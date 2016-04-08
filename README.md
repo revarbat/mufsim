@@ -13,6 +13,6 @@ Usage: `mufsim [-h] [-m] [-u] [-r] [-t] [-d] [-c COMMAND] infile`
       -u, --uncompile       Show compiled MUF tokens.
       -r, --run             Run compiled MUF tokens.
       -t, --trace           Show stacktrace for each instrution.
-      -d, --debug           Show stacktrace for each instrution.
+      -d, --debug           Run MUF program in interactive debugger.
       -c COMMAND, --command COMMAND
 			    Specify command to push onto the stack for run.

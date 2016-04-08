@@ -3961,7 +3961,7 @@ def main():
                         help="Show stacktrace for each instrution.",
                         action="store_true")
     parser.add_argument("-d", "--debug",
-                        help="Show stacktrace for each instrution.",
+                        help="Run MUF program in interactive debugger.",
                         action="store_true")
     parser.add_argument("-c", "--command", type=str,
                         help="Specify command to push onto the stack for run.")
