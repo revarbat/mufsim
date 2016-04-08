@@ -1,0 +1,27 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: LV0: me
+    2: @
+    3: "sex"
+    4: PROPDIR?
+    5: LV0: me
+    6: @
+    7: "test#"
+    8: PROPDIR?
+    9: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") LV0: me
+    2: line 2 ("", LV0) @
+    3: line 2 ("", #5) "sex"
+    4: line 2 ("", #5, "sex") PROPDIR?
+PROPDIR? "sex/" on #5 = False
+    5: line 3 ("", 0) LV0: me
+    6: line 3 ("", 0, LV0) @
+    7: line 3 ("", 0, #5) "test#"
+    8: line 3 ("", 0, #5, "test#") PROPDIR?
+PROPDIR? "test#/" on #5 = True
+    9: line 4 ("", 0, 1) EXIT

@@ -1,0 +1,4029 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+
+import os
+import re
+import sys
+import time
+import argparse
+from random import randrange
+from subprocess import call
+
+primitives = {}
+builtin_defines = {
+    '}array':          '} array_make',
+    '}list':           '} array_make',
+    '}dict':           '} 2 / array_make_dict',
+    '}join':           '} array_make "" array_join',
+    '}cat':            '} array_make "" array_join',
+    '}tell':           '} array_make me @ 1 array_make array_notify',
+    '[]':              'array_getitem',
+    '[..]':            'array_getrange',
+    '->[]':            'array_setitem',
+    '[]<-':            'array_appenditem',
+    'array_interpret': '"" array_join',
+    'array_union':     '2 array_nunion',
+    'array_diff':      '2 array_ndiff',
+    'array_intersect': '2 array_nintersect',
+
+    'desc':            '"_/de" getpropstr',
+    'idesc':           '"_/ide" getpropstr',
+    'succ':            '"_/sc" getpropstr',
+    'osucc':           '"_/osc" getpropstr',
+    'fail':            '"_/fl" getpropstr',
+    'ofail':           '"_/ofl" getpropstr',
+    'drop':            '"_/dr" getpropstr',
+    'odrop':           '"_/odr" getpropstr',
+    'oecho':           '"_/oecho" getpropstr',
+    'pecho':           '"_/pecho" getpropstr',
+
+    'setdesc':         '"_/de" swap setpropstr',
+    'setidesc':        '"_/ide" swap setpropstr',
+    'setsucc':         '"_/sc" swap setpropstr',
+    'setosucc':        '"_/osc" swap setpropstr',
+    'setfail':         '"_/fl" swap setpropstr',
+    'setofail':        '"_/ofl" swap setpropstr',
+    'setdrop':         '"_/dr" swap setpropstr',
+    'setodrop':        '"_/odr" swap setpropstr',
+    'setoecho':        '"_/oecho" swap setpropstr',
+    'setpecho':        '"_/pecho" swap setpropstr',
+
+    'truename':        'name',
+
+    'reg_icase':       '1',
+    'reg_all':         '2',
+    'reg_extended':    '4',
+}
+defines = dict(builtin_defines)
+player_names = {}
+
+object_db = {}
+db_top = 0
+recycled_list = []
+
+
+class DBObject(object):
+    def __init__(
+        self, name, objtype="thing", owner=-1,
+        props={}, flags="", location=-1
+    ):
+        global db_top
+        global player_names
+        self.dbref = db_top
+        db_top += 1
+        self.objtype = objtype
+        self.name = name
+        self.flags = flags
+        if owner < 0:
+            owner = self.dbref
+        self.owner = owner
+        self.location = -1
+        self.contents = []
+        self.exits = []
+        self.links = []
+        self.properties = props
+        object_db[self.dbref] = self
+        self.moveto(location)
+        if objtype == "player":
+            player_names[self.name.lower()] = self.dbref
+
+    def moveto(self, dest):
+        loc = self.location
+        if loc >= 0:
+            if self.objtype == "exit":
+                idx = object_db[loc].exits.index(self.dbref)
+                del object_db[loc].exits[idx]
+            else:
+                idx = object_db[loc].contents.index(self.dbref)
+                del object_db[loc].contents[idx]
+        if dest >= 0:
+            if self.objtype == "exit":
+                object_db[dest].exits.insert(0, self.dbref)
+                self.exits = dest
+            else:
+                object_db[dest].contents.insert(0, self.dbref)
+                self.location = dest
+
+    def __repr__(self):
+        return "DBObject(" + str(self.__dict__) + ")"
+
+
+global_env = DBObject(
+    name="Global Environment Room",
+    objtype="room",
+    owner=1,
+)
+
+
+wizard_player = DBObject(
+    name="Wizard",
+    objtype="player",
+    flags="W3",
+    location=0,
+    props={
+        "sex": "male"
+    },
+)
+
+
+main_room = DBObject(
+    name="Main Room",
+    objtype="room",
+    location=0,
+    owner=wizard_player.dbref,
+)
+
+
+trigger_action = DBObject(
+    name="test",
+    objtype="exit",
+    owner=wizard_player.dbref,
+    location=main_room.dbref,
+)
+
+
+program_object = DBObject(
+    name="cmd-test",
+    objtype="program",
+    flags="3",
+    owner=wizard_player.dbref,
+    location=wizard_player.dbref,
+)
+trigger_action.links.append(program_object.dbref)
+
+
+john_doe = DBObject(
+    name="John_Doe",
+    objtype="player",
+    flags="3",
+    location=main_room.dbref,
+    props={
+        "sex": "male",
+        "test#": 5,
+        "test#/1": "This is line one.",
+        "test#/2": "This is line two.",
+        "test#/3": "This is line three.",
+        "test#/4": "This is line four.",
+        "test#/5": "This is line five.",
+    },
+)
+
+
+jane_doe = DBObject(
+    name="Jane_Doe",
+    objtype="player",
+    flags="1",
+    location=main_room.dbref,
+    props={
+        "sex": "female"
+    },
+)
+
+
+thing_object = DBObject(
+    name="My Thing",
+    objtype="thing",
+    flags="",
+    location=main_room.dbref,
+    props={},
+)
+
+
+def normalize_prop(prop):
+    prop = prop.strip().lower()
+    prop = re.sub(r'//*', r'/', prop)
+    if not prop:
+        return prop
+    if prop[0] == '/':
+        prop = prop[1:]
+    if prop[-1] == '/':
+        prop = prop[:-1]
+    return prop
+
+
+def getprop(obj, prop):
+    prop = normalize_prop(prop)
+    if type(obj) is DBObject:
+        obj = obj.dbref
+    elif type(obj) is StackDBRef:
+        obj = obj.value
+    if obj not in object_db:
+        val = 0
+    elif prop not in object_db[obj].properties:
+        val = 0
+    else:
+        val = object_db[obj].properties[prop]
+    if type(val) is str:
+        print("GETPROP \"%s\" on #%d = \"%s\"" % (prop, obj, val))
+    else:
+        print("GETPROP \"%s\" on #%d = %s" % (prop, obj, val))
+    return val
+
+
+def setprop(obj, prop, val):
+    prop = normalize_prop(prop)
+    if type(obj) is DBObject:
+        obj = obj.dbref
+    elif type(obj) is StackDBRef:
+        obj = obj.value
+    if obj not in object_db:
+        object_db[obj] = {}
+    object_db[obj].properties[prop] = val
+    if type(val) is str:
+        print("SETPROP \"%s\" on #%d = \"%s\"" % (prop, obj, val))
+    else:
+        print("SETPROP \"%s\" on #%d = %s" % (prop, obj, val))
+
+
+def delprop(obj, prop):
+    prop = normalize_prop(prop)
+    if type(obj) is DBObject:
+        obj = obj.dbref
+    elif type(obj) is StackDBRef:
+        obj = obj.value
+    if obj not in object_db:
+        return
+    if prop in object_db[obj].properties:
+        del object_db[obj].properties[prop]
+        print("DELPROP \"%s\" on #%d" % (prop, obj))
+    prop += '/'
+    for prp in object_db[obj].properties:
+        prp = normalize_prop(prp)
+        if prp.startswith(prop):
+            del object_db[obj].properties[prp]
+            print("DELPROP \"%s\" on #%d" % (prp, obj))
+
+
+def is_propdir(obj, prop):
+    prop = normalize_prop(prop)
+    if type(obj) is DBObject:
+        obj = obj.dbref
+    elif type(obj) is StackDBRef:
+        obj = obj.value
+    val = False
+    if obj in object_db:
+        prop += '/'
+        for prp in object_db[obj].properties:
+            prp = normalize_prop(prp)
+            if prp.startswith(prop):
+                val = True
+                break
+    print("PROPDIR? \"%s\" on #%d = %s" % (prop, obj, val))
+    return val
+
+
+def next_prop(obj, prop):
+    if not prop or prop[-1] == '/':
+        prop = normalize_prop(prop)
+        if prop:
+            pfx = prop + '/'
+        else:
+            pfx = ''
+        prev = ''
+    else:
+        prop = normalize_prop(prop)
+        if '/' in prop:
+            pfx, prev = prop.rsplit('/', 1)
+            pfx += '/'
+        else:
+            pfx = ''
+            prev = prop
+    if type(obj) is DBObject:
+        obj = obj.dbref
+    elif type(obj) is StackDBRef:
+        obj = obj.value
+    plen = len(pfx)
+    out = ''
+    if obj in object_db:
+        for prp in object_db[obj].properties:
+            prp = normalize_prop(prp)
+            if prp.startswith(pfx):
+                sub = prp[plen:].split('/', 1)[0]
+                if sub > prev:
+                    if not out or pfx + sub < out:
+                        out = pfx + sub
+    print("NEXTPROP \"%s\" on #%d = \"%s\"" % (prop, obj, out))
+    return out
+
+
+def prodir_props(obj, prop):
+    prop = normalize_prop(prop)
+    if type(obj) is DBObject:
+        obj = obj.dbref
+    elif type(obj) is StackDBRef:
+        obj = obj.value
+    if obj not in object_db:
+        return False
+    if prop:
+        prop += '/'
+    plen = len(prop)
+    out = []
+    for prp in object_db[obj].properties:
+        prp = normalize_prop(prp)
+        if prp.startswith(prop):
+            sub = prop + prp[plen:].split('/', 1)[0]
+            if sub not in out:
+                out.append(sub)
+    out.sort()
+    print("PROPDIRPROPS \"%s\" on #%d = %s" % (prop, obj, out))
+    return out
+
+
+def is_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
+def is_dbref(s):
+    if s[0] != '#':
+        return False
+    try:
+        int(s[1:])
+        return True
+    except ValueError:
+        return False
+
+
+def is_float(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
+def smatch(pat, txt):
+    pats = [
+        ('{', '\b('),
+        ('}', ')\b'),
+        ('?', '.'),
+        ('*', '.*'),
+    ]
+    for fnd, repl in pats:
+        pat = pat.replace(fnd, repl)
+    try:
+        pat = re.compile(pat, re.IGNORECASE)
+    except:
+        return False
+    if pat.search(txt):
+        return True
+    return False
+
+
+class MufCompileError(Exception):
+    pass
+
+
+class MufRuntimeError(Exception):
+    pass
+
+
+class StackItem(object):
+    value = 0
+
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return "Unknown"
+
+    def __repr__(self):
+        return str(self)
+
+
+class StackMark(StackItem):
+    def __init__(self):
+        super(StackMark, self).__init__(0)
+
+    def __str__(self):
+        return "Mark"
+
+
+class StackDBRef(StackItem):
+    def __str__(self):
+        return "#%d" % self.value
+
+
+class StackLock(StackItem):
+    def __str__(self):
+        return "Lock:%s" % self.value
+
+
+class StackAddress(StackItem):
+    def __str__(self):
+        return "Addr:%d" % self.value
+
+
+class StackGlobalVar(StackItem):
+    def __str__(self):
+        return "LV%d" % self.value
+
+
+class StackFuncVar(StackItem):
+    def __str__(self):
+        return "SV%d" % self.value
+
+
+# Decorator
+def instr(inst_name):
+    def instr_decorator(func):
+        primitives[inst_name] = func
+        func.prim_name = inst_name
+        return func
+    return instr_decorator
+
+
+class Instruction(object):
+    prim_name = None
+
+    def __init__(self, line):
+        self.line = line
+
+    def execute(self, fr):
+        pass
+
+    def __str__(self):
+        if self.prim_name:
+            return self.prim_name.upper().strip()
+        primname = str(type(self))
+        primname = primname.split('.', 1)[1]
+        primname = primname.split("'", 1)[0][4:]
+        primname = primname.strip()
+        return primname
+
+    def __repr__(self):
+        return str(self)
+
+
+class InstInteger(Instruction):
+    value = 0
+
+    def __init__(self, line, val):
+        self.value = val
+        super(InstInteger, self).__init__(line)
+
+    def execute(self, fr):
+        fr.data_push(self.value)
+
+    def __str__(self):
+        return "%d" % self.value
+
+
+class InstFloat(Instruction):
+    value = 0.0
+
+    def __init__(self, line, val):
+        self.value = val
+        super(InstFloat, self).__init__(line)
+
+    def execute(self, fr):
+        fr.data_push(self.value)
+
+    def __str__(self):
+        return "%g" % self.value
+
+
+class InstDBRefPush(Instruction):
+    value = 0
+
+    def __init__(self, line, val):
+        self.value = val
+        super(InstDBRefPush, self).__init__(line)
+
+    def execute(self, fr):
+        fr.data_push(StackDBRef(self.value))
+
+    def __str__(self):
+        return "#%d" % self.value
+
+
+class InstString(Instruction):
+    value = 0
+
+    def __init__(self, line, val):
+        self.value = val
+        super(InstString, self).__init__(line)
+
+    def execute(self, fr):
+        fr.data_push(self.value)
+
+    def __str__(self):
+        return "\"%s\"" % self.value
+
+
+class InstAddress(Instruction):
+    value = 0
+
+    def __init__(self, line, val):
+        self.value = val
+        super(InstAddress, self).__init__(line)
+
+    def execute(self, fr):
+        fr.data_push(StackAddress(self.value))
+
+    def __str__(self):
+        return "Addr:%d" % self.value
+
+
+class InstGlobalVar(Instruction):
+    varnum = 0
+    varname = 0
+
+    def __init__(self, line, vnum, vname):
+        self.varnum = vnum
+        self.varname = vname
+        super(InstGlobalVar, self).__init__(line)
+
+    def execute(self, fr):
+        fr.data_push(StackGlobalVar(self.varnum))
+
+    def __str__(self):
+        return "LV%d: %s" % (self.varnum, self.varname)
+
+
+class InstFuncVar(Instruction):
+    varnum = 0
+    varname = 0
+
+    def __init__(self, line, vnum, vname):
+        self.varnum = vnum
+        self.varname = vname
+        super(InstFuncVar, self).__init__(line)
+
+    def execute(self, fr):
+        fr.data_push(StackFuncVar(self.varnum))
+
+    def __str__(self):
+        return "SV%d: %s" % (self.varnum, self.varname)
+
+
+class InstBranch(Instruction):
+    delta = 0
+
+    def __init__(self, line, val):
+        self.delta = val
+        super(InstBranch, self).__init__(line)
+
+    def execute(self, fr):
+        fr.pc_advance(self.delta-1)
+
+    def __str__(self):
+        return "Branch: %+d" % self.delta
+
+
+class InstBranchIfNot(Instruction):
+    delta = 0
+
+    def __init__(self, line, val):
+        self.delta = val
+        super(InstBranchIfNot, self).__init__(line)
+
+    def execute(self, fr):
+        fr.check_underflow(1)
+        val = fr.data_pop()
+        if not val:
+            fr.pc_advance(self.delta-1)
+
+    def __str__(self):
+        return "BranchIfNot: %+d" % self.delta
+
+
+class InstFunc(Instruction):
+    value = "Unknown"
+
+    def __init__(self, line, funcname):
+        self.value = funcname
+        super(InstFunc, self).__init__(line)
+
+    def __str__(self):
+        return "Function: %s" % self.value
+
+
+@instr("execute")
+class InstExecute(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        addr = fr.data_pop()
+        if type(addr) is not StackAddress:
+            raise MufRuntimeError("Expected address.")
+        fr.call_push(addr)
+        fr.pc_advance(-1)
+
+
+@instr("exit")
+class InstExit(Instruction):
+    def execute(self, fr):
+        fr.call_pop()
+
+
+@instr("try")
+class InstTry(Instruction):
+    def __init__(self, line):
+        self.delta = 0
+        self.trycode = []
+        self.detailed = False
+        super(InstTry, self).__init__(line)
+
+    def execute(self, fr):
+        fr.check_underflow(1)
+        cnt = fr.data_pop()
+        if type(cnt) is not int:
+            raise MufRuntimeError("Expected integer.")
+        stacklock = fr.data_depth() - cnt
+        addr = fr.curr_addr()
+        addr = StackAddress(addr.value + self.delta)
+        fr.catch_push(self.detailed, addr, stacklock)
+
+    def __str__(self):
+        return "Try: %+d" % self.delta
+
+
+class InstTryPop(Instruction):
+    def execute(self, fr):
+        fr.catch_pop()
+
+
+@instr("abort")
+class InstAbort(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        msg = fr.data_pop()
+        if type(msg) is not str:
+            raise MufRuntimeError("Expected string argument.")
+        raise MufRuntimeError(msg)
+
+
+@instr("if")
+class InstIf(Instruction):
+    def __init__(self, line):
+        self.ifcode = []
+        self.elsecode = []
+        super(InstIf, self).__init__(line)
+
+    def execute(self, fr):
+        pass
+
+
+@instr("begin")
+class InstBegin(Instruction):
+    pass
+
+
+@instr("for")
+class InstFor(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        inc = fr.data_pop()
+        end = fr.data_pop()
+        start = fr.data_pop()
+        if type(start) is not int:
+            raise MufRuntimeError("Expected integer.")
+        if type(end) is not int:
+            raise MufRuntimeError("Expected integer.")
+        if type(inc) is not int:
+            raise MufRuntimeError("Expected integer.")
+        fr.loop_iter_push("for", iter(xrange(start, end+inc, inc)))
+
+
+@instr("foreach")
+class InstForeach(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        arr = fr.data_pop()
+        if type(arr) is list:
+            arr = {k: v for k, v in enumerate(arr)}
+        if type(arr) is not dict:
+            raise MufRuntimeError("Expected Array.")
+        fr.loop_iter_push("foreach", arr.iteritems())
+
+
+@instr("__foriter__")
+class InstForIter(Instruction):
+    def execute(self, fr):
+        typ, topiter = fr.loop_iter_top()
+        try:
+            if typ == "for":
+                v = next(topiter)
+                fr.data_push(v)
+                fr.data_push(1)
+            elif typ == "foreach":
+                k, v = next(topiter)
+                fr.data_push(k)
+                fr.data_push(v)
+                fr.data_push(1)
+            else:
+                fr.data_push(1)
+        except StopIteration:
+            fr.data_push(0)
+
+
+@instr(" __forpop__")
+class InstForPop(Instruction):
+    def execute(self, fr):
+        fr.loop_iter_pop()
+
+
+@instr("while")
+class InstWhile(Instruction):
+    pass
+
+
+@instr("break")
+class InstBreak(Instruction):
+    pass
+
+
+@instr("continue")
+class InstContinue(Instruction):
+    pass
+
+
+@instr("!")
+class InstBang(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        v = fr.data_pop()
+        val = fr.data_pop()
+        if type(v) is StackGlobalVar:
+            fr.globalvar_set(v.value, val)
+        elif type(v) is StackFuncVar:
+            fr.funcvar_set(v.value, val)
+        else:
+            raise MufRuntimeError("StackItemNotVariable")
+
+    def __str__(self):
+        return "!"
+
+
+@instr("@")
+class InstAt(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        v = fr.data_pop()
+        if type(v) is StackGlobalVar:
+            val = fr.globalvar_get(v.value)
+            fr.data_push(val)
+        elif type(v) is StackFuncVar:
+            val = fr.funcvar_get(v.value)
+            fr.data_push(val)
+        else:
+            raise MufRuntimeError("StackItemNotVariable")
+
+    def __str__(self):
+        return "@"
+
+
+@instr("+")
+class InstPlus(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        makedbref = False
+        if type(a) is StackDBRef:
+            makedbref = True
+            a = a.value
+        if type(b) is StackDBRef:
+            makedbref = True
+            b = b.value
+        if type(a) not in [int, float]:
+            raise MufRuntimeError("NotANumericType")
+        if type(b) not in [int, float]:
+            raise MufRuntimeError("NotANumericType")
+        if makedbref:
+            fr.data_push(StackDBRef(a+b))
+        else:
+            fr.data_push(a + b)
+
+    def __str__(self):
+        return "+"
+
+
+@instr("++")
+class InstPlusPlus(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        a = fr.data_pop()
+        if type(a) is StackFuncVar:
+            val = fr.funcvar_get(a) + 1
+            fr.funcvar_set(a, val)
+        elif type(a) is StackGlobalVar:
+            val = fr.globalvar_get(a) + 1
+            fr.globalvar_set(a, val)
+        elif type(a) is StackDBRef:
+            fr.data_push(StackDBRef(a.value+1))
+        elif type(a) is int:
+            fr.data_push(a + 1)
+        elif type(a) is float:
+            fr.data_push(a + 1)
+        else:
+            raise MufRuntimeError("Expected a variable or number.")
+
+    def __str__(self):
+        return "++"
+
+
+@instr("-")
+class InstMinus(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        makedbref = False
+        if type(a) is StackDBRef:
+            makedbref = True
+            a = a.value
+        if type(b) is StackDBRef:
+            makedbref = True
+            b = b.value
+        if type(a) not in [int, float]:
+            raise MufRuntimeError("NotANumericType")
+        if type(b) not in [int, float]:
+            raise MufRuntimeError("NotANumericType")
+        if makedbref:
+            fr.data_push(StackDBRef(a-b))
+        else:
+            fr.data_push(a - b)
+
+    def __str__(self):
+        return "-"
+
+
+@instr("--")
+class InstMinusMinus(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        a = fr.data_pop()
+        if type(a) is StackFuncVar:
+            val = fr.funcvar_get(a) - 1
+            fr.funcvar_set(a, val)
+        elif type(a) is StackGlobalVar:
+            val = fr.globalvar_get(a) - 1
+            fr.globalvar_set(a, val)
+        elif type(a) is StackDBRef:
+            fr.data_push(StackDBRef(a.value+1))
+        elif type(a) is int:
+            fr.data_push(a - 1)
+        elif type(a) is float:
+            fr.data_push(a - 1)
+        else:
+            raise MufRuntimeError("Expected a variable or number.")
+
+    def __str__(self):
+        return "--"
+
+
+@instr("*")
+class InstTimes(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) not in [int, float]:
+            raise MufRuntimeError("NotANumericType")
+        if type(b) not in [int, float]:
+            raise MufRuntimeError("NotANumericType")
+        fr.data_push(a * b)
+
+    def __str__(self):
+        return "*"
+
+
+@instr("/")
+class InstDivide(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) not in [int, float]:
+            raise MufRuntimeError("NotANumericType")
+        if type(b) not in [int, float]:
+            raise MufRuntimeError("NotANumericType")
+        if b:
+            fr.data_push(a / b)
+        else:
+            fr.data_push(0)
+
+    def __str__(self):
+        return "/"
+
+
+@instr("%")
+class InstModulo(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) not in [int, float]:
+            raise MufRuntimeError("NotANumericType")
+        if type(b) not in [int, float]:
+            raise MufRuntimeError("NotANumericType")
+        if b:
+            fr.data_push(a % b)
+        else:
+            fr.data_push(0)
+
+    def __str__(self):
+        return "%"
+
+
+@instr("bitshift")
+class InstBitShift(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is not int:
+            raise MufRuntimeError("NotANumericType")
+        if type(b) is not int:
+            raise MufRuntimeError("NotANumericType")
+        if b < 0:
+            fr.data_push(a >> -b)
+        else:
+            fr.data_push(a << b)
+
+
+@instr("bitor")
+class InstBitOr(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is not int:
+            raise MufRuntimeError("NotANumericType")
+        if type(b) is not int:
+            raise MufRuntimeError("NotANumericType")
+        fr.data_push(a | b)
+
+
+@instr("bitxor")
+class InstBitXor(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is not int:
+            raise MufRuntimeError("NotANumericType")
+        if type(b) is not int:
+            raise MufRuntimeError("NotANumericType")
+        fr.data_push(a ^ b)
+
+
+@instr("bitand")
+class InstBitAnd(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is not int:
+            raise MufRuntimeError("NotANumericType")
+        if type(b) is not int:
+            raise MufRuntimeError("NotANumericType")
+        fr.data_push(a & b)
+
+
+@instr("or")
+class InstOr(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        fr.data_push(1 if a or b else 0)
+
+
+@instr("xor")
+class InstXor(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        fr.data_push(1 if (a and not b) or (not a and b) else 0)
+
+
+@instr("and")
+class InstAnd(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        fr.data_push(1 if a and b else 0)
+
+
+@instr("not")
+class InstNot(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        a = fr.data_pop()
+        if type(a) is StackDBRef:
+            fr.data_push(1 if a.value == -1 else 0)
+        else:
+            fr.data_push(1 if not a else 0)
+
+
+@instr("=")
+class InstEquals(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is StackDBRef:
+            a = a.value
+        if type(b) is StackDBRef:
+            b = b.value
+        if type(a) is not int or type(b) is not int:
+            raise MufRuntimeError("StackItemIsNotInteger")
+        fr.data_push(1 if a == b else 0)
+
+    def __str__(self):
+        return "="
+
+
+@instr("<")
+class InstLessThan(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is StackDBRef:
+            a = a.value
+        if type(b) is StackDBRef:
+            b = b.value
+        if type(a) is not int or type(b) is not int:
+            raise MufRuntimeError("StackItemIsNotInteger")
+        fr.data_push(1 if a < b else 0)
+
+    def __str__(self):
+        return "<"
+
+
+@instr("<=")
+class InstLessThanOrEquals(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is StackDBRef:
+            a = a.value
+        if type(b) is StackDBRef:
+            b = b.value
+        if type(a) is not int or type(b) is not int:
+            raise MufRuntimeError("StackItemIsNotInteger")
+        fr.data_push(1 if a <= b else 0)
+
+    def __str__(self):
+        return "<="
+
+
+@instr(">")
+class InstGreaterThan(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is StackDBRef:
+            a = a.value
+        if type(b) is StackDBRef:
+            b = b.value
+        if type(a) is not int or type(b) is not int:
+            raise MufRuntimeError("StackItemIsNotInteger")
+        fr.data_push(1 if a > b else 0)
+
+    def __str__(self):
+        return ">"
+
+
+@instr(">=")
+class InstGreaterThanOrEquals(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is StackDBRef:
+            a = a.value
+        if type(b) is StackDBRef:
+            b = b.value
+        if type(a) is not int or type(b) is not int:
+            raise MufRuntimeError("StackItemIsNotInteger")
+        fr.data_push(1 if a >= b else 0)
+
+    def __str__(self):
+        return ">="
+
+
+@instr("read")
+class InstRead(Instruction):
+    def execute(self, fr):
+        txt = raw_input("READ>")
+        if txt == "@Q":
+            while fr.call_stack:
+                fr.call_pop()
+            while fr.catch_stack:
+                fr.catch_pop()
+            raise MufRuntimeError("Aborting program.")
+        fr.data_push(txt)
+
+
+@instr("atoi")
+class InstAtoI(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        a = fr.data_pop()
+        if type(a) is not str:
+            raise MufRuntimeError("Expected string argument.")
+        try:
+            fr.data_push(int(a))
+        except:
+            fr.data_push(0)
+
+
+@instr("stod")
+class InstStoD(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        a = fr.data_pop()
+        if type(a) is not str:
+            raise MufRuntimeError("Expected string argument.")
+        if a[0] == '#':
+            a = a[1:]
+        try:
+            fr.data_push(StackDBRef(int(a)))
+        except:
+            fr.data_push(StackDBRef(-1))
+
+
+@instr("intostr")
+class InstIntostr(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        a = fr.data_pop()
+        if type(a) is not int:
+            raise MufRuntimeError("StackItemIsNotInteger")
+        fr.data_push("%d" % a)
+
+
+@instr("dup")
+class InstDup(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        a = fr.data_pop()
+        fr.data_push(a)
+        fr.data_push(a)
+
+
+@instr("dupn")
+class InstDupN(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        n = fr.data_pop()
+        if type(n) is not int:
+            raise MufRuntimeError("Expected integer argument.")
+        fr.check_underflow(n)
+        for i in xrange(n):
+            fr.data_push(fr.data_pick(n))
+
+
+@instr("ldup")
+class InstLDup(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        n = fr.data_pick(1)
+        if type(n) is not int:
+            raise MufRuntimeError("Expected integer argument.")
+        n += 1
+        fr.check_underflow(n)
+        for i in xrange(n):
+            fr.data_push(fr.data_pick(n))
+
+
+@instr("pop")
+class InstPop(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        fr.data_pop()
+
+
+@instr("popn")
+class InstPopN(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        n = fr.data_pop()
+        if type(n) is not int:
+            raise MufRuntimeError("Expected integer argument.")
+        fr.check_underflow(n)
+        for i in xrange(n):
+            fr.data_pop()
+
+
+@instr("swap")
+class InstSwap(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        fr.data_push(b)
+        fr.data_push(a)
+
+
+@instr("rot")
+class InstRot(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        a = fr.data_pull(3)
+        fr.data_push(a)
+
+
+@instr("rotate")
+class InstRotate(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        num = fr.data_pop()
+        if type(num) is not int:
+            raise MufRuntimeError("StackItemNotInt")
+        fr.check_underflow(num)
+        if not num:
+            return
+        if num < 0:
+            a = fr.data_pop()
+            fr.data_insert((-num)-1, a)
+        else:
+            a = fr.data_pull(num)
+            fr.data_push(a)
+
+
+@instr("pick")
+class InstPick(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        num = fr.data_pop()
+        if type(num) is not int:
+            raise MufRuntimeError("StackItemNotInt")
+        fr.check_underflow(num)
+        if not num:
+            return
+        if num < 0:
+            raise MufRuntimeError("StackItemBadInt")
+        else:
+            a = fr.data_pick(num)
+            fr.data_push(a)
+
+
+@instr("over")
+class InstOver(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        a = fr.data_pick(2)
+        fr.data_push(a)
+
+
+@instr("put")
+class InstPut(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        num = fr.data_pop()
+        val = fr.data_pop()
+        if type(num) is not int:
+            raise MufRuntimeError("Expected integer argument.")
+        fr.check_underflow(num)
+        if not num:
+            return
+        if num < 0:
+            raise MufRuntimeError("Value out of range")
+        else:
+            fr.data_put(num, val)
+
+
+@instr("reverse")
+class InstReverse(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        num = fr.data_pop()
+        if type(num) is not int:
+            raise MufRuntimeError("Expected integer argument.")
+        fr.check_underflow(num)
+        if not num:
+            return
+        arr = [fr.data_pop() for i in xrange(num)]
+        for val in arr:
+            fr.data_push(val)
+
+
+@instr("lreverse")
+class InstLReverse(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        num = fr.data_pop()
+        if type(num) is not int:
+            raise MufRuntimeError("Expected integer argument.")
+        fr.check_underflow(num)
+        if not num:
+            return
+        arr = [fr.data_pop() for i in xrange(num)]
+        for val in arr:
+            fr.data_push(val)
+        fr.data_push(num)
+
+
+@instr("{")
+class InstMark(Instruction):
+    def execute(self, fr):
+        fr.data_push(StackMark())
+
+
+@instr("}")
+class InstMarkCount(Instruction):
+    def execute(self, fr):
+        for i in xrange(fr.data_depth()):
+            a = fr.data_pick(i+1)
+            if type(a) is StackMark:
+                fr.data_pull(i+1)
+                fr.data_push(i)
+                return
+        raise MufRuntimeError("StackUnderflow")
+
+
+@instr("notify")
+class InstNotify(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        msg = fr.data_pop()
+        who = fr.data_pop()
+        if type(who) is not StackDBRef:
+            raise MufRuntimeError("StackItemNotDBRef")
+        if type(msg) is not str:
+            raise MufRuntimeError("StackItemNotString")
+        print("NOTIFY TO #%d: %s" % (who.value, msg))
+
+
+@instr("notify_except")
+class InstNotifyExcept(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        msg = fr.data_pop()
+        who = fr.data_pop()
+        where = fr.data_pop()
+        if type(where) is not StackDBRef:
+            raise MufRuntimeError("StackItemNotDBRef")
+        if type(who) is not StackDBRef:
+            raise MufRuntimeError("StackItemNotDBRef")
+        if type(msg) is not str:
+            raise MufRuntimeError("StackItemNotString")
+        print("NOTIFY TO ALL IN #%d EXCEPT #%d: %s" %
+              (where.value, who.value, msg))
+
+
+@instr("array_make")
+class InstArrayMake(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        num = fr.data_pop()
+        if type(num) is not int:
+            raise MufRuntimeError("StackItemNotInt")
+        fr.check_underflow(num)
+        arr = []
+        for i in xrange(num):
+            arr.insert(0, fr.data_pop())
+        fr.data_push(arr)
+
+
+@instr("array_make_dict")
+class InstArrayMakeDict(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        num = fr.data_pop()
+        if type(num) is not int:
+            raise MufRuntimeError("StackItemNotInt")
+        fr.check_underflow(num*2)
+        d = {}
+        for i in xrange(num):
+            val = fr.data_pop()
+            key = fr.data_pop()
+            d[key] = val
+        fr.data_push(d)
+
+
+@instr("array_count")
+class InstArrayCount(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        arr = fr.data_pop()
+        if type(arr) is list or type(arr) is dict:
+            fr.data_push(len(arr))
+        else:
+            raise MufRuntimeError("StackItemNotArray")
+
+
+@instr("array_getitem")
+class InstArrayGetItem(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        key = fr.data_pop()
+        arr = fr.data_pop()
+        if type(arr) is list:
+            if type(key) is not int:
+                fr.data_push(0)
+            elif key < 0 or key >= len(arr):
+                fr.data_push(0)
+            else:
+                fr.data_push(arr[key])
+        elif type(arr) is dict:
+            if key in arr:
+                fr.data_push(arr[key])
+            else:
+                fr.data_push(0)
+        else:
+            raise MufRuntimeError("StackItemNotArray")
+
+
+@instr("array_setitem")
+class InstArraySetItem(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        key = fr.data_pop()
+        arr = fr.data_pop()
+        val = fr.data_pop()
+        if type(arr) is list:
+            if type(key) is not int:
+                raise MufRuntimeError("List array expects integer index.")
+            elif key < 0 or key > len(arr):
+                raise MufRuntimeError("Index out of array bounds.")
+            else:
+                arr[key] = val
+            fr.data_push(arr)
+        elif type(arr) is dict:
+            if type(key) is not int and type(key) is not str:
+                raise MufRuntimeError("Index must be integer or string.")
+            arr[key] = val
+            fr.data_push(arr)
+        else:
+            raise MufRuntimeError("StackItemNotArray")
+
+
+@instr("array_insertitem")
+class InstArrayInsertItem(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        key = fr.data_pop()
+        arr = fr.data_pop()
+        val = fr.data_pop()
+        if type(arr) is list:
+            if type(key) is not int:
+                raise MufRuntimeError("List array expects integer index.")
+            elif key < 0 or key > len(arr):
+                raise MufRuntimeError("Index out of array bounds.")
+            else:
+                arr.insert(key, val)
+            fr.data_push(arr)
+        elif type(arr) is dict:
+            if type(key) is not int and type(key) is not str:
+                raise MufRuntimeError("Index must be integer or string.")
+            arr[key] = val
+            fr.data_push(arr)
+        else:
+            raise MufRuntimeError("StackItemNotArray")
+
+
+@instr("array_appenditem")
+class InstArrayAppendItem(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        arr = fr.data_pop()
+        val = fr.data_pop()
+        if type(arr) is not list:
+            raise MufRuntimeError("Expected list type array.")
+        arr.append(val)
+        fr.data_push(arr)
+
+
+@instr("array_getrange")
+class InstArrayGetRange(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        end = fr.data_pop()
+        st = fr.data_pop()
+        arr = fr.data_pop()
+        if type(arr) is not list:
+            raise MufRuntimeError("Expected list type array. (1)")
+        if type(st) is not int:
+            raise MufRuntimeError("Expected integer index. (2)")
+        if type(end) is not int:
+            raise MufRuntimeError("Expected integer index. (3)")
+        fr.data_push(arr[st:end+1])
+
+
+@instr("array_setrange")
+class InstArraySetRange(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        items = fr.data_pop()
+        st = fr.data_pop()
+        arr = fr.data_pop()
+        if type(arr) is not list:
+            raise MufRuntimeError("Expected list type array. (1)")
+        if type(st) is not int:
+            raise MufRuntimeError("Expected integer index. (2)")
+        if type(items) is not list:
+            raise MufRuntimeError("Expected list type array. (3)")
+        for i, item in enumerate(items):
+            arr[st+i] = item
+        fr.data_push(arr)
+
+
+@instr("array_delrange")
+class InstArrayDelRange(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        end = fr.data_pop()
+        st = fr.data_pop()
+        arr = fr.data_pop()
+        if type(arr) is not list:
+            raise MufRuntimeError("Expected list type array. (1)")
+        if type(st) is not int:
+            raise MufRuntimeError("Expected integer index. (2)")
+        if type(end) is not int:
+            raise MufRuntimeError("Expected integer index. (3)")
+        if end >= len(arr):
+            end = len(arr)-1
+        for i in xrange(st, end+1):
+            del arr[st]
+        fr.data_push(arr)
+
+
+@instr("array_insertrange")
+class InstArrayInsertRange(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        items = fr.data_pop()
+        st = fr.data_pop()
+        arr = fr.data_pop()
+        if type(arr) is not list:
+            raise MufRuntimeError("Expected list type array. (1)")
+        if type(st) is not int:
+            raise MufRuntimeError("Expected integer index. (2)")
+        if type(items) is not list:
+            raise MufRuntimeError("Expected list type array. (3)")
+        if st < 0 or st > len(arr):
+            raise MufRuntimeError("Index outside array bounds. (2)")
+        for i, item in enumerate(items):
+            arr.insert(st+i, item)
+        fr.data_push(arr)
+
+
+@instr("array_nested_get")
+class InstArrayNestedGet(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        keys = fr.data_pop()
+        arr = fr.data_pop()
+        if type(keys) is not list:
+            raise MufRuntimeError("StackItemNotListArray")
+        if type(arr) is not list and type(arr) is not dict:
+            raise MufRuntimeError("StackItemNotArray")
+        for key in keys:
+            if type(key) is not int and type(key) is not str:
+                raise MufRuntimeError("Index must be integer or string.")
+            if type(arr) is list:
+                arr = {idx: val for idx, val in enumerate(arr)}
+            if type(arr) is not dict:
+                arr = 0
+                break
+            elif key not in arr:
+                arr = 0
+                break
+            else:
+                arr = arr[key]
+        fr.data_push(arr)
+
+
+@instr("array_nested_set")
+class InstArrayNestedSet(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        keys = fr.data_pop()
+        arr = fr.data_pop()
+        val = fr.data_pop()
+        if type(keys) is not list:
+            raise MufRuntimeError("StackItemNotListArray")
+        if type(arr) is not list and type(arr) is not dict:
+            raise MufRuntimeError("StackItemNotArray")
+        subarr = arr
+        keyslen = len(keys)
+        for keynum, key in enumerate(keys):
+            if type(subarr) is list:
+                if type(key) is not int:
+                    raise MufRuntimeError("List array expects integer index.")
+                elif key < 0 or key > len(subarr):
+                    raise MufRuntimeError("Index out of list array bounds.")
+                if keynum < keyslen-1:
+                    if key == len(subarr):
+                        subarr[key] = {}
+                    subarr = subarr[key]
+                else:
+                    subarr[key] = val
+            elif type(subarr) is dict:
+                if type(key) is not int and type(key) is not str:
+                    raise MufRuntimeError(
+                        "Dictionary array ndex must be integer or string.")
+                if keynum < keyslen-1:
+                    if key not in subarr:
+                        subarr[key] = {}
+                    subarr = subarr[key]
+                else:
+                    subarr[key] = val
+            elif keynum < keyslen-1:
+                raise MufRuntimeError("Nested array not a list or dictionary.")
+        fr.data_push(arr)
+
+
+@instr("array_keys")
+class InstArrayKeys(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        arr = fr.data_pop()
+        if type(arr) is list:
+            cnt = 0
+            for key, val in enumerate(arr):
+                fr.data_push(key)
+                cnt += 1
+            fr.data_push(cnt)
+        elif type(arr) is dict:
+            cnt = 0
+            for key, val in arr.iteritems():
+                fr.data_push(key)
+                cnt += 1
+            fr.data_push(cnt)
+        else:
+            raise MufRuntimeError("StackItemNotArray")
+
+
+@instr("array_vals")
+class InstArrayVals(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        arr = fr.data_pop()
+        if type(arr) is list:
+            cnt = 0
+            for key, val in enumerate(arr):
+                fr.data_push(val)
+                cnt += 1
+            fr.data_push(cnt)
+        elif type(arr) is dict:
+            cnt = 0
+            for key, val in arr.iteritems():
+                fr.data_push(val)
+                cnt += 1
+            fr.data_push(cnt)
+        else:
+            raise MufRuntimeError("StackItemNotArray")
+
+
+@instr("array_join")
+class InstArrayJoin(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        delim = fr.data_pop()
+        arr = fr.data_pop()
+        if type(arr) is not list:
+            raise MufRuntimeError("Expected list array.")
+        if type(delim) is not str:
+            raise MufRuntimeError("Expected string delimiter argument.")
+        out = ""
+        for idx, val in enumerate(arr):
+            if idx > 0:
+                out += delim
+            if type(val) is str:
+                out += val
+            elif type(val) is int:
+                out += "%d" % val
+            elif type(val) is float:
+                out += "%g" % val
+            elif type(val) is StackDBRef:
+                out += "#%d" % val.value
+            elif type(val) is StackAddress:
+                out += "ADDRESS: " + val.value
+            else:
+                out += val
+        fr.data_push(out)
+
+
+@instr("array_findval")
+class InstArrayFindVal(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        val = fr.data_pop()
+        arr = fr.data_pop()
+        if type(arr) is list:
+            arr = {k: v for k, v in enumerate(arr)}
+        if type(arr) is not dict:
+            raise MufRuntimeError("Expected array.")
+        out = []
+        for k, v in arr.iteritems():
+            if v == val:
+                out.append(k)
+        fr.data_push(out)
+
+
+@instr("array_excludeval")
+class InstArrayExcludeVal(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        val = fr.data_pop()
+        arr = fr.data_pop()
+        if type(arr) is list:
+            arr = {k: v for k, v in enumerate(arr)}
+        if type(arr) is not dict:
+            raise MufRuntimeError("Expected array.")
+        out = []
+        for k, v in arr.iteritems():
+            if v != val:
+                out.append(k)
+        fr.data_push(out)
+
+
+@instr("array_reverse")
+class InstArrayReverse(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        arr = fr.data_pop()
+        if type(arr) is not list:
+            raise MufRuntimeError("Expected list array.")
+        arr = [x for x in reversed(arr)]
+        fr.data_push(arr)
+
+
+@instr("date")
+class InstDate(Instruction):
+    def execute(self, fr):
+        when = time.localtime()
+        fr.data_push(int(when.tm_mday))
+        fr.data_push(int(when.tm_mon))
+        fr.data_push(int(when.tm_year))
+
+
+@instr("time")
+class InstTime(Instruction):
+    def execute(self, fr):
+        when = time.localtime()
+        fr.data_push(int(when.tm_sec))
+        fr.data_push(int(when.tm_min))
+        fr.data_push(int(when.tm_hour))
+
+
+@instr("timefmt")
+class InstTimeFmt(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        when = fr.data_pop()
+        fmt = fr.data_pop()
+        if type(fmt) is not str:
+            MufRuntimeError("Expected string format argument. (1)")
+        if type(when) is not int:
+            MufRuntimeError("Expected integer argument. (2)")
+        when = time.localtime(when)
+        fr.data_push(time.strftime(fmt, when))
+
+
+@instr("systime")
+class InstSysTime(Instruction):
+    def execute(self, fr):
+        fr.data_push(int(time.time()))
+
+
+@instr("systime_precise")
+class InstSysTimePrecise(Instruction):
+    def execute(self, fr):
+        fr.data_push(float(time.time()))
+
+
+@instr("match")
+class InstMatch(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        pat = fr.data_pop()
+        if type(pat) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        obj = -1
+        if pat[0] == "#" and is_int(pat[1:]):
+            obj = int(pat[1:])
+        elif pat[0] == "*":
+            nam = pat[1:].lower()
+            if nam in player_names:
+                obj = player_names[nam]
+        elif pat == "me":
+            obj = john_doe.dbref
+        elif pat == "here":
+            obj = main_room.dbref
+        else:
+            # Do local partial name object matches
+            pass
+        fr.data_push(StackDBRef(obj))
+
+
+@instr("name")
+class InstName(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        out = object_db[obj.value].name
+        fr.data_push(out)
+
+
+@instr("setname")
+class InstSetName(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        nam = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        if type(nam) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        object_db[obj.value].name = nam
+
+
+@instr("set")
+class InstSet(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        flg = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        if type(flg) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        flg = flg.strip().upper()[0]
+        if flg not in object_db[obj.value].flags:
+            object_db[obj.value].flags += flg
+
+
+@instr("flag?")
+class InstFlagP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        flg = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        if type(flg) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        flg = flg.strip().upper()[0]
+        ret = 1 if flg in object_db[obj.value].flags else 0
+        fr.data_push(ret)
+
+
+@instr("owner")
+class InstOwner(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        out = StackDBRef(object_db[obj.value].owner)
+        fr.data_push(out)
+
+
+@instr("contents")
+class InstContents(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        if object_db[obj.value].contents:
+            obj = object_db[obj.value].contents[0]
+        else:
+            obj = -1
+        fr.data_push(StackDBRef(obj))
+
+
+@instr("exits")
+class InstExits(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        if object_db[obj.value].exits:
+            obj = object_db[obj.value].exits[0]
+        else:
+            obj = -1
+        fr.data_push(StackDBRef(obj))
+
+
+@instr("next")
+class InstNext(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        loc = object_db[obj.value].location
+        if loc < 0:
+            fr.data_push(StackDBRef(-1))
+            return
+        if object_db[obj.value].objtype == "exit":
+            arr = object_db[loc].exits
+        else:
+            arr = object_db[loc].contents
+        if obj.value not in arr:
+            print("arr=%s" % arr)
+            raise MufRuntimeError("DB inconsistent!")
+        idx = arr.index(obj.value)
+        if idx == len(arr)-1:
+            fr.data_push(StackDBRef(-1))
+        else:
+            fr.data_push(StackDBRef(arr[idx+1]))
+
+
+@instr("prog")
+class InstProg(Instruction):
+    def execute(self, fr):
+        fr.data_push(fr.program)
+
+
+@instr("caller")
+class InstCaller(Instruction):
+    def execute(self, fr):
+        # TODO: return actual caller
+        fr.data_push(StackDBRef(trigger_action.dbref))
+
+
+@instr("trig")
+class InstTrig(Instruction):
+    def execute(self, fr):
+        # TODO: return actual trigger
+        fr.data_push(StackDBRef(trigger_action.dbref))
+
+
+@instr("dbtop")
+class InstDBTop(Instruction):
+    def execute(self, fr):
+        fr.data_push(db_top)
+
+
+@instr("location")
+class InstLocation(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        loc = object_db[obj.value].location
+        fr.data_push(StackDBRef(loc))
+
+
+@instr("getlink")
+class InstGetLink(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        obj = object_db[obj.value].links[0]
+        fr.data_push(StackDBRef(obj))
+
+
+@instr("getlinks")
+class InstGetLinks(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        arr = object_db[obj.value].links
+        for obj in arr:
+            fr.data_push(StackDBRef(obj))
+        fr.data_push(len(arr))
+
+
+@instr("getlinks_array")
+class InstGetLinksArray(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        arr = [StackDBRef(x) for x in object_db[obj.value].links]
+        fr.data_push(arr)
+
+
+@instr("ok?")
+class InstOkP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument.")
+        if obj.value not in object_db:
+            fr.data_push(0)
+        elif object_db[obj.value].objtype == "garbage":
+            fr.data_push(0)
+        else:
+            fr.data_push(1)
+
+
+@instr("player?")
+class InstPlayerP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument.")
+        if obj.value not in object_db:
+            fr.data_push(0)
+        elif object_db[obj.value].objtype == "player":
+            fr.data_push(1)
+        else:
+            fr.data_push(0)
+
+
+@instr("room?")
+class InstRoomP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument.")
+        if obj.value not in object_db:
+            fr.data_push(0)
+        elif object_db[obj.value].objtype == "room":
+            fr.data_push(1)
+        else:
+            fr.data_push(0)
+
+
+@instr("exit?")
+class InstExitP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument.")
+        if obj.value not in object_db:
+            fr.data_push(0)
+        elif object_db[obj.value].objtype == "exit":
+            fr.data_push(1)
+        else:
+            fr.data_push(0)
+
+
+@instr("program?")
+class InstProgramP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument.")
+        if obj.value not in object_db:
+            fr.data_push(0)
+        elif object_db[obj.value].objtype == "program":
+            fr.data_push(1)
+        else:
+            fr.data_push(0)
+
+
+@instr("thing?")
+class InstThingP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument.")
+        if obj.value not in object_db:
+            fr.data_push(0)
+        elif object_db[obj.value].objtype == "thing":
+            fr.data_push(1)
+        else:
+            fr.data_push(0)
+
+
+@instr("controls")
+class InstControls(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        obj = fr.data_pop()
+        who = fr.data_pop()
+        if type(who) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (2)")
+        if obj.value not in object_db:
+            fr.data_push(0)
+        elif who.value not in object_db:
+            fr.data_push(0)
+        elif object_db[obj.value].owner == who.value:
+            fr.data_push(1)
+        elif "W" in object_db[who.value].flags:
+            fr.data_push(1)
+        else:
+            fr.data_push(0)
+
+
+@instr("online_array")
+class InstOnlineArray(Instruction):
+    def execute(self, fr):
+        out = []
+        for key in object_db:
+            if object_db[key].objtype == "player":
+                out.append(StackDBRef(object_db[key].dbref))
+        fr.data_push(out)
+
+
+@instr("fmtstring")
+class InstFmtString(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        fmt = fr.data_pop()
+        if type(fmt) is not str:
+            raise MufRuntimeError("Expected string format argument.")
+        out = ""
+        while fmt:
+            if fmt[0] != "%":
+                if "%" in fmt:
+                    pos = fmt.index("%")
+                    out += fmt[:pos]
+                    fmt = fmt[pos:]
+                else:
+                    out += fmt
+                    fmt = ""
+                continue
+            fmt = fmt[1:]
+            if fmt[0] == "%":
+                out += "%"
+                fmt = fmt[1:]
+                continue
+            fmt2 = ""
+            while fmt and not fmt[0].isalpha():
+                fmt2 += fmt[0]
+                fmt = fmt[1:]
+            if not fmt:
+                raise MufRuntimeError("Badly formed format string.")
+            fmt3 = fmt[0]
+            fmt = fmt[1:]
+            val = fr.data_pop()
+            if fmt3 == "i":
+                if type(val) is not int:
+                    raise MufRuntimeError("Expected integer argument.")
+                fmt3 = "d"
+                out += ("%"+fmt2+fmt3) % val
+            elif fmt3 == "e":
+                if type(val) is not float:
+                    raise MufRuntimeError("Expected float argument.")
+                out += ("%"+fmt2+fmt3) % val
+            elif fmt3 == "f":
+                if type(val) is not float:
+                    raise MufRuntimeError("Expected float argument.")
+                out += ("%"+fmt2+fmt3) % val
+            elif fmt3 == "g":
+                if type(val) is not float:
+                    raise MufRuntimeError("Expected float argument.")
+                out += ("%"+fmt2+fmt3) % val
+            elif fmt3 == "d":
+                if type(val) is not StackDBRef:
+                    raise MufRuntimeError("Expected dbref argument.")
+                fmt3 = "s"
+                out += ("%"+fmt2+fmt3) % str(val)
+            elif fmt3 == "D":
+                if type(val) is not StackDBRef:
+                    raise MufRuntimeError("Expected dbref argument.")
+                fmt3 = "s"
+                out += ("%"+fmt2+fmt3) % object_db[val.value].name
+            elif fmt3 == "s":
+                if type(val) is not str:
+                    raise MufRuntimeError("Expected string argument.")
+                out += ("%"+fmt2+fmt3) % val
+            elif fmt3 == "~":
+                if type(val) is int:
+                    fmt3 = "d"
+                elif type(val) is float:
+                    fmt3 = "g"
+                elif type(val) is str:
+                    fmt3 = "s"
+                else:
+                    fmt3 = "s"
+                    val = str(val)
+                out += ("%"+fmt2+fmt3) % val
+            elif fmt3 == "?":
+                if type(val) is int:
+                    out += "Int"
+                elif type(val) is float:
+                    out += "Float"
+                elif type(val) is str:
+                    out += "String"
+                else:
+                    out += type(val)[5:]
+        fr.data_push(out)
+
+
+@instr("addprop")
+class InstAddProp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        val2 = fr.data_pop()
+        val = fr.data_pop()
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(val) is not str:
+            raise MufRuntimeError("Expected string argument. (3)")
+        if type(val2) is not int:
+            raise MufRuntimeError("Expected integer argument. (4)")
+        if val:
+            setprop(obj, prop, val)
+        else:
+            setprop(obj, prop, val2)
+
+
+@instr("setprop")
+class InstSetProp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        val = fr.data_pop()
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        setprop(obj, prop, val)
+
+
+@instr("remove_prop")
+class InstRemoveProp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        delprop(obj, prop)
+
+
+@instr("setpropstr")
+class InstSetPropStr(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        val = fr.data_pop()
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(val) is not StackDBRef:
+            raise MufRuntimeError("Expected string argument. (3)")
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Excected dbref argument. (1)")
+        setprop(obj, prop, val)
+
+
+@instr("propdir?")
+class InstPropDirP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        val = is_propdir(obj, prop)
+        fr.data_push(1 if val else 0)
+
+
+@instr("nextprop")
+class InstNextProp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        val = next_prop(obj, prop)
+        fr.data_push(val)
+
+
+@instr("getprop")
+class InstGetProp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        val = getprop(obj, prop)
+        fr.data_push(val)
+
+
+@instr("getpropstr")
+class InstGetPropStr(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        val = getprop(obj, prop)
+        if type(val) is not str:
+            val = ""
+        fr.data_push(val)
+
+
+@instr("getpropval")
+class InstGetPropVal(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        val = getprop(obj, prop)
+        if type(val) is not int:
+            val = 0
+        fr.data_push(val)
+
+
+@instr("getpropfval")
+class InstGetPropFVal(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        val = getprop(obj, prop)
+        if type(val) is not float:
+            val = 0.0
+        fr.data_push(val)
+
+
+@instr("array_get_proplist")
+class InstArrayGetPropList(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        out = []
+        val = getprop(obj, "%s#" % prop)
+        cnt = 0
+        if val:
+            if type(val) is str:
+                try:
+                    cnt = int(cnt)
+                except:
+                    cnt = 0
+            elif type(val) is int:
+                cnt = val
+        for i in xrange(cnt):
+            val = getprop(obj, "%s#/%d" % (prop, i+1))
+            if type(val) is str:
+                out.append(val)
+        fr.data_push(out)
+
+
+@instr("array_put_proplist")
+class InstArrayPutPropList(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        items = fr.data_pop()
+        prop = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if type(prop) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(items) is not list:
+            raise MufRuntimeError("Expected list array argument. (3)")
+        setprop(obj, "%s#" % prop, len(items))
+        for i, item in enumerate(items):
+            setprop(obj, "%s#/%d" % (prop, i+1), item)
+
+
+@instr("dbcmp")
+class InstDBCmp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if type(b) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (2)")
+        fr.data_push(1 if a.value == b.value else 0)
+
+
+@instr("explode_array")
+class InstExplodeArray(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        delim = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(delim) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        fr.data_push(txt.split(delim))
+
+
+@instr("regexp")
+class InstRegexp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        flags = fr.data_pop()
+        pat = fr.data_pop()
+        txt = fr.data_pop()
+        if type(flags) is not int:
+            raise MufRuntimeError("Expected integer argument. (3)")
+        if type(pat) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        flgs = 0
+        if (flags % 0x1) != 0:
+            flgs |= re.IGNORECASE
+        try:
+            pat = re.compile(pat, flgs)
+        except:
+            raise MufRuntimeError("Malformed regexp pattern. (2)")
+        matches = pat.search(txt)
+        if not matches:
+            fr.data_push([])
+            fr.data_push([])
+        else:
+            submatches = []
+            indexes = []
+            for i in xrange(len(matches.groups())+1):
+                submatches.append(matches.group(i))
+                indexes.append(matches.span(i))
+            fr.data_push(submatches)
+            fr.data_push(indexes)
+
+
+@instr("regsub")
+class InstRegsub(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(4)
+        flags = fr.data_pop()
+        repl = fr.data_pop()
+        pat = fr.data_pop()
+        txt = fr.data_pop()
+        if type(flags) is not int:
+            raise MufRuntimeError("Expected integer argument. (3)")
+        if type(pat) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        flgs = 0
+        if (flags % 0x1) != 0:
+            flgs |= re.IGNORECASE
+        try:
+            val = re.sub(pat, repl, txt, flgs)
+        except:
+            raise MufRuntimeError("Malformed regexp pattern. (2)")
+        fr.data_push(val)
+
+
+@instr("toupper")
+class InstToUpper(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument.")
+        fr.data_push(txt.upper())
+
+
+@instr("tolower")
+class InstToLower(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument.")
+        fr.data_push(txt.lower())
+
+
+@instr("explode")
+class InstExplode(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        delim = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(delim) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if not delim:
+            raise MufRuntimeError("Expected non-null string argument. (2)")
+        parts = txt.split(delim)
+        for part in reversed(parts):
+            fr.data_push(part)
+        fr.data_push(len(parts))
+
+
+@instr("split")
+class InstSplit(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        delim = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(delim) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        parts = txt.split(delim, 1)
+        fr.data_push(parts[0])
+        if len(parts) > 1:
+            fr.data_push(parts[1])
+        else:
+            fr.data_push("")
+
+
+@instr("rsplit")
+class InstRSplit(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        delim = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(delim) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        parts = txt.rsplit(delim, 1)
+        fr.data_push(parts[0])
+        if len(parts) > 1:
+            fr.data_push(parts[1])
+        else:
+            fr.data_push("")
+
+
+@instr("strip")
+class InstStrip(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        fr.data_push(txt.strip())
+
+
+@instr("striplead")
+class InstStripLead(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        fr.data_push(txt.lstrip())
+
+
+@instr("striptail")
+class InstStripTail(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        fr.data_push(txt.rstrip())
+
+
+@instr("strlen")
+class InstStrLen(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        fr.data_push(len(txt))
+
+
+@instr("strcat")
+class InstStrCat(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        txt2 = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(txt2) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        fr.data_push(txt+txt2)
+
+
+@instr("instr")
+class InstInstr(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        fnd = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(fnd) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        fr.data_push(txt.find(fnd)+1)
+
+
+@instr("instring")
+class InstInString(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        fnd = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(fnd) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        txt = txt.lower()
+        fnd = fnd.lower()
+        fr.data_push(txt.find(fnd)+1)
+
+
+@instr("rinstr")
+class InstRInstr(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        fnd = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(fnd) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        fr.data_push(txt.rfind(fnd)+1)
+
+
+@instr("rinstring")
+class InstRInString(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        fnd = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(fnd) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        txt = txt.lower()
+        fnd = fnd.lower()
+        fr.data_push(txt.rfind(fnd)+1)
+
+
+@instr("strcut")
+class InstStrCut(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(b) is not int:
+            raise MufRuntimeError("Expected integer argument. (2)")
+        fr.data_push(a[:b])
+        fr.data_push(a[b:])
+
+
+@instr("depth")
+class InstDepth(Instruction):
+    def execute(self, fr):
+        fr.data_push(fr.data_depth())
+
+
+@instr("random")
+class InstRandom(Instruction):
+    def execute(self, fr):
+        fr.data_push(randrange(2**32-1)-2**31)
+
+
+@instr("int?")
+class InstIntP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        val = fr.data_pop()
+        fr.data_push(1 if type(val) is int else 0)
+
+
+@instr("float?")
+class InstFloatP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        val = fr.data_pop()
+        fr.data_push(1 if type(val) is float else 0)
+
+
+@instr("number?")
+class InstNumberP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        val = fr.data_pop()
+        if type(val) is int:
+            fr.data_push(1)
+        elif type(val) is float:
+            fr.data_push(1)
+        else:
+            fr.data_push(0)
+
+
+@instr("dbref?")
+class InstDBRefP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        val = fr.data_pop()
+        fr.data_push(1 if type(val) is StackDBRef else 0)
+
+
+@instr("string?")
+class InstStringP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        val = fr.data_pop()
+        fr.data_push(1 if type(val) is str else 0)
+
+
+@instr("array?")
+class InstArrayP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        val = fr.data_pop()
+        fr.data_push(1 if type(val) is list or type(val) is dict else 0)
+
+
+@instr("dictionary?")
+class InstDictionaryP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        val = fr.data_pop()
+        fr.data_push(1 if type(val) is dict else 0)
+
+
+@instr("int")
+class InstInt(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        val = fr.data_pop()
+        if type(val) is StackGlobalVar:
+            val = val.value
+        elif type(val) is StackFuncVar:
+            val = val.value
+        elif type(val) is StackDBRef:
+            val = val.value
+        elif type(val) is int:
+            val = val
+        elif type(val) is float:
+            val = int(val)
+        else:
+            raise MufRuntimeError("Expected number or var argument.")
+        fr.data_push(val)
+
+
+@instr("dbref")
+class InstDBRef(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        val = fr.data_pop()
+        if type(val) is not int:
+            raise MufRuntimeError("Expected integer argument.")
+        fr.data_push(StackDBRef(val))
+
+
+@instr("subst")
+class InstSubst(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        repl = fr.data_pop()
+        fnd = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(fnd) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(repl) is not str:
+            raise MufRuntimeError("Expected string argument. (3)")
+        fr.data_push(txt.replace(fnd, repl))
+
+
+@instr("strcmp")
+class InstStrCmp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(b) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        fr.data_push(cmp(a, b))
+
+
+@instr("strncmp")
+class InstStrNCmp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        n = fr.data_pop()
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(b) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        if type(n) is not int:
+            raise MufRuntimeError("Expected integer argument. (3)")
+        fr.data_push(cmp(a[:n], b[:n]))
+
+
+@instr("stringcmp")
+class InstStringCmp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is not str or type(b) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        fr.data_push(cmp(a.upper(), b.upper()))
+
+
+@instr("stringpfx")
+class InstStringPfx(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        if type(a) is not str or type(b) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        fr.data_push(0 if cmp(a[:len(b)].upper(), b.upper()) else 1)
+
+
+@instr("smatch")
+class InstSMatch(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        pat = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            raise MufRuntimeError("Expected string argument. (1)")
+        if type(pat) is not str:
+            raise MufRuntimeError("Expected string argument. (2)")
+        fr.data_push(1 if smatch(pat, txt) else 0)
+
+
+class MufCallFrame(object):
+    def __init__(self, addr):
+        self.variables = {}
+        self.loop_stack = []
+        self.pc = addr
+
+    def pc_advance(self, delta):
+        self.pc.value += delta
+
+    def pc_set(self, addr):
+        self.pc = addr
+
+    def loop_iter_push(self, typ, it):
+        self.loop_stack.append((typ, it))
+
+    def loop_iter_pop(self):
+        return self.loop_stack.pop()
+
+    def loop_iter_top(self):
+        return self.loop_stack[-1]
+
+    def variable_get(self, varnum):
+        if varnum in self.variables:
+            return self.variables[varnum]
+        return 0
+
+    def variable_set(self, varnum, val):
+        self.variables[varnum] = val
+
+
+class MufStackFrame(object):
+    MAX_STACK = 512
+
+    def __init__(self, src, code, addr, funcaddrs):
+        self.start_addr = addr
+        self.data_stack = []
+        self.call_stack = [MufCallFrame(addr)]
+        self.catch_stack = []
+        self.globalvars = {}
+        self.program = StackDBRef(program_object.dbref)
+        self.code = code
+        self.srclines = src.split("\n")
+        self.prevaddr = -1
+        self.prevline = -1
+        self.funcaddrs = funcaddrs
+
+    def curr_inst(self):
+        if not self.call_stack:
+            return None
+        return self.code[self.call_stack[-1].pc.value]
+
+    def curr_addr(self):
+        if not self.call_stack:
+            return None
+        return self.call_stack[-1].pc
+
+    def pc_advance(self, delta):
+        if self.call_stack:
+            return self.call_stack[-1].pc_advance(delta)
+        return None
+
+    def pc_set(self, addr):
+        if type(addr) is not StackAddress:
+            raise MufRuntimeError("BLAH2!")
+        return self.call_stack[-1].pc_set(addr)
+
+    def catch_push(self, detailed, addr, lockdepth):
+        self.catch_stack.append((detailed, addr, lockdepth))
+
+    def catch_pop(self):
+        return self.catch_stack.pop()
+
+    def catch_is_detailed(self):
+        if not self.catch_stack:
+            return False
+        return self.catch_stack[-1][0]
+
+    def catch_addr(self):
+        if not self.catch_stack:
+            return None
+        return self.catch_stack[-1][1]
+
+    def catch_locklevel(self):
+        if not self.catch_stack:
+            return 0
+        return self.catch_stack[-1][2]
+
+    def catch_trigger(self, e):
+        addr = self.catch_addr()
+        if not addr:
+            return False
+        if type(addr) is not StackAddress:
+            raise MufRuntimeError("BLAH!")
+        # Clear stack down to stacklock
+        while self.data_depth() > self.catch_locklevel():
+            self.data_pop()
+        if self.catch_is_detailed():
+            # Push detailed exception info.
+            inst = self.curr_inst()
+            self.data_push({
+                "error": str(e),
+                "instr": inst.prim_name.upper(),
+                "line": inst.line,
+                "program": self.program,
+            })
+        else:
+            # Push error message.
+            self.data_push(str(e))
+        self.catch_pop()
+        self.pc_set(addr)
+        return True
+
+    def check_underflow(self, cnt):
+        if self.data_depth() < cnt:
+            raise MufRuntimeError("StackUnderflow")
+
+    def data_depth(self):
+        return len(self.data_stack)
+
+    def data_push(self, x):
+        self.data_stack.append(x)
+        if len(self.data_stack) > self.MAX_STACK:
+            raise MufRuntimeError("StackOverflow")
+
+    def data_pop(self):
+        if len(self.data_stack) - self.catch_locklevel() < 1:
+            raise MufRuntimeError("StackUnderflow")
+        return self.data_stack.pop()
+
+    def data_pick(self, n):
+        if len(self.data_stack) < n:
+            raise MufRuntimeError("Stack underflow.")
+        return self.data_stack[-n]
+
+    def data_pull(self, n):
+        if len(self.data_stack) - self.catch_locklevel() < n:
+            raise MufRuntimeError("Stack underflow.")
+        a = self.data_stack[-n]
+        del self.data_stack[-n]
+        return a
+
+    def data_put(self, n, val):
+        if len(self.data_stack) - self.catch_locklevel() < n:
+            raise MufRuntimeError("Stack underflow.")
+        self.data_stack[-n] = val
+
+    def data_insert(self, n, val):
+        if len(self.data_stack) - self.catch_locklevel() < n:
+            raise MufRuntimeError("StackUnderflow")
+        if n < 1:
+            self.data_stack.append(val)
+        else:
+            self.data_stack.insert(1-n, val)
+
+    def loop_iter_push(self, typ, it):
+        return self.call_stack[-1].loop_iter_push(typ, it)
+
+    def loop_iter_pop(self):
+        return self.call_stack[-1].loop_iter_pop()
+
+    def loop_iter_top(self):
+        return self.call_stack[-1].loop_iter_top()
+
+    def call_push(self, addr):
+        self.call_stack.append(MufCallFrame(addr))
+
+    def call_pop(self):
+        self.call_stack.pop()
+
+    def funcvar_get(self, v):
+        if type(v) is StackFuncVar:
+            v = v.value
+        return self.call_stack[-1].variable_get(v)
+
+    def funcvar_set(self, v, val):
+        if type(v) is StackFuncVar:
+            v = v.value
+        return self.call_stack[-1].variable_set(v, val)
+
+    def globalvar_get(self, v):
+        if type(v) is StackGlobalVar:
+            v = v.value
+        if v in self.globalvars:
+            return self.globalvars[v]
+        return 0
+
+    def globalvar_set(self, v, val):
+        if type(v) is StackGlobalVar:
+            v = v.value
+        self.globalvars[v] = val
+
+    def get_stack_repr(self, maxcnt):
+        out = ''
+        depth = self.data_depth()
+        if maxcnt > depth:
+            maxcnt = depth
+        else:
+            out += '...'
+        for i in xrange(-depth, 0):
+            if out:
+                out += ', '
+            val = self.data_stack[i]
+            if type(val) is str:
+                out += '"%s"' % val
+            else:
+                out += str(val)
+        return out
+
+    def show_compiled_tokens(self):
+        for instnum, inst in enumerate(self.code):
+            inst = str(inst)
+            if instnum > 0 and inst.startswith("Function:"):
+                print("")
+            print("% 5d: %s" % (instnum, inst))
+            sys.stdout.flush()
+
+    def execute_code(
+        self,
+        dotrace=False,
+        isteps=-1,
+        steps=-1,
+        lines=-1,
+        finish=False,
+        breakpoints=[]
+    ):
+        startlev = len(self.call_stack)
+        while self.call_stack:
+            inst = self.curr_inst()
+            addr = self.curr_addr()
+            line = inst.line
+            if dotrace:
+                print("% 5d: line %d (%s) %s" %
+                      (addr.value, line, self.get_stack_repr(999), inst))
+                sys.stdout.flush()
+            try:
+                inst.execute(self)
+                self.pc_advance(1)
+            except MufRuntimeError as e:
+                if not self.catch_stack:
+                    print(
+                        "Error in line %d (%s): %s" % (line, str(inst), e),
+                        file=sys.stderr
+                    )
+                    return
+                elif dotrace:
+                    print("catch depth=%d" % len(self.catch_stack))
+                    print(
+                        "Caught error in line %d (%s): %s" %
+                        (line, str(inst), e),
+                        file=sys.stderr
+                    )
+                self.catch_trigger(e)
+            if not self.call_stack:
+                return
+            inst = self.curr_inst()
+            addr = self.curr_addr()
+            line = inst.line
+            calllev = len(self.call_stack)
+            if breakpoints:
+                if line in breakpoints and line != self.prevline:
+                    bpnum = breakpoints.index(line)
+                    print("Stopped at breakpoint %d." % bpnum)
+                    self.prevline = line
+                    self.prevaddr = addr.value
+                    return
+            if isteps > 0:
+                if addr.value != self.prevaddr:
+                    self.prevaddr = addr.value
+                    isteps -= 1
+                    if not isteps:
+                        self.prevline = line
+                        self.prevaddr = addr.value
+                        return
+            if finish and calllev < startlev:
+                print("Stopped on call return at instruction %d." % addr.value)
+                self.prevline = line
+                self.prevaddr = addr.value
+                return
+            if calllev <= startlev and lines > 0:
+                if line != self.prevline:
+                    self.prevline = line
+                    lines -= 1
+                    if not lines:
+                        self.prevaddr = addr.value
+                        return
+            if steps > 0:
+                if line != self.prevline:
+                    self.prevline = line
+                    steps -= 1
+                    if not steps:
+                        self.prevaddr = addr.value
+                        return
+
+    def show_line(self, addr=None):
+        if not addr:
+            addr = self.curr_addr()
+        if addr:
+            inst = self.code[addr.value]
+            if (
+                addr.value > 0 and addr.value < len(self.code) and
+                self.code[addr.value-1].line == inst.line
+            ):
+                print("Instruction %d: %s" % (addr.value, inst))
+            print(">% 5d: %s" % (inst.line, self.srclines[inst.line-1]))
+
+    def show_call(self, addr=None):
+        if not addr:
+            addr = self.curr_addr()
+        if addr:
+            inum = addr.value
+            inst = self.code[inum]
+            funcinum = inum
+            while funcinum > 0 and type(self.code[funcinum]) is not InstFunc:
+                funcinum -= 1
+            fun = self.code[funcinum].value
+            print("In function '%s', Line %d:" % (fun, inst.line))
+            print("%s" % self.srclines[inst.line-1])
+
+    def debug_code(self, dotrace=False):
+        breakpoints = []
+        prevcmd = ""
+        nextline = -1
+        while True:
+            if prevcmd:
+                cmd = raw_input("DEBUG>")
+                if not cmd:
+                    cmd = prevcmd
+            else:
+                cmd = "list"
+            prevcmd = cmd
+            args = ""
+            if " " in cmd:
+                cmd, args = cmd.split(" ", 1)
+                cmd = cmd.strip()
+                args = args.strip()
+            if cmd == "quit":
+                print("Exiting.")
+                return
+            elif cmd == "s" or cmd == "step":
+                if not args:
+                    args = "1"
+                if not is_int(args):
+                    print("Usage: step [COUNT]")
+                else:
+                    self.execute_code(
+                        dotrace, steps=int(args), breakpoints=breakpoints)
+                    self.show_line()
+                    nextline = -1
+            elif cmd == "n" or cmd == "next":
+                if not args:
+                    args = "1"
+                if not is_int(args):
+                    print("Usage: next [COUNT]")
+                else:
+                    self.execute_code(
+                        dotrace, lines=int(args), breakpoints=breakpoints)
+                    self.show_line()
+                    nextline = -1
+            elif cmd == "c" or cmd == "cont":
+                self.execute_code(dotrace, breakpoints=breakpoints)
+                self.show_line()
+                nextline = -1
+            elif cmd == "f" or cmd == "finish":
+                self.execute_code(
+                    dotrace, finish=True, breakpoints=breakpoints)
+                self.show_line()
+                nextline = -1
+            elif cmd == "break":
+                if args in self.funcaddrs:
+                    line = self.code[self.funcaddrs[args]].line
+                    breakpoints.append(line)
+                    print("Added breakpoint %d on line %d." %
+                          (len(breakpoints), line))
+                elif is_int(args):
+                    breakpoints.append(int(args))
+                    print("Added breakpoint %d on line %d." %
+                          (len(breakpoints), int(args)))
+                else:
+                    print("Usage: break LINE   or   break FUNCNAME")
+            elif cmd == "delete":
+                if (
+                    not is_int(args) or
+                    int(args) < 1 or
+                    int(args) > len(breakpoints)
+                ):
+                    print("Usage: delete BREAKPOINTNUM")
+                else:
+                    breakpoints[int(args)] = -1
+                    print("Deleted breakpoint %d." % int(args))
+            elif cmd == "show" and args == "breakpoints":
+                cnt = 0
+                for i, line in enumerate(breakpoints):
+                    if line > 0:
+                        print("Breakpoint %d: Line %d" % (i+1, line))
+                        cnt += 1
+                if not cnt:
+                    print("- No Breakpoints -")
+            elif cmd == "show" and args == "functions":
+                print("Declared Functions")
+                if self.funcaddrs:
+                    funcs = self.funcaddrs.keys()
+                    funcs.sort()
+                    for func in funcs:
+                        print("  %s" % func)
+                else:
+                    print("  - None -")
+            elif cmd == "l" or cmd == "list":
+                inst = self.curr_inst()
+                if args in self.funcaddrs:
+                    start = self.code[self.funcaddrs[args]].line
+                    end = start + 10
+                elif ',' in args:
+                    start, end = args.split(',', 1)
+                    start = start.strip()
+                    end = end.strip()
+                elif args:
+                    start = end = args
+                elif nextline < 0:
+                    start = str(inst.line - 5)
+                    end = str(inst.line + 5)
+                else:
+                    start = nextline
+                    end = nextline + 10
+                if not is_int(start) or not is_int(end):
+                    print("Usage: list [COUNT]")
+                else:
+                    start = int(start)
+                    if start < 1:
+                        start = 1
+                    if start > len(self.srclines):
+                        start = len(self.srclines)
+                    end = int(end)
+                    if end < 1:
+                        end = 1
+                    if end > len(self.srclines):
+                        end = len(self.srclines)
+                    nextline = end + 1
+                    for i in range(start, end+1):
+                        if i == inst.line:
+                            print(">% 5d: %s" % (i, self.srclines[i-1]))
+                        else:
+                            print(" % 5d: %s" % (i, self.srclines[i-1]))
+            elif cmd == "stack":
+                if not args:
+                    args = "999999"
+                if not is_int(args):
+                    print("Usage: stack [DEPTH]")
+                else:
+                    depth = self.data_depth()
+                    args = int(args)
+                    if args > depth:
+                        args = depth
+                    for i in xrange(args):
+                        val = self.data_pick(i+1)
+                        if type(val) is str:
+                            val = '"%s"' % val
+                        print("Stack %d: %s" % (depth-i, val))
+                    if not depth:
+                        print("- Empty Stack -")
+            elif cmd == "trace":
+                dotrace = True
+                print("Turning on Trace mode.")
+            elif cmd == "notrace":
+                dotrace = False
+                print("Turning off Trace mode.")
+            elif cmd == "pop":
+                self.data_pop()
+                print("Stack item POPed.")
+            elif cmd == "dup":
+                a = self.data_pick(1)
+                self.data_push(a)
+                print("Stack item DUPed.")
+            elif cmd == "swap":
+                a = self.data_pop()
+                b = self.data_pop()
+                self.data_push(a)
+                self.data_push(b)
+                print("Stack items SWAPed.")
+            elif cmd == "rot":
+                a = self.data_pop()
+                b = self.data_pop()
+                c = self.data_pop()
+                self.data_push(b)
+                self.data_push(a)
+                self.data_push(c)
+                print("Stack items ROTed.")
+            elif cmd == "push":
+                if is_int(args):
+                    self.data_push(int(args))
+                elif is_float(args):
+                    self.data_push(float(args))
+                elif args[0] == '#' and is_int(args[1:]):
+                    self.data_push(StackDBRef(int(args[1:])))
+                elif args[0] == '"' and args[-1] == '"':
+                    self.data_push(args[1:-1])
+                print("Stack item pushed.")
+            elif cmd == "w" or cmd == "where":
+                for callfr in self.call_stack:
+                    self.show_call(callfr.pc)
+            elif cmd == "run":
+                self.data_stack = [args]
+                self.call_stack = [MufCallFrame(self.start_addr)]
+                self.catch_stack = []
+                self.globalvars = {}
+                prevcmd = ""
+                print("Restarting program.")
+            else:
+                print("help               Show this message.")
+                print("where              Display the call stack.")
+                print("stack [DEPTH]      Show top N data stack items.")
+                print("list [COUNT]       List source code lines.")
+                print("break LINE|FUNC    Set breakpoint at line or func.")
+                print("delete BREAKNUM    Delete a breakpoint.")
+                print("show breakpoints   Show current breakpoints.")
+                print("show functions     List all declared functions.")
+                print("step [COUNT]       Step one line, going into calls.")
+                print("next [COUNT]       Step one line, skipping over calls.")
+                print("finish             Finish the current function.")
+                print("cont               Continue until next breakpoint.")
+                print("pop                Pop top data stack item.")
+                print("dup                Duplicate top data stack item.")
+                print("swap               Swap top two data stack items.")
+                print("rot                Rot top three data stack items.")
+                print("push VALUE         Push VALUE onto top of data stack.")
+                print("trace              Turn on tracing of each instr.")
+                print("notrace            Turn off tracing if each instr.")
+                print("run COMMANDARG     Re-run program, with COMMANDARG.")
+            if not self.call_stack:
+                break
+            sys.stdout.flush()
+
+
+class MufCompiler(object):
+    def __init__(self):
+        self.line = 1
+        self.stmt_stack = []
+        self.funcname = None
+        self.declared_functions = {}
+        self.function_vars = []
+        self.global_vars = []
+        self.lastfunction = None
+
+    def splitword(self, txt):
+        txt = self.lstrip(txt)
+        for i in xrange(len(txt)):
+            if txt[i].isspace():
+                break
+            i += 1
+        return (txt[:i], txt[i:])
+
+    def lstrip(self, txt):
+        i = 0
+        while i < len(txt) and txt[i].isspace():
+            if txt[i] == "\n":
+                self.line += 1
+            i += 1
+        return txt[i:]
+
+    def strip_comment(self, src):
+        src = src[1:]
+        lev = 1
+        for i in xrange(len(src)):
+            if lev <= 0:
+                break
+            if src[i] == "\n":
+                self.line += 1
+            elif src[i] == '(':
+                lev += 1
+            elif src[i] == ')':
+                lev -= 1
+        if lev > 0:
+            raise MufCompileError("CommentNotTerminated")
+        return src[i:]
+
+    def get_string(self, src):
+        out = '"'
+        i = 1
+        srclen = len(src)
+        while i < srclen:
+            if src[i] == "\n":
+                raise MufCompileError("StringNotTerminated")
+            elif src[i] == "\\":
+                i += 1
+                if src[i] in ["r", "n"]:
+                    out += "\r"
+                elif src[i] == "[":
+                    out += "\033"
+                else:
+                    out += src[i]
+            elif src[i] == '"':
+                out += '"'
+                src = self.lstrip(src[i+1:])
+                return (out, src)
+            else:
+                out += src[i]
+            i += 1
+        raise MufCompileError("StringNotTerminated")
+
+    def get_to_eol(self, src):
+        if "\n" in src:
+            self.line += 1
+            return src.split("\n", 1)
+        else:
+            return (src, "")
+
+    def get_word(self, src):
+        while True:
+            # Strip whitespace
+            src = self.lstrip(src)
+            if not src:
+                return (None, None, None)
+            if src[0] != '(':
+                break
+            src = self.strip_comment(src)
+        line = self.line
+        if src[0] == '"':
+            word, src = self.get_string(src)
+            return (word, line, src)
+        # Get next word.
+        word, src = self.splitword(src)
+        # Expand defines if needed
+        if word in defines:
+            src = defines[word] + " " + src
+            word, line, src = self.get_word(src)
+            return (word, line, src)
+        # Return raw word.
+        src = self.lstrip(src)
+        return (word, line, src)
+
+    def in_loop_inst(self):
+        for inst in reversed(self.stmt_stack):
+            if type(inst) in [InstBegin, InstFor, InstForeach]:
+                return inst
+        return None
+
+    def compile_r(self, src):
+        global defines
+        code = []
+        while True:
+            word, line, src = self.get_word(src)
+            if not word:
+                if self.funcname:
+                    raise MufCompileError("FunctionIncomplete")
+                if self.stmt_stack:
+                    if type(self.stmt_stack) is InstIf:
+                        raise MufCompileError("Incomplete if-block.")
+                    if type(self.stmt_stack) is InstBegin:
+                        raise MufCompileError("Incomplete loop.")
+                    if type(self.stmt_stack) is InstFor:
+                        raise MufCompileError("Incomplete for loop.")
+                    if type(self.stmt_stack) is InstForeach:
+                        raise MufCompileError("Incomplete foreach loop.")
+                return (code, src)
+            if word == ":":
+                # Start function definition
+                if self.funcname:
+                    raise MufCompileError("FunctionIncomplete")
+                funcname, line, src = self.get_word(src)
+                self.function_vars = []
+                if funcname[-1] == '[':
+                    funcname = funcname[:-1]
+                    while True:
+                        v, line, src = self.get_word(src)
+                        if v == ']':
+                            break
+                        if v == '--':
+                            src = src.split(']', 1)[1]
+                            src = self.lstrip(src)
+                            break
+                        if v in self.function_vars:
+                            raise MufCompileError("Variable already declared.")
+                        self.function_vars.append(v)
+                        if not src:
+                            raise MufCompileError("FunctionHeaderIncomplete")
+                if funcname in self.declared_functions:
+                    raise MufCompileError("FunctionAlreadyDeclared")
+                self.funcname = funcname
+                subcode = []
+                subcode.append(InstFunc(line, funcname))
+                for i in reversed(range(len(self.function_vars))):
+                    vname = self.function_vars[i]
+                    subcode.append(InstFuncVar(line, i, vname))
+                    subcode.append(InstBang(line))
+                fcode, src = self.compile_r(src)
+                for inst in fcode:
+                    subcode.append(inst)
+                self.declared_functions[funcname] = len(code)
+                self.lastfunction = StackAddress(len(code))
+                for inst in subcode:
+                    code.append(inst)
+                continue
+            elif word == ";":
+                # End function define
+                if not self.funcname:
+                    raise MufCompileError("NotInFunction")
+                self.funcname = None
+                code.append(InstExit(line))
+                if self.stmt_stack:
+                    if type(self.stmt_stack[-1]) is InstIf:
+                        raise MufCompileError("Incomplete if-block.")
+                    if type(self.stmt_stack[-1]) is InstBegin:
+                        raise MufCompileError("Incomplete loop.")
+                    if type(self.stmt_stack[-1]) is InstFor:
+                        raise MufCompileError("Incomplete for loop.")
+                    if type(self.stmt_stack[-1]) is InstForeach:
+                        raise MufCompileError("Incomplete foreach loop.")
+                self.function_vars = []
+                self.stmt_stack = []
+                return (code, src)
+            elif word == "lvar":
+                vname, line, src = self.get_word(src)
+                if not vname:
+                    raise MufCompileError("Variable declaration incomplete.")
+                if vname in self.global_vars:
+                    raise MufCompileError("Variable already declared.")
+                self.global_vars.append(vname)
+                continue
+            elif word == "var":
+                vname, line, src = self.get_word(src)
+                if not vname:
+                    raise MufCompileError("Variable declaration incomplete.")
+                if self.funcname:
+                    # Function scoped var
+                    if vname in self.function_vars:
+                        raise MufCompileError("Variable already declared.")
+                    self.function_vars.append(vname)
+                    vnum = self.function_vars.index(vname)
+                else:
+                    # Global vars
+                    if vname in self.global_vars:
+                        raise MufCompileError("Variable already declared.")
+                    self.global_vars.append(vname)
+                    vnum = self.global_vars.index(vname)
+                continue
+            elif word == "public":
+                nam, line, src = self.get_word(src)
+                if nam not in self.declared_functions:
+                    raise MufCompileError("Unrecognized Identifier: '%s'" % nam)
+                print("EXPOSED '%s' AS PUBLIC" % nam)
+                continue
+            elif word == "$author":
+                val, src = self.get_to_eol(src)
+                setprop(program_object, "_author", val)
+                continue
+            elif word == "$note":
+                val, src = self.get_to_eol(src)
+                setprop(program_object, "_note", val)
+                continue
+            elif word == "$version":
+                val, line, src = self.get_word(src)
+                setprop(program_object, "_version", val)
+                continue
+            elif word == "$lib-version":
+                val, line, src = self.get_word(src)
+                setprop(program_object, "_lib-version", val)
+                continue
+            elif word == "$define":
+                nam, line, src = self.get_word(src)
+                if "$enddef" not in src:
+                    raise MufCompileError("Incomplete $define for %s" % nam)
+                val, src = src.split("$enddef", 1)
+                defines[nam] = val
+                continue
+            elif word == "$def":
+                nam, line, src = self.get_word(src)
+                val, src = self.get_to_eol(src)
+                defines[nam] = val
+                continue
+            elif word == "$undef":
+                nam, line, src = self.get_word(src)
+                if nam in defines:
+                    del defines[nam]
+                continue
+            elif word == "$include":
+                nam, src = self.get_word(src)
+                raise MufCompileError("'$include' is not yet supported.")
+            elif word == "$pubdef":
+                nam, line, src = self.get_word(src)
+                val, src = self.get_to_eol(src)
+                if nam == ":":
+                    delprop(program_object, "_defs")
+                elif not val.strip():
+                    delprop(program_object, "_defs/%s" % nam)
+                else:
+                    if nam[0] == '/':
+                        nam = nam[1:]
+                        if getprop(program_object, "_defs/%s" % nam):
+                            continue
+                    setprop(program_object, "_defs/%s" % nam, val)
+                continue
+            elif word == "$libdef":
+                nam, line, src = self.get_word(src)
+                if nam[0] == '/':
+                    nam = nam[1:]
+                    if getprop(program_object, "_defs/%s" % nam):
+                        continue
+                val = '#%d "%s" call' % (program_object.dbref, nam)
+                setprop(program_object, "_defs/%s" % nam, val)
+                continue
+            elif word == "$cleardefs":
+                val, src = self.get_to_eol(src)
+                val = val.strip()
+                defines = dict(builtin_defines)
+                continue
+            if not self.funcname:
+                raise MufCompileError("NotInFunction: %s" % word)
+            if is_int(word):
+                code.append(InstInteger(line, int(word)))
+                continue
+            elif is_dbref(word):
+                code.append(InstDBRefPush(line, int(word[1:])))
+                continue
+            elif is_float(word):
+                code.append(InstFloat(line, float(word)))
+                continue
+            elif word[0] == '"':
+                code.append(InstString(line, word[1:-1]))
+                continue
+            elif word in self.global_vars:
+                vnum = self.global_vars.index(word)
+                code.append(InstGlobalVar(line, vnum, word))
+                continue
+            elif word in self.function_vars:
+                vnum = self.function_vars.index(word)
+                code.append(InstFuncVar(line, vnum, word))
+                continue
+            elif word in self.declared_functions:
+                addr = self.declared_functions[word]
+                code.append(InstAddress(line, addr))
+                code.append(InstExecute(line))
+                continue
+            elif word == "var!":
+                vname, line, src = self.get_word(src)
+                if not vname:
+                    raise MufCompileError("VariableDeclarationIncomplete")
+                if not self.funcname:
+                    raise MufCompileError("NotInFunction")
+                if vname in self.function_vars:
+                    raise MufCompileError("Variable already declared.")
+                vnum = len(self.function_vars)
+                self.function_vars.append(vname)
+                code.append(InstFuncVar(line, vnum, vname))
+                code.append(InstBang(line))
+                continue
+            elif word == "if":
+                inst = InstIf(line)
+                self.stmt_stack.append(inst)
+                subcode, src = self.compile_r(src)
+                inst = self.stmt_stack.pop()
+                if inst.elsecode:
+                    branch = InstBranch(line, len(inst.elsecode)+1)
+                    inst.ifcode.append(branch)
+                branch = InstBranchIfNot(line, len(inst.ifcode)+1)
+                code.append(branch)
+                for prim in inst.ifcode:
+                    code.append(prim)
+                for prim in inst.elsecode:
+                    code.append(prim)
+                continue
+            elif word == "else":
+                if not self.stmt_stack:
+                    raise MufCompileError("MustBeInsideIf")
+                if type(self.stmt_stack[-1]) is not InstIf:
+                    raise MufCompileError("MustBeInsideIf")
+                if self.stmt_stack[-1].ifcode:
+                    raise MufCompileError("OnlyOneElsePerIf")
+                self.stmt_stack[-1].ifcode = code
+                code = []
+                continue
+            elif word == "then":
+                if not self.stmt_stack:
+                    raise MufCompileError("MustBeInsideIf")
+                if type(self.stmt_stack[-1]) is not InstIf:
+                    raise MufCompileError("MustBeInsideIf")
+                stmt = self.stmt_stack[-1]
+                if stmt.ifcode:
+                    stmt.elsecode = code
+                else:
+                    stmt.ifcode = code
+                return ([], src)
+            elif word == "begin":
+                inst = InstBegin(line)
+                self.stmt_stack.append(inst)
+                subcode, src = self.compile_r(src)
+                self.stmt_stack.pop()
+                bodylen = len(subcode)
+                for instnum, inst in enumerate(subcode):
+                    if type(inst) is InstWhile:
+                        inst = InstBranchIfNot(inst.line, bodylen-instnum)
+                    elif type(inst) is InstBreak:
+                        inst = InstBranch(inst.line, bodylen-instnum)
+                    elif type(inst) is InstContinue:
+                        inst = InstBranch(inst.line, -instnum)
+                    code.append(inst)
+                continue
+            elif word == "for":
+                inst = InstFor(line)
+                code.append(inst)
+                self.stmt_stack.append(inst)
+                subcode, src = self.compile_r("__foriter__ while " + src)
+                self.stmt_stack.pop()
+                bodylen = len(subcode)
+                for instnum, inst in enumerate(subcode):
+                    if type(inst) is InstWhile:
+                        inst = InstBranchIfNot(inst.line, bodylen-instnum)
+                    elif type(inst) is InstBreak:
+                        inst = InstBranch(inst.line, bodylen-instnum)
+                    elif type(inst) is InstContinue:
+                        inst = InstBranch(inst.line, -instnum)
+                    code.append(inst)
+                code.append(InstForPop(line))
+                continue
+            elif word == "foreach":
+                inst = InstForeach(line)
+                code.append(inst)
+                self.stmt_stack.append(inst)
+                subcode, src = self.compile_r("__foriter__ while " + src)
+                self.stmt_stack.pop()
+                bodylen = len(subcode)
+                for instnum, inst in enumerate(subcode):
+                    if type(inst) is InstWhile:
+                        inst = InstBranchIfNot(inst.line, bodylen-instnum)
+                    elif type(inst) is InstBreak:
+                        inst = InstBranch(inst.line, bodylen-instnum)
+                    elif type(inst) is InstContinue:
+                        inst = InstBranch(inst.line, -instnum)
+                    code.append(inst)
+                code.append(InstForPop(line))
+                continue
+            elif word == "while":
+                loopinst = self.in_loop_inst()
+                if not loopinst:
+                    raise MufCompileError("MustBeInsideLoop (while)")
+                code.append(InstWhile(line))
+                continue
+            elif word == "break":
+                loopinst = self.in_loop_inst()
+                if not loopinst:
+                    raise MufCompileError("MustBeInsideLoop (break)")
+                code.append(InstBreak(line))
+                continue
+            elif word == "continue":
+                loopinst = self.in_loop_inst()
+                if not loopinst:
+                    raise MufCompileError("MustBeInsideLoop (continue)")
+                code.append(InstContinue(line))
+                continue
+            elif word == "repeat":
+                loopinst = self.in_loop_inst()
+                if not loopinst:
+                    raise MufCompileError("MustBeInsideLoop (repeat)")
+                if type(self.stmt_stack[-1]) is InstIf:
+                    raise MufCompileError("MustBeInsideLoop (repeat 2)")
+                code.append(InstBranch(line, -len(code)))
+                return (code, src)
+            elif word == "until":
+                loopinst = self.in_loop_inst()
+                if not loopinst:
+                    raise MufCompileError("MustBeInsideLoop (until)")
+                if type(self.stmt_stack[-1]) is InstIf:
+                    raise MufCompileError("MustBeInsideLoop (until 2)")
+                code.append(InstBranchIfNot(line, -len(code)))
+                return (code, src)
+            elif word == "try":
+                inst = InstTry(line)
+                self.stmt_stack.append(inst)
+                subcode, src = self.compile_r(src)
+                inst = self.stmt_stack.pop()
+                trycode = inst.trycode
+                if not trycode:
+                    raise MufCompileError("Incomplete Try-Catch block.")
+                inst.trycode = None
+                trycode.append(InstBranch(line, len(subcode)+1))
+                inst.delta = len(trycode)+1
+                code.append(inst)
+                for prim in trycode:
+                    code.append(prim)
+                for prim in subcode:
+                    code.append(prim)
+                continue
+            elif word == "catch":
+                if not self.stmt_stack:
+                    raise MufCompileError("MustBeInsideTryBlock (catch)")
+                inst = self.stmt_stack[-1]
+                if type(inst) is not InstTry:
+                    raise MufCompileError("MustBeInsideTryBlock (catch)")
+                code.append(InstTryPop(line))
+                inst.trycode = code
+                inst.detailed = False
+                code = []
+                continue
+            elif word == "catch_detailed":
+                if not self.stmt_stack:
+                    raise MufCompileError("MustBeInsideTryBlock (catch)")
+                inst = self.stmt_stack[-1]
+                if type(inst) is not InstTry:
+                    raise MufCompileError("MustBeInsideTryBlock (catch)")
+                code.append(InstTryPop(line))
+                inst.trycode = code
+                inst.detailed = True
+                code = []
+                continue
+            elif word == "endcatch":
+                if not self.stmt_stack:
+                    raise MufCompileError("MustBeInsideTryBlock (endcatch)")
+                inst = self.stmt_stack[-1]
+                if type(inst) is not InstTry:
+                    raise MufCompileError("MustBeInsideTryBlock (endcatch)")
+                return (code, src)
+            elif word in primitives:
+                instcls = primitives[word]
+                inst = instcls(line)
+                code.append(inst)
+            else:
+                raise MufCompileError("Unrecognized Identifier: '%s'" % word)
+
+    def compile_source(self, src):
+        self.line = 1
+        self.stmt_stack = []
+        self.funcname = None
+        self.declared_functions = {}
+        self.function_vars = []
+        self.global_vars = ["me", "loc", "trigger", "command"]
+        self.lastfunction = None
+        origsrc = src
+        try:
+            code, src = self.compile_r(src)
+            frame = None
+            if code:
+                frame = MufStackFrame(
+                    origsrc, code, self.lastfunction, self.declared_functions)
+            return frame
+        except MufCompileError as e:
+            print("Error in line %d: %s" % (self.line, e), file=sys.stderr)
+            return None
+
+
+def main():
+    parser = argparse.ArgumentParser(prog='mufsim')
+    parser.add_argument("-m", "--muv",
+                        help="Use muv to compile the sources.",
+                        action="store_true")
+    parser.add_argument("-u", "--uncompile",
+                        help="Show compiled MUF tokens.",
+                        action="store_true")
+    parser.add_argument("-r", "--run",
+                        help="Run compiled MUF tokens.",
+                        action="store_true")
+    parser.add_argument("-t", "--trace",
+                        help="Show stacktrace for each instrution.",
+                        action="store_true")
+    parser.add_argument("-d", "--debug",
+                        help="Show stacktrace for each instrution.",
+                        action="store_true")
+    parser.add_argument("-c", "--command", type=str,
+                        help="Specify command to push onto the stack for run.")
+    parser.add_argument('infile',
+                        help='Input MUF sourcecode filename.')
+    args = parser.parse_args()
+    infile = args.infile
+    tmpfile = ""
+    if args.muv:
+        tmpfile = infile
+        if tmpfile[-4:] == ".muv":
+            tmpfile = tmpfile[:-1] + 'f'
+        else:
+            tmpfile += ".muf"
+        print("#### Compiling MUV Code to MUF ########################")
+        sys.stdout.flush()
+        if args.debug:
+            retcode = call(
+                ["muv", "-d", "-o", tmpfile, infile], stderr=sys.stderr)
+        else:
+            retcode = call(["muv", "-o", tmpfile, infile], stderr=sys.stderr)
+        if retcode != 0:
+            print("Aborting.")
+            return
+        print("")
+        sys.stdout.flush()
+        infile = tmpfile
+    with open(infile, "r") as f:
+        srcs = f.read()
+        print("#### Compiling MUF Code to Tokens #####################")
+        sys.stdout.flush()
+        mufcomp = MufCompiler()
+        fr = mufcomp.compile_source(srcs)
+        if fr:
+            if args.uncompile:
+                print("")
+                print("#### Showing Compiled Tokens ##########################")
+                sys.stdout.flush()
+                fr.show_compiled_tokens()
+                sys.stdout.flush()
+            if args.run:
+                print("")
+                print("#### Executing Tokens #################################")
+                sys.stdout.flush()
+                fr.globalvar_set(0, StackDBRef(john_doe.dbref))
+                fr.globalvar_set(1, StackDBRef(john_doe.location))
+                fr.globalvar_set(2, StackDBRef(trigger_action.dbref))
+                if args.command:
+                    fr.data_push(args.command)
+                    fr.globalvar_set(3, args.command)
+                else:
+                    fr.data_push("")
+                    fr.globalvar_set(3, "")
+                if args.debug:
+                    fr.debug_code(args.trace)
+                else:
+                    fr.execute_code(args.trace)
+        if tmpfile:
+            os.unlink(tmpfile)
+
+if __name__ == "__main__":
+    main()
+
+
+# vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

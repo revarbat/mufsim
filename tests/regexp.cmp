@@ -1,0 +1,25 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "cat dog fog bat"
+    2: "[bc]at"
+    3: 1
+    4: REGEXP
+    5: "cat dog fog bat"
+    6: "[a-z]og"
+    7: 1
+    8: REGEXP
+    9: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "cat dog fog bat"
+    2: line 2 ("", "cat dog fog bat") "[bc]at"
+    3: line 2 ("", "cat dog fog bat", "[bc]at") 1
+    4: line 2 ("", "cat dog fog bat", "[bc]at", 1) REGEXP
+    5: line 3 ("", ['cat'], [(0, 3)]) "cat dog fog bat"
+    6: line 3 ("", ['cat'], [(0, 3)], "cat dog fog bat") "[a-z]og"
+    7: line 3 ("", ['cat'], [(0, 3)], "cat dog fog bat", "[a-z]og") 1
+    8: line 3 ("", ['cat'], [(0, 3)], "cat dog fog bat", "[a-z]og", 1) REGEXP
+    9: line 4 ("", ['cat'], [(0, 3)], ['dog'], [(4, 7)]) EXIT

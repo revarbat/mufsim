@@ -1,0 +1,3 @@
+: main
+    me @ "foo" notify
+;

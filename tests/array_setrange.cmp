@@ -1,0 +1,41 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: {
+    2: 3
+    3: 4
+    4: 5
+    5: 6
+    6: 7
+    7: 8
+    8: }
+    9: ARRAY_MAKE
+   10: 2
+   11: {
+   12: 88
+   13: 99
+   14: }
+   15: ARRAY_MAKE
+   16: ARRAY_SETRANGE
+   17: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") {
+    2: line 2 ("", Mark) 3
+    3: line 2 ("", Mark, 3) 4
+    4: line 2 ("", Mark, 3, 4) 5
+    5: line 2 ("", Mark, 3, 4, 5) 6
+    6: line 2 ("", Mark, 3, 4, 5, 6) 7
+    7: line 2 ("", Mark, 3, 4, 5, 6, 7) 8
+    8: line 2 ("", Mark, 3, 4, 5, 6, 7, 8) }
+    9: line 2 ("", 3, 4, 5, 6, 7, 8, 6) ARRAY_MAKE
+   10: line 2 ("", [3, 4, 5, 6, 7, 8]) 2
+   11: line 2 ("", [3, 4, 5, 6, 7, 8], 2) {
+   12: line 2 ("", [3, 4, 5, 6, 7, 8], 2, Mark) 88
+   13: line 2 ("", [3, 4, 5, 6, 7, 8], 2, Mark, 88) 99
+   14: line 2 ("", [3, 4, 5, 6, 7, 8], 2, Mark, 88, 99) }
+   15: line 2 ("", [3, 4, 5, 6, 7, 8], 2, 88, 99, 2) ARRAY_MAKE
+   16: line 3 ("", [3, 4, 5, 6, 7, 8], 2, [88, 99]) ARRAY_SETRANGE
+   17: line 4 ("", [3, 4, 88, 99, 7, 8]) EXIT

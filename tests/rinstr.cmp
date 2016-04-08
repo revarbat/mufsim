@@ -1,0 +1,27 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "abacadabra"
+    2: "ab"
+    3: RINSTR
+    4: "abacadabra"
+    5: "AB"
+    6: RINSTR
+    7: "abacadabra"
+    8: "Blah"
+    9: RINSTR
+   10: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "abacadabra"
+    2: line 2 ("", "abacadabra") "ab"
+    3: line 2 ("", "abacadabra", "ab") RINSTR
+    4: line 3 ("", 7) "abacadabra"
+    5: line 3 ("", 7, "abacadabra") "AB"
+    6: line 3 ("", 7, "abacadabra", "AB") RINSTR
+    7: line 4 ("", 7, 0) "abacadabra"
+    8: line 4 ("", 7, 0, "abacadabra") "Blah"
+    9: line 4 ("", 7, 0, "abacadabra", "Blah") RINSTR
+   10: line 5 ("", 7, 0, 0) EXIT

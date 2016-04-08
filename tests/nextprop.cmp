@@ -1,0 +1,36 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: LV0: me
+    2: @
+    3: ""
+    4: NEXTPROP
+    5: LV0: me
+    6: @
+    7: "test#/"
+    8: NEXTPROP
+    9: LV0: me
+   10: @
+   11: "test#/2"
+   12: NEXTPROP
+   13: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") LV0: me
+    2: line 2 ("", LV0) @
+    3: line 2 ("", #5) ""
+    4: line 2 ("", #5, "") NEXTPROP
+NEXTPROP "" on #5 = "sex"
+    5: line 3 ("", "sex") LV0: me
+    6: line 3 ("", "sex", LV0) @
+    7: line 3 ("", "sex", #5) "test#/"
+    8: line 3 ("", "sex", #5, "test#/") NEXTPROP
+NEXTPROP "test#" on #5 = "test#/1"
+    9: line 4 ("", "sex", "test#/1") LV0: me
+   10: line 4 ("", "sex", "test#/1", LV0) @
+   11: line 4 ("", "sex", "test#/1", #5) "test#/2"
+   12: line 4 ("", "sex", "test#/1", #5, "test#/2") NEXTPROP
+NEXTPROP "test#/2" on #5 = "test#/3"
+   13: line 5 ("", "sex", "test#/1", "test#/3") EXIT

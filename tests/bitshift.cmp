@@ -1,0 +1,21 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: 7
+    2: 2
+    3: BITSHIFT
+    4: 7
+    5: -2
+    6: BITSHIFT
+    7: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") 7
+    2: line 2 ("", 7) 2
+    3: line 2 ("", 7, 2) BITSHIFT
+    4: line 3 ("", 28) 7
+    5: line 3 ("", 28, 7) -2
+    6: line 3 ("", 28, 7, -2) BITSHIFT
+    7: line 4 ("", 28, 1) EXIT

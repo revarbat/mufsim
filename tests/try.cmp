@@ -1,0 +1,16 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: Try: +5
+    2: "foo"
+    3: ABORT
+    4: TryPop
+    5: Branch: +2
+    6: POP
+    7: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") Try: +5
+Error in line 2 (Try: +5): Expected integer.

@@ -1,0 +1,3 @@
+: main
+    me @ "Jeff" setname
+;

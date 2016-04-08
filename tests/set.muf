@@ -1,0 +1,3 @@
+: main
+    me @ "haven" set
+;

@@ -1,0 +1,42 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: LV0: me
+    2: @
+    3: "sex"
+    4: "female"
+    5: SETPROP
+    6: LV0: me
+    7: @
+    8: "val"
+    9: 42
+   10: SETPROP
+   11: LV0: me
+   12: @
+   13: "fval"
+   14: 3.14
+   15: SETPROP
+   16: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") LV0: me
+    2: line 2 ("", LV0) @
+    3: line 2 ("", #5) "sex"
+    4: line 2 ("", #5, "sex") "female"
+    5: line 2 ("", #5, "sex", "female") SETPROP
+SETPROP "sex" on #5 = "female"
+    6: line 3 ("") LV0: me
+    7: line 3 ("", LV0) @
+    8: line 3 ("", #5) "val"
+    9: line 3 ("", #5, "val") 42
+   10: line 3 ("", #5, "val", 42) SETPROP
+SETPROP "val" on #5 = 42
+   11: line 4 ("") LV0: me
+   12: line 4 ("", LV0) @
+   13: line 4 ("", #5) "fval"
+   14: line 4 ("", #5, "fval") 3.14
+   15: line 4 ("", #5, "fval", 3.14) SETPROP
+SETPROP "fval" on #5 = 3.14
+   16: line 5 ("") EXIT

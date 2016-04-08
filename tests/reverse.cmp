@@ -1,0 +1,21 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: 4
+    2: 5
+    3: 6
+    4: 7
+    5: 4
+    6: REVERSE
+    7: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") 4
+    2: line 2 ("", 4) 5
+    3: line 2 ("", 4, 5) 6
+    4: line 2 ("", 4, 5, 6) 7
+    5: line 2 ("", 4, 5, 6, 7) 4
+    6: line 2 ("", 4, 5, 6, 7, 4) REVERSE
+    7: line 3 ("", 7, 6, 5, 4) EXIT

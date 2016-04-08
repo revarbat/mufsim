@@ -1,0 +1,3 @@
+: main
+    "abcdef" "" "bcd" subst
+;

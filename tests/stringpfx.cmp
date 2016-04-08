@@ -1,0 +1,27 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "foobar"
+    2: "foo"
+    3: STRINGPFX
+    4: "foobar"
+    5: "Foo"
+    6: STRINGPFX
+    7: "foobar"
+    8: "bar"
+    9: STRINGPFX
+   10: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "foobar"
+    2: line 2 ("", "foobar") "foo"
+    3: line 2 ("", "foobar", "foo") STRINGPFX
+    4: line 3 ("", 1) "foobar"
+    5: line 3 ("", 1, "foobar") "Foo"
+    6: line 3 ("", 1, "foobar", "Foo") STRINGPFX
+    7: line 4 ("", 1, 1) "foobar"
+    8: line 4 ("", 1, 1, "foobar") "bar"
+    9: line 4 ("", 1, 1, "foobar", "bar") STRINGPFX
+   10: line 5 ("", 1, 1, 0) EXIT

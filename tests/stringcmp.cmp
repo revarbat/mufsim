@@ -1,0 +1,33 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "foo"
+    2: "foo"
+    3: STRINGCMP
+    4: "foo"
+    5: "bar"
+    6: STRINGCMP
+    7: "bar"
+    8: "foo"
+    9: STRINGCMP
+   10: "bar"
+   11: "bar"
+   12: STRINGCMP
+   13: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "foo"
+    2: line 2 ("", "foo") "foo"
+    3: line 2 ("", "foo", "foo") STRINGCMP
+    4: line 3 ("", 0) "foo"
+    5: line 3 ("", 0, "foo") "bar"
+    6: line 3 ("", 0, "foo", "bar") STRINGCMP
+    7: line 4 ("", 0, 1) "bar"
+    8: line 4 ("", 0, 1, "bar") "foo"
+    9: line 4 ("", 0, 1, "bar", "foo") STRINGCMP
+   10: line 5 ("", 0, 1, -1) "bar"
+   11: line 5 ("", 0, 1, -1, "bar") "bar"
+   12: line 5 ("", 0, 1, -1, "bar", "bar") STRINGCMP
+   13: line 6 ("", 0, 1, -1, 0) EXIT

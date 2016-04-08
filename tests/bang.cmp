@@ -1,0 +1,21 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: #1
+    2: LV0: me
+    3: !
+    4: 42
+    5: SV0: foo
+    6: !
+    7: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") #1
+    2: line 2 ("", #1) LV0: me
+    3: line 2 ("", #1, LV0) !
+    4: line 4 ("") 42
+    5: line 4 ("", 42) SV0: foo
+    6: line 4 ("", 42, SV0) !
+    7: line 5 ("") EXIT

@@ -1,0 +1,23 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: LV0: me
+    2: @
+    3: "wizard"
+    4: FLAG?
+    5: #1
+    6: "wizard"
+    7: FLAG?
+    8: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") LV0: me
+    2: line 2 ("", LV0) @
+    3: line 2 ("", #5) "wizard"
+    4: line 2 ("", #5, "wizard") FLAG?
+    5: line 3 ("", 0) #1
+    6: line 3 ("", 0, #1) "wizard"
+    7: line 3 ("", 0, #1, "wizard") FLAG?
+    8: line 4 ("", 0, 1) EXIT

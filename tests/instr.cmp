@@ -1,0 +1,33 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "abcde"
+    2: "bcd"
+    3: INSTR
+    4: "abcde"
+    5: "bce"
+    6: INSTR
+    7: "abcde"
+    8: "BCD"
+    9: INSTR
+   10: "abcde"
+   11: "BCE"
+   12: INSTR
+   13: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "abcde"
+    2: line 2 ("", "abcde") "bcd"
+    3: line 2 ("", "abcde", "bcd") INSTR
+    4: line 3 ("", 2) "abcde"
+    5: line 3 ("", 2, "abcde") "bce"
+    6: line 3 ("", 2, "abcde", "bce") INSTR
+    7: line 4 ("", 2, 0) "abcde"
+    8: line 4 ("", 2, 0, "abcde") "BCD"
+    9: line 4 ("", 2, 0, "abcde", "BCD") INSTR
+   10: line 5 ("", 2, 0, 0) "abcde"
+   11: line 5 ("", 2, 0, 0, "abcde") "BCE"
+   12: line 5 ("", 2, 0, 0, "abcde", "BCE") INSTR
+   13: line 6 ("", 2, 0, 0, 0) EXIT

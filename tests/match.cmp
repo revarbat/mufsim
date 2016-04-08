@@ -1,0 +1,25 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "me"
+    2: MATCH
+    3: "here"
+    4: MATCH
+    5: "*wizard"
+    6: MATCH
+    7: "#5"
+    8: MATCH
+    9: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "me"
+    2: line 2 ("", "me") MATCH
+    3: line 3 ("", #5) "here"
+    4: line 3 ("", #5, "here") MATCH
+    5: line 4 ("", #5, #2) "*wizard"
+    6: line 4 ("", #5, #2, "*wizard") MATCH
+    7: line 5 ("", #5, #2, #1) "#5"
+    8: line 5 ("", #5, #2, #1, "#5") MATCH
+    9: line 6 ("", #5, #2, #1, #5) EXIT

@@ -1,0 +1,21 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "foo"
+    2: 42
+    3: #5
+    4: #5
+    5: "%D %d %i %s"
+    6: FMTSTRING
+    7: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "foo"
+    2: line 2 ("", "foo") 42
+    3: line 2 ("", "foo", 42) #5
+    4: line 2 ("", "foo", 42, #5) #5
+    5: line 3 ("", "foo", 42, #5, #5) "%D %d %i %s"
+    6: line 3 ("", "foo", 42, #5, #5, "%D %d %i %s") FMTSTRING
+    7: line 4 ("", "John_Doe #5 42 foo") EXIT

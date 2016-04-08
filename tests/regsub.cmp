@@ -1,0 +1,19 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "hello there"
+    2: "[a-h]"
+    3: "y"
+    4: 1
+    5: REGSUB
+    6: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "hello there"
+    2: line 2 ("", "hello there") "[a-h]"
+    3: line 2 ("", "hello there", "[a-h]") "y"
+    4: line 2 ("", "hello there", "[a-h]", "y") 1
+    5: line 2 ("", "hello there", "[a-h]", "y", 1) REGSUB
+    6: line 3 ("", "yyllo tyyry") EXIT

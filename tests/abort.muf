@@ -1,0 +1,3 @@
+: main
+    "Error message." abort
+;

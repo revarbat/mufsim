@@ -1,0 +1,25 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "d"
+    2: {
+    3: "a"
+    4: "b"
+    5: "c"
+    6: }
+    7: ARRAY_MAKE
+    8: ARRAY_APPENDITEM
+    9: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "d"
+    2: line 2 ("", "d") {
+    3: line 2 ("", "d", Mark) "a"
+    4: line 2 ("", "d", Mark, "a") "b"
+    5: line 2 ("", "d", Mark, "a", "b") "c"
+    6: line 2 ("", "d", Mark, "a", "b", "c") }
+    7: line 2 ("", "d", "a", "b", "c", 3) ARRAY_MAKE
+    8: line 2 ("", "d", ['a', 'b', 'c']) ARRAY_APPENDITEM
+    9: line 3 ("", ['a', 'b', 'c', 'd']) EXIT

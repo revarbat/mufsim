@@ -1,0 +1,27 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "foo bar"
+    2: "f*"
+    3: SMATCH
+    4: "foo bar"
+    5: "*b*"
+    6: SMATCH
+    7: "foo bar"
+    8: "*c*"
+    9: SMATCH
+   10: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "foo bar"
+    2: line 2 ("", "foo bar") "f*"
+    3: line 2 ("", "foo bar", "f*") SMATCH
+    4: line 3 ("", 1) "foo bar"
+    5: line 3 ("", 1, "foo bar") "*b*"
+    6: line 3 ("", 1, "foo bar", "*b*") SMATCH
+    7: line 4 ("", 1, 1) "foo bar"
+    8: line 4 ("", 1, 1, "foo bar") "*c*"
+    9: line 4 ("", 1, 1, "foo bar", "*c*") SMATCH
+   10: line 5 ("", 1, 1, 0) EXIT

@@ -1,0 +1,21 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "#5"
+    2: STOD
+    3: "#-1"
+    4: STOD
+    5: "#99991"
+    6: STOD
+    7: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "#5"
+    2: line 2 ("", "#5") STOD
+    3: line 3 ("", #5) "#-1"
+    4: line 3 ("", #5, "#-1") STOD
+    5: line 4 ("", #5, #-1) "#99991"
+    6: line 4 ("", #5, #-1, "#99991") STOD
+    7: line 5 ("", #5, #-1, #99991) EXIT

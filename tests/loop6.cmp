@@ -1,0 +1,47 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: {
+    2: 3
+    3: 4
+    4: 5
+    5: }
+    6: ARRAY_MAKE
+    7: FOREACH
+    8: __FORITER__
+    9: BranchIfNot: +4
+   10: POP
+   11: POP
+   12: Branch: -4
+   13: __FORPOP__
+   14: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") {
+    2: line 2 ("", Mark) 3
+    3: line 2 ("", Mark, 3) 4
+    4: line 2 ("", Mark, 3, 4) 5
+    5: line 2 ("", Mark, 3, 4, 5) }
+    6: line 2 ("", 3, 4, 5, 3) ARRAY_MAKE
+    7: line 3 ("", [3, 4, 5]) FOREACH
+    8: line 4 ("") __FORITER__
+    9: line 4 ("", 0, 3, 1) BranchIfNot: +4
+   10: line 4 ("", 0, 3) POP
+   11: line 4 ("", 0) POP
+   12: line 5 ("") Branch: -4
+    8: line 4 ("") __FORITER__
+    9: line 4 ("", 1, 4, 1) BranchIfNot: +4
+   10: line 4 ("", 1, 4) POP
+   11: line 4 ("", 1) POP
+   12: line 5 ("") Branch: -4
+    8: line 4 ("") __FORITER__
+    9: line 4 ("", 2, 5, 1) BranchIfNot: +4
+   10: line 4 ("", 2, 5) POP
+   11: line 4 ("", 2) POP
+   12: line 5 ("") Branch: -4
+    8: line 4 ("") __FORITER__
+    9: line 4 ("", 0) BranchIfNot: +4
+   13: line 3 ("") __FORPOP__
+   14: line 6 ("") EXIT

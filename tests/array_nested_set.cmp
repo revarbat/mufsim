@@ -1,0 +1,49 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: 8
+    2: {
+    3: "a"
+    4: {
+    5: "x"
+    6: 3
+    7: }
+    8: 2
+    9: /
+   10: ARRAY_MAKE_DICT
+   11: }
+   12: 2
+   13: /
+   14: ARRAY_MAKE_DICT
+   15: {
+   16: "a"
+   17: "x"
+   18: }
+   19: ARRAY_MAKE
+   20: ARRAY_NESTED_SET
+   21: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") 8
+    2: line 3 ("", 8) {
+    3: line 3 ("", 8, Mark) "a"
+    4: line 3 ("", 8, Mark, "a") {
+    5: line 3 ("", 8, Mark, "a", Mark) "x"
+    6: line 3 ("", 8, Mark, "a", Mark, "x") 3
+    7: line 3 ("", 8, Mark, "a", Mark, "x", 3) }
+    8: line 3 ("", 8, Mark, "a", "x", 3, 2) 2
+    9: line 3 ("", 8, Mark, "a", "x", 3, 2, 2) /
+   10: line 3 ("", 8, Mark, "a", "x", 3, 1) ARRAY_MAKE_DICT
+   11: line 3 ("", 8, Mark, "a", {'x': 3}) }
+   12: line 3 ("", 8, "a", {'x': 3}, 2) 2
+   13: line 3 ("", 8, "a", {'x': 3}, 2, 2) /
+   14: line 3 ("", 8, "a", {'x': 3}, 1) ARRAY_MAKE_DICT
+   15: line 4 ("", 8, {'a': {'x': 3}}) {
+   16: line 4 ("", 8, {'a': {'x': 3}}, Mark) "a"
+   17: line 4 ("", 8, {'a': {'x': 3}}, Mark, "a") "x"
+   18: line 4 ("", 8, {'a': {'x': 3}}, Mark, "a", "x") }
+   19: line 4 ("", 8, {'a': {'x': 3}}, "a", "x", 2) ARRAY_MAKE
+   20: line 5 ("", 8, {'a': {'x': 3}}, ['a', 'x']) ARRAY_NESTED_SET
+   21: line 6 ("", {'a': {'x': 8}}) EXIT
