@@ -2,7 +2,7 @@
 
 #### Showing Compiled Tokens ##########################
     0: Function: main
-    1: "abcdef"
+    1: "abcdeabcde"
     2: ""
     3: "bcd"
     4: SUBST
@@ -10,8 +10,8 @@
 
 #### Executing Tokens #################################
     0: line 1 ("") Function: main
-    1: line 2 ("") "abcdef"
-    2: line 2 ("", "abcdef") ""
-    3: line 2 ("", "abcdef", "") "bcd"
-    4: line 2 ("", "abcdef", "", "bcd") SUBST
-    5: line 3 ("", "bcdabcdbbcdcbcddbcdebcdfbcd") EXIT
+    1: line 2 ("") "abcdeabcde"
+    2: line 2 ("", "abcdeabcde") ""
+    3: line 2 ("", "abcdeabcde", "") "bcd"
+    4: line 2 ("", "abcdeabcde", "", "bcd") SUBST
+    5: line 3 ("", "aeae") EXIT

@@ -1,3 +1,3 @@
 : main
-    "abcdef" "" "bcd" subst
+    "abcdeabcde" "" "bcd" subst
 ;

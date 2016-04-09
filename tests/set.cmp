@@ -5,13 +5,33 @@
     1: LV0: me
     2: @
     3: "haven"
-    4: SET
-    5: EXIT
+    4: FLAG?
+    5: POP
+    6: LV0: me
+    7: @
+    8: "haven"
+    9: SET
+   10: LV0: me
+   11: @
+   12: "haven"
+   13: FLAG?
+   14: POP
+   15: EXIT
 
 #### Executing Tokens #################################
     0: line 1 ("") Function: main
     1: line 2 ("") LV0: me
     2: line 2 ("", LV0) @
     3: line 2 ("", #5) "haven"
-    4: line 2 ("", #5, "haven") SET
-    5: line 3 ("") EXIT
+    4: line 2 ("", #5, "haven") FLAG?
+    5: line 2 ("", 0) POP
+    6: line 3 ("") LV0: me
+    7: line 3 ("", LV0) @
+    8: line 3 ("", #5) "haven"
+    9: line 3 ("", #5, "haven") SET
+   10: line 4 ("") LV0: me
+   11: line 4 ("", LV0) @
+   12: line 4 ("", #5) "haven"
+   13: line 4 ("", #5, "haven") FLAG?
+   14: line 4 ("", 1) POP
+   15: line 5 ("") EXIT

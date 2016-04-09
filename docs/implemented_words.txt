@@ -1,4 +1,14 @@
 !
+$author
+$cleardefs
+$def
+$define
+$lib-version
+$libdef
+$note
+$pubdef
+$undef
+$version
 %
 *
 +
@@ -29,8 +39,10 @@ and
 array?
 array_appenditem
 array_count
+array_delitem
 array_delrange
 array_excludeval
+array_extract
 array_findval
 array_get_proplist
 array_getitem
@@ -97,6 +109,7 @@ intostr
 ldup
 location
 lreverse
+lvar
 match
 name
 next
@@ -116,6 +129,7 @@ pop
 popn
 prog
 program?
+pronoun_sub
 propdir?
 put
 random
@@ -160,7 +174,10 @@ timefmt
 tolower
 toupper
 trig
+truename
 try
 until
+var
+var!
 while
 xor

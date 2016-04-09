@@ -1,2 +1,20 @@
 #### Compiling MUF Code to Tokens #####################
-Error in line 3: Unrecognized Identifier: ''foo'
+
+#### Showing Compiled Tokens ##########################
+    0: Function: foo
+    1: 42
+    2: EXIT
+
+    3: Function: main
+    4: Addr:0
+    5: EXECUTE
+    6: EXIT
+
+#### Executing Tokens #################################
+    3: line 2 ("") Function: main
+    4: line 3 ("") Addr:0
+    5: line 3 ("", Addr:0) EXECUTE
+    0: line 1 ("") Function: foo
+    1: line 1 ("") 42
+    2: line 1 ("", 42) EXIT
+    6: line 4 ("", 42) EXIT

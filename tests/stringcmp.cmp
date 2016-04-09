@@ -14,7 +14,19 @@
    10: "bar"
    11: "bar"
    12: STRINGCMP
-   13: EXIT
+   13: "foo"
+   14: "Foo"
+   15: STRINGCMP
+   16: "foo"
+   17: "Bar"
+   18: STRINGCMP
+   19: "bar"
+   20: "Foo"
+   21: STRINGCMP
+   22: "bar"
+   23: "Bar"
+   24: STRINGCMP
+   25: EXIT
 
 #### Executing Tokens #################################
     0: line 1 ("") Function: main
@@ -30,4 +42,16 @@
    10: line 5 ("", 0, 1, -1) "bar"
    11: line 5 ("", 0, 1, -1, "bar") "bar"
    12: line 5 ("", 0, 1, -1, "bar", "bar") STRINGCMP
-   13: line 6 ("", 0, 1, -1, 0) EXIT
+   13: line 6 ("", 0, 1, -1, 0) "foo"
+   14: line 6 ("", 0, 1, -1, 0, "foo") "Foo"
+   15: line 6 ("", 0, 1, -1, 0, "foo", "Foo") STRINGCMP
+   16: line 7 ("", 0, 1, -1, 0, 0) "foo"
+   17: line 7 ("", 0, 1, -1, 0, 0, "foo") "Bar"
+   18: line 7 ("", 0, 1, -1, 0, 0, "foo", "Bar") STRINGCMP
+   19: line 8 ("", 0, 1, -1, 0, 0, 1) "bar"
+   20: line 8 ("", 0, 1, -1, 0, 0, 1, "bar") "Foo"
+   21: line 8 ("", 0, 1, -1, 0, 0, 1, "bar", "Foo") STRINGCMP
+   22: line 9 ("", 0, 1, -1, 0, 0, 1, -1) "bar"
+   23: line 9 ("", 0, 1, -1, 0, 0, 1, -1, "bar") "Bar"
+   24: line 9 ("", 0, 1, -1, 0, 0, 1, -1, "bar", "Bar") STRINGCMP
+   25: line 10 ("", 0, 1, -1, 0, 0, 1, -1, 0) EXIT

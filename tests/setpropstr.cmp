@@ -6,7 +6,7 @@
     2: @
     3: "sex"
     4: "male"
-    5: SETPROPSTR
+    5: SETPROP
     6: EXIT
 
 #### Executing Tokens #################################
@@ -15,5 +15,6 @@
     2: line 2 ("", LV0) @
     3: line 2 ("", #5) "sex"
     4: line 2 ("", #5, "sex") "male"
-    5: line 2 ("", #5, "sex", "male") SETPROPSTR
-Error in line 2 (SETPROPSTR): Expected string argument. (3)
+    5: line 2 ("", #5, "sex", "male") SETPROP
+SETPROP "sex" on #5 = "male"
+    6: line 3 ("") EXIT

@@ -2,15 +2,68 @@
 
 #### Showing Compiled Tokens ##########################
     0: Function: main
-    1: Try: +5
-    2: "foo"
-    3: ABORT
-    4: TryPop
-    5: Branch: +2
-    6: POP
-    7: EXIT
+    1: 0
+    2: Try: +5
+    3: "foo"
+    4: ABORT
+    5: TryPop
+    6: Branch: +2
+    7: POP
+    8: 3
+    9: 4
+   10: 5
+   11: 2
+   12: Try: +5
+   13: "bar"
+   14: ABORT
+   15: TryPop
+   16: Branch: +2
+   17: POP
+   18: POP
+   19: 3
+   20: 4
+   21: 5
+   22: 2
+   23: Try: +6
+   24: POP
+   25: POP
+   26: POP
+   27: TryPop
+   28: Branch: +2
+   29: POP
+   30: POP
+   31: EXIT
 
 #### Executing Tokens #################################
     0: line 1 ("") Function: main
-    1: line 2 ("") Try: +5
-Error in line 2 (Try: +5): Expected integer.
+    1: line 2 ("") 0
+    2: line 2 ("", 0) Try: +5
+    3: line 3 ("") "foo"
+    4: line 3 ("", "foo") ABORT
+Caught error in line 3 (ABORT): foo
+catch depth=1
+    7: line 4 ("", "foo") POP
+    8: line 6 ("") 3
+    9: line 6 ("", 3) 4
+   10: line 6 ("", 3, 4) 5
+   11: line 7 ("", 3, 4, 5) 2
+   12: line 7 ("", 3, 4, 5, 2) Try: +5
+   13: line 8 ("", 3, 4, 5) "bar"
+   14: line 8 ("", 3, 4, 5, "bar") ABORT
+Caught error in line 8 (ABORT): bar
+catch depth=1
+   17: line 9 ("", 3, {'program': #4, 'line': 8, 'instr': 'ABORT', 'error': 'bar'}) POP
+   18: line 11 ("", 3) POP
+   19: line 12 ("") 3
+   20: line 12 ("", 3) 4
+   21: line 12 ("", 3, 4) 5
+   22: line 13 ("", 3, 4, 5) 2
+   23: line 13 ("", 3, 4, 5, 2) Try: +6
+   24: line 14 ("", 3, 4, 5) POP
+   25: line 14 ("", 3, 4) POP
+   26: line 14 ("", 3) POP
+Caught error in line 14 (POP): StackUnderflow
+catch depth=1
+   29: line 15 ("", 3, "StackUnderflow") POP
+   30: line 17 ("", 3) POP
+   31: line 18 ("") EXIT
