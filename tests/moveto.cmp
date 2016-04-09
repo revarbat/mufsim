@@ -1,0 +1,83 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: LV0: me
+    2: @
+    3: LOCATION
+    4: SV0: oldloc
+    5: !
+    6: #0
+    7: SV1: newloc
+    8: !
+    9: SV0: oldloc
+   10: @
+   11: CONTENTS_ARRAY
+   12: POP
+   13: SV1: newloc
+   14: @
+   15: CONTENTS_ARRAY
+   16: POP
+   17: LV0: me
+   18: @
+   19: LOCATION
+   20: POP
+   21: LV0: me
+   22: @
+   23: SV1: newloc
+   24: @
+   25: MOVETO
+   26: SV0: oldloc
+   27: @
+   28: CONTENTS_ARRAY
+   29: POP
+   30: SV1: newloc
+   31: @
+   32: CONTENTS_ARRAY
+   33: POP
+   34: LV0: me
+   35: @
+   36: LOCATION
+   37: POP
+   38: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") LV0: me
+    2: line 2 ("", LV0) @
+    3: line 2 ("", #5) LOCATION
+    4: line 2 ("", #2) SV0: oldloc
+    5: line 2 ("", #2, SV0) !
+    6: line 3 ("") #0
+    7: line 3 ("", #0) SV1: newloc
+    8: line 3 ("", #0, SV1) !
+    9: line 4 ("") SV0: oldloc
+   10: line 4 ("", SV0) @
+   11: line 4 ("", #2) CONTENTS_ARRAY
+   12: line 4 ("", [#7, #6, #5]) POP
+   13: line 5 ("") SV1: newloc
+   14: line 5 ("", SV1) @
+   15: line 5 ("", #0) CONTENTS_ARRAY
+   16: line 5 ("", [#2, #1]) POP
+   17: line 6 ("") LV0: me
+   18: line 6 ("", LV0) @
+   19: line 6 ("", #5) LOCATION
+   20: line 6 ("", #2) POP
+   21: line 7 ("") LV0: me
+   22: line 7 ("", LV0) @
+   23: line 7 ("", #5) SV1: newloc
+   24: line 7 ("", #5, SV1) @
+   25: line 7 ("", #5, #0) MOVETO
+   26: line 8 ("") SV0: oldloc
+   27: line 8 ("", SV0) @
+   28: line 8 ("", #2) CONTENTS_ARRAY
+   29: line 8 ("", [#7, #6]) POP
+   30: line 9 ("") SV1: newloc
+   31: line 9 ("", SV1) @
+   32: line 9 ("", #0) CONTENTS_ARRAY
+   33: line 9 ("", [#5, #2, #1]) POP
+   34: line 10 ("") LV0: me
+   35: line 10 ("", LV0) @
+   36: line 10 ("", #5) LOCATION
+   37: line 10 ("", #0) POP
+   38: line 11 ("") EXIT

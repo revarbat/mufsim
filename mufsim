@@ -7,7 +7,7 @@ import re
 import sys
 import time
 import argparse
-from random import randrange
+from random import randint
 from subprocess import call
 
 primitives = {}
@@ -55,6 +55,10 @@ builtin_defines = {
     'reg_icase':       '1',
     'reg_all':         '2',
     'reg_extended':    '4',
+
+    'sorttype_caseinsens': '1',
+    'sorttype_descending': '2',
+    'sorttype_shuffle':    '4',
 }
 defines = dict(builtin_defines)
 player_names = {}
@@ -355,6 +359,41 @@ def is_float(s):
         return True
     except ValueError:
         return False
+
+
+def is_number(s):
+    return(is_int(s) or is_float(s))
+
+
+def sortcomp(a, b, nocase=False):
+    if type(a) is type(b):
+        if type(a) is str and nocase:
+            a = a.upper()
+            b = b.upper()
+        return cmp(a, b)
+    if is_number(a) and is_number(b):
+        return cmp(a, b)
+    if is_number(a):
+        return -1
+    if is_number(b):
+        return 1
+    if type(a) is StackDBRef:
+        return -1
+    if type(b) is StackDBRef:
+        return 1
+    if type(a) is str:
+        return -1
+    if type(b) is str:
+        return 1
+    return cmp(a, b)
+
+
+def sortcompi(a, b):
+    return sortcomp(a, b, nocase=True)
+
+
+def sortcompshuffle(a, b):
+    return 1 if randint(0, 7) & 0x4 == 0 else -1
 
 
 def smatch(pat, txt):
@@ -1797,6 +1836,29 @@ class InstArrayReverse(Instruction):
         fr.data_push(arr)
 
 
+@instr("array_sort")
+class InstArraySort(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        flags = fr.data_pop()
+        arr = fr.data_pop()
+        if type(arr) is not list:
+            raise MufRuntimeError("Expected list array. (1)")
+        if type(flags) is not int:
+            raise MufRuntimeError("Expected integer argument. (2)")
+        nocase = flags & 1 != 0
+        dorev = flags & 2 != 0
+        doshuffle = flags & 4 != 0
+        if doshuffle:
+            for i in xrange(7):
+                arr = sorted(arr, cmp=sortcompshuffle, reverse=dorev)
+        elif nocase:
+            arr = sorted(arr, cmp=sortcompi, reverse=dorev)
+        else:
+            arr = sorted(arr, cmp=sortcomp, reverse=dorev)
+        fr.data_push(arr)
+
+
 @instr("date")
 class InstDate(Instruction):
     def execute(self, fr):
@@ -1965,10 +2027,25 @@ class InstContentsArray(Instruction):
             raise MufRuntimeError("Expected dbref argument. (1)")
         if obj.value not in object_db:
             raise MufRuntimeError("Invalid object. (1)")
-        if object_db[obj.value].contents:
-            fr.data_push(object_db[obj.value].contents)
-        else:
-            fr.data_push([])
+        arr = [StackDBRef(x) for x in object_db[obj.value].contents]
+        fr.data_push(arr)
+
+
+@instr("moveto")
+class InstMoveTo(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        dest = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        if type(dest) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (2)")
+        if dest.value not in object_db:
+            raise MufRuntimeError("Invalid object. (2)")
+        object_db[obj.value].moveto(dest.value)
 
 
 @instr("exits")
@@ -2777,7 +2854,7 @@ class InstDepth(Instruction):
 @instr("random")
 class InstRandom(Instruction):
     def execute(self, fr):
-        fr.data_push(randrange(2**32-1)-2**31)
+        fr.data_push(randint(-(2**31-2), (2**31-2)))
 
 
 @instr("int?")
@@ -3607,8 +3684,8 @@ class MufStackFrame(object):
                 print("show functions     List all declared functions.")
                 print("show globals       List all global vars.")
                 print("show vars          List all vars in the current func.")
-                print("step [COUNT]       Step one or COUNT lines, going into calls.")
-                print("next [COUNT]       Step one or COUNT lines, skipping over calls.")
+                print("step [COUNT]       Step 1 or COUNT lines, enters calls.")
+                print("next [COUNT]       Step 1 or COUNT lines, skips calls.")
                 print("finish             Finish the current function.")
                 print("cont               Continue until next breakpoint.")
                 print("pop                Pop top data stack item.")
@@ -3830,7 +3907,7 @@ class MufCompiler(object):
             elif word == "$language":
                 val, src = self.get_to_eol(src)
                 if val.strip().lower() == '"muv"':
-                    raise MufCompileError("MUV source needs the -m flag to compile.")
+                    raise MufCompileError("MUV needs -m flag to compile.")
                 continue
             elif word == "$pragma":
                 val, src = self.get_to_eol(src)

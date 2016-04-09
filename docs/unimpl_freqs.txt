@@ -1,5 +1,4 @@
     616 textattr
-    398 moveto
     379 awake?
     275 notify_exclude
     252 unparseobj
@@ -27,14 +26,12 @@
      57 envprop
      56 midstr
      54 setlockstr
-     51 array_sort
      50 sysparm
      49 descriptors
      49 concount
      47 round
      47 checkargs
      42 stats
-     41 contents_array
      41 abs
      40 timestamps
      39 conidle

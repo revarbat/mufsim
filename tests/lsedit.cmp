@@ -1,0 +1,3027 @@
+#### Compiling MUV Code to MUF ########################
+
+#### Compiling MUF Code to Tokens #####################
+SETPROP "_author" on #4 = "Revar Desmera <revar@gmail.com>"
+SETPROP "_note" on #4 = "An example replacement for the lsedit program, written in MUV."
+SETPROP "_version" on #4 = "1.0"
+SETPROP "_lib-version" on #4 = "1.0"
+EXPOSED 'lsedit__init_help' AS PUBLIC
+SETPROP "_defs/lsedit__init_help" on #4 = "#4 "lsedit__init_help" call"
+EXPOSED 'lsedit__show_help' AS PUBLIC
+SETPROP "_defs/lsedit__show_help" on #4 = "#4 "lsedit__show_help" call"
+EXPOSED 'lsedit__add_helptext' AS PUBLIC
+SETPROP "_defs/lsedit__add_helptext" on #4 = "#4 "lsedit__add_helptext" call"
+EXPOSED 'lsedit__editor' AS PUBLIC
+SETPROP "_defs/lsedit__editor" on #4 = "#4 "lsedit__editor" call"
+EXPOSED 'lsedit__basic' AS PUBLIC
+SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
+
+#### Showing Compiled Tokens ##########################
+    0: Function: argparse::init
+    1: ""
+    2: LV4: argparse::current_mode
+    3: !
+    4: {
+    5: }
+    6: ARRAY_MAKE
+    7: LV5: argparse::modes_list
+    8: !
+    9: {
+   10: }
+   11: 2
+   12: /
+   13: ARRAY_MAKE_DICT
+   14: LV6: argparse::flags_map
+   15: !
+   16: {
+   17: }
+   18: 2
+   19: /
+   20: ARRAY_MAKE_DICT
+   21: LV7: argparse::posargs_map
+   22: !
+   23: {
+   24: ""
+   25: "remainder"
+   26: }
+   27: 2
+   28: /
+   29: ARRAY_MAKE_DICT
+   30: LV8: argparse::remainder_map
+   31: !
+   32: 0
+   33: EXIT
+
+   34: Function: argparse::parse_posargs
+   35: SV1: _posargs
+   36: !
+   37: SV0: _mode
+   38: !
+   39: {
+   40: SV1: _posargs
+   41: @
+   42: "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
+   43: 1
+   44: REGEXP
+   45: }
+   46: ARRAY_MAKE
+   47: 0
+   48: ARRAY_GETITEM
+   49: SV2: _tok
+   50: !
+   51: SV2: _tok
+   52: @
+   53: BranchIfNot: +53
+   54: LV7: argparse::posargs_map
+   55: @
+   56: SV0: _mode
+   57: @
+   58: ARRAY_GETITEM
+   59: NOT
+   60: BranchIfNot: +13
+   61: {
+   62: }
+   63: ARRAY_MAKE
+   64: DUP
+   65: LV7: argparse::posargs_map
+   66: @
+   67: SV0: _mode
+   68: @
+   69: ARRAY_SETITEM
+   70: LV7: argparse::posargs_map
+   71: !
+   72: POP
+   73: LV7: argparse::posargs_map
+   74: @
+   75: SV0: _mode
+   76: @
+   77: OVER
+   78: OVER
+   79: ARRAY_GETITEM
+   80: {
+   81: SV2: _tok
+   82: @
+   83: 1
+   84: ARRAY_GETITEM
+   85: TOLOWER
+   86: SV2: _tok
+   87: @
+   88: 2
+   89: ARRAY_GETITEM
+   90: }
+   91: ARRAY_MAKE
+   92: SWAP
+   93: ARRAY_APPENDITEM
+   94: ROT
+   95: ROT
+   96: ARRAY_SETITEM
+   97: LV7: argparse::posargs_map
+   98: !
+   99: SV2: _tok
+  100: @
+  101: 3
+  102: ARRAY_GETITEM
+  103: SV1: _posargs
+  104: !
+  105: Branch: +14
+  106: SV1: _posargs
+  107: @
+  108: TOLOWER
+  109: DUP
+  110: LV8: argparse::remainder_map
+  111: @
+  112: SV0: _mode
+  113: @
+  114: ARRAY_SETITEM
+  115: LV8: argparse::remainder_map
+  116: !
+  117: POP
+  118: Branch: +2
+  119: Branch: -80
+  120: 0
+  121: EXIT
+
+  122: Function: argparse::set_mode
+  123: SV0: _name
+  124: !
+  125: SV0: _name
+  126: @
+  127: TOLOWER
+  128: SV0: _name
+  129: !
+  130: SV0: _name
+  131: @
+  132: LV4: argparse::current_mode
+  133: !
+  134: 0
+  135: EXIT
+
+  136: Function: argparse::add_mode
+  137: SV2: _posargs
+  138: !
+  139: SV1: _flags
+  140: !
+  141: SV0: _name
+  142: !
+  143: SV0: _name
+  144: @
+  145: TOLOWER
+  146: SV0: _name
+  147: !
+  148: LV5: argparse::modes_list
+  149: @
+  150: SV0: _name
+  151: @
+  152: SWAP
+  153: ARRAY_APPENDITEM
+  154: LV5: argparse::modes_list
+  155: !
+  156: {
+  157: }
+  158: ARRAY_MAKE
+  159: DUP
+  160: LV6: argparse::flags_map
+  161: @
+  162: SV0: _name
+  163: @
+  164: ARRAY_SETITEM
+  165: LV6: argparse::flags_map
+  166: !
+  167: POP
+  168: {
+  169: }
+  170: ARRAY_MAKE
+  171: DUP
+  172: LV7: argparse::posargs_map
+  173: @
+  174: SV0: _name
+  175: @
+  176: ARRAY_SETITEM
+  177: LV7: argparse::posargs_map
+  178: !
+  179: POP
+  180: SV1: _flags
+  181: @
+  182: FOREACH
+  183: __FORITER__
+  184: BranchIfNot: +41
+  185: SV3: _flag
+  186: !
+  187: POP
+  188: LV6: argparse::flags_map
+  189: @
+  190: SV0: _name
+  191: @
+  192: ARRAY_GETITEM
+  193: NOT
+  194: BranchIfNot: +13
+  195: {
+  196: }
+  197: ARRAY_MAKE
+  198: DUP
+  199: LV6: argparse::flags_map
+  200: @
+  201: SV0: _name
+  202: @
+  203: ARRAY_SETITEM
+  204: LV6: argparse::flags_map
+  205: !
+  206: POP
+  207: LV6: argparse::flags_map
+  208: @
+  209: SV0: _name
+  210: @
+  211: OVER
+  212: OVER
+  213: ARRAY_GETITEM
+  214: SV3: _flag
+  215: @
+  216: TOLOWER
+  217: SWAP
+  218: ARRAY_APPENDITEM
+  219: ROT
+  220: ROT
+  221: ARRAY_SETITEM
+  222: LV6: argparse::flags_map
+  223: !
+  224: Branch: -41
+  225: __FORPOP__
+  226: SV0: _name
+  227: @
+  228: SV2: _posargs
+  229: @
+  230: Addr:34
+  231: EXECUTE
+  232: POP
+  233: 0
+  234: EXIT
+
+  235: Function: argparse::add_flag
+  236: SV0: _name
+  237: !
+  238: SV0: _name
+  239: @
+  240: TOLOWER
+  241: SV0: _name
+  242: !
+  243: LV5: argparse::modes_list
+  244: @
+  245: FOREACH
+  246: __FORITER__
+  247: BranchIfNot: +59
+  248: SV1: _mode
+  249: !
+  250: POP
+  251: SV1: _mode
+  252: @
+  253: TOLOWER
+  254: SV1: _mode
+  255: !
+  256: LV5: argparse::modes_list
+  257: @
+  258: SV1: _mode
+  259: @
+  260: ARRAY_FINDVAL
+  261: NOT
+  262: BranchIfNot: +8
+  263: SV1: _mode
+  264: @
+  265: SV0: _name
+  266: @
+  267: "ArgParse: Option '%s' declared as part of non-existent mode '%s'!"
+  268: FMTSTRING
+  269: ABORT
+  270: LV6: argparse::flags_map
+  271: @
+  272: SV1: _mode
+  273: @
+  274: ARRAY_GETITEM
+  275: NOT
+  276: BranchIfNot: +13
+  277: {
+  278: }
+  279: ARRAY_MAKE
+  280: DUP
+  281: LV6: argparse::flags_map
+  282: @
+  283: SV1: _mode
+  284: @
+  285: ARRAY_SETITEM
+  286: LV6: argparse::flags_map
+  287: !
+  288: POP
+  289: LV6: argparse::flags_map
+  290: @
+  291: SV1: _mode
+  292: @
+  293: OVER
+  294: OVER
+  295: ARRAY_GETITEM
+  296: SV0: _name
+  297: @
+  298: SWAP
+  299: ARRAY_APPENDITEM
+  300: ROT
+  301: ROT
+  302: ARRAY_SETITEM
+  303: LV6: argparse::flags_map
+  304: !
+  305: Branch: -59
+  306: __FORPOP__
+  307: 0
+  308: EXIT
+
+  309: Function: argparse::add_posargs
+  310: SV0: _posargs
+  311: !
+  312: LV5: argparse::modes_list
+  313: @
+  314: FOREACH
+  315: __FORITER__
+  316: BranchIfNot: +31
+  317: SV1: _mode
+  318: !
+  319: POP
+  320: SV1: _mode
+  321: @
+  322: TOLOWER
+  323: SV1: _mode
+  324: !
+  325: LV5: argparse::modes_list
+  326: @
+  327: SV1: _mode
+  328: @
+  329: ARRAY_FINDVAL
+  330: NOT
+  331: BranchIfNot: +8
+  332: SV1: _mode
+  333: @
+  334: SV1: _mode
+  335: @
+  336: "ArgParse: Option '%s' declared as part of non-existent mode '%s'!"
+  337: FMTSTRING
+  338: ABORT
+  339: SV1: _mode
+  340: @
+  341: SV0: _posargs
+  342: @
+  343: Addr:34
+  344: EXECUTE
+  345: POP
+  346: Branch: -31
+  347: __FORPOP__
+  348: 0
+  349: EXIT
+
+  350: Function: argparse::show_usage
+  351: TRIG
+  352: NAME
+  353: ";"
+  354: SPLIT
+  355: POP
+  356: STRIP
+  357: SV0: _cmd
+  358: !
+  359: "Usage:"
+  360: LV0: me
+  361: @
+  362: SWAP
+  363: NOTIFY
+  364: LV5: argparse::modes_list
+  365: @
+  366: FOREACH
+  367: __FORITER__
+  368: BranchIfNot: +108
+  369: SV1: _mode
+  370: !
+  371: POP
+  372: {
+  373: }
+  374: ARRAY_MAKE
+  375: LV6: argparse::flags_map
+  376: @
+  377: SV1: _mode
+  378: @
+  379: ARRAY_GETITEM
+  380: FOREACH
+  381: __FORITER__
+  382: BranchIfNot: +16
+  383: SV3: _flag
+  384: !
+  385: POP
+  386: {
+  387: "[#"
+  388: SV3: _flag
+  389: @
+  390: "]"
+  391: }
+  392: ARRAY_MAKE
+  393: ""
+  394: ARRAY_JOIN
+  395: SWAP
+  396: ARRAY_APPENDITEM
+  397: Branch: -16
+  398: __FORPOP__
+  399: SV2: _flags
+  400: !
+  401: {
+  402: }
+  403: ARRAY_MAKE
+  404: LV7: argparse::posargs_map
+  405: @
+  406: SV1: _mode
+  407: @
+  408: ARRAY_GETITEM
+  409: FOREACH
+  410: __FORITER__
+  411: BranchIfNot: +21
+  412: SV5: _posarg
+  413: !
+  414: POP
+  415: {
+  416: SV5: _posarg
+  417: @
+  418: 0
+  419: ARRAY_GETITEM
+  420: TOUPPER
+  421: SV5: _posarg
+  422: @
+  423: 1
+  424: ARRAY_GETITEM
+  425: }
+  426: ARRAY_MAKE
+  427: ""
+  428: ARRAY_JOIN
+  429: SWAP
+  430: ARRAY_APPENDITEM
+  431: Branch: -21
+  432: __FORPOP__
+  433: SV4: _posargs
+  434: !
+  435: LV8: argparse::remainder_map
+  436: @
+  437: SV1: _mode
+  438: @
+  439: ARRAY_GETITEM
+  440: TOUPPER
+  441: SV4: _posargs
+  442: @
+  443: ""
+  444: ARRAY_JOIN
+  445: SV2: _flags
+  446: @
+  447: BranchIfNot: +3
+  448: " "
+  449: Branch: +2
+  450: ""
+  451: SV2: _flags
+  452: @
+  453: " "
+  454: ARRAY_JOIN
+  455: SV1: _mode
+  456: @
+  457: SV1: _mode
+  458: @
+  459: BranchIfNot: +3
+  460: "#"
+  461: Branch: +2
+  462: ""
+  463: SV0: _cmd
+  464: @
+  465: "%s %s%s %s%s%s%s"
+  466: FMTSTRING
+  467: SV6: _line
+  468: !
+  469: SV6: _line
+  470: @
+  471: LV0: me
+  472: @
+  473: SWAP
+  474: NOTIFY
+  475: Branch: -108
+  476: __FORPOP__
+  477: 0
+  478: EXIT
+
+  479: Function: argparse::parse
+  480: SV0: _line
+  481: !
+  482: {
+  483: }
+  484: 2
+  485: /
+  486: ARRAY_MAKE_DICT
+  487: SV4: _opts
+  488: !
+  489: 0
+  490: SV5: _mode_given
+  491: !
+  492: SV0: _line
+  493: @
+  494: "#"
+  495: STRINGPFX
+  496: BranchIfNot: +208
+  497: {
+  498: {
+  499: SV0: _line
+  500: @
+  501: 1
+  502: STRCUT
+  503: }
+  504: ARRAY_MAKE
+  505: 1
+  506: ARRAY_GETITEM
+  507: " "
+  508: SPLIT
+  509: }
+  510: ARRAY_MAKE
+  511: SV1: _parts
+  512: !
+  513: SV1: _parts
+  514: @
+  515: 0
+  516: ARRAY_GETITEM
+  517: SV6: _opt
+  518: !
+  519: SV6: _opt
+  520: @
+  521: TOLOWER
+  522: SV7: _lc_opt
+  523: !
+  524: 0
+  525: SV8: _found
+  526: !
+  527: LV5: argparse::modes_list
+  528: @
+  529: FOREACH
+  530: __FORITER__
+  531: BranchIfNot: +19
+  532: SV2: _mode
+  533: !
+  534: POP
+  535: SV2: _mode
+  536: @
+  537: SV7: _lc_opt
+  538: @
+  539: STRINGCMP
+  540: NOT
+  541: BranchIfNot: +8
+  542: SV2: _mode
+  543: @
+  544: LV4: argparse::current_mode
+  545: !
+  546: SV8: _found
+  547: ++
+  548: Branch: +2
+  549: Branch: -19
+  550: __FORPOP__
+  551: SV8: _found
+  552: @
+  553: BranchIfNot: +10
+  554: SV5: _mode_given
+  555: ++
+  556: SV1: _parts
+  557: @
+  558: 1
+  559: ARRAY_GETITEM
+  560: SV0: _line
+  561: !
+  562: Branch: -70
+  563: LV6: argparse::flags_map
+  564: @
+  565: LV4: argparse::current_mode
+  566: @
+  567: ARRAY_GETITEM
+  568: FOREACH
+  569: __FORITER__
+  570: BranchIfNot: +26
+  571: SV3: _flag
+  572: !
+  573: POP
+  574: SV3: _flag
+  575: @
+  576: SV7: _lc_opt
+  577: @
+  578: STRINGCMP
+  579: NOT
+  580: BranchIfNot: +15
+  581: SV6: _opt
+  582: @
+  583: DUP
+  584: SV4: _opts
+  585: @
+  586: SV3: _flag
+  587: @
+  588: ARRAY_SETITEM
+  589: SV4: _opts
+  590: !
+  591: POP
+  592: SV8: _found
+  593: ++
+  594: Branch: +2
+  595: Branch: -26
+  596: __FORPOP__
+  597: SV8: _found
+  598: @
+  599: BranchIfNot: +8
+  600: SV1: _parts
+  601: @
+  602: 1
+  603: ARRAY_GETITEM
+  604: SV0: _line
+  605: !
+  606: Branch: -114
+  607: LV5: argparse::modes_list
+  608: @
+  609: FOREACH
+  610: __FORITER__
+  611: BranchIfNot: +17
+  612: SV2: _mode
+  613: !
+  614: POP
+  615: SV2: _mode
+  616: @
+  617: SV7: _lc_opt
+  618: @
+  619: STRINGPFX
+  620: BranchIfNot: +7
+  621: SV2: _mode
+  622: @
+  623: LV4: argparse::current_mode
+  624: !
+  625: SV8: _found
+  626: ++
+  627: Branch: -17
+  628: __FORPOP__
+  629: LV6: argparse::flags_map
+  630: @
+  631: LV4: argparse::current_mode
+  632: @
+  633: ARRAY_GETITEM
+  634: FOREACH
+  635: __FORITER__
+  636: BranchIfNot: +24
+  637: SV3: _flag
+  638: !
+  639: POP
+  640: SV3: _flag
+  641: @
+  642: SV7: _lc_opt
+  643: @
+  644: STRINGPFX
+  645: BranchIfNot: +14
+  646: SV6: _opt
+  647: @
+  648: DUP
+  649: SV4: _opts
+  650: @
+  651: SV3: _flag
+  652: @
+  653: ARRAY_SETITEM
+  654: SV4: _opts
+  655: !
+  656: POP
+  657: SV8: _found
+  658: ++
+  659: Branch: -24
+  660: __FORPOP__
+  661: SV8: _found
+  662: @
+  663: 1
+  664: =
+  665: BranchIfNot: +9
+  666: SV1: _parts
+  667: @
+  668: 1
+  669: ARRAY_GETITEM
+  670: SV0: _line
+  671: !
+  672: Branch: -180
+  673: Branch: +23
+  674: SV8: _found
+  675: @
+  676: 1
+  677: >
+  678: BranchIfNot: +10
+  679: SV6: _opt
+  680: @
+  681: "Option #%s is ambiguous."
+  682: FMTSTRING
+  683: LV0: me
+  684: @
+  685: SWAP
+  686: NOTIFY
+  687: Branch: +9
+  688: SV6: _opt
+  689: @
+  690: "Option #%s not recognized."
+  691: FMTSTRING
+  692: LV0: me
+  693: @
+  694: SWAP
+  695: NOTIFY
+  696: Addr:350
+  697: EXECUTE
+  698: POP
+  699: {
+  700: }
+  701: ARRAY_MAKE
+  702: EXIT
+  703: Branch: -211
+  704: SV5: _mode_given
+  705: @
+  706: 1
+  707: >
+  708: BranchIfNot: +13
+  709: "Cannot mix modes."
+  710: LV0: me
+  711: @
+  712: SWAP
+  713: NOTIFY
+  714: Addr:350
+  715: EXECUTE
+  716: POP
+  717: {
+  718: }
+  719: ARRAY_MAKE
+  720: EXIT
+  721: LV7: argparse::posargs_map
+  722: @
+  723: LV4: argparse::current_mode
+  724: @
+  725: ARRAY_GETITEM
+  726: FOREACH
+  727: __FORITER__
+  728: BranchIfNot: +38
+  729: SV9: _posarg
+  730: !
+  731: POP
+  732: {
+  733: SV0: _line
+  734: @
+  735: SV9: _posarg
+  736: @
+  737: 1
+  738: ARRAY_GETITEM
+  739: SPLIT
+  740: }
+  741: ARRAY_MAKE
+  742: SV1: _parts
+  743: !
+  744: SV1: _parts
+  745: @
+  746: 0
+  747: ARRAY_GETITEM
+  748: DUP
+  749: SV4: _opts
+  750: @
+  751: SV9: _posarg
+  752: @
+  753: 0
+  754: ARRAY_GETITEM
+  755: ARRAY_SETITEM
+  756: SV4: _opts
+  757: !
+  758: POP
+  759: SV1: _parts
+  760: @
+  761: 1
+  762: ARRAY_GETITEM
+  763: SV0: _line
+  764: !
+  765: Branch: -38
+  766: __FORPOP__
+  767: SV0: _line
+  768: @
+  769: DUP
+  770: SV4: _opts
+  771: @
+  772: LV8: argparse::remainder_map
+  773: @
+  774: LV4: argparse::current_mode
+  775: @
+  776: ARRAY_GETITEM
+  777: ARRAY_SETITEM
+  778: SV4: _opts
+  779: !
+  780: POP
+  781: LV4: argparse::current_mode
+  782: @
+  783: DUP
+  784: SV4: _opts
+  785: @
+  786: "mode"
+  787: ARRAY_SETITEM
+  788: SV4: _opts
+  789: !
+  790: POP
+  791: SV4: _opts
+  792: @
+  793: EXIT
+
+  794: Function: lsedit__init_help
+  795: {
+  796: }
+  797: ARRAY_MAKE
+  798: LV9: lsedit::help_lines
+  799: !
+  800: 0
+  801: EXIT
+
+  802: Function: lsedit__show_help
+  803: {
+  804: {
+  805: "-- Commands: -----------------------------------------------------"
+  806: "..LINE              Insert .LINE at current insertion position."
+  807: ".h                  Show this help message."
+  808: ".q                  Quit editor, saving changes."
+  809: ".x                  Quit editor, aborting changes."
+  810: ".l                  List all lines."
+  811: ".l LINE             List given LINE."
+  812: ".l LINE,LINE        List given LINE range, inclusive."
+  813: ".i LINE             Move insertion to before LINE."
+  814: ".d LINE             Delete LINE."
+  815: ".d LINE,LINE        Delete given LINE range, inclusive."
+  816: ".f                  Format all lines to 75 columns."
+  817: ".f LINE,LINE        Format given line range to 75 columns."
+  818: ".f LINE,LINE=COLS   Format given line range to COLS columns."
+  819: ".s /FIND/REPL       Substitute regexp FIND with REPL in all lines."
+  820: ".s LINE/FIND/REPL   Substitute regexp FIND with REPL in LINE."
+  821: ".s L1,L2/FIND/REPL  Substitute FIND with REPL between L1 and L2."
+  822: ".w                  Write/Save changes without exiting editor."
+  823: ".w OBJ=PROP         Write/Save list to OBJ in proplist PROP."
+  824: }
+  825: ARRAY_MAKE
+  826: LV9: lsedit::help_lines
+  827: @
+  828: {
+  829: "------------------------------------------------------------------"
+  830: }
+  831: ARRAY_MAKE
+  832: }
+  833: ARRAY_MAKE
+  834: {
+  835: }
+  836: ARRAY_MAKE
+  837: SWAP
+  838: ARRAY_REVERSE
+  839: FOREACH
+  840: __FORITER__
+  841: BranchIfNot: +7
+  842: SWAP
+  843: POP
+  844: 0
+  845: SWAP
+  846: ARRAY_INSERTRANGE
+  847: Branch: -7
+  848: __FORPOP__
+  849: FOREACH
+  850: __FORITER__
+  851: BranchIfNot: +11
+  852: SV0: _line
+  853: !
+  854: POP
+  855: SV0: _line
+  856: @
+  857: LV0: me
+  858: @
+  859: SWAP
+  860: NOTIFY
+  861: Branch: -11
+  862: __FORPOP__
+  863: 0
+  864: EXIT
+
+  865: Function: lsedit__add_helptext
+  866: SV0: _line
+  867: !
+  868: LV9: lsedit::help_lines
+  869: @
+  870: SV0: _line
+  871: @
+  872: SWAP
+  873: ARRAY_APPENDITEM
+  874: LV9: lsedit::help_lines
+  875: !
+  876: 0
+  877: EXIT
+
+  878: Function: lsedit::show_list
+  879: SV3: _pos
+  880: !
+  881: SV2: _end
+  882: !
+  883: SV1: _start
+  884: !
+  885: SV0: _lines
+  886: !
+  887: SV0: _lines
+  888: @
+  889: FOREACH
+  890: __FORITER__
+  891: BranchIfNot: +41
+  892: SV5: _line
+  893: !
+  894: SV4: _lnum
+  895: !
+  896: SV4: _lnum
+  897: ++
+  898: SV4: _lnum
+  899: @
+  900: SV1: _start
+  901: @
+  902: >=
+  903: DUP
+  904: BranchIfNot: +7
+  905: POP
+  906: SV4: _lnum
+  907: @
+  908: SV2: _end
+  909: @
+  910: <=
+  911: BranchIfNot: +20
+  912: SV5: _line
+  913: @
+  914: SV4: _lnum
+  915: @
+  916: SV4: _lnum
+  917: @
+  918: SV3: _pos
+  919: @
+  920: =
+  921: BranchIfNot: +3
+  922: ">"
+  923: Branch: +2
+  924: " "
+  925: "%s%3i: %s"
+  926: FMTSTRING
+  927: LV0: me
+  928: @
+  929: SWAP
+  930: NOTIFY
+  931: Branch: -41
+  932: __FORPOP__
+  933: SV3: _pos
+  934: @
+  935: SV0: _lines
+  936: @
+  937: ARRAY_COUNT
+  938: >
+  939: BranchIfNot: +6
+  940: ">"
+  941: LV0: me
+  942: @
+  943: SWAP
+  944: NOTIFY
+  945: "Done."
+  946: LV0: me
+  947: @
+  948: SWAP
+  949: NOTIFY
+  950: 0
+  951: EXIT
+
+  952: Function: lsedit::list_split_range
+  953: SV2: _end
+  954: !
+  955: SV1: _start
+  956: !
+  957: SV0: _lines
+  958: !
+  959: {
+  960: }
+  961: ARRAY_MAKE
+  962: SV3: _pfx
+  963: !
+  964: {
+  965: }
+  966: ARRAY_MAKE
+  967: SV4: _mid
+  968: !
+  969: {
+  970: }
+  971: ARRAY_MAKE
+  972: SV5: _sfx
+  973: !
+  974: SV0: _lines
+  975: @
+  976: FOREACH
+  977: __FORITER__
+  978: BranchIfNot: +58
+  979: SV7: _line
+  980: !
+  981: SV6: _idx
+  982: !
+  983: SV6: _idx
+  984: ++
+  985: SV6: _idx
+  986: @
+  987: SV1: _start
+  988: @
+  989: <
+  990: BranchIfNot: +9
+  991: SV3: _pfx
+  992: @
+  993: SV7: _line
+  994: @
+  995: SWAP
+  996: ARRAY_APPENDITEM
+  997: SV3: _pfx
+  998: !
+  999: SV6: _idx
+ 1000: @
+ 1001: SV1: _start
+ 1002: @
+ 1003: >=
+ 1004: DUP
+ 1005: BranchIfNot: +7
+ 1006: POP
+ 1007: SV6: _idx
+ 1008: @
+ 1009: SV2: _end
+ 1010: @
+ 1011: <=
+ 1012: BranchIfNot: +9
+ 1013: SV4: _mid
+ 1014: @
+ 1015: SV7: _line
+ 1016: @
+ 1017: SWAP
+ 1018: ARRAY_APPENDITEM
+ 1019: SV4: _mid
+ 1020: !
+ 1021: SV6: _idx
+ 1022: @
+ 1023: SV2: _end
+ 1024: @
+ 1025: >
+ 1026: BranchIfNot: +9
+ 1027: SV5: _sfx
+ 1028: @
+ 1029: SV7: _line
+ 1030: @
+ 1031: SWAP
+ 1032: ARRAY_APPENDITEM
+ 1033: SV5: _sfx
+ 1034: !
+ 1035: Branch: -58
+ 1036: __FORPOP__
+ 1037: {
+ 1038: SV3: _pfx
+ 1039: @
+ 1040: SV4: _mid
+ 1041: @
+ 1042: SV5: _sfx
+ 1043: @
+ 1044: }
+ 1045: ARRAY_MAKE
+ 1046: EXIT
+
+ 1047: Function: lsedit::regexp_list_sub
+ 1048: SV2: _repl
+ 1049: !
+ 1050: SV1: _fnd
+ 1051: !
+ 1052: SV0: _lines
+ 1053: !
+ 1054: 0
+ 1055: SV3: _changed
+ 1056: !
+ 1057: SV0: _lines
+ 1058: @
+ 1059: FOREACH
+ 1060: __FORITER__
+ 1061: BranchIfNot: +37
+ 1062: SV5: _line
+ 1063: !
+ 1064: SV4: _idx
+ 1065: !
+ 1066: SV5: _line
+ 1067: @
+ 1068: SV1: _fnd
+ 1069: @
+ 1070: SV2: _repl
+ 1071: @
+ 1072: 2
+ 1073: 1
+ 1074: BITOR
+ 1075: REGSUB
+ 1076: SV6: _newln
+ 1077: !
+ 1078: SV6: _newln
+ 1079: @
+ 1080: SV5: _line
+ 1081: @
+ 1082: STRCMP
+ 1083: BranchIfNot: +14
+ 1084: SV6: _newln
+ 1085: @
+ 1086: DUP
+ 1087: SV0: _lines
+ 1088: @
+ 1089: SV4: _idx
+ 1090: @
+ 1091: ARRAY_SETITEM
+ 1092: SV0: _lines
+ 1093: !
+ 1094: POP
+ 1095: SV3: _changed
+ 1096: ++
+ 1097: Branch: -37
+ 1098: __FORPOP__
+ 1099: {
+ 1100: SV3: _changed
+ 1101: @
+ 1102: SV0: _lines
+ 1103: @
+ 1104: }
+ 1105: ARRAY_MAKE
+ 1106: EXIT
+
+ 1107: Function: lsedit::format_list
+ 1108: SV1: _cols
+ 1109: !
+ 1110: SV0: _lines
+ 1111: !
+ 1112: SV0: _lines
+ 1113: @
+ 1114: " "
+ 1115: ARRAY_JOIN
+ 1116: SV2: _txt
+ 1117: !
+ 1118: SV2: _txt
+ 1119: @
+ 1120: "  *"
+ 1121: " "
+ 1122: 2
+ 1123: REGSUB
+ 1124: SV2: _txt
+ 1125: !
+ 1126: {
+ 1127: }
+ 1128: ARRAY_MAKE
+ 1129: SV3: _out
+ 1130: !
+ 1131: SV2: _txt
+ 1132: @
+ 1133: STRLEN
+ 1134: SV1: _cols
+ 1135: @
+ 1136: >
+ 1137: BranchIfNot: +94
+ 1138: {
+ 1139: SV2: _txt
+ 1140: @
+ 1141: SV1: _cols
+ 1142: @
+ 1143: STRCUT
+ 1144: }
+ 1145: ARRAY_MAKE
+ 1146: DUP
+ 1147: DUP
+ 1148: 0
+ 1149: ARRAY_GETITEM
+ 1150: SV4: _pre
+ 1151: !
+ 1152: DUP
+ 1153: 1
+ 1154: ARRAY_GETITEM
+ 1155: SV2: _txt
+ 1156: !
+ 1157: POP
+ 1158: POP
+ 1159: {
+ 1160: SV4: _pre
+ 1161: @
+ 1162: " "
+ 1163: RSPLIT
+ 1164: }
+ 1165: ARRAY_MAKE
+ 1166: DUP
+ 1167: DUP
+ 1168: 0
+ 1169: ARRAY_GETITEM
+ 1170: SV4: _pre
+ 1171: !
+ 1172: DUP
+ 1173: 1
+ 1174: ARRAY_GETITEM
+ 1175: SV5: _rem
+ 1176: !
+ 1177: POP
+ 1178: POP
+ 1179: SV4: _pre
+ 1180: @
+ 1181: NOT
+ 1182: BranchIfNot: +9
+ 1183: SV5: _rem
+ 1184: @
+ 1185: SV4: _pre
+ 1186: !
+ 1187: ""
+ 1188: SV5: _rem
+ 1189: !
+ 1190: Branch: +25
+ 1191: SV5: _rem
+ 1192: @
+ 1193: STRLEN
+ 1194: SV1: _cols
+ 1195: @
+ 1196: 2
+ 1197: /
+ 1198: >
+ 1199: BranchIfNot: +16
+ 1200: {
+ 1201: SV4: _pre
+ 1202: @
+ 1203: " "
+ 1204: SV5: _rem
+ 1205: @
+ 1206: }
+ 1207: ARRAY_MAKE
+ 1208: ""
+ 1209: ARRAY_JOIN
+ 1210: SV4: _pre
+ 1211: !
+ 1212: ""
+ 1213: SV5: _rem
+ 1214: !
+ 1215: SV3: _out
+ 1216: @
+ 1217: SV4: _pre
+ 1218: @
+ 1219: SWAP
+ 1220: ARRAY_APPENDITEM
+ 1221: SV3: _out
+ 1222: !
+ 1223: SV5: _rem
+ 1224: @
+ 1225: SV2: _txt
+ 1226: @
+ 1227: STRCAT
+ 1228: SV2: _txt
+ 1229: !
+ 1230: Branch: -99
+ 1231: SV2: _txt
+ 1232: @
+ 1233: STRIP
+ 1234: BranchIfNot: +9
+ 1235: SV3: _out
+ 1236: @
+ 1237: SV2: _txt
+ 1238: @
+ 1239: SWAP
+ 1240: ARRAY_APPENDITEM
+ 1241: SV3: _out
+ 1242: !
+ 1243: SV3: _out
+ 1244: @
+ 1245: EXIT
+
+ 1246: Function: lsedit::parse_lines
+ 1247: SV2: _line2
+ 1248: !
+ 1249: SV1: _line1
+ 1250: !
+ 1251: SV0: _str
+ 1252: !
+ 1253: SV0: _str
+ 1254: @
+ 1255: ","
+ 1256: INSTR
+ 1257: BranchIfNot: +25
+ 1258: {
+ 1259: SV0: _str
+ 1260: @
+ 1261: ","
+ 1262: SPLIT
+ 1263: }
+ 1264: ARRAY_MAKE
+ 1265: SV0: _str
+ 1266: !
+ 1267: SV0: _str
+ 1268: @
+ 1269: 0
+ 1270: ARRAY_GETITEM
+ 1271: ATOI
+ 1272: SV1: _line1
+ 1273: !
+ 1274: SV0: _str
+ 1275: @
+ 1276: 1
+ 1277: ARRAY_GETITEM
+ 1278: ATOI
+ 1279: SV2: _line2
+ 1280: !
+ 1281: Branch: +42
+ 1282: SV0: _str
+ 1283: @
+ 1284: " "
+ 1285: INSTR
+ 1286: BranchIfNot: +25
+ 1287: {
+ 1288: SV0: _str
+ 1289: @
+ 1290: " "
+ 1291: SPLIT
+ 1292: }
+ 1293: ARRAY_MAKE
+ 1294: SV0: _str
+ 1295: !
+ 1296: SV0: _str
+ 1297: @
+ 1298: 0
+ 1299: ARRAY_GETITEM
+ 1300: ATOI
+ 1301: SV1: _line1
+ 1302: !
+ 1303: SV0: _str
+ 1304: @
+ 1305: 1
+ 1306: ARRAY_GETITEM
+ 1307: ATOI
+ 1308: SV2: _line2
+ 1309: !
+ 1310: Branch: +13
+ 1311: SV0: _str
+ 1312: @
+ 1313: STRIP
+ 1314: BranchIfNot: +9
+ 1315: SV0: _str
+ 1316: @
+ 1317: ATOI
+ 1318: DUP
+ 1319: SV2: _line2
+ 1320: !
+ 1321: SV1: _line1
+ 1322: !
+ 1323: {
+ 1324: SV1: _line1
+ 1325: @
+ 1326: SV2: _line2
+ 1327: @
+ 1328: }
+ 1329: ARRAY_MAKE
+ 1330: EXIT
+
+ 1331: Function: lsedit__editor
+ 1332: SV2: _prop
+ 1333: !
+ 1334: SV1: _obj
+ 1335: !
+ 1336: SV0: _lines
+ 1337: !
+ 1338: 0
+ 1339: SV3: _line1
+ 1340: !
+ 1341: 0
+ 1342: SV4: _line2
+ 1343: !
+ 1344: LV10: lsedit::insert_pos
+ 1345: @
+ 1346: SV0: _lines
+ 1347: @
+ 1348: ARRAY_COUNT
+ 1349: ++
+ 1350: >
+ 1351: BranchIfNot: +15
+ 1352: SV0: _lines
+ 1353: @
+ 1354: ARRAY_COUNT
+ 1355: ++
+ 1356: LV10: lsedit::insert_pos
+ 1357: !
+ 1358: LV10: lsedit::insert_pos
+ 1359: @
+ 1360: "Inserting at line %i"
+ 1361: FMTSTRING
+ 1362: LV0: me
+ 1363: @
+ 1364: SWAP
+ 1365: NOTIFY
+ 1366: READ
+ 1367: SV5: _inln
+ 1368: !
+ 1369: SV5: _inln
+ 1370: @
+ 1371: "."
+ 1372: 1
+ 1373: STRNCMP
+ 1374: BranchIfNot: +14
+ 1375: SV5: _inln
+ 1376: @
+ 1377: SV0: _lines
+ 1378: @
+ 1379: LV10: lsedit::insert_pos
+ 1380: @
+ 1381: --
+ 1382: ARRAY_INSERTITEM
+ 1383: SV0: _lines
+ 1384: !
+ 1385: LV10: lsedit::insert_pos
+ 1386: ++
+ 1387: Branch: -43
+ 1388: SV5: _inln
+ 1389: @
+ 1390: ".."
+ 1391: 2
+ 1392: STRNCMP
+ 1393: NOT
+ 1394: BranchIfNot: +25
+ 1395: {
+ 1396: SV5: _inln
+ 1397: @
+ 1398: 1
+ 1399: STRCUT
+ 1400: }
+ 1401: ARRAY_MAKE
+ 1402: 1
+ 1403: ARRAY_GETITEM
+ 1404: SV5: _inln
+ 1405: !
+ 1406: SV5: _inln
+ 1407: @
+ 1408: SV0: _lines
+ 1409: @
+ 1410: LV10: lsedit::insert_pos
+ 1411: @
+ 1412: --
+ 1413: ARRAY_INSERTITEM
+ 1414: SV0: _lines
+ 1415: !
+ 1416: LV10: lsedit::insert_pos
+ 1417: ++
+ 1418: Branch: -74
+ 1419: {
+ 1420: SV5: _inln
+ 1421: @
+ 1422: " "
+ 1423: SPLIT
+ 1424: }
+ 1425: ARRAY_MAKE
+ 1426: DUP
+ 1427: DUP
+ 1428: 0
+ 1429: ARRAY_GETITEM
+ 1430: SV6: _cmd
+ 1431: !
+ 1432: DUP
+ 1433: 1
+ 1434: ARRAY_GETITEM
+ 1435: SV7: _cmdargs
+ 1436: !
+ 1437: POP
+ 1438: POP
+ 1439: 0
+ 1440: POP
+ 1441: SV6: _cmd
+ 1442: @
+ 1443: DUP
+ 1444: ".h"
+ 1445: STRCMP
+ 1446: NOT
+ 1447: BranchIfNot: +5
+ 1448: Addr:802
+ 1449: EXECUTE
+ 1450: POP
+ 1451: Branch: +751
+ 1452: DUP
+ 1453: ".q"
+ 1454: STRCMP
+ 1455: NOT
+ 1456: BranchIfNot: +24
+ 1457: SV1: _obj
+ 1458: @
+ 1459: SV2: _prop
+ 1460: @
+ 1461: SV0: _lines
+ 1462: @
+ 1463: ARRAY_PUT_PROPLIST
+ 1464: "Saved."
+ 1465: LV0: me
+ 1466: @
+ 1467: SWAP
+ 1468: NOTIFY
+ 1469: {
+ 1470: SV6: _cmd
+ 1471: @
+ 1472: SV7: _cmdargs
+ 1473: @
+ 1474: SV0: _lines
+ 1475: @
+ 1476: }
+ 1477: ARRAY_MAKE
+ 1478: EXIT
+ 1479: Branch: +723
+ 1480: DUP
+ 1481: ".x"
+ 1482: STRCMP
+ 1483: NOT
+ 1484: BranchIfNot: +17
+ 1485: "Aborting."
+ 1486: LV0: me
+ 1487: @
+ 1488: SWAP
+ 1489: NOTIFY
+ 1490: {
+ 1491: SV6: _cmd
+ 1492: @
+ 1493: SV7: _cmdargs
+ 1494: @
+ 1495: SV0: _lines
+ 1496: @
+ 1497: }
+ 1498: ARRAY_MAKE
+ 1499: EXIT
+ 1500: Branch: +702
+ 1501: DUP
+ 1502: ".l"
+ 1503: STRCMP
+ 1504: NOT
+ 1505: BranchIfNot: +32
+ 1506: SV7: _cmdargs
+ 1507: @
+ 1508: 1
+ 1509: 999999
+ 1510: Addr:1246
+ 1511: EXECUTE
+ 1512: DUP
+ 1513: DUP
+ 1514: 0
+ 1515: ARRAY_GETITEM
+ 1516: SV3: _line1
+ 1517: !
+ 1518: DUP
+ 1519: 1
+ 1520: ARRAY_GETITEM
+ 1521: SV4: _line2
+ 1522: !
+ 1523: POP
+ 1524: POP
+ 1525: SV0: _lines
+ 1526: @
+ 1527: SV3: _line1
+ 1528: @
+ 1529: SV4: _line2
+ 1530: @
+ 1531: LV10: lsedit::insert_pos
+ 1532: @
+ 1533: Addr:878
+ 1534: EXECUTE
+ 1535: POP
+ 1536: Branch: +666
+ 1537: DUP
+ 1538: ".i"
+ 1539: STRCMP
+ 1540: NOT
+ 1541: BranchIfNot: +60
+ 1542: SV7: _cmdargs
+ 1543: @
+ 1544: 1
+ 1545: 1
+ 1546: Addr:1246
+ 1547: EXECUTE
+ 1548: DUP
+ 1549: DUP
+ 1550: 0
+ 1551: ARRAY_GETITEM
+ 1552: SV3: _line1
+ 1553: !
+ 1554: DUP
+ 1555: 1
+ 1556: ARRAY_GETITEM
+ 1557: SV4: _line2
+ 1558: !
+ 1559: POP
+ 1560: POP
+ 1561: SV3: _line1
+ 1562: @
+ 1563: SV4: _line2
+ 1564: @
+ 1565: =
+ 1566: NOT
+ 1567: BranchIfNot: +7
+ 1568: "Usage: .i LINENUM"
+ 1569: LV0: me
+ 1570: @
+ 1571: SWAP
+ 1572: NOTIFY
+ 1573: Branch: +629
+ 1574: SV3: _line1
+ 1575: @
+ 1576: LV10: lsedit::insert_pos
+ 1577: !
+ 1578: LV10: lsedit::insert_pos
+ 1579: @
+ 1580: SV0: _lines
+ 1581: @
+ 1582: ARRAY_COUNT
+ 1583: ++
+ 1584: >
+ 1585: BranchIfNot: +7
+ 1586: SV0: _lines
+ 1587: @
+ 1588: ARRAY_COUNT
+ 1589: ++
+ 1590: LV10: lsedit::insert_pos
+ 1591: !
+ 1592: LV10: lsedit::insert_pos
+ 1593: @
+ 1594: "Inserting at line %i"
+ 1595: FMTSTRING
+ 1596: LV0: me
+ 1597: @
+ 1598: SWAP
+ 1599: NOTIFY
+ 1600: Branch: +602
+ 1601: DUP
+ 1602: ".s"
+ 1603: STRCMP
+ 1604: NOT
+ 1605: BranchIfNot: +175
+ 1606: SV7: _cmdargs
+ 1607: @
+ 1608: "/"
+ 1609: EXPLODE_ARRAY
+ 1610: SV7: _cmdargs
+ 1611: !
+ 1612: SV7: _cmdargs
+ 1613: @
+ 1614: ARRAY_COUNT
+ 1615: 3
+ 1616: =
+ 1617: BranchIfNot: +157
+ 1618: SV7: _cmdargs
+ 1619: @
+ 1620: DUP
+ 1621: DUP
+ 1622: 0
+ 1623: ARRAY_GETITEM
+ 1624: SV3: _line1
+ 1625: !
+ 1626: DUP
+ 1627: 1
+ 1628: ARRAY_GETITEM
+ 1629: SV8: _fnd
+ 1630: !
+ 1631: DUP
+ 1632: 2
+ 1633: ARRAY_GETITEM
+ 1634: SV9: _repl
+ 1635: !
+ 1636: POP
+ 1637: POP
+ 1638: SV3: _line1
+ 1639: @
+ 1640: 1
+ 1641: 999999
+ 1642: Addr:1246
+ 1643: EXECUTE
+ 1644: DUP
+ 1645: DUP
+ 1646: 0
+ 1647: ARRAY_GETITEM
+ 1648: SV3: _line1
+ 1649: !
+ 1650: DUP
+ 1651: 1
+ 1652: ARRAY_GETITEM
+ 1653: SV4: _line2
+ 1654: !
+ 1655: POP
+ 1656: POP
+ 1657: SV3: _line1
+ 1658: @
+ 1659: NOT
+ 1660: DUP
+ 1661: NOT
+ 1662: BranchIfNot: +5
+ 1663: POP
+ 1664: SV4: _line2
+ 1665: @
+ 1666: NOT
+ 1667: DUP
+ 1668: NOT
+ 1669: BranchIfNot: +5
+ 1670: POP
+ 1671: SV8: _fnd
+ 1672: @
+ 1673: NOT
+ 1674: BranchIfNot: +7
+ 1675: "Usage: .s [LINE[,LINE]]/FIND/REPLACE"
+ 1676: LV0: me
+ 1677: @
+ 1678: SWAP
+ 1679: NOTIFY
+ 1680: Branch: +522
+ 1681: SV0: _lines
+ 1682: @
+ 1683: SV3: _line1
+ 1684: @
+ 1685: SV4: _line2
+ 1686: @
+ 1687: Addr:952
+ 1688: EXECUTE
+ 1689: DUP
+ 1690: DUP
+ 1691: 0
+ 1692: ARRAY_GETITEM
+ 1693: SV10: _pfx
+ 1694: !
+ 1695: DUP
+ 1696: 1
+ 1697: ARRAY_GETITEM
+ 1698: SV11: _subbed
+ 1699: !
+ 1700: DUP
+ 1701: 2
+ 1702: ARRAY_GETITEM
+ 1703: SV12: _sfx
+ 1704: !
+ 1705: POP
+ 1706: POP
+ 1707: SV11: _subbed
+ 1708: @
+ 1709: SV8: _fnd
+ 1710: @
+ 1711: SV9: _repl
+ 1712: @
+ 1713: Addr:1047
+ 1714: EXECUTE
+ 1715: DUP
+ 1716: DUP
+ 1717: 0
+ 1718: ARRAY_GETITEM
+ 1719: SV13: _changed
+ 1720: !
+ 1721: DUP
+ 1722: 1
+ 1723: ARRAY_GETITEM
+ 1724: SV11: _subbed
+ 1725: !
+ 1726: POP
+ 1727: POP
+ 1728: {
+ 1729: SV10: _pfx
+ 1730: @
+ 1731: SV11: _subbed
+ 1732: @
+ 1733: SV12: _sfx
+ 1734: @
+ 1735: }
+ 1736: ARRAY_MAKE
+ 1737: {
+ 1738: }
+ 1739: ARRAY_MAKE
+ 1740: SWAP
+ 1741: ARRAY_REVERSE
+ 1742: FOREACH
+ 1743: __FORITER__
+ 1744: BranchIfNot: +7
+ 1745: SWAP
+ 1746: POP
+ 1747: 0
+ 1748: SWAP
+ 1749: ARRAY_INSERTRANGE
+ 1750: Branch: -7
+ 1751: __FORPOP__
+ 1752: SV0: _lines
+ 1753: !
+ 1754: SV13: _changed
+ 1755: @
+ 1756: "Changed %i lines."
+ 1757: FMTSTRING
+ 1758: LV0: me
+ 1759: @
+ 1760: SWAP
+ 1761: NOTIFY
+ 1762: SV0: _lines
+ 1763: @
+ 1764: SV3: _line1
+ 1765: @
+ 1766: SV4: _line2
+ 1767: @
+ 1768: LV10: lsedit::insert_pos
+ 1769: @
+ 1770: Addr:878
+ 1771: EXECUTE
+ 1772: POP
+ 1773: Branch: +6
+ 1774: "Usage: .s [LINE[,LINE]]/FIND/REPLACE"
+ 1775: LV0: me
+ 1776: @
+ 1777: SWAP
+ 1778: NOTIFY
+ 1779: Branch: +423
+ 1780: DUP
+ 1781: ".d"
+ 1782: STRCMP
+ 1783: NOT
+ 1784: BranchIfNot: +101
+ 1785: SV0: _lines
+ 1786: @
+ 1787: ARRAY_COUNT
+ 1788: SV14: _oldcount
+ 1789: !
+ 1790: SV7: _cmdargs
+ 1791: @
+ 1792: 0
+ 1793: 0
+ 1794: Addr:1246
+ 1795: EXECUTE
+ 1796: DUP
+ 1797: DUP
+ 1798: 0
+ 1799: ARRAY_GETITEM
+ 1800: SV3: _line1
+ 1801: !
+ 1802: DUP
+ 1803: 1
+ 1804: ARRAY_GETITEM
+ 1805: SV4: _line2
+ 1806: !
+ 1807: POP
+ 1808: POP
+ 1809: SV3: _line1
+ 1810: @
+ 1811: NOT
+ 1812: DUP
+ 1813: NOT
+ 1814: BranchIfNot: +5
+ 1815: POP
+ 1816: SV4: _line2
+ 1817: @
+ 1818: NOT
+ 1819: BranchIfNot: +6
+ 1820: "Usage: .d LINENUM [LINENUM]"
+ 1821: LV0: me
+ 1822: @
+ 1823: SWAP
+ 1824: NOTIFY
+ 1825: SV0: _lines
+ 1826: @
+ 1827: SV3: _line1
+ 1828: @
+ 1829: --
+ 1830: SV4: _line2
+ 1831: @
+ 1832: --
+ 1833: ARRAY_DELRANGE
+ 1834: SV0: _lines
+ 1835: !
+ 1836: SV14: _oldcount
+ 1837: @
+ 1838: SV0: _lines
+ 1839: @
+ 1840: ARRAY_COUNT
+ 1841: -
+ 1842: "Deleted %i lines."
+ 1843: FMTSTRING
+ 1844: LV0: me
+ 1845: @
+ 1846: SWAP
+ 1847: NOTIFY
+ 1848: LV10: lsedit::insert_pos
+ 1849: @
+ 1850: SV3: _line1
+ 1851: @
+ 1852: >=
+ 1853: BranchIfNot: +23
+ 1854: LV10: lsedit::insert_pos
+ 1855: @
+ 1856: SV4: _line2
+ 1857: @
+ 1858: >
+ 1859: BranchIfNot: +13
+ 1860: LV10: lsedit::insert_pos
+ 1861: @
+ 1862: SV4: _line2
+ 1863: @
+ 1864: SV3: _line1
+ 1865: @
+ 1866: -
+ 1867: ++
+ 1868: -
+ 1869: LV10: lsedit::insert_pos
+ 1870: !
+ 1871: Branch: +5
+ 1872: SV3: _line1
+ 1873: @
+ 1874: LV10: lsedit::insert_pos
+ 1875: !
+ 1876: LV10: lsedit::insert_pos
+ 1877: @
+ 1878: "Inserting at line %i"
+ 1879: FMTSTRING
+ 1880: LV0: me
+ 1881: @
+ 1882: SWAP
+ 1883: NOTIFY
+ 1884: Branch: +318
+ 1885: DUP
+ 1886: ".w"
+ 1887: STRCMP
+ 1888: NOT
+ 1889: BranchIfNot: +138
+ 1890: SV7: _cmdargs
+ 1891: @
+ 1892: "="
+ 1893: EXPLODE_ARRAY
+ 1894: SV7: _cmdargs
+ 1895: !
+ 1896: SV7: _cmdargs
+ 1897: @
+ 1898: NOT
+ 1899: BranchIfNot: +28
+ 1900: SV1: _obj
+ 1901: @
+ 1902: DUP
+ 1903: BranchIfNot: +4
+ 1904: POP
+ 1905: SV2: _prop
+ 1906: @
+ 1907: BranchIfNot: +14
+ 1908: SV1: _obj
+ 1909: @
+ 1910: SV2: _prop
+ 1911: @
+ 1912: SV0: _lines
+ 1913: @
+ 1914: ARRAY_PUT_PROPLIST
+ 1915: "Saved."
+ 1916: LV0: me
+ 1917: @
+ 1918: SWAP
+ 1919: NOTIFY
+ 1920: Branch: +6
+ 1921: "Usage: .w OBJECT=LISTPROP"
+ 1922: LV0: me
+ 1923: @
+ 1924: SWAP
+ 1925: NOTIFY
+ 1926: Branch: +100
+ 1927: SV7: _cmdargs
+ 1928: @
+ 1929: ARRAY_COUNT
+ 1930: 2
+ 1931: =
+ 1932: BranchIfNot: +89
+ 1933: SV7: _cmdargs
+ 1934: @
+ 1935: DUP
+ 1936: DUP
+ 1937: 0
+ 1938: ARRAY_GETITEM
+ 1939: SV15: _saveobj
+ 1940: !
+ 1941: DUP
+ 1942: 1
+ 1943: ARRAY_GETITEM
+ 1944: SV16: _savelist
+ 1945: !
+ 1946: POP
+ 1947: POP
+ 1948: SV15: _saveobj
+ 1949: @
+ 1950: MATCH
+ 1951: DUP
+ 1952: #-1
+ 1953: DBCMP
+ 1954: BranchIfNot: +5
+ 1955: LV0: me
+ 1956: @
+ 1957: "I don't see that here!"
+ 1958: NOTIFY
+ 1959: DUP
+ 1960: #-2
+ 1961: DBCMP
+ 1962: BranchIfNot: +5
+ 1963: LV0: me
+ 1964: @
+ 1965: "I don't know which one you mean!"
+ 1966: NOTIFY
+ 1967: DUP
+ 1968: #-3
+ 1969: DBCMP
+ 1970: BranchIfNot: +5
+ 1971: POP
+ 1972: LV0: me
+ 1973: @
+ 1974: GETLINK
+ 1975: DUP
+ 1976: OK?
+ 1977: BranchIfNot: +13
+ 1978: LV0: me
+ 1979: @
+ 1980: OVER
+ 1981: CONTROLS
+ 1982: NOT
+ 1983: BranchIfNot: +7
+ 1984: POP
+ 1985: #-1
+ 1986: LV0: me
+ 1987: @
+ 1988: "Permission denied."
+ 1989: NOTIFY
+ 1990: SV15: _saveobj
+ 1991: !
+ 1992: SV15: _saveobj
+ 1993: @
+ 1994: 0
+ 1995: <
+ 1996: BranchIfNot: +2
+ 1997: Branch: +205
+ 1998: SV16: _savelist
+ 1999: @
+ 2000: NOT
+ 2001: BranchIfNot: +7
+ 2002: "Usage: .w [OBJECT=LISTPROP]"
+ 2003: LV0: me
+ 2004: @
+ 2005: SWAP
+ 2006: NOTIFY
+ 2007: Branch: +195
+ 2008: SV15: _saveobj
+ 2009: @
+ 2010: SV16: _savelist
+ 2011: @
+ 2012: SV0: _lines
+ 2013: @
+ 2014: ARRAY_PUT_PROPLIST
+ 2015: "Saved."
+ 2016: LV0: me
+ 2017: @
+ 2018: SWAP
+ 2019: NOTIFY
+ 2020: Branch: +6
+ 2021: "Usage: .w [OBJECT=LISTPROP]"
+ 2022: LV0: me
+ 2023: @
+ 2024: SWAP
+ 2025: NOTIFY
+ 2026: Branch: +176
+ 2027: DUP
+ 2028: ".f"
+ 2029: STRCMP
+ 2030: NOT
+ 2031: BranchIfNot: +159
+ 2032: {
+ 2033: SV7: _cmdargs
+ 2034: @
+ 2035: "="
+ 2036: SPLIT
+ 2037: }
+ 2038: ARRAY_MAKE
+ 2039: DUP
+ 2040: DUP
+ 2041: 0
+ 2042: ARRAY_GETITEM
+ 2043: SV7: _cmdargs
+ 2044: !
+ 2045: DUP
+ 2046: 1
+ 2047: ARRAY_GETITEM
+ 2048: SV17: _cols
+ 2049: !
+ 2050: POP
+ 2051: POP
+ 2052: SV7: _cmdargs
+ 2053: @
+ 2054: 1
+ 2055: 999999
+ 2056: Addr:1246
+ 2057: EXECUTE
+ 2058: DUP
+ 2059: DUP
+ 2060: 0
+ 2061: ARRAY_GETITEM
+ 2062: SV3: _line1
+ 2063: !
+ 2064: DUP
+ 2065: 1
+ 2066: ARRAY_GETITEM
+ 2067: SV4: _line2
+ 2068: !
+ 2069: POP
+ 2070: POP
+ 2071: SV17: _cols
+ 2072: @
+ 2073: BranchIfNot: +5
+ 2074: SV17: _cols
+ 2075: @
+ 2076: ATOI
+ 2077: Branch: +2
+ 2078: 75
+ 2079: SV17: _cols
+ 2080: !
+ 2081: SV17: _cols
+ 2082: @
+ 2083: NOT
+ 2084: DUP
+ 2085: NOT
+ 2086: BranchIfNot: +5
+ 2087: POP
+ 2088: SV3: _line1
+ 2089: @
+ 2090: NOT
+ 2091: DUP
+ 2092: NOT
+ 2093: BranchIfNot: +5
+ 2094: POP
+ 2095: SV4: _line2
+ 2096: @
+ 2097: NOT
+ 2098: BranchIfNot: +7
+ 2099: "Usage: .f [L1,[L2]][=LISTPROP]"
+ 2100: LV0: me
+ 2101: @
+ 2102: SWAP
+ 2103: NOTIFY
+ 2104: Branch: +98
+ 2105: SV0: _lines
+ 2106: @
+ 2107: SV3: _line1
+ 2108: @
+ 2109: SV4: _line2
+ 2110: @
+ 2111: Addr:952
+ 2112: EXECUTE
+ 2113: DUP
+ 2114: DUP
+ 2115: 0
+ 2116: ARRAY_GETITEM
+ 2117: SV18: _pfx2
+ 2118: !
+ 2119: DUP
+ 2120: 1
+ 2121: ARRAY_GETITEM
+ 2122: SV19: _mid
+ 2123: !
+ 2124: DUP
+ 2125: 2
+ 2126: ARRAY_GETITEM
+ 2127: SV20: _sfx2
+ 2128: !
+ 2129: POP
+ 2130: POP
+ 2131: SV19: _mid
+ 2132: @
+ 2133: ARRAY_COUNT
+ 2134: SV21: _origcnt
+ 2135: !
+ 2136: SV19: _mid
+ 2137: @
+ 2138: SV17: _cols
+ 2139: @
+ 2140: Addr:1107
+ 2141: EXECUTE
+ 2142: SV19: _mid
+ 2143: !
+ 2144: {
+ 2145: SV18: _pfx2
+ 2146: @
+ 2147: SV19: _mid
+ 2148: @
+ 2149: SV20: _sfx2
+ 2150: @
+ 2151: }
+ 2152: ARRAY_MAKE
+ 2153: {
+ 2154: }
+ 2155: ARRAY_MAKE
+ 2156: SWAP
+ 2157: ARRAY_REVERSE
+ 2158: FOREACH
+ 2159: __FORITER__
+ 2160: BranchIfNot: +7
+ 2161: SWAP
+ 2162: POP
+ 2163: 0
+ 2164: SWAP
+ 2165: ARRAY_INSERTRANGE
+ 2166: Branch: -7
+ 2167: __FORPOP__
+ 2168: SV0: _lines
+ 2169: !
+ 2170: SV21: _origcnt
+ 2171: @
+ 2172: "Formatted %i lines."
+ 2173: FMTSTRING
+ 2174: LV0: me
+ 2175: @
+ 2176: SWAP
+ 2177: NOTIFY
+ 2178: SV0: _lines
+ 2179: @
+ 2180: SV3: _line1
+ 2181: @
+ 2182: SV4: _line2
+ 2183: @
+ 2184: LV10: lsedit::insert_pos
+ 2185: @
+ 2186: Addr:878
+ 2187: EXECUTE
+ 2188: POP
+ 2189: Branch: +13
+ 2190: {
+ 2191: SV6: _cmd
+ 2192: @
+ 2193: SV7: _cmdargs
+ 2194: @
+ 2195: SV0: _lines
+ 2196: @
+ 2197: }
+ 2198: ARRAY_MAKE
+ 2199: EXIT
+ 2200: Branch: +2
+ 2201: Branch: -761
+ 2202: POP
+ 2203: Branch: -859
+ 2204: 0
+ 2205: EXIT
+
+ 2206: Function: lsedit__basic
+ 2207: SV0: _arg
+ 2208: !
+ 2209: Addr:0
+ 2210: EXECUTE
+ 2211: POP
+ 2212: ""
+ 2213: Addr:122
+ 2214: EXECUTE
+ 2215: POP
+ 2216: ""
+ 2217: {
+ 2218: }
+ 2219: ARRAY_MAKE
+ 2220: "obj=list"
+ 2221: Addr:136
+ 2222: EXECUTE
+ 2223: POP
+ 2224: SV0: _arg
+ 2225: @
+ 2226: Addr:479
+ 2227: EXECUTE
+ 2228: SV1: _opts
+ 2229: !
+ 2230: SV1: _opts
+ 2231: @
+ 2232: NOT
+ 2233: BranchIfNot: +3
+ 2234: 0
+ 2235: EXIT
+ 2236: SV1: _opts
+ 2237: @
+ 2238: "obj"
+ 2239: ARRAY_GETITEM
+ 2240: NOT
+ 2241: DUP
+ 2242: NOT
+ 2243: BranchIfNot: +7
+ 2244: POP
+ 2245: SV1: _opts
+ 2246: @
+ 2247: "list"
+ 2248: ARRAY_GETITEM
+ 2249: NOT
+ 2250: BranchIfNot: +6
+ 2251: Addr:350
+ 2252: EXECUTE
+ 2253: POP
+ 2254: 0
+ 2255: EXIT
+ 2256: SV1: _opts
+ 2257: @
+ 2258: "obj"
+ 2259: ARRAY_GETITEM
+ 2260: MATCH
+ 2261: DUP
+ 2262: #-1
+ 2263: DBCMP
+ 2264: BranchIfNot: +5
+ 2265: LV0: me
+ 2266: @
+ 2267: "I don't see that here!"
+ 2268: NOTIFY
+ 2269: DUP
+ 2270: #-2
+ 2271: DBCMP
+ 2272: BranchIfNot: +5
+ 2273: LV0: me
+ 2274: @
+ 2275: "I don't know which one you mean!"
+ 2276: NOTIFY
+ 2277: DUP
+ 2278: #-3
+ 2279: DBCMP
+ 2280: BranchIfNot: +5
+ 2281: POP
+ 2282: LV0: me
+ 2283: @
+ 2284: GETLINK
+ 2285: DUP
+ 2286: OK?
+ 2287: BranchIfNot: +13
+ 2288: LV0: me
+ 2289: @
+ 2290: OVER
+ 2291: CONTROLS
+ 2292: NOT
+ 2293: BranchIfNot: +7
+ 2294: POP
+ 2295: #-1
+ 2296: LV0: me
+ 2297: @
+ 2298: "Permission denied."
+ 2299: NOTIFY
+ 2300: SV2: _obj
+ 2301: !
+ 2302: SV2: _obj
+ 2303: @
+ 2304: 0
+ 2305: <
+ 2306: BranchIfNot: +3
+ 2307: 0
+ 2308: EXIT
+ 2309: 1
+ 2310: LV10: lsedit::insert_pos
+ 2311: !
+ 2312: SV2: _obj
+ 2313: @
+ 2314: SV1: _opts
+ 2315: @
+ 2316: "list"
+ 2317: ARRAY_GETITEM
+ 2318: ARRAY_GET_PROPLIST
+ 2319: SV5: _lines
+ 2320: !
+ 2321: SV5: _lines
+ 2322: @
+ 2323: 1
+ 2324: 999999
+ 2325: LV10: lsedit::insert_pos
+ 2326: @
+ 2327: Addr:878
+ 2328: EXECUTE
+ 2329: POP
+ 2330: SV5: _lines
+ 2331: @
+ 2332: SV2: _obj
+ 2333: @
+ 2334: SV1: _opts
+ 2335: @
+ 2336: "list"
+ 2337: ARRAY_GETITEM
+ 2338: Addr:1331
+ 2339: EXECUTE
+ 2340: DUP
+ 2341: DUP
+ 2342: 0
+ 2343: ARRAY_GETITEM
+ 2344: SV3: _cmd
+ 2345: !
+ 2346: DUP
+ 2347: 1
+ 2348: ARRAY_GETITEM
+ 2349: SV4: _args
+ 2350: !
+ 2351: DUP
+ 2352: 2
+ 2353: ARRAY_GETITEM
+ 2354: SV5: _lines
+ 2355: !
+ 2356: POP
+ 2357: POP
+ 2358: {
+ 2359: ".x"
+ 2360: ".q"
+ 2361: }
+ 2362: ARRAY_MAKE
+ 2363: SV3: _cmd
+ 2364: @
+ 2365: ARRAY_FINDVAL
+ 2366: BranchIfNot: +2
+ 2367: Branch: +10
+ 2368: SV3: _cmd
+ 2369: @
+ 2370: "Unrecognized editor command '%s'."
+ 2371: FMTSTRING
+ 2372: LV0: me
+ 2373: @
+ 2374: SWAP
+ 2375: NOTIFY
+ 2376: Branch: -46
+ 2377: {
+ 2378: SV3: _cmd
+ 2379: @
+ 2380: SV4: _args
+ 2381: @
+ 2382: SV5: _lines
+ 2383: @
+ 2384: }
+ 2385: ARRAY_MAKE
+ 2386: EXIT
+
+ 2387: Function: _main
+ 2388: SV0: _arg
+ 2389: !
+ 2390: Addr:794
+ 2391: EXECUTE
+ 2392: POP
+ 2393: SV0: _arg
+ 2394: @
+ 2395: Addr:2206
+ 2396: EXECUTE
+ 2397: EXIT
+
+ 2398: Function: __start
+ 2399: "me"
+ 2400: MATCH
+ 2401: LV0: me
+ 2402: !
+ 2403: LV0: me
+ 2404: @
+ 2405: LOCATION
+ 2406: LV1: loc
+ 2407: !
+ 2408: TRIG
+ 2409: LV2: trigger
+ 2410: !
+ 2411: ""
+ 2412: LV4: argparse::current_mode
+ 2413: !
+ 2414: {
+ 2415: }
+ 2416: ARRAY_MAKE
+ 2417: LV5: argparse::modes_list
+ 2418: !
+ 2419: {
+ 2420: }
+ 2421: 2
+ 2422: /
+ 2423: ARRAY_MAKE_DICT
+ 2424: LV6: argparse::flags_map
+ 2425: !
+ 2426: {
+ 2427: }
+ 2428: 2
+ 2429: /
+ 2430: ARRAY_MAKE_DICT
+ 2431: LV7: argparse::posargs_map
+ 2432: !
+ 2433: {
+ 2434: ""
+ 2435: "remainder"
+ 2436: }
+ 2437: 2
+ 2438: /
+ 2439: ARRAY_MAKE_DICT
+ 2440: LV8: argparse::remainder_map
+ 2441: !
+ 2442: {
+ 2443: }
+ 2444: ARRAY_MAKE
+ 2445: LV9: lsedit::help_lines
+ 2446: !
+ 2447: Addr:2387
+ 2448: EXECUTE
+ 2449: EXIT
+
+#### Executing Tokens #################################
+ 2398: line 550 ("") Function: __start
+ 2399: line 551 ("") "me"
+ 2400: line 551 ("", "me") MATCH
+ 2401: line 551 ("", #5) LV0: me
+ 2402: line 551 ("", #5, LV0) !
+ 2403: line 551 ("") LV0: me
+ 2404: line 551 ("", LV0) @
+ 2405: line 551 ("", #5) LOCATION
+ 2406: line 551 ("", #2) LV1: loc
+ 2407: line 551 ("", #2, LV1) !
+ 2408: line 551 ("") TRIG
+ 2409: line 551 ("", #3) LV2: trigger
+ 2410: line 551 ("", #3, LV2) !
+ 2411: line 552 ("") ""
+ 2412: line 552 ("", "") LV4: argparse::current_mode
+ 2413: line 552 ("", "", LV4) !
+ 2414: line 553 ("") {
+ 2415: line 553 ("", Mark) }
+ 2416: line 553 ("", 0) ARRAY_MAKE
+ 2417: line 553 ("", []) LV5: argparse::modes_list
+ 2418: line 553 ("", [], LV5) !
+ 2419: line 554 ("") {
+ 2420: line 554 ("", Mark) }
+ 2421: line 554 ("", 0) 2
+ 2422: line 554 ("", 0, 2) /
+ 2423: line 554 ("", 0) ARRAY_MAKE_DICT
+ 2424: line 554 ("", {}) LV6: argparse::flags_map
+ 2425: line 554 ("", {}, LV6) !
+ 2426: line 555 ("") {
+ 2427: line 555 ("", Mark) }
+ 2428: line 555 ("", 0) 2
+ 2429: line 555 ("", 0, 2) /
+ 2430: line 555 ("", 0) ARRAY_MAKE_DICT
+ 2431: line 555 ("", {}) LV7: argparse::posargs_map
+ 2432: line 555 ("", {}, LV7) !
+ 2433: line 556 ("") {
+ 2434: line 556 ("", Mark) ""
+ 2435: line 556 ("", Mark, "") "remainder"
+ 2436: line 556 ("", Mark, "", "remainder") }
+ 2437: line 556 ("", "", "remainder", 2) 2
+ 2438: line 556 ("", "", "remainder", 2, 2) /
+ 2439: line 556 ("", "", "remainder", 1) ARRAY_MAKE_DICT
+ 2440: line 556 ("", {'': 'remainder'}) LV8: argparse::remainder_map
+ 2441: line 556 ("", {'': 'remainder'}, LV8) !
+ 2442: line 557 ("") {
+ 2443: line 557 ("", Mark) }
+ 2444: line 557 ("", 0) ARRAY_MAKE
+ 2445: line 557 ("", []) LV9: lsedit::help_lines
+ 2446: line 557 ("", [], LV9) !
+ 2447: line 558 ("") Addr:2387
+ 2448: line 558 ("", Addr:2387) EXECUTE
+ 2387: line 546 ("") Function: _main
+ 2388: line 546 ("") SV0: _arg
+ 2389: line 546 ("", SV0) !
+ 2390: line 547 () Addr:794
+ 2391: line 547 (Addr:794) EXECUTE
+  794: line 207 () Function: lsedit__init_help
+  795: line 208 () {
+  796: line 208 (Mark) }
+  797: line 208 (0) ARRAY_MAKE
+  798: line 208 ([]) LV9: lsedit::help_lines
+  799: line 208 ([], LV9) !
+  800: line 209 () 0
+  801: line 210 (0) EXIT
+ 2392: line 547 (0) POP
+ 2393: line 548 () SV0: _arg
+ 2394: line 548 (SV0) @
+ 2395: line 548 ("") Addr:2206
+ 2396: line 548 ("", Addr:2206) EXECUTE
+ 2206: line 510 ("") Function: lsedit__basic
+ 2207: line 510 ("") SV0: _arg
+ 2208: line 510 ("", SV0) !
+ 2209: line 512 () Addr:0
+ 2210: line 512 (Addr:0) EXECUTE
+    0: line 12 () Function: argparse::init
+    1: line 13 () ""
+    2: line 13 ("") LV4: argparse::current_mode
+    3: line 13 ("", LV4) !
+    4: line 14 () {
+    5: line 14 (Mark) }
+    6: line 14 (0) ARRAY_MAKE
+    7: line 14 ([]) LV5: argparse::modes_list
+    8: line 14 ([], LV5) !
+    9: line 15 () {
+   10: line 15 (Mark) }
+   11: line 15 (0) 2
+   12: line 15 (0, 2) /
+   13: line 15 (0) ARRAY_MAKE_DICT
+   14: line 15 ({}) LV6: argparse::flags_map
+   15: line 15 ({}, LV6) !
+   16: line 16 () {
+   17: line 16 (Mark) }
+   18: line 16 (0) 2
+   19: line 16 (0, 2) /
+   20: line 16 (0) ARRAY_MAKE_DICT
+   21: line 16 ({}) LV7: argparse::posargs_map
+   22: line 16 ({}, LV7) !
+   23: line 17 () {
+   24: line 17 (Mark) ""
+   25: line 17 (Mark, "") "remainder"
+   26: line 17 (Mark, "", "remainder") }
+   27: line 17 ("", "remainder", 2) 2
+   28: line 17 ("", "remainder", 2, 2) /
+   29: line 17 ("", "remainder", 1) ARRAY_MAKE_DICT
+   30: line 17 ({'': 'remainder'}) LV8: argparse::remainder_map
+   31: line 17 ({'': 'remainder'}, LV8) !
+   32: line 18 () 0
+   33: line 19 (0) EXIT
+ 2211: line 512 (0) POP
+ 2212: line 513 () ""
+ 2213: line 513 ("") Addr:122
+ 2214: line 513 ("", Addr:122) EXECUTE
+  122: line 41 ("") Function: argparse::set_mode
+  123: line 41 ("") SV0: _name
+  124: line 41 ("", SV0) !
+  125: line 42 () SV0: _name
+  126: line 42 (SV0) @
+  127: line 42 ("") TOLOWER
+  128: line 42 ("") SV0: _name
+  129: line 42 ("", SV0) !
+  130: line 43 () SV0: _name
+  131: line 43 (SV0) @
+  132: line 43 ("") LV4: argparse::current_mode
+  133: line 43 ("", LV4) !
+  134: line 44 () 0
+  135: line 45 (0) EXIT
+ 2215: line 513 (0) POP
+ 2216: line 514 () ""
+ 2217: line 514 ("") {
+ 2218: line 514 ("", Mark) }
+ 2219: line 514 ("", 0) ARRAY_MAKE
+ 2220: line 514 ("", []) "obj=list"
+ 2221: line 514 ("", [], "obj=list") Addr:136
+ 2222: line 514 ("", [], "obj=list", Addr:136) EXECUTE
+  136: line 46 ("", [], "obj=list") Function: argparse::add_mode
+  137: line 46 ("", [], "obj=list") SV2: _posargs
+  138: line 46 ("", [], "obj=list", SV2) !
+  139: line 46 ("", []) SV1: _flags
+  140: line 46 ("", [], SV1) !
+  141: line 46 ("") SV0: _name
+  142: line 46 ("", SV0) !
+  143: line 48 () SV0: _name
+  144: line 48 (SV0) @
+  145: line 48 ("") TOLOWER
+  146: line 48 ("") SV0: _name
+  147: line 48 ("", SV0) !
+  148: line 49 () LV5: argparse::modes_list
+  149: line 49 (LV5) @
+  150: line 49 ([]) SV0: _name
+  151: line 49 ([], SV0) @
+  152: line 49 ([], "") SWAP
+  153: line 49 ("", []) ARRAY_APPENDITEM
+  154: line 49 (['']) LV5: argparse::modes_list
+  155: line 49 ([''], LV5) !
+  156: line 50 () {
+  157: line 50 (Mark) }
+  158: line 50 (0) ARRAY_MAKE
+  159: line 50 ([]) DUP
+  160: line 51 ([], []) LV6: argparse::flags_map
+  161: line 51 ([], [], LV6) @
+  162: line 51 ([], [], {}) SV0: _name
+  163: line 51 ([], [], {}, SV0) @
+  164: line 51 ([], [], {}, "") ARRAY_SETITEM
+  165: line 51 ([], {'': []}) LV6: argparse::flags_map
+  166: line 51 ([], {'': []}, LV6) !
+  167: line 51 ([]) POP
+  168: line 52 () {
+  169: line 52 (Mark) }
+  170: line 52 (0) ARRAY_MAKE
+  171: line 52 ([]) DUP
+  172: line 53 ([], []) LV7: argparse::posargs_map
+  173: line 53 ([], [], LV7) @
+  174: line 53 ([], [], {}) SV0: _name
+  175: line 53 ([], [], {}, SV0) @
+  176: line 53 ([], [], {}, "") ARRAY_SETITEM
+  177: line 53 ([], {'': []}) LV7: argparse::posargs_map
+  178: line 53 ([], {'': []}, LV7) !
+  179: line 53 ([]) POP
+  180: line 54 () SV1: _flags
+  181: line 54 (SV1) @
+  182: line 54 ([]) FOREACH
+  183: line 55 () __FORITER__
+  184: line 55 (0) BranchIfNot: +41
+  225: line 54 () __FORPOP__
+  226: line 63 () SV0: _name
+  227: line 63 (SV0) @
+  228: line 63 ("") SV2: _posargs
+  229: line 63 ("", SV2) @
+  230: line 63 ("", "obj=list") Addr:34
+  231: line 63 ("", "obj=list", Addr:34) EXECUTE
+   34: line 20 ("", "obj=list") Function: argparse::parse_posargs
+   35: line 20 ("", "obj=list") SV1: _posargs
+   36: line 20 ("", "obj=list", SV1) !
+   37: line 20 ("") SV0: _mode
+   38: line 20 ("", SV0) !
+   39: line 23 () {
+   40: line 23 (Mark) SV1: _posargs
+   41: line 23 (Mark, SV1) @
+   42: line 23 (Mark, "obj=list") "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
+   43: line 23 (Mark, "obj=list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$") 1
+   44: line 23 (Mark, "obj=list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$", 1) REGEXP
+   45: line 23 (Mark, ['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)]) }
+   46: line 23 (['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)], 2) ARRAY_MAKE
+   47: line 23 ([['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)]]) 0
+   48: line 23 ([['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)]], 0) ARRAY_GETITEM
+   49: line 24 (['obj=list', 'obj', '=', 'list']) SV2: _tok
+   50: line 24 (['obj=list', 'obj', '=', 'list'], SV2) !
+   51: line 25 () SV2: _tok
+   52: line 25 (SV2) @
+   53: line 25 (['obj=list', 'obj', '=', 'list']) BranchIfNot: +53
+   54: line 26 () LV7: argparse::posargs_map
+   55: line 26 (LV7) @
+   56: line 26 ({'': []}) SV0: _mode
+   57: line 26 ({'': []}, SV0) @
+   58: line 26 ({'': []}, "") ARRAY_GETITEM
+   59: line 26 ([]) NOT
+   60: line 26 (1) BranchIfNot: +13
+   61: line 27 () {
+   62: line 27 (Mark) }
+   63: line 27 (0) ARRAY_MAKE
+   64: line 27 ([]) DUP
+   65: line 28 ([], []) LV7: argparse::posargs_map
+   66: line 28 ([], [], LV7) @
+   67: line 28 ([], [], {'': []}) SV0: _mode
+   68: line 28 ([], [], {'': []}, SV0) @
+   69: line 28 ([], [], {'': []}, "") ARRAY_SETITEM
+   70: line 28 ([], {'': []}) LV7: argparse::posargs_map
+   71: line 28 ([], {'': []}, LV7) !
+   72: line 28 ([]) POP
+   73: line 30 () LV7: argparse::posargs_map
+   74: line 30 (LV7) @
+   75: line 30 ({'': []}) SV0: _mode
+   76: line 30 ({'': []}, SV0) @
+   77: line 30 ({'': []}, "") OVER
+   78: line 30 ({'': []}, "", {'': []}) OVER
+   79: line 30 ({'': []}, "", {'': []}, "") ARRAY_GETITEM
+   80: line 31 ({'': []}, "", []) {
+   81: line 31 ({'': []}, "", [], Mark) SV2: _tok
+   82: line 31 ({'': []}, "", [], Mark, SV2) @
+   83: line 31 ({'': []}, "", [], Mark, ['obj=list', 'obj', '=', 'list']) 1
+   84: line 31 ({'': []}, "", [], Mark, ['obj=list', 'obj', '=', 'list'], 1) ARRAY_GETITEM
+   85: line 31 ({'': []}, "", [], Mark, "obj") TOLOWER
+   86: line 31 ({'': []}, "", [], Mark, "obj") SV2: _tok
+   87: line 31 ({'': []}, "", [], Mark, "obj", SV2) @
+   88: line 31 ({'': []}, "", [], Mark, "obj", ['obj=list', 'obj', '=', 'list']) 2
+   89: line 31 ({'': []}, "", [], Mark, "obj", ['obj=list', 'obj', '=', 'list'], 2) ARRAY_GETITEM
+   90: line 31 ({'': []}, "", [], Mark, "obj", "=") }
+   91: line 31 ({'': []}, "", [], "obj", "=", 2) ARRAY_MAKE
+   92: line 31 ({'': []}, "", [], ['obj', '=']) SWAP
+   93: line 31 ({'': []}, "", ['obj', '='], []) ARRAY_APPENDITEM
+   94: line 31 ({'': [['obj', '=']]}, "", [['obj', '=']]) ROT
+   95: line 31 ("", [['obj', '=']], {'': [['obj', '=']]}) ROT
+   96: line 31 ([['obj', '=']], {'': [['obj', '=']]}, "") ARRAY_SETITEM
+   97: line 31 ({'': [['obj', '=']]}) LV7: argparse::posargs_map
+   98: line 31 ({'': [['obj', '=']]}, LV7) !
+   99: line 32 () SV2: _tok
+  100: line 32 (SV2) @
+  101: line 32 (['obj=list', 'obj', '=', 'list']) 3
+  102: line 32 (['obj=list', 'obj', '=', 'list'], 3) ARRAY_GETITEM
+  103: line 32 ("list") SV1: _posargs
+  104: line 32 ("list", SV1) !
+  105: line 25 () Branch: +14
+  119: line 38 () Branch: -80
+   39: line 23 () {
+   40: line 23 (Mark) SV1: _posargs
+   41: line 23 (Mark, SV1) @
+   42: line 23 (Mark, "list") "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
+   43: line 23 (Mark, "list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$") 1
+   44: line 23 (Mark, "list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$", 1) REGEXP
+   45: line 23 (Mark, [], []) }
+   46: line 23 ([], [], 2) ARRAY_MAKE
+   47: line 23 ([[], []]) 0
+   48: line 23 ([[], []], 0) ARRAY_GETITEM
+   49: line 24 ([]) SV2: _tok
+   50: line 24 ([], SV2) !
+   51: line 25 () SV2: _tok
+   52: line 25 (SV2) @
+   53: line 25 ([]) BranchIfNot: +53
+  106: line 34 () SV1: _posargs
+  107: line 34 (SV1) @
+  108: line 34 ("list") TOLOWER
+  109: line 34 ("list") DUP
+  110: line 35 ("list", "list") LV8: argparse::remainder_map
+  111: line 35 ("list", "list", LV8) @
+  112: line 35 ("list", "list", {'': 'remainder'}) SV0: _mode
+  113: line 35 ("list", "list", {'': 'remainder'}, SV0) @
+  114: line 35 ("list", "list", {'': 'remainder'}, "") ARRAY_SETITEM
+  115: line 35 ("list", {'': 'list'}) LV8: argparse::remainder_map
+  116: line 35 ("list", {'': 'list'}, LV8) !
+  117: line 35 ("list") POP
+  118: line 36 () Branch: +2
+  120: line 39 () 0
+  121: line 40 (0) EXIT
+  232: line 63 (0) POP
+  233: line 64 () 0
+  234: line 65 (0) EXIT
+ 2223: line 514 (0) POP
+ 2224: line 515 () SV0: _arg
+ 2225: line 515 (SV0) @
+ 2226: line 515 ("") Addr:479
+ 2227: line 515 ("", Addr:479) EXECUTE
+  479: line 124 ("") Function: argparse::parse
+  480: line 124 ("") SV0: _line
+  481: line 124 ("", SV0) !
+  482: line 127 () {
+  483: line 127 (Mark) }
+  484: line 127 (0) 2
+  485: line 127 (0, 2) /
+  486: line 127 (0) ARRAY_MAKE_DICT
+  487: line 127 ({}) SV4: _opts
+  488: line 127 ({}, SV4) !
+  489: line 128 () 0
+  490: line 128 (0) SV5: _mode_given
+  491: line 128 (0, SV5) !
+  492: line 130 () SV0: _line
+  493: line 130 (SV0) @
+  494: line 130 ("") "#"
+  495: line 130 ("", "#") STRINGPFX
+  496: line 131 (0) BranchIfNot: +208
+  704: line 189 () SV5: _mode_given
+  705: line 189 (SV5) @
+  706: line 189 (0) 1
+  707: line 189 (0, 1) >
+  708: line 189 (0) BranchIfNot: +13
+  721: line 194 () LV7: argparse::posargs_map
+  722: line 194 (LV7) @
+  723: line 194 ({'': [['obj', '=']]}) LV4: argparse::current_mode
+  724: line 194 ({'': [['obj', '=']]}, LV4) @
+  725: line 194 ({'': [['obj', '=']]}, "") ARRAY_GETITEM
+  726: line 194 ([['obj', '=']]) FOREACH
+  727: line 195 () __FORITER__
+  728: line 195 (0, ['obj', '='], 1) BranchIfNot: +38
+  729: line 195 (0, ['obj', '=']) SV9: _posarg
+  730: line 195 (0, ['obj', '='], SV9) !
+  731: line 195 (0) POP
+  732: line 196 () {
+  733: line 196 (Mark) SV0: _line
+  734: line 196 (Mark, SV0) @
+  735: line 196 (Mark, "") SV9: _posarg
+  736: line 196 (Mark, "", SV9) @
+  737: line 196 (Mark, "", ['obj', '=']) 1
+  738: line 196 (Mark, "", ['obj', '='], 1) ARRAY_GETITEM
+  739: line 196 (Mark, "", "=") SPLIT
+  740: line 196 (Mark, "", "") }
+  741: line 196 ("", "", 2) ARRAY_MAKE
+  742: line 196 (['', '']) SV1: _parts
+  743: line 196 (['', ''], SV1) !
+  744: line 197 () SV1: _parts
+  745: line 197 (SV1) @
+  746: line 197 (['', '']) 0
+  747: line 197 (['', ''], 0) ARRAY_GETITEM
+  748: line 197 ("") DUP
+  749: line 197 ("", "") SV4: _opts
+  750: line 197 ("", "", SV4) @
+  751: line 197 ("", "", {}) SV9: _posarg
+  752: line 197 ("", "", {}, SV9) @
+  753: line 197 ("", "", {}, ['obj', '=']) 0
+  754: line 197 ("", "", {}, ['obj', '='], 0) ARRAY_GETITEM
+  755: line 197 ("", "", {}, "obj") ARRAY_SETITEM
+  756: line 197 ("", {'obj': ''}) SV4: _opts
+  757: line 197 ("", {'obj': ''}, SV4) !
+  758: line 197 ("") POP
+  759: line 198 () SV1: _parts
+  760: line 198 (SV1) @
+  761: line 198 (['', '']) 1
+  762: line 198 (['', ''], 1) ARRAY_GETITEM
+  763: line 198 ("") SV0: _line
+  764: line 198 ("", SV0) !
+  765: line 199 () Branch: -38
+  727: line 195 () __FORITER__
+  728: line 195 (0) BranchIfNot: +38
+  766: line 194 () __FORPOP__
+  767: line 200 () SV0: _line
+  768: line 200 (SV0) @
+  769: line 200 ("") DUP
+  770: line 201 ("", "") SV4: _opts
+  771: line 201 ("", "", SV4) @
+  772: line 201 ("", "", {'obj': ''}) LV8: argparse::remainder_map
+  773: line 201 ("", "", {'obj': ''}, LV8) @
+  774: line 201 ("", "", {'obj': ''}, {'': 'list'}) LV4: argparse::current_mode
+  775: line 201 ("", "", {'obj': ''}, {'': 'list'}, LV4) @
+  776: line 201 ("", "", {'obj': ''}, {'': 'list'}, "") ARRAY_GETITEM
+  777: line 201 ("", "", {'obj': ''}, "list") ARRAY_SETITEM
+  778: line 201 ("", {'list': '', 'obj': ''}) SV4: _opts
+  779: line 201 ("", {'list': '', 'obj': ''}, SV4) !
+  780: line 201 ("") POP
+  781: line 202 () LV4: argparse::current_mode
+  782: line 202 (LV4) @
+  783: line 202 ("") DUP
+  784: line 202 ("", "") SV4: _opts
+  785: line 202 ("", "", SV4) @
+  786: line 202 ("", "", {'list': '', 'obj': ''}) "mode"
+  787: line 202 ("", "", {'list': '', 'obj': ''}, "mode") ARRAY_SETITEM
+  788: line 202 ("", {'list': '', 'obj': '', 'mode': ''}) SV4: _opts
+  789: line 202 ("", {'list': '', 'obj': '', 'mode': ''}, SV4) !
+  790: line 202 ("") POP
+  791: line 203 () SV4: _opts
+  792: line 203 (SV4) @
+  793: line 204 ({'list': '', 'obj': '', 'mode': ''}) EXIT
+ 2228: line 515 ({'list': '', 'obj': '', 'mode': ''}) SV1: _opts
+ 2229: line 515 ({'list': '', 'obj': '', 'mode': ''}, SV1) !
+ 2230: line 516 () SV1: _opts
+ 2231: line 516 (SV1) @
+ 2232: line 516 ({'list': '', 'obj': '', 'mode': ''}) NOT
+ 2233: line 516 (0) BranchIfNot: +3
+ 2236: line 517 () SV1: _opts
+ 2237: line 517 (SV1) @
+ 2238: line 517 ({'list': '', 'obj': '', 'mode': ''}) "obj"
+ 2239: line 517 ({'list': '', 'obj': '', 'mode': ''}, "obj") ARRAY_GETITEM
+ 2240: line 517 ("") NOT
+ 2241: line 518 (1) DUP
+ 2242: line 518 (1, 1) NOT
+ 2243: line 518 (1, 0) BranchIfNot: +7
+ 2250: line 518 (1) BranchIfNot: +6
+ 2251: line 519 () Addr:350
+ 2252: line 519 (Addr:350) EXECUTE
+  350: line 100 () Function: argparse::show_usage
+  351: line 103 () TRIG
+  352: line 103 (#3) NAME
+  353: line 103 ("test") ";"
+  354: line 103 ("test", ";") SPLIT
+  355: line 103 ("test", "") POP
+  356: line 103 ("test") STRIP
+  357: line 103 ("test") SV0: _cmd
+  358: line 103 ("test", SV0) !
+  359: line 104 () "Usage:"
+  360: line 104 ("Usage:") LV0: me
+  361: line 104 ("Usage:", LV0) @
+  362: line 104 ("Usage:", #5) SWAP
+  363: line 104 (#5, "Usage:") NOTIFY
+NOTIFY TO #5: Usage:
+  364: line 105 () LV5: argparse::modes_list
+  365: line 105 (LV5) @
+  366: line 105 (['']) FOREACH
+  367: line 106 () __FORITER__
+  368: line 106 (0, "", 1) BranchIfNot: +108
+  369: line 106 (0, "") SV1: _mode
+  370: line 106 (0, "", SV1) !
+  371: line 106 (0) POP
+  372: line 107 () {
+  373: line 107 (Mark) }
+  374: line 107 (0) ARRAY_MAKE
+  375: line 107 ([]) LV6: argparse::flags_map
+  376: line 107 ([], LV6) @
+  377: line 107 ([], {'': []}) SV1: _mode
+  378: line 107 ([], {'': []}, SV1) @
+  379: line 107 ([], {'': []}, "") ARRAY_GETITEM
+  380: line 107 ([], []) FOREACH
+  381: line 108 ([]) __FORITER__
+  382: line 108 ([], 0) BranchIfNot: +16
+  398: line 107 ([]) __FORPOP__
+  399: line 110 ([]) SV2: _flags
+  400: line 110 ([], SV2) !
+  401: line 111 () {
+  402: line 111 (Mark) }
+  403: line 111 (0) ARRAY_MAKE
+  404: line 111 ([]) LV7: argparse::posargs_map
+  405: line 111 ([], LV7) @
+  406: line 111 ([], {'': [['obj', '=']]}) SV1: _mode
+  407: line 111 ([], {'': [['obj', '=']]}, SV1) @
+  408: line 111 ([], {'': [['obj', '=']]}, "") ARRAY_GETITEM
+  409: line 111 ([], [['obj', '=']]) FOREACH
+  410: line 112 ([]) __FORITER__
+  411: line 112 ([], 0, ['obj', '='], 1) BranchIfNot: +21
+  412: line 112 ([], 0, ['obj', '=']) SV5: _posarg
+  413: line 112 ([], 0, ['obj', '='], SV5) !
+  414: line 112 ([], 0) POP
+  415: line 113 ([]) {
+  416: line 113 ([], Mark) SV5: _posarg
+  417: line 113 ([], Mark, SV5) @
+  418: line 113 ([], Mark, ['obj', '=']) 0
+  419: line 113 ([], Mark, ['obj', '='], 0) ARRAY_GETITEM
+  420: line 113 ([], Mark, "obj") TOUPPER
+  421: line 113 ([], Mark, "OBJ") SV5: _posarg
+  422: line 113 ([], Mark, "OBJ", SV5) @
+  423: line 113 ([], Mark, "OBJ", ['obj', '=']) 1
+  424: line 113 ([], Mark, "OBJ", ['obj', '='], 1) ARRAY_GETITEM
+  425: line 113 ([], Mark, "OBJ", "=") }
+  426: line 113 ([], "OBJ", "=", 2) ARRAY_MAKE
+  427: line 113 ([], ['OBJ', '=']) ""
+  428: line 113 ([], ['OBJ', '='], "") ARRAY_JOIN
+  429: line 114 ([], "OBJ=") SWAP
+  430: line 114 ("OBJ=", []) ARRAY_APPENDITEM
+  431: line 115 (['OBJ=']) Branch: -21
+  410: line 112 (['OBJ=']) __FORITER__
+  411: line 112 (['OBJ='], 0) BranchIfNot: +21
+  432: line 111 (['OBJ=']) __FORPOP__
+  433: line 115 (['OBJ=']) SV4: _posargs
+  434: line 115 (['OBJ='], SV4) !
+  435: line 116 () LV8: argparse::remainder_map
+  436: line 116 (LV8) @
+  437: line 116 ({'': 'list'}) SV1: _mode
+  438: line 116 ({'': 'list'}, SV1) @
+  439: line 116 ({'': 'list'}, "") ARRAY_GETITEM
+  440: line 116 ("list") TOUPPER
+  441: line 117 ("LIST") SV4: _posargs
+  442: line 117 ("LIST", SV4) @
+  443: line 117 ("LIST", ['OBJ=']) ""
+  444: line 117 ("LIST", ['OBJ='], "") ARRAY_JOIN
+  445: line 117 ("LIST", "OBJ=") SV2: _flags
+  446: line 117 ("LIST", "OBJ=", SV2) @
+  447: line 117 ("LIST", "OBJ=", []) BranchIfNot: +3
+  450: line 117 ("LIST", "OBJ=") ""
+  451: line 118 ("LIST", "OBJ=", "") SV2: _flags
+  452: line 118 ("LIST", "OBJ=", "", SV2) @
+  453: line 118 ("LIST", "OBJ=", "", []) " "
+  454: line 118 ("LIST", "OBJ=", "", [], " ") ARRAY_JOIN
+  455: line 118 ("LIST", "OBJ=", "", "") SV1: _mode
+  456: line 118 ("LIST", "OBJ=", "", "", SV1) @
+  457: line 118 ("LIST", "OBJ=", "", "", "") SV1: _mode
+  458: line 118 ("LIST", "OBJ=", "", "", "", SV1) @
+  459: line 118 ("LIST", "OBJ=", "", "", "", "") BranchIfNot: +3
+  462: line 118 ("LIST", "OBJ=", "", "", "") ""
+  463: line 119 ("LIST", "OBJ=", "", "", "", "") SV0: _cmd
+  464: line 119 ("LIST", "OBJ=", "", "", "", "", SV0) @
+  465: line 119 ("LIST", "OBJ=", "", "", "", "", "test") "%s %s%s %s%s%s%s"
+  466: line 119 ("LIST", "OBJ=", "", "", "", "", "test", "%s %s%s %s%s%s%s") FMTSTRING
+  467: line 119 ("test  OBJ=LIST") SV6: _line
+  468: line 119 ("test  OBJ=LIST", SV6) !
+  469: line 120 () SV6: _line
+  470: line 120 (SV6) @
+  471: line 120 ("test  OBJ=LIST") LV0: me
+  472: line 120 ("test  OBJ=LIST", LV0) @
+  473: line 120 ("test  OBJ=LIST", #5) SWAP
+  474: line 120 (#5, "test  OBJ=LIST") NOTIFY
+NOTIFY TO #5: test  OBJ=LIST
+  475: line 121 () Branch: -108
+  367: line 106 () __FORITER__
+  368: line 106 (0) BranchIfNot: +108
+  476: line 105 () __FORPOP__
+  477: line 122 () 0
+  478: line 123 (0) EXIT
+ 2253: line 519 (0) POP
+ 2254: line 520 () 0
+ 2255: line 520 (0) EXIT
+ 2397: line 549 (0) EXIT
+ 2449: line 559 (0) EXIT

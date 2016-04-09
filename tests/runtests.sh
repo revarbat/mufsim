@@ -22,3 +22,19 @@ for f in *.muf ; do
     rm -f $outfile
 done
 
+for f in *.muv ; do
+    outfile=$(basename $f .muv).out
+    cmpfile=$(basename $f .muv).cmp
+    if [ "$refresh_only" -eq 0 -o ! -e "$cmpfile" ]; then
+        echo $f
+        ../mufsim $f -m -u -r -t >$outfile 2>&1
+        if [ ! -e "$cmpfile" ]; then
+            echo "Installing results as $cmpfile"
+            mv -f $outfile $cmpfile
+            else
+            diff -u $cmpfile $outfile
+        fi
+    fi
+    rm -f $outfile
+done
+

@@ -1,0 +1,123 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: {
+    2: "d"
+    3: "h"
+    4: "G"
+    5: "B"
+    6: "j"
+    7: "E"
+    8: "a"
+    9: "i"
+   10: "F"
+   11: "c"
+   12: }
+   13: ARRAY_MAKE
+   14: SV0: arr
+   15: !
+   16: {
+   17: 0
+   18: 1
+   19: 2
+   20: 1
+   21: 2
+   22: BITOR
+   23: }
+   24: ARRAY_MAKE
+   25: FOREACH
+   26: __FORITER__
+   27: BranchIfNot: +11
+   28: SV1: mode
+   29: !
+   30: POP
+   31: SV0: arr
+   32: @
+   33: SV1: mode
+   34: @
+   35: ARRAY_SORT
+   36: POP
+   37: Branch: -11
+   38: __FORPOP__
+   39: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") {
+    2: line 2 ("", Mark) "d"
+    3: line 2 ("", Mark, "d") "h"
+    4: line 2 ("", Mark, "d", "h") "G"
+    5: line 2 ("", Mark, "d", "h", "G") "B"
+    6: line 2 ("", Mark, "d", "h", "G", "B") "j"
+    7: line 2 ("", Mark, "d", "h", "G", "B", "j") "E"
+    8: line 2 ("", Mark, "d", "h", "G", "B", "j", "E") "a"
+    9: line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a") "i"
+   10: line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a", "i") "F"
+   11: line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a", "i", "F") "c"
+   12: line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a", "i", "F", "c") }
+   13: line 2 ("", "d", "h", "G", "B", "j", "E", "a", "i", "F", "c", 10) ARRAY_MAKE
+   14: line 3 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c']) SV0: arr
+   15: line 3 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], SV0) !
+   16: line 4 ("") {
+   17: line 5 ("", Mark) 0
+   18: line 6 ("", Mark, 0) 1
+   19: line 7 ("", Mark, 0, 1) 2
+   20: line 8 ("", Mark, 0, 1, 2) 1
+   21: line 8 ("", Mark, 0, 1, 2, 1) 2
+   22: line 8 ("", Mark, 0, 1, 2, 1, 2) BITOR
+   23: line 9 ("", Mark, 0, 1, 2, 3) }
+   24: line 9 ("", 0, 1, 2, 3, 4) ARRAY_MAKE
+   25: line 9 ("", [0, 1, 2, 3]) FOREACH
+   26: line 9 ("") __FORITER__
+   27: line 9 ("", 0, 0, 1) BranchIfNot: +11
+   28: line 9 ("", 0, 0) SV1: mode
+   29: line 9 ("", 0, 0, SV1) !
+   30: line 9 ("", 0) POP
+   31: line 10 ("") SV0: arr
+   32: line 10 ("", SV0) @
+   33: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c']) SV1: mode
+   34: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], SV1) @
+   35: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], 0) ARRAY_SORT
+   36: line 10 ("", ['B', 'E', 'F', 'G', 'a', 'c', 'd', 'h', 'i', 'j']) POP
+   37: line 11 ("") Branch: -11
+   26: line 9 ("") __FORITER__
+   27: line 9 ("", 1, 1, 1) BranchIfNot: +11
+   28: line 9 ("", 1, 1) SV1: mode
+   29: line 9 ("", 1, 1, SV1) !
+   30: line 9 ("", 1) POP
+   31: line 10 ("") SV0: arr
+   32: line 10 ("", SV0) @
+   33: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c']) SV1: mode
+   34: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], SV1) @
+   35: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], 1) ARRAY_SORT
+   36: line 10 ("", ['a', 'B', 'c', 'd', 'E', 'F', 'G', 'h', 'i', 'j']) POP
+   37: line 11 ("") Branch: -11
+   26: line 9 ("") __FORITER__
+   27: line 9 ("", 2, 2, 1) BranchIfNot: +11
+   28: line 9 ("", 2, 2) SV1: mode
+   29: line 9 ("", 2, 2, SV1) !
+   30: line 9 ("", 2) POP
+   31: line 10 ("") SV0: arr
+   32: line 10 ("", SV0) @
+   33: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c']) SV1: mode
+   34: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], SV1) @
+   35: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], 2) ARRAY_SORT
+   36: line 10 ("", ['j', 'i', 'h', 'd', 'c', 'a', 'G', 'F', 'E', 'B']) POP
+   37: line 11 ("") Branch: -11
+   26: line 9 ("") __FORITER__
+   27: line 9 ("", 3, 3, 1) BranchIfNot: +11
+   28: line 9 ("", 3, 3) SV1: mode
+   29: line 9 ("", 3, 3, SV1) !
+   30: line 9 ("", 3) POP
+   31: line 10 ("") SV0: arr
+   32: line 10 ("", SV0) @
+   33: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c']) SV1: mode
+   34: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], SV1) @
+   35: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], 3) ARRAY_SORT
+   36: line 10 ("", ['j', 'i', 'h', 'G', 'F', 'E', 'd', 'c', 'B', 'a']) POP
+   37: line 11 ("") Branch: -11
+   26: line 9 ("") __FORITER__
+   27: line 9 ("", 0) BranchIfNot: +11
+   38: line 9 ("") __FORPOP__
+   39: line 12 ("") EXIT
