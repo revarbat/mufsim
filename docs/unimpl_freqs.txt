@@ -1,6 +1,4 @@
-    616 textattr
     379 awake?
-    275 notify_exclude
     252 unparseobj
     225 version
     217 parseprop

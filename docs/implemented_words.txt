@@ -120,6 +120,7 @@ nextprop
 not
 notify
 notify_except
+notify_exclude
 number?
 ok?
 online_array
@@ -170,6 +171,7 @@ subst
 swap
 systime
 systime_precise
+textattr
 then
 thing?
 time

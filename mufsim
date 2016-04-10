@@ -38,28 +38,53 @@ builtin_defines = {
     'oecho':           '"_/oecho" getpropstr',
     'pecho':           '"_/pecho" getpropstr',
 
-    'setpropstr':      'setprop',
-    'setdesc':         '"_/de" swap setpropstr',
-    'setidesc':        '"_/ide" swap setpropstr',
-    'setsucc':         '"_/sc" swap setpropstr',
-    'setosucc':        '"_/osc" swap setpropstr',
-    'setfail':         '"_/fl" swap setpropstr',
-    'setofail':        '"_/ofl" swap setpropstr',
-    'setdrop':         '"_/dr" swap setpropstr',
-    'setodrop':        '"_/odr" swap setpropstr',
-    'setoecho':        '"_/oecho" swap setpropstr',
-    'setpecho':        '"_/pecho" swap setpropstr',
+    'setdesc':         '"_/de" swap setprop',
+    'setidesc':        '"_/ide" swap setprop',
+    'setsucc':         '"_/sc" swap setprop',
+    'setosucc':        '"_/osc" swap setprop',
+    'setfail':         '"_/fl" swap setprop',
+    'setofail':        '"_/ofl" swap setprop',
+    'setdrop':         '"_/dr" swap setprop',
+    'setodrop':        '"_/odr" swap setprop',
+    'setoecho':        '"_/oecho" swap setprop',
+    'setpecho':        '"_/pecho" swap setprop',
 
     'truename':        'name',
+    'strip':           'striplead striptail',
+
+    'preempt':         'pr_mode setmode',
+    'background':      'bg_mode setmode',
+    'foreground':      'fg_mode setmode',
+
+    'event_wait':      '0 array_make event_waitfor',
+    'tread':           '"__tread" timer_start { "TIMER.__tread" "READ" }list ' +
+                       'event_waitfor swap pop "READ" strcmp ' +
+                       'if "" 0 else read 1 "__tread" timer_stop then',
+
+    'pr_mode':         '0',
+    'fg_mode':         '1',
+    'bg_mode':         '2',
 
     'reg_icase':       '1',
     'reg_all':         '2',
     'reg_extended':    '4',
 
-    'sorttype_caseinsens': '1',
-    'sorttype_descending': '2',
-    'sorttype_shuffle':    '4',
+    '__version':       '"Muck2.2fb6.09"',
+    '__muckname':      '"MufSim"',
+    '__fuzzball__':    '1',
+
+    'max_variable_count':       '54',
+
+    'sorttype_case_ascend':     '0',
+    'sorttype_nocase_ascend':   '1',
+    'sorttype_case_descend':    '2',
+    'sorttype_nocase_descend':  '3',
+
+    'sorttype_caseinsens':      '1',
+    'sorttype_descending':      '2',
+    'sorttype_shuffle':         '4',
 }
+
 defines = dict(builtin_defines)
 player_names = {}
 
@@ -1415,6 +1440,80 @@ class InstNotifyExcept(Instruction):
               (where.value, who.value, msg))
 
 
+@instr("notify_exclude")
+class InstNotifyExclude(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        msg = fr.data_pop()
+        pcount = fr.data_pop()
+        if type(msg) is not str:
+            raise MufRuntimeError("Expected string argument.")
+        if type(pcount) is not int:
+            raise MufRuntimeError("Expected int argument.")
+        fr.check_underflow(pcount+1)
+        excl = []
+        for i in xrange(pcount):
+            who = fr.data_pop()
+            if type(who) is not StackDBRef:
+                raise MufRuntimeError("Expected dbref argument.")
+            if who.value not in object_db:
+                raise MufRuntimeError("Invalid object.")
+            excl.append(who)
+        where = fr.data_pop()
+        if type(where) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument.")
+        if where.value not in object_db:
+            raise MufRuntimeError("Invalid object.")
+        print("NOTIFY TO ALL IN #%d EXCEPT %s: %s" % (where.value, excl, msg))
+
+
+@instr("textattr")
+class InstTextAttr(Instruction):
+    ATTRCODES = {
+        "reset": "0",
+        "bold": "1",
+        "dim": "2",
+        "uline": "4",
+        "flash": "5",
+        "reverse": "7",
+        "black": "30",
+        "red": "31",
+        "green": "32",
+        "yellow": "33",
+        "blue": "34",
+        "magenta": "35",
+        "cyan": "36",
+        "white": "37",
+        "bg_black": "40",
+        "bg_red": "41",
+        "bg_green": "42",
+        "bg_yellow": "43",
+        "bg_blue": "44",
+        "bg_magenta": "45",
+        "bg_cyan": "46",
+        "bg_white": "47",
+    }
+
+    def execute(self, fr):
+        fr.check_underflow(1)
+        attrs = fr.data_pop()
+        txt = fr.data_pop()
+        if type(txt) is not str:
+            MufRuntimeError("Expected string argument. (1)")
+        if type(attrs) is not str:
+            MufRuntimeError("Expected string argument. (2)")
+        codes = []
+        endcode = ""
+        for attr in attrs.split(','):
+            attr = attr.strip()
+            if attr in self.ATTRCODES:
+                codes.append(self.ATTRCODES[attr])
+        if codes:
+            codes = "\033[%sm" % ";".join(codes)
+            endcode = "\033[0m"
+        fr.data_push(codes + txt + endcode)
+
+
 @instr("array_make")
 class InstArrayMake(Instruction):
     def execute(self, fr):
@@ -2722,16 +2821,6 @@ class InstRSplit(Instruction):
             fr.data_push("")
 
 
-@instr("strip")
-class InstStrip(Instruction):
-    def execute(self, fr):
-        fr.check_underflow(1)
-        txt = fr.data_pop()
-        if type(txt) is not str:
-            raise MufRuntimeError("Expected string argument. (1)")
-        fr.data_push(txt.strip())
-
-
 @instr("striplead")
 class InstStripLead(Instruction):
     def execute(self, fr):
@@ -3145,7 +3234,7 @@ class MufCallFrame(object):
 
 
 class MufStackFrame(object):
-    MAX_STACK = 512
+    MAX_STACK = 1024
 
     def __init__(self, src, code, addr, funcaddrs, fvars, gvars):
         self.start_addr = addr
