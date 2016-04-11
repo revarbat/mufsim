@@ -1,0 +1,31 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: #1
+    2: UNPARSEOBJ
+    3: POP
+    4: LV0: me
+    5: @
+    6: UNPARSEOBJ
+    7: POP
+    8: "*jane_doe"
+    9: MATCH
+   10: UNPARSEOBJ
+   11: POP
+   12: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") #1
+    2: line 2 ("", #1) UNPARSEOBJ
+    3: line 2 ("", "Wizard(#1PM3W)") POP
+    4: line 3 ("") LV0: me
+    5: line 3 ("", LV0) @
+    6: line 3 ("", #5) UNPARSEOBJ
+    7: line 3 ("", "John_Doe(#5PM3)") POP
+    8: line 4 ("") "*jane_doe"
+    9: line 4 ("", "*jane_doe") MATCH
+   10: line 4 ("", #6) UNPARSEOBJ
+   11: line 4 ("", "Jane_Doe(#6PM1)") POP
+   12: line 5 ("") EXIT

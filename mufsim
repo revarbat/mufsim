@@ -2,6 +2,9 @@
 
 from __future__ import print_function
 
+EMULATED_VERSION = '"Muck2.2fb6.09"'
+MAX_VARS = 54
+
 import os
 import re
 import sys
@@ -57,9 +60,6 @@ builtin_defines = {
     'foreground':      'fg_mode setmode',
 
     'event_wait':      '0 array_make event_waitfor',
-    'tread':           '"__tread" timer_start { "TIMER.__tread" "READ" }list ' +
-                       'event_waitfor swap pop "READ" strcmp ' +
-                       'if "" 0 else read 1 "__tread" timer_stop then',
 
     'pr_mode':         '0',
     'fg_mode':         '1',
@@ -69,11 +69,12 @@ builtin_defines = {
     'reg_all':         '2',
     'reg_extended':    '4',
 
-    '__version':       '"Muck2.2fb6.09"',
+    'version':         '__version',
+    '__version':       EMULATED_VERSION,
     '__muckname':      '"MufSim"',
     '__fuzzball__':    '1',
 
-    'max_variable_count':       '54',
+    'max_variable_count':       str(MAX_VARS),
 
     'sorttype_case_ascend':     '0',
     'sorttype_nocase_ascend':   '1',
@@ -91,6 +92,12 @@ player_names = {}
 object_db = {}
 db_top = 0
 recycled_list = []
+descriptors = {
+    23: 5,
+    13: 6,
+    42: 1,
+}
+execution_mode = 1
 
 
 class DBObject(object):
@@ -112,6 +119,7 @@ class DBObject(object):
         self.contents = []
         self.exits = []
         self.links = []
+        self.pennies = 0
         self.properties = props
         object_db[self.dbref] = self
         self.moveto(location)
@@ -239,9 +247,9 @@ def getprop(obj, prop):
     elif type(obj) is StackDBRef:
         obj = obj.value
     if obj not in object_db:
-        val = 0
+        val = None
     elif prop not in object_db[obj].properties:
-        val = 0
+        val = None
     else:
         val = object_db[obj].properties[prop]
     if type(val) is str:
@@ -1192,6 +1200,30 @@ class InstRead(Instruction):
         fr.data_push(txt)
 
 
+@instr("tread")
+class InstTRead(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        a = fr.data_pop()
+        if type(a) is not int:
+            raise MufRuntimeError("Expected integer argument. (1)")
+        print("Enter '@T' to fake a timeout.")
+        txt = raw_input("TIMED READ>")
+        if txt == "@T":
+            print("Faking time-out.")
+            fr.data_push("")
+            fr.data_push(1)
+        elif txt == "@Q":
+            while fr.call_stack:
+                fr.call_pop()
+            while fr.catch_stack:
+                fr.catch_pop()
+            raise MufRuntimeError("Aborting program.")
+        else:
+            fr.data_push(txt)
+            fr.data_push(0)
+
+
 @instr("atoi")
 class InstAtoI(Instruction):
     def execute(self, fr):
@@ -1421,6 +1453,25 @@ class InstNotify(Instruction):
         if type(msg) is not str:
             raise MufRuntimeError("StackItemNotString")
         print("NOTIFY TO #%d: %s" % (who.value, msg))
+
+
+@instr("array_notify")
+class InstArrayNotify(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        msgs = fr.data_pop()
+        targs = fr.data_pop()
+        if type(targs) is not list:
+            raise MufRuntimeError("Expected list type array. (1)")
+        if type(msgs) is not list:
+            raise MufRuntimeError("Expected list type array. (2)")
+        for targ in targs:
+            if type(targ) is not StackDBRef:
+                raise MufRuntimeError("Expected list array of dbrefs. (1)")
+        for msg in msgs:
+            if type(msg) is not str:
+                raise MufRuntimeError("Expected list array of strings. (2)")
+            print("NOTIFY TO %s: %s" % (targs, msg))
 
 
 @instr("notify_except")
@@ -2026,6 +2077,24 @@ class InstMatch(Instruction):
         fr.data_push(StackDBRef(obj))
 
 
+@instr("mode")
+class InstMode(Instruction):
+    def execute(self, fr):
+        global execution_mode
+        fr.data_push(execution_mode)
+
+
+@instr("setmode")
+class InstSetMode(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        mod = fr.data_pop()
+        if type(mod) is not int:
+            raise MufRuntimeError("Expected integer argument. (1)")
+        global execution_mode
+        execution_mode = mod
+
+
 @instr("name")
 class InstName(Instruction):
     def execute(self, fr):
@@ -2037,6 +2106,76 @@ class InstName(Instruction):
             raise MufRuntimeError("Invalid object. (1)")
         out = object_db[obj.value].name
         fr.data_push(out)
+
+
+@instr("pennies")
+class InstPennies(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        out = object_db[obj.value].pennies
+        fr.data_push(out)
+
+
+@instr("addpennies")
+class InstAddPennies(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        val = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        if type(val) is not int:
+            raise MufRuntimeError("Expected integer argument. (2)")
+        object_db[obj.value].pennies += val
+
+
+@instr("movepennies")
+class InstMovePennies(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        val = fr.data_pop()
+        dest = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        if type(dest) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (2)")
+        if dest.value not in object_db:
+            raise MufRuntimeError("Invalid object. (2)")
+        if type(val) is not int:
+            raise MufRuntimeError("Expected integer argument. (3)")
+        object_db[obj.value].pennies -= val
+        object_db[dest.value].pennies += val
+
+
+@instr("unparseobj")
+class InstUnparseObj(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        obj = object_db[obj.value]
+        if obj.objtype == "program":
+            typflag = "F"
+        elif obj.objtype == "thing":
+            typflag = ""
+        else:
+            typflag = obj.objtype.upper()[0]
+        flags = "".join(sorted(list(obj.flags)))
+        flags = flags.replace('1', 'M1').replace('2', 'M2').replace('3', 'M3')
+        fr.data_push("%s(#%s%s%s)" % (obj.name, obj.dbref, typflag, flags))
 
 
 @instr("setname")
@@ -2074,7 +2213,7 @@ class InstSet(Instruction):
 @instr("flag?")
 class InstFlagP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
+        fr.check_underflow(2)
         flg = fr.data_pop()
         obj = fr.data_pop()
         if type(obj) is not StackDBRef:
@@ -2086,6 +2225,28 @@ class InstFlagP(Instruction):
         flg = flg.strip().upper()[0]
         ret = 1 if flg in object_db[obj.value].flags else 0
         fr.data_push(ret)
+
+
+@instr("mlevel")
+class InstMLevel(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(1)
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        flags = object_db[obj.value].flags.upper()
+        if "W" in flags:
+            fr.data_push(4)
+        elif "3" in flags:
+            fr.data_push(3)
+        elif "2" in flags:
+            fr.data_push(2)
+        elif "1" in flags or "M" in flags:
+            fr.data_push(1)
+        else:
+            fr.data_push(0)
 
 
 @instr("owner")
@@ -2227,6 +2388,43 @@ class InstLocation(Instruction):
             raise MufRuntimeError("Invalid object. (1)")
         loc = object_db[obj.value].location
         fr.data_push(StackDBRef(loc))
+
+
+@instr("setlink")
+class InstSetLink(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        dest = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        if type(dest) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (2)")
+        if dest.value not in object_db:
+            raise MufRuntimeError("Invalid object. (2)")
+        object_db[obj.value].links = [dest.value]
+
+
+@instr("setlinks_array")
+class InstSetLinksArray(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        dests = fr.data_pop()
+        obj = fr.data_pop()
+        if type(obj) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        if obj.value not in object_db:
+            raise MufRuntimeError("Invalid object. (1)")
+        if type(dests) is not list:
+            raise MufRuntimeError("Expected list array of dbrefs. (2)")
+        for dest in dests:
+            if type(dest) is not StackDBRef:
+                raise MufRuntimeError("Expected list array of dbrefs. (2)")
+            if dest.value not in object_db:
+                raise MufRuntimeError("Invalid object. (2)")
+        object_db[obj.value].links = [dest.value for dest in dests]
 
 
 @instr("getlink")
@@ -2382,13 +2580,23 @@ class InstControls(Instruction):
             fr.data_push(0)
 
 
+@instr("awake?")
+class InstAwakeP(Instruction):
+    def execute(self, fr):
+        who = fr.data_pop()
+        if type(who) is not StackDBRef:
+            raise MufRuntimeError("Expected dbref argument. (1)")
+        fr.data_push(1 if who.value in descriptors.values() else 0)
+
+
 @instr("online_array")
 class InstOnlineArray(Instruction):
     def execute(self, fr):
         out = []
-        for key in object_db:
-            if object_db[key].objtype == "player":
-                out.append(StackDBRef(object_db[key].dbref))
+        for descr, who in descriptors.iteritems():
+            if who in object_db:
+                if object_db[who].objtype == "player":
+                    out.append(StackDBRef(object_db[who].dbref))
         fr.data_push(out)
 
 
@@ -2566,6 +2774,8 @@ class InstGetProp(Instruction):
         if type(obj) is not StackDBRef:
             raise MufRuntimeError("Expected dbref argument. (1)")
         val = getprop(obj, prop)
+        if val is None:
+            val = 0
         fr.data_push(val)
 
 
@@ -3138,6 +3348,8 @@ class InstPronounSub(Instruction):
         if type(txt) is not str:
             raise MufRuntimeError("Expected string argument. (2)")
         sex = getprop(obj, "sex")
+        if type(sex) is not str:
+            sex = ""
         if sex.strip().lower() == "male":
             subs = {
                 "%a": "his",

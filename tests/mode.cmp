@@ -1,0 +1,37 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: MODE
+    2: POP
+    3: 0
+    4: SETMODE
+    5: MODE
+    6: POP
+    7: 1
+    8: SETMODE
+    9: MODE
+   10: POP
+   11: 2
+   12: SETMODE
+   13: MODE
+   14: POP
+   15: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") MODE
+    2: line 2 ("", 1) POP
+    3: line 3 ("") 0
+    4: line 3 ("", 0) SETMODE
+    5: line 3 ("") MODE
+    6: line 3 ("", 0) POP
+    7: line 4 ("") 1
+    8: line 4 ("", 1) SETMODE
+    9: line 4 ("") MODE
+   10: line 4 ("", 1) POP
+   11: line 5 ("") 2
+   12: line 5 ("", 2) SETMODE
+   13: line 5 ("") MODE
+   14: line 5 ("", 2) POP
+   15: line 6 ("") EXIT

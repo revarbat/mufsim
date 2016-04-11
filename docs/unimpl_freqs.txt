@@ -1,22 +1,14 @@
-    379 awake?
-    252 unparseobj
-    225 version
     217 parseprop
-    197 mode
-    170 pennies
     142 rmatch
     139 envpropstr
-    129 addpennies
     120 force
     109 ansi_strcut
     103 pmatch
     101 clear
      97 locked?
-     88 setlink
      73 log
      71 pid
      71 online
-     69 mlevel
      62 descrcon
      62 condbref
      59 kill
@@ -36,7 +28,6 @@
      39 array_matchval
      34 float
      32 descr
-     32 array_notify
      31 recycle
      29 newexit
      29 array_last
@@ -140,13 +131,11 @@
       1 userlog
       1 sysparm_array
       1 setsysparm
-      1 setmode
       1 program_setlines
       1 pname-ok?
       1 nextdescr
       1 newprogram
       1 newpassword
-      1 movepennies
       1 instances
       1 gui_ctrl_create
       1 firstdescr

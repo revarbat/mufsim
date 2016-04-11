@@ -1,0 +1,42 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: {
+    2: LV0: me
+    3: @
+    4: #1
+    5: "*jane_doe"
+    6: MATCH
+    7: }
+    8: ARRAY_MAKE
+    9: {
+   10: "First line."
+   11: "Second line."
+   12: "Third line."
+   13: }
+   14: ARRAY_MAKE
+   15: ARRAY_NOTIFY
+   16: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") {
+    2: line 2 ("", Mark) LV0: me
+    3: line 2 ("", Mark, LV0) @
+    4: line 2 ("", Mark, #5) #1
+    5: line 2 ("", Mark, #5, #1) "*jane_doe"
+    6: line 2 ("", Mark, #5, #1, "*jane_doe") MATCH
+    7: line 2 ("", Mark, #5, #1, #6) }
+    8: line 2 ("", #5, #1, #6, 3) ARRAY_MAKE
+    9: line 3 ("", [#5, #1, #6]) {
+   10: line 3 ("", [#5, #1, #6], Mark) "First line."
+   11: line 3 ("", [#5, #1, #6], Mark, "First line.") "Second line."
+   12: line 3 ("", [#5, #1, #6], Mark, "First line.", "Second line.") "Third line."
+   13: line 3 ("", [#5, #1, #6], Mark, "First line.", "Second line.", "Third line.") }
+   14: line 3 ("", [#5, #1, #6], "First line.", "Second line.", "Third line.", 3) ARRAY_MAKE
+   15: line 4 ("", [#5, #1, #6], ['First line.', 'Second line.', 'Third line.']) ARRAY_NOTIFY
+NOTIFY TO [#5, #1, #6]: First line.
+NOTIFY TO [#5, #1, #6]: Second line.
+NOTIFY TO [#5, #1, #6]: Third line.
+   16: line 5 ("") EXIT

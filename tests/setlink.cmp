@@ -1,0 +1,21 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: TRIG
+    2: #0
+    3: SETLINK
+    4: TRIG
+    5: GETLINKS_ARRAY
+    6: POP
+    7: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") TRIG
+    2: line 2 ("", #3) #0
+    3: line 2 ("", #3, #0) SETLINK
+    4: line 3 ("") TRIG
+    5: line 3 ("", #3) GETLINKS_ARRAY
+    6: line 3 ("", [#0]) POP
+    7: line 4 ("") EXIT
