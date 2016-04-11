@@ -3,7 +3,7 @@
     "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it." var! msg2
     { "male" "female" "herm" "hermaphrodite" "none" }list
     foreach swap pop
-        me @ "sex" rot setpropstr
+        me @ "sex" rot setprop
         me @ dup msg @ pronoun_sub notify
         me @ dup msg2 @ pronoun_sub notify
     repeat

@@ -3,11 +3,13 @@
 #### Showing Compiled Tokens ##########################
     0: Function: main
     1: " foo "
-    2: STRIP
-    3: EXIT
+    2: STRIPLEAD
+    3: STRIPTAIL
+    4: EXIT
 
 #### Executing Tokens #################################
     0: line 1 ("") Function: main
     1: line 2 ("") " foo "
-    2: line 2 ("", " foo ") STRIP
-    3: line 3 ("", "foo") EXIT
+    2: line 2 ("", " foo ") STRIPLEAD
+    3: line 2 ("", "foo ") STRIPTAIL
+    4: line 3 ("", "foo") EXIT

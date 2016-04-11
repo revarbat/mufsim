@@ -1,10 +1,10 @@
 : main
-    "foo" "foo" stringcmp
-    "foo" "bar" stringcmp
-    "bar" "foo" stringcmp
-    "bar" "bar" stringcmp
-    "foo" "Foo" stringcmp
-    "foo" "Bar" stringcmp
-    "bar" "Foo" stringcmp
-    "bar" "Bar" stringcmp
+    "foo" "foo" stringcmp pop
+    "foo" "bar" stringcmp pop
+    "bar" "foo" stringcmp pop
+    "bar" "bar" stringcmp pop
+    "foo" "Foo" stringcmp pop
+    "foo" "Bar" stringcmp pop
+    "bar" "Foo" stringcmp pop
+    "bar" "Bar" stringcmp pop
 ;

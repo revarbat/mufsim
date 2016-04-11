@@ -1,6 +1,5 @@
     217 parseprop
     142 rmatch
-    139 envpropstr
     120 force
     109 ansi_strcut
     103 pmatch
@@ -13,7 +12,6 @@
      62 condbref
      59 kill
      58 ansi_strlen
-     57 envprop
      56 midstr
      54 setlockstr
      50 sysparm

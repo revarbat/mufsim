@@ -83,6 +83,8 @@ depth
 dictionary?
 dup
 dupn
+envprop
+envpropstr
 execute
 exit
 exit?

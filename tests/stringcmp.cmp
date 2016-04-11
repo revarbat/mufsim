@@ -5,53 +5,69 @@
     1: "foo"
     2: "foo"
     3: STRINGCMP
-    4: "foo"
-    5: "bar"
-    6: STRINGCMP
-    7: "bar"
-    8: "foo"
-    9: STRINGCMP
-   10: "bar"
-   11: "bar"
-   12: STRINGCMP
-   13: "foo"
-   14: "Foo"
+    4: POP
+    5: "foo"
+    6: "bar"
+    7: STRINGCMP
+    8: POP
+    9: "bar"
+   10: "foo"
+   11: STRINGCMP
+   12: POP
+   13: "bar"
+   14: "bar"
    15: STRINGCMP
-   16: "foo"
-   17: "Bar"
-   18: STRINGCMP
-   19: "bar"
-   20: "Foo"
-   21: STRINGCMP
-   22: "bar"
-   23: "Bar"
-   24: STRINGCMP
-   25: EXIT
+   16: POP
+   17: "foo"
+   18: "Foo"
+   19: STRINGCMP
+   20: POP
+   21: "foo"
+   22: "Bar"
+   23: STRINGCMP
+   24: POP
+   25: "bar"
+   26: "Foo"
+   27: STRINGCMP
+   28: POP
+   29: "bar"
+   30: "Bar"
+   31: STRINGCMP
+   32: POP
+   33: EXIT
 
 #### Executing Tokens #################################
     0: line 1 ("") Function: main
     1: line 2 ("") "foo"
     2: line 2 ("", "foo") "foo"
     3: line 2 ("", "foo", "foo") STRINGCMP
-    4: line 3 ("", 0) "foo"
-    5: line 3 ("", 0, "foo") "bar"
-    6: line 3 ("", 0, "foo", "bar") STRINGCMP
-    7: line 4 ("", 0, 1) "bar"
-    8: line 4 ("", 0, 1, "bar") "foo"
-    9: line 4 ("", 0, 1, "bar", "foo") STRINGCMP
-   10: line 5 ("", 0, 1, -1) "bar"
-   11: line 5 ("", 0, 1, -1, "bar") "bar"
-   12: line 5 ("", 0, 1, -1, "bar", "bar") STRINGCMP
-   13: line 6 ("", 0, 1, -1, 0) "foo"
-   14: line 6 ("", 0, 1, -1, 0, "foo") "Foo"
-   15: line 6 ("", 0, 1, -1, 0, "foo", "Foo") STRINGCMP
-   16: line 7 ("", 0, 1, -1, 0, 0) "foo"
-   17: line 7 ("", 0, 1, -1, 0, 0, "foo") "Bar"
-   18: line 7 ("", 0, 1, -1, 0, 0, "foo", "Bar") STRINGCMP
-   19: line 8 ("", 0, 1, -1, 0, 0, 1) "bar"
-   20: line 8 ("", 0, 1, -1, 0, 0, 1, "bar") "Foo"
-   21: line 8 ("", 0, 1, -1, 0, 0, 1, "bar", "Foo") STRINGCMP
-   22: line 9 ("", 0, 1, -1, 0, 0, 1, -1) "bar"
-   23: line 9 ("", 0, 1, -1, 0, 0, 1, -1, "bar") "Bar"
-   24: line 9 ("", 0, 1, -1, 0, 0, 1, -1, "bar", "Bar") STRINGCMP
-   25: line 10 ("", 0, 1, -1, 0, 0, 1, -1, 0) EXIT
+    4: line 2 ("", 0) POP
+    5: line 3 ("") "foo"
+    6: line 3 ("", "foo") "bar"
+    7: line 3 ("", "foo", "bar") STRINGCMP
+    8: line 3 ("", 1) POP
+    9: line 4 ("") "bar"
+   10: line 4 ("", "bar") "foo"
+   11: line 4 ("", "bar", "foo") STRINGCMP
+   12: line 4 ("", -1) POP
+   13: line 5 ("") "bar"
+   14: line 5 ("", "bar") "bar"
+   15: line 5 ("", "bar", "bar") STRINGCMP
+   16: line 5 ("", 0) POP
+   17: line 6 ("") "foo"
+   18: line 6 ("", "foo") "Foo"
+   19: line 6 ("", "foo", "Foo") STRINGCMP
+   20: line 6 ("", 0) POP
+   21: line 7 ("") "foo"
+   22: line 7 ("", "foo") "Bar"
+   23: line 7 ("", "foo", "Bar") STRINGCMP
+   24: line 7 ("", 1) POP
+   25: line 8 ("") "bar"
+   26: line 8 ("", "bar") "Foo"
+   27: line 8 ("", "bar", "Foo") STRINGCMP
+   28: line 8 ("", -1) POP
+   29: line 9 ("") "bar"
+   30: line 9 ("", "bar") "Bar"
+   31: line 9 ("", "bar", "Bar") STRINGCMP
+   32: line 9 ("", 0) POP
+   33: line 10 ("") EXIT

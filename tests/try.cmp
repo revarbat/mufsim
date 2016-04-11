@@ -62,8 +62,8 @@ catch depth=1
    24: line 14 ("", 3, 4, 5) POP
    25: line 14 ("", 3, 4) POP
    26: line 14 ("", 3) POP
-Caught error in line 14 (POP): StackUnderflow
+Caught error in line 14 (POP): Stack underflow.
 catch depth=1
-   29: line 15 ("", 3, "StackUnderflow") POP
+   29: line 15 ("", 3, "Stack underflow.") POP
    30: line 17 ("", 3) POP
    31: line 18 ("") EXIT

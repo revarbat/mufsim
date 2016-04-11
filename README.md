@@ -1,6 +1,12 @@
 # MufSim
 An offline command-line simulator and debugger for the MUF language.
 
+This is NOT a perfect simulator of a full MUCK.
+This does NOT accurately simulate all permissions and behaviours.
+It IS, however, a useful way to debug and test programs that don't
+need some of the more unusual primitives.
+
+
 ## Usage
 Usage: `mufsim [-h] [-m] [-u] [-r] [-t] [-d] [-c COMMAND] infile`
 
@@ -17,6 +23,7 @@ Optional argument     | What it does.
 -t, --trace           | Show stacktrace for each instrution.
 -d, --debug           | Run MUF program in interactive debugger.
 -c COMMAND, --command | COMMAND Specify command to push onto the stack for run.
+
 
 ## Interactive Debugger
 The interactive MUF debugger accepts the following commands:
