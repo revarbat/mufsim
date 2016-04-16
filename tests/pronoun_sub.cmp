@@ -18,7 +18,7 @@
    14: ARRAY_MAKE
    15: FOREACH
    16: __FORITER__
-   17: BranchIfNot: +23
+   17: JmpIfFalse: +23
    18: SWAP
    19: POP
    20: LV0: me
@@ -40,7 +40,7 @@
    36: @
    37: PRONOUN_SUB
    38: NOTIFY
-   39: Branch: -23
+   39: JMP: -23
    40: __FORPOP__
    41: EXIT
 
@@ -62,7 +62,7 @@
    14: line 4 ("", "male", "female", "herm", "hermaphrodite", "none", 5) ARRAY_MAKE
    15: line 5 ("", ['male', 'female', 'herm', 'hermaphrodite', 'none']) FOREACH
    16: line 5 ("") __FORITER__
-   17: line 5 ("", 0, "male", 1) BranchIfNot: +23
+   17: line 5 ("", 0, "male", 1) JmpIfFalse: +23
    18: line 5 ("", 0, "male") SWAP
    19: line 5 ("", "male", 0) POP
    20: line 6 ("", "male") LV0: me
@@ -89,9 +89,9 @@ NOTIFY TO #5: John_Doe is in his happy place by himself and it suits him, as it 
 GETPROP "sex" on #5 = "male"
    38: line 8 ("", #5, "John_Doe is in His happy place by Himself and it suits Him, as it is His, and He earned it.") NOTIFY
 NOTIFY TO #5: John_Doe is in His happy place by Himself and it suits Him, as it is His, and He earned it.
-   39: line 9 ("") Branch: -23
+   39: line 9 ("") JMP: -23
    16: line 5 ("") __FORITER__
-   17: line 5 ("", 1, "female", 1) BranchIfNot: +23
+   17: line 5 ("", 1, "female", 1) JmpIfFalse: +23
    18: line 5 ("", 1, "female") SWAP
    19: line 5 ("", "female", 1) POP
    20: line 6 ("", "female") LV0: me
@@ -118,9 +118,9 @@ NOTIFY TO #5: John_Doe is in her happy place by herself and it suits her, as it 
 GETPROP "sex" on #5 = "female"
    38: line 8 ("", #5, "John_Doe is in Her happy place by Herself and it suits Her, as it is Hers, and She earned it.") NOTIFY
 NOTIFY TO #5: John_Doe is in Her happy place by Herself and it suits Her, as it is Hers, and She earned it.
-   39: line 9 ("") Branch: -23
+   39: line 9 ("") JMP: -23
    16: line 5 ("") __FORITER__
-   17: line 5 ("", 2, "herm", 1) BranchIfNot: +23
+   17: line 5 ("", 2, "herm", 1) JmpIfFalse: +23
    18: line 5 ("", 2, "herm") SWAP
    19: line 5 ("", "herm", 2) POP
    20: line 6 ("", "herm") LV0: me
@@ -147,9 +147,9 @@ NOTIFY TO #5: John_Doe is in hir happy place by hirself and it suits hir, as it 
 GETPROP "sex" on #5 = "herm"
    38: line 8 ("", #5, "John_Doe is in Hir happy place by Hirself and it suits Hir, as it is Hirs, and Shi earned it.") NOTIFY
 NOTIFY TO #5: John_Doe is in Hir happy place by Hirself and it suits Hir, as it is Hirs, and Shi earned it.
-   39: line 9 ("") Branch: -23
+   39: line 9 ("") JMP: -23
    16: line 5 ("") __FORITER__
-   17: line 5 ("", 3, "hermaphrodite", 1) BranchIfNot: +23
+   17: line 5 ("", 3, "hermaphrodite", 1) JmpIfFalse: +23
    18: line 5 ("", 3, "hermaphrodite") SWAP
    19: line 5 ("", "hermaphrodite", 3) POP
    20: line 6 ("", "hermaphrodite") LV0: me
@@ -176,9 +176,9 @@ NOTIFY TO #5: John_Doe is in hir happy place by hirself and it suits hir, as it 
 GETPROP "sex" on #5 = "hermaphrodite"
    38: line 8 ("", #5, "John_Doe is in Hir happy place by Hirself and it suits Hir, as it is Hirs, and Shi earned it.") NOTIFY
 NOTIFY TO #5: John_Doe is in Hir happy place by Hirself and it suits Hir, as it is Hirs, and Shi earned it.
-   39: line 9 ("") Branch: -23
+   39: line 9 ("") JMP: -23
    16: line 5 ("") __FORITER__
-   17: line 5 ("", 4, "none", 1) BranchIfNot: +23
+   17: line 5 ("", 4, "none", 1) JmpIfFalse: +23
    18: line 5 ("", 4, "none") SWAP
    19: line 5 ("", "none", 4) POP
    20: line 6 ("", "none") LV0: me
@@ -205,8 +205,9 @@ NOTIFY TO #5: John_Doe is in its happy place by itself and it suits it, as it is
 GETPROP "sex" on #5 = "none"
    38: line 8 ("", #5, "John_Doe is in Its happy place by Itself and it suits It, as it is Its, and It earned it.") NOTIFY
 NOTIFY TO #5: John_Doe is in Its happy place by Itself and it suits It, as it is Its, and It earned it.
-   39: line 9 ("") Branch: -23
+   39: line 9 ("") JMP: -23
    16: line 5 ("") __FORITER__
-   17: line 5 ("", 0) BranchIfNot: +23
+   17: line 5 ("", 0) JmpIfFalse: +23
    40: line 5 ("") __FORPOP__
    41: line 10 ("") EXIT
+Execution completed in 140 steps.

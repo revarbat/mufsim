@@ -31,3 +31,4 @@
    11: line 2 ("", "a", 1, "b", 2, "c", 3, 3) ARRAY_MAKE_DICT
    12: line 3 ("", {'a': 1, 'c': 3, 'b': 2}) ARRAY_KEYS
    13: line 4 ("", "a", "c", "b", 3) EXIT
+Execution completed in 14 steps.

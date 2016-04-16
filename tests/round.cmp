@@ -1,0 +1,34 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: PI
+    2: 5
+    3: ROUND
+    4: POP
+    5: PI
+    6: 1
+    7: ROUND
+    8: POP
+    9: 6.022e+23
+   10: 3
+   11: ROUND
+   12: POP
+   13: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") PI
+    2: line 2 ("", 3.14159265359) 5
+    3: line 2 ("", 3.14159265359, 5) ROUND
+    4: line 2 ("", 3.14159) POP
+    5: line 3 ("") PI
+    6: line 3 ("", 3.14159265359) 1
+    7: line 3 ("", 3.14159265359, 1) ROUND
+    8: line 3 ("", 3.1) POP
+    9: line 4 ("") 6.022e+23
+   10: line 4 ("", 6.022e+23) 3
+   11: line 4 ("", 6.022e+23, 3) ROUND
+   12: line 4 ("", 6.022e+23) POP
+   13: line 5 ("") EXIT
+Execution completed in 14 steps.

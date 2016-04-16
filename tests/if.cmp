@@ -3,35 +3,36 @@
 #### Showing Compiled Tokens ##########################
     0: Function: main
     1: 0
-    2: BranchIfNot: +2
+    2: JmpIfFalse: +2
     3: "foo"
     4: 1
-    5: BranchIfNot: +2
+    5: JmpIfFalse: +2
     6: "bar"
     7: 0
-    8: BranchIfNot: +3
+    8: JmpIfFalse: +3
     9: "baz"
-   10: Branch: +2
+   10: JMP: +2
    11: "qux"
    12: 1
-   13: BranchIfNot: +3
+   13: JmpIfFalse: +3
    14: "baz2"
-   15: Branch: +2
+   15: JMP: +2
    16: "qux2"
    17: EXIT
 
 #### Executing Tokens #################################
     0: line 1 ("") Function: main
     1: line 2 ("") 0
-    2: line 2 ("", 0) BranchIfNot: +2
+    2: line 2 ("", 0) JmpIfFalse: +2
     4: line 3 ("") 1
-    5: line 3 ("", 1) BranchIfNot: +2
+    5: line 3 ("", 1) JmpIfFalse: +2
     6: line 3 ("") "bar"
     7: line 4 ("", "bar") 0
-    8: line 4 ("", "bar", 0) BranchIfNot: +3
+    8: line 4 ("", "bar", 0) JmpIfFalse: +3
    11: line 4 ("", "bar") "qux"
    12: line 5 ("", "bar", "qux") 1
-   13: line 5 ("", "bar", "qux", 1) BranchIfNot: +3
+   13: line 5 ("", "bar", "qux", 1) JmpIfFalse: +3
    14: line 5 ("", "bar", "qux") "baz2"
-   15: line 5 ("", "bar", "qux", "baz2") Branch: +2
+   15: line 5 ("", "bar", "qux", "baz2") JMP: +2
    17: line 6 ("", "bar", "qux", "baz2") EXIT
+Execution completed in 14 steps.

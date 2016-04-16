@@ -1,0 +1,42 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: 625.0
+    2: 0.25
+    3: POW
+    4: POP
+    5: 5.0
+    6: 4.0
+    7: POW
+    8: POP
+    9: 5.0
+   10: 4.5
+   11: POW
+   12: POP
+   13: -5.0
+   14: 4.0
+   15: POW
+   16: POP
+   17: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") 625.0
+    2: line 2 ("", 625.0) 0.25
+    3: line 2 ("", 625.0, 0.25) POW
+    4: line 2 ("", 5.0) POP
+    5: line 3 ("") 5.0
+    6: line 3 ("", 5.0) 4.0
+    7: line 3 ("", 5.0, 4.0) POW
+    8: line 3 ("", 625.0) POP
+    9: line 4 ("") 5.0
+   10: line 4 ("", 5.0) 4.5
+   11: line 4 ("", 5.0, 4.5) POW
+   12: line 4 ("", 1397.54248594) POP
+   13: line 5 ("") -5.0
+   14: line 5 ("", -5.0) 4.0
+   15: line 5 ("", -5.0, 4.0) POW
+   16: line 5 ("", 625.0) POP
+   17: line 6 ("") EXIT
+Execution completed in 18 steps.

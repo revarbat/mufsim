@@ -1,0 +1,3 @@
+: main
+    inf pop
+;

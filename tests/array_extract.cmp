@@ -79,3 +79,4 @@
    35: line 6 ("", {2: 5, 4: 7}, {'a': 2, 'c': 9, 'b': 6, 'e': 3, 'd': 2}, "d", "b", 2) ARRAY_MAKE
    36: line 7 ("", {2: 5, 4: 7}, {'a': 2, 'c': 9, 'b': 6, 'e': 3, 'd': 2}, ['d', 'b']) ARRAY_EXTRACT
    37: line 8 ("", {2: 5, 4: 7}, {'b': 6, 'd': 2}) EXIT
+Execution completed in 38 steps.

@@ -71,14 +71,14 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
    50: !
    51: SV2: _tok
    52: @
-   53: BranchIfNot: +53
+   53: JmpIfFalse: +53
    54: LV7: argparse::posargs_map
    55: @
    56: SV0: _mode
    57: @
    58: ARRAY_GETITEM
    59: NOT
-   60: BranchIfNot: +13
+   60: JmpIfFalse: +13
    61: {
    62: }
    63: ARRAY_MAKE
@@ -123,7 +123,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   102: ARRAY_GETITEM
   103: SV1: _posargs
   104: !
-  105: Branch: +14
+  105: JMP: +14
   106: SV1: _posargs
   107: @
   108: TOLOWER
@@ -136,8 +136,8 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   115: LV8: argparse::remainder_map
   116: !
   117: POP
-  118: Branch: +2
-  119: Branch: -80
+  118: JMP: +2
+  119: JMP: -80
   120: 0
   121: EXIT
 
@@ -204,7 +204,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   181: @
   182: FOREACH
   183: __FORITER__
-  184: BranchIfNot: +41
+  184: JmpIfFalse: +41
   185: SV3: _flag
   186: !
   187: POP
@@ -214,7 +214,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   191: @
   192: ARRAY_GETITEM
   193: NOT
-  194: BranchIfNot: +13
+  194: JmpIfFalse: +13
   195: {
   196: }
   197: ARRAY_MAKE
@@ -244,7 +244,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   221: ARRAY_SETITEM
   222: LV6: argparse::flags_map
   223: !
-  224: Branch: -41
+  224: JMP: -41
   225: __FORPOP__
   226: SV0: _name
   227: @
@@ -268,7 +268,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   244: @
   245: FOREACH
   246: __FORITER__
-  247: BranchIfNot: +59
+  247: JmpIfFalse: +59
   248: SV1: _mode
   249: !
   250: POP
@@ -283,7 +283,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   259: @
   260: ARRAY_FINDVAL
   261: NOT
-  262: BranchIfNot: +8
+  262: JmpIfFalse: +8
   263: SV1: _mode
   264: @
   265: SV0: _name
@@ -297,7 +297,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   273: @
   274: ARRAY_GETITEM
   275: NOT
-  276: BranchIfNot: +13
+  276: JmpIfFalse: +13
   277: {
   278: }
   279: ARRAY_MAKE
@@ -326,7 +326,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   302: ARRAY_SETITEM
   303: LV6: argparse::flags_map
   304: !
-  305: Branch: -59
+  305: JMP: -59
   306: __FORPOP__
   307: 0
   308: EXIT
@@ -338,7 +338,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   313: @
   314: FOREACH
   315: __FORITER__
-  316: BranchIfNot: +31
+  316: JmpIfFalse: +31
   317: SV1: _mode
   318: !
   319: POP
@@ -353,7 +353,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   328: @
   329: ARRAY_FINDVAL
   330: NOT
-  331: BranchIfNot: +8
+  331: JmpIfFalse: +8
   332: SV1: _mode
   333: @
   334: SV1: _mode
@@ -368,7 +368,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   343: Addr:34
   344: EXECUTE
   345: POP
-  346: Branch: -31
+  346: JMP: -31
   347: __FORPOP__
   348: 0
   349: EXIT
@@ -392,7 +392,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   366: @
   367: FOREACH
   368: __FORITER__
-  369: BranchIfNot: +108
+  369: JmpIfFalse: +108
   370: SV1: _mode
   371: !
   372: POP
@@ -406,7 +406,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   380: ARRAY_GETITEM
   381: FOREACH
   382: __FORITER__
-  383: BranchIfNot: +16
+  383: JmpIfFalse: +16
   384: SV3: _flag
   385: !
   386: POP
@@ -421,7 +421,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   395: ARRAY_JOIN
   396: SWAP
   397: ARRAY_APPENDITEM
-  398: Branch: -16
+  398: JMP: -16
   399: __FORPOP__
   400: SV2: _flags
   401: !
@@ -435,7 +435,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   409: ARRAY_GETITEM
   410: FOREACH
   411: __FORITER__
-  412: BranchIfNot: +21
+  412: JmpIfFalse: +21
   413: SV5: _posarg
   414: !
   415: POP
@@ -455,7 +455,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   429: ARRAY_JOIN
   430: SWAP
   431: ARRAY_APPENDITEM
-  432: Branch: -21
+  432: JMP: -21
   433: __FORPOP__
   434: SV4: _posargs
   435: !
@@ -471,9 +471,9 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   445: ARRAY_JOIN
   446: SV2: _flags
   447: @
-  448: BranchIfNot: +3
+  448: JmpIfFalse: +3
   449: " "
-  450: Branch: +2
+  450: JMP: +2
   451: ""
   452: SV2: _flags
   453: @
@@ -483,9 +483,9 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   457: @
   458: SV1: _mode
   459: @
-  460: BranchIfNot: +3
+  460: JmpIfFalse: +3
   461: "#"
-  462: Branch: +2
+  462: JMP: +2
   463: ""
   464: SV0: _cmd
   465: @
@@ -499,7 +499,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   473: @
   474: SWAP
   475: NOTIFY
-  476: Branch: -108
+  476: JMP: -108
   477: __FORPOP__
   478: 0
   479: EXIT
@@ -521,7 +521,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   494: @
   495: "#"
   496: STRINGPFX
-  497: BranchIfNot: +208
+  497: JmpIfFalse: +208
   498: {
   499: {
   500: SV0: _line
@@ -556,7 +556,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   529: @
   530: FOREACH
   531: __FORITER__
-  532: BranchIfNot: +19
+  532: JmpIfFalse: +19
   533: SV2: _mode
   534: !
   535: POP
@@ -566,19 +566,19 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   539: @
   540: STRINGCMP
   541: NOT
-  542: BranchIfNot: +8
+  542: JmpIfFalse: +8
   543: SV2: _mode
   544: @
   545: LV4: argparse::current_mode
   546: !
   547: SV8: _found
   548: ++
-  549: Branch: +2
-  550: Branch: -19
+  549: JMP: +2
+  550: JMP: -19
   551: __FORPOP__
   552: SV8: _found
   553: @
-  554: BranchIfNot: +10
+  554: JmpIfFalse: +10
   555: SV5: _mode_given
   556: ++
   557: SV1: _parts
@@ -587,7 +587,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   560: ARRAY_GETITEM
   561: SV0: _line
   562: !
-  563: Branch: -70
+  563: JMP: -70
   564: LV6: argparse::flags_map
   565: @
   566: LV4: argparse::current_mode
@@ -595,7 +595,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   568: ARRAY_GETITEM
   569: FOREACH
   570: __FORITER__
-  571: BranchIfNot: +26
+  571: JmpIfFalse: +26
   572: SV3: _flag
   573: !
   574: POP
@@ -605,7 +605,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   578: @
   579: STRINGCMP
   580: NOT
-  581: BranchIfNot: +15
+  581: JmpIfFalse: +15
   582: SV6: _opt
   583: @
   584: DUP
@@ -619,24 +619,24 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   592: POP
   593: SV8: _found
   594: ++
-  595: Branch: +2
-  596: Branch: -26
+  595: JMP: +2
+  596: JMP: -26
   597: __FORPOP__
   598: SV8: _found
   599: @
-  600: BranchIfNot: +8
+  600: JmpIfFalse: +8
   601: SV1: _parts
   602: @
   603: 1
   604: ARRAY_GETITEM
   605: SV0: _line
   606: !
-  607: Branch: -114
+  607: JMP: -114
   608: LV5: argparse::modes_list
   609: @
   610: FOREACH
   611: __FORITER__
-  612: BranchIfNot: +17
+  612: JmpIfFalse: +17
   613: SV2: _mode
   614: !
   615: POP
@@ -645,14 +645,14 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   618: SV7: _lc_opt
   619: @
   620: STRINGPFX
-  621: BranchIfNot: +7
+  621: JmpIfFalse: +7
   622: SV2: _mode
   623: @
   624: LV4: argparse::current_mode
   625: !
   626: SV8: _found
   627: ++
-  628: Branch: -17
+  628: JMP: -17
   629: __FORPOP__
   630: LV6: argparse::flags_map
   631: @
@@ -661,7 +661,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   634: ARRAY_GETITEM
   635: FOREACH
   636: __FORITER__
-  637: BranchIfNot: +24
+  637: JmpIfFalse: +24
   638: SV3: _flag
   639: !
   640: POP
@@ -670,7 +670,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   643: SV7: _lc_opt
   644: @
   645: STRINGPFX
-  646: BranchIfNot: +14
+  646: JmpIfFalse: +14
   647: SV6: _opt
   648: @
   649: DUP
@@ -684,26 +684,26 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   657: POP
   658: SV8: _found
   659: ++
-  660: Branch: -24
+  660: JMP: -24
   661: __FORPOP__
   662: SV8: _found
   663: @
   664: 1
   665: =
-  666: BranchIfNot: +9
+  666: JmpIfFalse: +9
   667: SV1: _parts
   668: @
   669: 1
   670: ARRAY_GETITEM
   671: SV0: _line
   672: !
-  673: Branch: -180
-  674: Branch: +23
+  673: JMP: -180
+  674: JMP: +23
   675: SV8: _found
   676: @
   677: 1
   678: >
-  679: BranchIfNot: +10
+  679: JmpIfFalse: +10
   680: SV6: _opt
   681: @
   682: "Option #%s is ambiguous."
@@ -712,7 +712,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   685: @
   686: SWAP
   687: NOTIFY
-  688: Branch: +9
+  688: JMP: +9
   689: SV6: _opt
   690: @
   691: "Option #%s not recognized."
@@ -728,12 +728,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   701: }
   702: ARRAY_MAKE
   703: EXIT
-  704: Branch: -211
+  704: JMP: -211
   705: SV5: _mode_given
   706: @
   707: 1
   708: >
-  709: BranchIfNot: +13
+  709: JmpIfFalse: +13
   710: "Cannot mix modes."
   711: LV0: me
   712: @
@@ -753,7 +753,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   726: ARRAY_GETITEM
   727: FOREACH
   728: __FORITER__
-  729: BranchIfNot: +38
+  729: JmpIfFalse: +38
   730: SV9: _posarg
   731: !
   732: POP
@@ -790,7 +790,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   763: ARRAY_GETITEM
   764: SV0: _line
   765: !
-  766: Branch: -38
+  766: JMP: -38
   767: __FORPOP__
   768: SV0: _line
   769: @
@@ -868,17 +868,17 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   839: ARRAY_REVERSE
   840: FOREACH
   841: __FORITER__
-  842: BranchIfNot: +7
+  842: JmpIfFalse: +7
   843: SWAP
   844: POP
   845: 0
   846: SWAP
   847: ARRAY_INSERTRANGE
-  848: Branch: -7
+  848: JMP: -7
   849: __FORPOP__
   850: FOREACH
   851: __FORITER__
-  852: BranchIfNot: +11
+  852: JmpIfFalse: +11
   853: SV0: _line
   854: !
   855: POP
@@ -888,7 +888,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   859: @
   860: SWAP
   861: NOTIFY
-  862: Branch: -11
+  862: JMP: -11
   863: __FORPOP__
   864: 0
   865: EXIT
@@ -920,7 +920,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   889: @
   890: FOREACH
   891: __FORITER__
-  892: BranchIfNot: +41
+  892: JmpIfFalse: +41
   893: SV5: _line
   894: !
   895: SV4: _lnum
@@ -933,14 +933,14 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   902: @
   903: >=
   904: DUP
-  905: BranchIfNot: +7
+  905: JmpIfFalse: +7
   906: POP
   907: SV4: _lnum
   908: @
   909: SV2: _end
   910: @
   911: <=
-  912: BranchIfNot: +20
+  912: JmpIfFalse: +20
   913: SV5: _line
   914: @
   915: SV4: _lnum
@@ -950,9 +950,9 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   919: SV3: _pos
   920: @
   921: =
-  922: BranchIfNot: +3
+  922: JmpIfFalse: +3
   923: ">"
-  924: Branch: +2
+  924: JMP: +2
   925: " "
   926: "%s%3i: %s"
   927: FMTSTRING
@@ -960,7 +960,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   929: @
   930: SWAP
   931: NOTIFY
-  932: Branch: -41
+  932: JMP: -41
   933: __FORPOP__
   934: SV3: _pos
   935: @
@@ -968,7 +968,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   937: @
   938: ARRAY_COUNT
   939: >
-  940: BranchIfNot: +6
+  940: JmpIfFalse: +6
   941: ">"
   942: LV0: me
   943: @
@@ -1008,7 +1008,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   976: @
   977: FOREACH
   978: __FORITER__
-  979: BranchIfNot: +58
+  979: JmpIfFalse: +58
   980: SV7: _line
   981: !
   982: SV6: _idx
@@ -1020,7 +1020,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   988: SV1: _start
   989: @
   990: <
-  991: BranchIfNot: +9
+  991: JmpIfFalse: +9
   992: SV3: _pfx
   993: @
   994: SV7: _line
@@ -1035,14 +1035,14 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1003: @
  1004: >=
  1005: DUP
- 1006: BranchIfNot: +7
+ 1006: JmpIfFalse: +7
  1007: POP
  1008: SV6: _idx
  1009: @
  1010: SV2: _end
  1011: @
  1012: <=
- 1013: BranchIfNot: +9
+ 1013: JmpIfFalse: +9
  1014: SV4: _mid
  1015: @
  1016: SV7: _line
@@ -1056,7 +1056,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1024: SV2: _end
  1025: @
  1026: >
- 1027: BranchIfNot: +9
+ 1027: JmpIfFalse: +9
  1028: SV5: _sfx
  1029: @
  1030: SV7: _line
@@ -1065,7 +1065,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1033: ARRAY_APPENDITEM
  1034: SV5: _sfx
  1035: !
- 1036: Branch: -58
+ 1036: JMP: -58
  1037: __FORPOP__
  1038: {
  1039: SV3: _pfx
@@ -1092,7 +1092,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1059: @
  1060: FOREACH
  1061: __FORITER__
- 1062: BranchIfNot: +37
+ 1062: JmpIfFalse: +37
  1063: SV5: _line
  1064: !
  1065: SV4: _idx
@@ -1114,7 +1114,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1081: SV5: _line
  1082: @
  1083: STRCMP
- 1084: BranchIfNot: +14
+ 1084: JmpIfFalse: +14
  1085: SV6: _newln
  1086: @
  1087: DUP
@@ -1128,7 +1128,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1095: POP
  1096: SV3: _changed
  1097: ++
- 1098: Branch: -37
+ 1098: JMP: -37
  1099: __FORPOP__
  1100: {
  1101: SV3: _changed
@@ -1169,7 +1169,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1135: SV1: _cols
  1136: @
  1137: >
- 1138: BranchIfNot: +94
+ 1138: JmpIfFalse: +94
  1139: {
  1140: SV2: _txt
  1141: @
@@ -1214,7 +1214,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1180: SV4: _pre
  1181: @
  1182: NOT
- 1183: BranchIfNot: +9
+ 1183: JmpIfFalse: +9
  1184: SV5: _rem
  1185: @
  1186: SV4: _pre
@@ -1222,7 +1222,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1188: ""
  1189: SV5: _rem
  1190: !
- 1191: Branch: +25
+ 1191: JMP: +25
  1192: SV5: _rem
  1193: @
  1194: STRLEN
@@ -1231,7 +1231,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1197: 2
  1198: /
  1199: >
- 1200: BranchIfNot: +16
+ 1200: JmpIfFalse: +16
  1201: {
  1202: SV4: _pre
  1203: @
@@ -1262,12 +1262,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1228: STRCAT
  1229: SV2: _txt
  1230: !
- 1231: Branch: -99
+ 1231: JMP: -99
  1232: SV2: _txt
  1233: @
  1234: STRIPLEAD
  1235: STRIPTAIL
- 1236: BranchIfNot: +9
+ 1236: JmpIfFalse: +9
  1237: SV3: _out
  1238: @
  1239: SV2: _txt
@@ -1291,7 +1291,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1256: @
  1257: ","
  1258: INSTR
- 1259: BranchIfNot: +25
+ 1259: JmpIfFalse: +25
  1260: {
  1261: SV0: _str
  1262: @
@@ -1315,12 +1315,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1280: ATOI
  1281: SV2: _line2
  1282: !
- 1283: Branch: +43
+ 1283: JMP: +43
  1284: SV0: _str
  1285: @
  1286: " "
  1287: INSTR
- 1288: BranchIfNot: +25
+ 1288: JmpIfFalse: +25
  1289: {
  1290: SV0: _str
  1291: @
@@ -1344,12 +1344,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1309: ATOI
  1310: SV2: _line2
  1311: !
- 1312: Branch: +14
+ 1312: JMP: +14
  1313: SV0: _str
  1314: @
  1315: STRIPLEAD
  1316: STRIPTAIL
- 1317: BranchIfNot: +9
+ 1317: JmpIfFalse: +9
  1318: SV0: _str
  1319: @
  1320: ATOI
@@ -1387,7 +1387,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1351: ARRAY_COUNT
  1352: ++
  1353: >
- 1354: BranchIfNot: +15
+ 1354: JmpIfFalse: +15
  1355: SV0: _lines
  1356: @
  1357: ARRAY_COUNT
@@ -1410,7 +1410,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1374: "."
  1375: 1
  1376: STRNCMP
- 1377: BranchIfNot: +14
+ 1377: JmpIfFalse: +14
  1378: SV5: _inln
  1379: @
  1380: SV0: _lines
@@ -1423,14 +1423,14 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1387: !
  1388: LV10: lsedit::insert_pos
  1389: ++
- 1390: Branch: -43
+ 1390: JMP: -43
  1391: SV5: _inln
  1392: @
  1393: ".."
  1394: 2
  1395: STRNCMP
  1396: NOT
- 1397: BranchIfNot: +25
+ 1397: JmpIfFalse: +25
  1398: {
  1399: SV5: _inln
  1400: @
@@ -1454,7 +1454,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1418: !
  1419: LV10: lsedit::insert_pos
  1420: ++
- 1421: Branch: -74
+ 1421: JMP: -74
  1422: {
  1423: SV5: _inln
  1424: @
@@ -1483,16 +1483,16 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1447: ".h"
  1448: STRCMP
  1449: NOT
- 1450: BranchIfNot: +5
+ 1450: JmpIfFalse: +5
  1451: Addr:803
  1452: EXECUTE
  1453: POP
- 1454: Branch: +751
+ 1454: JMP: +751
  1455: DUP
  1456: ".q"
  1457: STRCMP
  1458: NOT
- 1459: BranchIfNot: +24
+ 1459: JmpIfFalse: +24
  1460: SV1: _obj
  1461: @
  1462: SV2: _prop
@@ -1515,12 +1515,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1479: }
  1480: ARRAY_MAKE
  1481: EXIT
- 1482: Branch: +723
+ 1482: JMP: +723
  1483: DUP
  1484: ".x"
  1485: STRCMP
  1486: NOT
- 1487: BranchIfNot: +17
+ 1487: JmpIfFalse: +17
  1488: "Aborting."
  1489: LV0: me
  1490: @
@@ -1536,12 +1536,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1500: }
  1501: ARRAY_MAKE
  1502: EXIT
- 1503: Branch: +702
+ 1503: JMP: +702
  1504: DUP
  1505: ".l"
  1506: STRCMP
  1507: NOT
- 1508: BranchIfNot: +32
+ 1508: JmpIfFalse: +32
  1509: SV7: _cmdargs
  1510: @
  1511: 1
@@ -1572,12 +1572,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1536: Addr:879
  1537: EXECUTE
  1538: POP
- 1539: Branch: +666
+ 1539: JMP: +666
  1540: DUP
  1541: ".i"
  1542: STRCMP
  1543: NOT
- 1544: BranchIfNot: +60
+ 1544: JmpIfFalse: +60
  1545: SV7: _cmdargs
  1546: @
  1547: 1
@@ -1603,13 +1603,13 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1567: @
  1568: =
  1569: NOT
- 1570: BranchIfNot: +7
+ 1570: JmpIfFalse: +7
  1571: "Usage: .i LINENUM"
  1572: LV0: me
  1573: @
  1574: SWAP
  1575: NOTIFY
- 1576: Branch: +629
+ 1576: JMP: +629
  1577: SV3: _line1
  1578: @
  1579: LV10: lsedit::insert_pos
@@ -1621,7 +1621,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1585: ARRAY_COUNT
  1586: ++
  1587: >
- 1588: BranchIfNot: +7
+ 1588: JmpIfFalse: +7
  1589: SV0: _lines
  1590: @
  1591: ARRAY_COUNT
@@ -1636,12 +1636,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1600: @
  1601: SWAP
  1602: NOTIFY
- 1603: Branch: +602
+ 1603: JMP: +602
  1604: DUP
  1605: ".s"
  1606: STRCMP
  1607: NOT
- 1608: BranchIfNot: +175
+ 1608: JmpIfFalse: +175
  1609: SV7: _cmdargs
  1610: @
  1611: "/"
@@ -1653,7 +1653,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1617: ARRAY_COUNT
  1618: 3
  1619: =
- 1620: BranchIfNot: +157
+ 1620: JmpIfFalse: +157
  1621: SV7: _cmdargs
  1622: @
  1623: DUP
@@ -1698,25 +1698,25 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1662: NOT
  1663: DUP
  1664: NOT
- 1665: BranchIfNot: +5
+ 1665: JmpIfFalse: +5
  1666: POP
  1667: SV4: _line2
  1668: @
  1669: NOT
  1670: DUP
  1671: NOT
- 1672: BranchIfNot: +5
+ 1672: JmpIfFalse: +5
  1673: POP
  1674: SV8: _fnd
  1675: @
  1676: NOT
- 1677: BranchIfNot: +7
+ 1677: JmpIfFalse: +7
  1678: "Usage: .s [LINE[,LINE]]/FIND/REPLACE"
  1679: LV0: me
  1680: @
  1681: SWAP
  1682: NOTIFY
- 1683: Branch: +522
+ 1683: JMP: +522
  1684: SV0: _lines
  1685: @
  1686: SV3: _line1
@@ -1780,13 +1780,13 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1744: ARRAY_REVERSE
  1745: FOREACH
  1746: __FORITER__
- 1747: BranchIfNot: +7
+ 1747: JmpIfFalse: +7
  1748: SWAP
  1749: POP
  1750: 0
  1751: SWAP
  1752: ARRAY_INSERTRANGE
- 1753: Branch: -7
+ 1753: JMP: -7
  1754: __FORPOP__
  1755: SV0: _lines
  1756: !
@@ -1809,18 +1809,18 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1773: Addr:879
  1774: EXECUTE
  1775: POP
- 1776: Branch: +6
+ 1776: JMP: +6
  1777: "Usage: .s [LINE[,LINE]]/FIND/REPLACE"
  1778: LV0: me
  1779: @
  1780: SWAP
  1781: NOTIFY
- 1782: Branch: +423
+ 1782: JMP: +423
  1783: DUP
  1784: ".d"
  1785: STRCMP
  1786: NOT
- 1787: BranchIfNot: +101
+ 1787: JmpIfFalse: +101
  1788: SV0: _lines
  1789: @
  1790: ARRAY_COUNT
@@ -1850,12 +1850,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1814: NOT
  1815: DUP
  1816: NOT
- 1817: BranchIfNot: +5
+ 1817: JmpIfFalse: +5
  1818: POP
  1819: SV4: _line2
  1820: @
  1821: NOT
- 1822: BranchIfNot: +6
+ 1822: JmpIfFalse: +6
  1823: "Usage: .d LINENUM [LINENUM]"
  1824: LV0: me
  1825: @
@@ -1889,13 +1889,13 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1853: SV3: _line1
  1854: @
  1855: >=
- 1856: BranchIfNot: +23
+ 1856: JmpIfFalse: +23
  1857: LV10: lsedit::insert_pos
  1858: @
  1859: SV4: _line2
  1860: @
  1861: >
- 1862: BranchIfNot: +13
+ 1862: JmpIfFalse: +13
  1863: LV10: lsedit::insert_pos
  1864: @
  1865: SV4: _line2
@@ -1907,7 +1907,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1871: -
  1872: LV10: lsedit::insert_pos
  1873: !
- 1874: Branch: +5
+ 1874: JMP: +5
  1875: SV3: _line1
  1876: @
  1877: LV10: lsedit::insert_pos
@@ -1920,12 +1920,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1884: @
  1885: SWAP
  1886: NOTIFY
- 1887: Branch: +318
+ 1887: JMP: +318
  1888: DUP
  1889: ".w"
  1890: STRCMP
  1891: NOT
- 1892: BranchIfNot: +138
+ 1892: JmpIfFalse: +138
  1893: SV7: _cmdargs
  1894: @
  1895: "="
@@ -1935,15 +1935,15 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1899: SV7: _cmdargs
  1900: @
  1901: NOT
- 1902: BranchIfNot: +28
+ 1902: JmpIfFalse: +28
  1903: SV1: _obj
  1904: @
  1905: DUP
- 1906: BranchIfNot: +4
+ 1906: JmpIfFalse: +4
  1907: POP
  1908: SV2: _prop
  1909: @
- 1910: BranchIfNot: +14
+ 1910: JmpIfFalse: +14
  1911: SV1: _obj
  1912: @
  1913: SV2: _prop
@@ -1956,19 +1956,19 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1920: @
  1921: SWAP
  1922: NOTIFY
- 1923: Branch: +6
+ 1923: JMP: +6
  1924: "Usage: .w OBJECT=LISTPROP"
  1925: LV0: me
  1926: @
  1927: SWAP
  1928: NOTIFY
- 1929: Branch: +100
+ 1929: JMP: +100
  1930: SV7: _cmdargs
  1931: @
  1932: ARRAY_COUNT
  1933: 2
  1934: =
- 1935: BranchIfNot: +89
+ 1935: JmpIfFalse: +89
  1936: SV7: _cmdargs
  1937: @
  1938: DUP
@@ -1990,7 +1990,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1954: DUP
  1955: #-1
  1956: DBCMP
- 1957: BranchIfNot: +5
+ 1957: JmpIfFalse: +5
  1958: LV0: me
  1959: @
  1960: "I don't see that here!"
@@ -1998,7 +1998,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1962: DUP
  1963: #-2
  1964: DBCMP
- 1965: BranchIfNot: +5
+ 1965: JmpIfFalse: +5
  1966: LV0: me
  1967: @
  1968: "I don't know which one you mean!"
@@ -2006,20 +2006,20 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1970: DUP
  1971: #-3
  1972: DBCMP
- 1973: BranchIfNot: +5
+ 1973: JmpIfFalse: +5
  1974: POP
  1975: LV0: me
  1976: @
  1977: GETLINK
  1978: DUP
  1979: OK?
- 1980: BranchIfNot: +13
+ 1980: JmpIfFalse: +13
  1981: LV0: me
  1982: @
  1983: OVER
  1984: CONTROLS
  1985: NOT
- 1986: BranchIfNot: +7
+ 1986: JmpIfFalse: +7
  1987: POP
  1988: #-1
  1989: LV0: me
@@ -2032,18 +2032,18 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  1996: @
  1997: 0
  1998: <
- 1999: BranchIfNot: +2
- 2000: Branch: +205
+ 1999: JmpIfFalse: +2
+ 2000: JMP: +205
  2001: SV16: _savelist
  2002: @
  2003: NOT
- 2004: BranchIfNot: +7
+ 2004: JmpIfFalse: +7
  2005: "Usage: .w [OBJECT=LISTPROP]"
  2006: LV0: me
  2007: @
  2008: SWAP
  2009: NOTIFY
- 2010: Branch: +195
+ 2010: JMP: +195
  2011: SV15: _saveobj
  2012: @
  2013: SV16: _savelist
@@ -2056,18 +2056,18 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2020: @
  2021: SWAP
  2022: NOTIFY
- 2023: Branch: +6
+ 2023: JMP: +6
  2024: "Usage: .w [OBJECT=LISTPROP]"
  2025: LV0: me
  2026: @
  2027: SWAP
  2028: NOTIFY
- 2029: Branch: +176
+ 2029: JMP: +176
  2030: DUP
  2031: ".f"
  2032: STRCMP
  2033: NOT
- 2034: BranchIfNot: +159
+ 2034: JmpIfFalse: +159
  2035: {
  2036: SV7: _cmdargs
  2037: @
@@ -2109,11 +2109,11 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2073: POP
  2074: SV17: _cols
  2075: @
- 2076: BranchIfNot: +5
+ 2076: JmpIfFalse: +5
  2077: SV17: _cols
  2078: @
  2079: ATOI
- 2080: Branch: +2
+ 2080: JMP: +2
  2081: 75
  2082: SV17: _cols
  2083: !
@@ -2122,25 +2122,25 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2086: NOT
  2087: DUP
  2088: NOT
- 2089: BranchIfNot: +5
+ 2089: JmpIfFalse: +5
  2090: POP
  2091: SV3: _line1
  2092: @
  2093: NOT
  2094: DUP
  2095: NOT
- 2096: BranchIfNot: +5
+ 2096: JmpIfFalse: +5
  2097: POP
  2098: SV4: _line2
  2099: @
  2100: NOT
- 2101: BranchIfNot: +7
+ 2101: JmpIfFalse: +7
  2102: "Usage: .f [L1,[L2]][=LISTPROP]"
  2103: LV0: me
  2104: @
  2105: SWAP
  2106: NOTIFY
- 2107: Branch: +98
+ 2107: JMP: +98
  2108: SV0: _lines
  2109: @
  2110: SV3: _line1
@@ -2196,13 +2196,13 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2160: ARRAY_REVERSE
  2161: FOREACH
  2162: __FORITER__
- 2163: BranchIfNot: +7
+ 2163: JmpIfFalse: +7
  2164: SWAP
  2165: POP
  2166: 0
  2167: SWAP
  2168: ARRAY_INSERTRANGE
- 2169: Branch: -7
+ 2169: JMP: -7
  2170: __FORPOP__
  2171: SV0: _lines
  2172: !
@@ -2225,7 +2225,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2189: Addr:879
  2190: EXECUTE
  2191: POP
- 2192: Branch: +13
+ 2192: JMP: +13
  2193: {
  2194: SV6: _cmd
  2195: @
@@ -2236,10 +2236,10 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2200: }
  2201: ARRAY_MAKE
  2202: EXIT
- 2203: Branch: +2
- 2204: Branch: -761
+ 2203: JMP: +2
+ 2204: JMP: -761
  2205: POP
- 2206: Branch: -859
+ 2206: JMP: -859
  2207: 0
  2208: EXIT
 
@@ -2270,7 +2270,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2233: SV1: _opts
  2234: @
  2235: NOT
- 2236: BranchIfNot: +3
+ 2236: JmpIfFalse: +3
  2237: 0
  2238: EXIT
  2239: SV1: _opts
@@ -2280,14 +2280,14 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2243: NOT
  2244: DUP
  2245: NOT
- 2246: BranchIfNot: +7
+ 2246: JmpIfFalse: +7
  2247: POP
  2248: SV1: _opts
  2249: @
  2250: "list"
  2251: ARRAY_GETITEM
  2252: NOT
- 2253: BranchIfNot: +6
+ 2253: JmpIfFalse: +6
  2254: Addr:350
  2255: EXECUTE
  2256: POP
@@ -2301,7 +2301,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2264: DUP
  2265: #-1
  2266: DBCMP
- 2267: BranchIfNot: +5
+ 2267: JmpIfFalse: +5
  2268: LV0: me
  2269: @
  2270: "I don't see that here!"
@@ -2309,7 +2309,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2272: DUP
  2273: #-2
  2274: DBCMP
- 2275: BranchIfNot: +5
+ 2275: JmpIfFalse: +5
  2276: LV0: me
  2277: @
  2278: "I don't know which one you mean!"
@@ -2317,20 +2317,20 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2280: DUP
  2281: #-3
  2282: DBCMP
- 2283: BranchIfNot: +5
+ 2283: JmpIfFalse: +5
  2284: POP
  2285: LV0: me
  2286: @
  2287: GETLINK
  2288: DUP
  2289: OK?
- 2290: BranchIfNot: +13
+ 2290: JmpIfFalse: +13
  2291: LV0: me
  2292: @
  2293: OVER
  2294: CONTROLS
  2295: NOT
- 2296: BranchIfNot: +7
+ 2296: JmpIfFalse: +7
  2297: POP
  2298: #-1
  2299: LV0: me
@@ -2343,7 +2343,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2306: @
  2307: 0
  2308: <
- 2309: BranchIfNot: +3
+ 2309: JmpIfFalse: +3
  2310: 0
  2311: EXIT
  2312: 1
@@ -2403,8 +2403,8 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2366: SV3: _cmd
  2367: @
  2368: ARRAY_FINDVAL
- 2369: BranchIfNot: +2
- 2370: Branch: +10
+ 2369: JmpIfFalse: +2
+ 2370: JMP: +10
  2371: SV3: _cmd
  2372: @
  2373: "Unrecognized editor command '%s'."
@@ -2413,7 +2413,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2376: @
  2377: SWAP
  2378: NOTIFY
- 2379: Branch: -46
+ 2379: JMP: -46
  2380: {
  2381: SV3: _cmd
  2382: @
@@ -2673,7 +2673,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   181: line 54 (SV1) @
   182: line 54 ([]) FOREACH
   183: line 55 () __FORITER__
-  184: line 55 (0) BranchIfNot: +41
+  184: line 55 (0) JmpIfFalse: +41
   225: line 54 () __FORPOP__
   226: line 63 () SV0: _name
   227: line 63 (SV0) @
@@ -2700,14 +2700,14 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
    50: line 24 (['obj=list', 'obj', '=', 'list'], SV2) !
    51: line 25 () SV2: _tok
    52: line 25 (SV2) @
-   53: line 25 (['obj=list', 'obj', '=', 'list']) BranchIfNot: +53
+   53: line 25 (['obj=list', 'obj', '=', 'list']) JmpIfFalse: +53
    54: line 26 () LV7: argparse::posargs_map
    55: line 26 (LV7) @
    56: line 26 ({'': []}) SV0: _mode
    57: line 26 ({'': []}, SV0) @
    58: line 26 ({'': []}, "") ARRAY_GETITEM
    59: line 26 ([]) NOT
-   60: line 26 (1) BranchIfNot: +13
+   60: line 26 (1) JmpIfFalse: +13
    61: line 27 () {
    62: line 27 (Mark) }
    63: line 27 (0) ARRAY_MAKE
@@ -2752,8 +2752,8 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   102: line 32 (['obj=list', 'obj', '=', 'list'], 3) ARRAY_GETITEM
   103: line 32 ("list") SV1: _posargs
   104: line 32 ("list", SV1) !
-  105: line 25 () Branch: +14
-  119: line 38 () Branch: -80
+  105: line 25 () JMP: +14
+  119: line 38 () JMP: -80
    39: line 23 () {
    40: line 23 (Mark) SV1: _posargs
    41: line 23 (Mark, SV1) @
@@ -2768,7 +2768,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
    50: line 24 ([], SV2) !
    51: line 25 () SV2: _tok
    52: line 25 (SV2) @
-   53: line 25 ([]) BranchIfNot: +53
+   53: line 25 ([]) JmpIfFalse: +53
   106: line 34 () SV1: _posargs
   107: line 34 (SV1) @
   108: line 34 ("list") TOLOWER
@@ -2781,7 +2781,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   115: line 35 ("list", {'': 'list'}) LV8: argparse::remainder_map
   116: line 35 ("list", {'': 'list'}, LV8) !
   117: line 35 ("list") POP
-  118: line 36 () Branch: +2
+  118: line 36 () JMP: +2
   120: line 39 () 0
   121: line 40 (0) EXIT
   232: line 63 (0) POP
@@ -2809,12 +2809,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   494: line 130 (SV0) @
   495: line 130 ("") "#"
   496: line 130 ("", "#") STRINGPFX
-  497: line 131 (0) BranchIfNot: +208
+  497: line 131 (0) JmpIfFalse: +208
   705: line 189 () SV5: _mode_given
   706: line 189 (SV5) @
   707: line 189 (0) 1
   708: line 189 (0, 1) >
-  709: line 189 (0) BranchIfNot: +13
+  709: line 189 (0) JmpIfFalse: +13
   722: line 194 () LV7: argparse::posargs_map
   723: line 194 (LV7) @
   724: line 194 ({'': [['obj', '=']]}) LV4: argparse::current_mode
@@ -2822,7 +2822,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   726: line 194 ({'': [['obj', '=']]}, "") ARRAY_GETITEM
   727: line 194 ([['obj', '=']]) FOREACH
   728: line 195 () __FORITER__
-  729: line 195 (0, ['obj', '='], 1) BranchIfNot: +38
+  729: line 195 (0, ['obj', '='], 1) JmpIfFalse: +38
   730: line 195 (0, ['obj', '=']) SV9: _posarg
   731: line 195 (0, ['obj', '='], SV9) !
   732: line 195 (0) POP
@@ -2859,9 +2859,9 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   763: line 198 (['', ''], 1) ARRAY_GETITEM
   764: line 198 ("") SV0: _line
   765: line 198 ("", SV0) !
-  766: line 199 () Branch: -38
+  766: line 199 () JMP: -38
   728: line 195 () __FORITER__
-  729: line 195 (0) BranchIfNot: +38
+  729: line 195 (0) JmpIfFalse: +38
   767: line 194 () __FORPOP__
   768: line 200 () SV0: _line
   769: line 200 (SV0) @
@@ -2895,7 +2895,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2233: line 516 () SV1: _opts
  2234: line 516 (SV1) @
  2235: line 516 ({'list': '', 'obj': '', 'mode': ''}) NOT
- 2236: line 516 (0) BranchIfNot: +3
+ 2236: line 516 (0) JmpIfFalse: +3
  2239: line 517 () SV1: _opts
  2240: line 517 (SV1) @
  2241: line 517 ({'list': '', 'obj': '', 'mode': ''}) "obj"
@@ -2903,8 +2903,8 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2243: line 517 ("") NOT
  2244: line 518 (1) DUP
  2245: line 518 (1, 1) NOT
- 2246: line 518 (1, 0) BranchIfNot: +7
- 2253: line 518 (1) BranchIfNot: +6
+ 2246: line 518 (1, 0) JmpIfFalse: +7
+ 2253: line 518 (1) JmpIfFalse: +6
  2254: line 519 () Addr:350
  2255: line 519 (Addr:350) EXECUTE
   350: line 100 () Function: argparse::show_usage
@@ -2927,7 +2927,7 @@ NOTIFY TO #5: Usage:
   366: line 105 (LV5) @
   367: line 105 (['']) FOREACH
   368: line 106 () __FORITER__
-  369: line 106 (0, "", 1) BranchIfNot: +108
+  369: line 106 (0, "", 1) JmpIfFalse: +108
   370: line 106 (0, "") SV1: _mode
   371: line 106 (0, "", SV1) !
   372: line 106 (0) POP
@@ -2941,7 +2941,7 @@ NOTIFY TO #5: Usage:
   380: line 107 ([], {'': []}, "") ARRAY_GETITEM
   381: line 107 ([], []) FOREACH
   382: line 108 ([]) __FORITER__
-  383: line 108 ([], 0) BranchIfNot: +16
+  383: line 108 ([], 0) JmpIfFalse: +16
   399: line 107 ([]) __FORPOP__
   400: line 110 ([]) SV2: _flags
   401: line 110 ([], SV2) !
@@ -2955,7 +2955,7 @@ NOTIFY TO #5: Usage:
   409: line 111 ([], {'': [['obj', '=']]}, "") ARRAY_GETITEM
   410: line 111 ([], [['obj', '=']]) FOREACH
   411: line 112 ([]) __FORITER__
-  412: line 112 ([], 0, ['obj', '='], 1) BranchIfNot: +21
+  412: line 112 ([], 0, ['obj', '='], 1) JmpIfFalse: +21
   413: line 112 ([], 0, ['obj', '=']) SV5: _posarg
   414: line 112 ([], 0, ['obj', '='], SV5) !
   415: line 112 ([], 0) POP
@@ -2975,9 +2975,9 @@ NOTIFY TO #5: Usage:
   429: line 113 ([], ['OBJ', '='], "") ARRAY_JOIN
   430: line 114 ([], "OBJ=") SWAP
   431: line 114 ("OBJ=", []) ARRAY_APPENDITEM
-  432: line 115 (['OBJ=']) Branch: -21
+  432: line 115 (['OBJ=']) JMP: -21
   411: line 112 (['OBJ=']) __FORITER__
-  412: line 112 (['OBJ='], 0) BranchIfNot: +21
+  412: line 112 (['OBJ='], 0) JmpIfFalse: +21
   433: line 111 (['OBJ=']) __FORPOP__
   434: line 115 (['OBJ=']) SV4: _posargs
   435: line 115 (['OBJ='], SV4) !
@@ -2993,7 +2993,7 @@ NOTIFY TO #5: Usage:
   445: line 117 ("LIST", ['OBJ='], "") ARRAY_JOIN
   446: line 117 ("LIST", "OBJ=") SV2: _flags
   447: line 117 ("LIST", "OBJ=", SV2) @
-  448: line 117 ("LIST", "OBJ=", []) BranchIfNot: +3
+  448: line 117 ("LIST", "OBJ=", []) JmpIfFalse: +3
   451: line 117 ("LIST", "OBJ=") ""
   452: line 118 ("LIST", "OBJ=", "") SV2: _flags
   453: line 118 ("LIST", "OBJ=", "", SV2) @
@@ -3003,7 +3003,7 @@ NOTIFY TO #5: Usage:
   457: line 118 ("LIST", "OBJ=", "", "", SV1) @
   458: line 118 ("LIST", "OBJ=", "", "", "") SV1: _mode
   459: line 118 ("LIST", "OBJ=", "", "", "", SV1) @
-  460: line 118 ("LIST", "OBJ=", "", "", "", "") BranchIfNot: +3
+  460: line 118 ("LIST", "OBJ=", "", "", "", "") JmpIfFalse: +3
   463: line 118 ("LIST", "OBJ=", "", "", "") ""
   464: line 119 ("LIST", "OBJ=", "", "", "", "") SV0: _cmd
   465: line 119 ("LIST", "OBJ=", "", "", "", "", SV0) @
@@ -3018,9 +3018,9 @@ NOTIFY TO #5: Usage:
   474: line 120 ("test  OBJ=LIST", #5) SWAP
   475: line 120 (#5, "test  OBJ=LIST") NOTIFY
 NOTIFY TO #5: test  OBJ=LIST
-  476: line 121 () Branch: -108
+  476: line 121 () JMP: -108
   368: line 106 () __FORITER__
-  369: line 106 (0) BranchIfNot: +108
+  369: line 106 (0) JmpIfFalse: +108
   477: line 105 () __FORPOP__
   478: line 122 () 0
   479: line 123 (0) EXIT
@@ -3029,3 +3029,4 @@ NOTIFY TO #5: test  OBJ=LIST
  2258: line 520 (0) EXIT
  2400: line 549 (0) EXIT
  2452: line 559 (0) EXIT
+Execution completed in 536 steps.

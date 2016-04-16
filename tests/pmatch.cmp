@@ -1,0 +1,34 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "jane_doe"
+    2: PMATCH
+    3: POP
+    4: "john_doe"
+    5: PMATCH
+    6: POP
+    7: "Wizard"
+    8: PMATCH
+    9: POP
+   10: "FleegulNuman"
+   11: PMATCH
+   12: POP
+   13: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "jane_doe"
+    2: line 2 ("", "jane_doe") PMATCH
+    3: line 2 ("", #6) POP
+    4: line 3 ("") "john_doe"
+    5: line 3 ("", "john_doe") PMATCH
+    6: line 3 ("", #5) POP
+    7: line 4 ("") "Wizard"
+    8: line 4 ("", "Wizard") PMATCH
+    9: line 4 ("", #1) POP
+   10: line 5 ("") "FleegulNuman"
+   11: line 5 ("", "FleegulNuman") PMATCH
+   12: line 5 ("", #-1) POP
+   13: line 6 ("") EXIT
+Execution completed in 14 steps.

@@ -23,3 +23,4 @@
     7: line 3 ("", ['cat'], [(0, 3)], "cat dog fog bat", "[a-z]og") 1
     8: line 3 ("", ['cat'], [(0, 3)], "cat dog fog bat", "[a-z]og", 1) REGEXP
     9: line 4 ("", ['cat'], [(0, 3)], ['dog'], [(4, 7)]) EXIT
+Execution completed in 10 steps.

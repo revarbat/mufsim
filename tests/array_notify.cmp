@@ -40,3 +40,4 @@ NOTIFY TO [#5, #1, #6]: First line.
 NOTIFY TO [#5, #1, #6]: Second line.
 NOTIFY TO [#5, #1, #6]: Third line.
    16: line 5 ("") EXIT
+Execution completed in 17 steps.

@@ -25,3 +25,4 @@
     8: line 2 ("", [3, 4, 5, 6]) 2
     9: line 3 ("", [3, 4, 5, 6], 2) ARRAY_DELITEM
    10: line 4 ("", [3, 4, 6]) EXIT
+Execution completed in 11 steps.

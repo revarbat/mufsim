@@ -11,3 +11,4 @@
     1: line 2 ("") TRIG
     2: line 2 ("", #3) GETLINKS_ARRAY
     3: line 3 ("", [#4]) EXIT
+Execution completed in 4 steps.

@@ -25,3 +25,4 @@
     8: line 5 ("", 4) SV0: foo
     9: line 5 ("", 4, SV0) @
    10: line 6 ("", 4, 2) EXIT
+Execution completed in 11 steps.

@@ -10,10 +10,10 @@
     6: ARRAY_MAKE
     7: FOREACH
     8: __FORITER__
-    9: BranchIfNot: +4
+    9: JmpIfFalse: +4
    10: POP
    11: POP
-   12: Branch: -4
+   12: JMP: -4
    13: __FORPOP__
    14: EXIT
 
@@ -27,21 +27,22 @@
     6: line 2 ("", 3, 4, 5, 3) ARRAY_MAKE
     7: line 3 ("", [3, 4, 5]) FOREACH
     8: line 4 ("") __FORITER__
-    9: line 4 ("", 0, 3, 1) BranchIfNot: +4
+    9: line 4 ("", 0, 3, 1) JmpIfFalse: +4
    10: line 4 ("", 0, 3) POP
    11: line 4 ("", 0) POP
-   12: line 5 ("") Branch: -4
+   12: line 5 ("") JMP: -4
     8: line 4 ("") __FORITER__
-    9: line 4 ("", 1, 4, 1) BranchIfNot: +4
+    9: line 4 ("", 1, 4, 1) JmpIfFalse: +4
    10: line 4 ("", 1, 4) POP
    11: line 4 ("", 1) POP
-   12: line 5 ("") Branch: -4
+   12: line 5 ("") JMP: -4
     8: line 4 ("") __FORITER__
-    9: line 4 ("", 2, 5, 1) BranchIfNot: +4
+    9: line 4 ("", 2, 5, 1) JmpIfFalse: +4
    10: line 4 ("", 2, 5) POP
    11: line 4 ("", 2) POP
-   12: line 5 ("") Branch: -4
+   12: line 5 ("") JMP: -4
     8: line 4 ("") __FORITER__
-    9: line 4 ("", 0) BranchIfNot: +4
+    9: line 4 ("", 0) JmpIfFalse: +4
    13: line 3 ("") __FORPOP__
    14: line 6 ("") EXIT
+Execution completed in 27 steps.

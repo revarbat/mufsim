@@ -15,3 +15,4 @@
     3: line 2 ("", 3, 4) 5
     4: line 2 ("", 3, 4, 5) SWAP
     5: line 3 ("", 3, 5, 4) EXIT
+Execution completed in 6 steps.

@@ -1,0 +1,22 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: 25.0
+    2: SQRT
+    3: 2.0
+    4: SQRT
+    5: -1.0
+    6: SQRT
+    7: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") 25.0
+    2: line 2 ("", 25.0) SQRT
+    3: line 3 ("", 5.0) 2.0
+    4: line 3 ("", 5.0, 2.0) SQRT
+    5: line 4 ("", 5.0, 1.41421356237) -1.0
+    6: line 4 ("", 5.0, 1.41421356237, -1.0) SQRT
+Error in line 4 (SQRT): Math domain error.
+Execution completed in 7 steps.

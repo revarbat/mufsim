@@ -55,3 +55,4 @@
    23: line 9 ("", 1, -1, 0, 0, 1, 1, 1, "bar") "Bar"
    24: line 9 ("", 1, -1, 0, 0, 1, 1, 1, "bar", "Bar") STRCMP
    25: line 10 ("", 1, -1, 0, 0, 1, 1, 1, 1) EXIT
+Execution completed in 26 steps.

@@ -9,8 +9,10 @@ import os
 import re
 import sys
 import time
+import math
+import random
+import readline
 import argparse
-from random import randint
 from subprocess import call
 
 primitives = {}
@@ -164,7 +166,7 @@ class DBObject(object):
         self.location = -1
         self.contents = []
         self.exits = []
-        self.links = []
+        self.links = [location] if objtype == "player" else []
         self.pennies = 0
         self.properties = props
         objects_db[self.dbref] = self
@@ -456,7 +458,7 @@ def sortcompi(a, b):
 
 
 def sortcompshuffle(a, b):
-    return 1 if randint(0, 7) & 0x4 == 0 else -1
+    return 1 if random.randint(0, 7) & 0x4 == 0 else -1
 
 
 def smatch(pat, txt):
@@ -516,74 +518,29 @@ class Instruction(object):
         return str(self)
 
 
-class InstInteger(Instruction):
+class InstPushItem(Instruction):
     value = 0
 
     def __init__(self, line, val):
         self.value = val
-        super(InstInteger, self).__init__(line)
+        super(InstPushItem, self).__init__(line)
 
     def execute(self, fr):
         fr.data_push(self.value)
 
     def __str__(self):
-        return "%d" % self.value
-
-
-class InstFloat(Instruction):
-    value = 0.0
-
-    def __init__(self, line, val):
-        self.value = val
-        super(InstFloat, self).__init__(line)
-
-    def execute(self, fr):
-        fr.data_push(self.value)
-
-    def __str__(self):
-        return "%g" % self.value
-
-
-class InstDBRefPush(Instruction):
-    value = 0
-
-    def __init__(self, line, val):
-        self.value = val
-        super(InstDBRefPush, self).__init__(line)
-
-    def execute(self, fr):
-        fr.data_push(StackDBRef(self.value))
-
-    def __str__(self):
-        return "#%d" % self.value
-
-
-class InstString(Instruction):
-    value = 0
-
-    def __init__(self, line, val):
-        self.value = val
-        super(InstString, self).__init__(line)
-
-    def execute(self, fr):
-        fr.data_push(self.value)
-
-    def __str__(self):
-        return "\"%s\"" % self.value
-
-
-class InstAddress(Instruction):
-    value = 0
-
-    def __init__(self, line, val):
-        self.value = val
-        super(InstAddress, self).__init__(line)
-
-    def execute(self, fr):
-        fr.data_push(StackAddress(self.value))
-
-    def __str__(self):
-        return "Addr:%d" % self.value
+        if type(self.value) in [StackDBRef, StackAddress, StackLock]:
+            return "%s" % self.value
+        elif type(self.value) is float:
+            x = "%.12g" % self.value
+            if "e" in x or "." in x:
+                return x
+            else:
+                return "%s.0" % x
+        elif type(self.value) is str:
+            return '"%s"' % self.value
+        else:
+            return "%s" % self.value
 
 
 class InstGlobalVar(Instruction):
@@ -618,35 +575,34 @@ class InstFuncVar(Instruction):
         return "SV%d: %s" % (self.varnum, self.varname)
 
 
-class InstBranch(Instruction):
+class InstJmp(Instruction):
     delta = 0
 
     def __init__(self, line, val):
         self.delta = val
-        super(InstBranch, self).__init__(line)
+        super(InstJmp, self).__init__(line)
 
     def execute(self, fr):
         fr.pc_advance(self.delta-1)
 
     def __str__(self):
-        return "Branch: %+d" % self.delta
+        return "JMP: %+d" % self.delta
 
 
-class InstBranchIfNot(Instruction):
+class InstJmpIfFalse(Instruction):
     delta = 0
 
     def __init__(self, line, val):
         self.delta = val
-        super(InstBranchIfNot, self).__init__(line)
+        super(InstJmpIfFalse, self).__init__(line)
 
     def execute(self, fr):
-        fr.check_underflow(1)
         val = fr.data_pop()
         if not val:
             fr.pc_advance(self.delta-1)
 
     def __str__(self):
-        return "BranchIfNot: %+d" % self.delta
+        return "JmpIfFalse: %+d" % self.delta
 
 
 class InstFunc(Instruction):
@@ -663,7 +619,6 @@ class InstFunc(Instruction):
 @instr("execute")
 class InstExecute(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         addr = fr.data_pop_address()
         fr.call_push(addr)
         fr.pc_advance(-1)
@@ -684,7 +639,6 @@ class InstTry(Instruction):
         super(InstTry, self).__init__(line)
 
     def execute(self, fr):
-        fr.check_underflow(1)
         cnt = fr.data_pop(int)
         stacklock = fr.data_depth() - cnt
         addr = fr.curr_addr()
@@ -703,7 +657,6 @@ class InstTryPop(Instruction):
 @instr("abort")
 class InstAbort(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         msg = fr.data_pop(str)
         raise MufRuntimeError(msg)
 
@@ -737,7 +690,6 @@ class InstFor(Instruction):
 @instr("foreach")
 class InstForeach(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         arr = fr.data_pop(list, dict)
         if type(arr) is list:
             arr = {k: v for k, v in enumerate(arr)}
@@ -803,7 +755,6 @@ class InstBang(Instruction):
 @instr("@")
 class InstAt(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         v = fr.data_pop(StackGlobalVar, StackFuncVar)
         if type(v) is StackGlobalVar:
             val = fr.globalvar_get(v.value)
@@ -841,7 +792,6 @@ class InstPlus(Instruction):
 @instr("++")
 class InstPlusPlus(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         a = fr.data_pop(int, float, StackDBRef, StackFuncVar, StackGlobalVar)
         if type(a) is StackFuncVar:
             val = fr.funcvar_get(a) + 1
@@ -885,7 +835,6 @@ class InstMinus(Instruction):
 @instr("--")
 class InstMinusMinus(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         a = fr.data_pop(int, float, StackDBRef, StackFuncVar, StackGlobalVar)
         if type(a) is StackFuncVar:
             val = fr.funcvar_get(a) - 1
@@ -1015,7 +964,6 @@ class InstAnd(Instruction):
 @instr("not")
 class InstNot(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         a = fr.data_pop()
         if type(a) is StackDBRef:
             fr.data_push(1 if a.value == -1 else 0)
@@ -1103,10 +1051,375 @@ class InstGreaterThanOrEquals(Instruction):
         return ">="
 
 
+@instr("abs")
+class InstAbs(Instruction):
+    def execute(self, fr):
+        a = fr.data_pop(int)
+        fr.data_push(abs(a))
+
+
+@instr("sign")
+class InstSign(Instruction):
+    def execute(self, fr):
+        a = fr.data_pop(int)
+        fr.data_push(cmp(a,0))
+
+
+# TODO: Figure out a way to implement GETSEED
+@instr("setseed")
+class InstSetSeed(Instruction):
+    def execute(self, fr):
+        s = fr.data_pop(str)
+        random.seed(s[:32])
+
+
+@instr("srand")
+class InstRandom(Instruction):
+    def execute(self, fr):
+        fr.data_push(random.randint(-(2**31-2), (2**31-2)))
+
+
+# TODO: Make RANDOM distinct from SRAND.
+# Currently, both get seeded by the random.seed() call in SETSEED.
+@instr("random")
+class InstRandom(Instruction):
+    def execute(self, fr):
+        fr.data_push(random.randint(-(2**31-2), (2**31-2)))
+
+
+@instr("float")
+class InstFloat(Instruction):
+    def execute(self, fr):
+        i = fr.data_pop(int)
+        fr.data_push(float(i))
+
+
+@instr("pi")
+class InstPi(Instruction):
+    def execute(self, fr):
+        fr.data_push(math.pi)
+
+
+@instr("inf")
+class InstInf(Instruction):
+    def execute(self, fr):
+        fr.data_push(float("Inf"))
+
+
+@instr("epsilon")
+class InstEpsilon(Instruction):
+    def execute(self, fr):
+        fr.data_push(sys.float_info.epsilon)
+
+
+@instr("ftostr")
+class InstFToStr(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(int, float)
+        a = "%.11e" % x
+        b = "%.11f" % x
+        x = a if len(a) < len(b) else b
+        if "e" in x:
+            fpval, mant = x.split("e", 1)
+            if "." in fpval:
+                fpval = fpval.rstrip("0")
+            x = fpval + "e" + mant
+        fr.data_push(x)
+
+
+@instr("ftostrc")
+class InstFToStrC(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(int, float)
+        fr.data_push("%.12g" % x)
+
+
+@instr("strtof")
+class InstStrToF(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(str)
+        try:
+            x = float(x)
+        except:
+            x = 0.0
+        fr.data_push(x)
+
+
+@instr("fabs")
+class InstFabs(Instruction):
+    def execute(self, fr):
+        x = float(fr.data_pop(int, float))
+        if x < 0.0:
+            fr.data_push(-x)
+        else:
+            fr.data_push(x)
+
+
+@instr("ceil")
+class InstCeil(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        fr.data_push(math.ceil(x))
+
+
+@instr("floor")
+class InstFloor(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        fr.data_push(math.floor(x))
+
+
+@instr("round")
+class InstRound(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop(int)
+        a = fr.data_pop(float)
+        fr.data_push(round(a, b))
+
+
+@instr("fmod")
+class InstFMod(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop(float)
+        a = fr.data_pop(float)
+        fr.data_push(math.fmod(a, b))
+
+
+@instr("modf")
+class InstModF(Instruction):
+    def execute(self, fr):
+        a = fr.data_pop(float)
+        if a < 0.0:
+            fr.data_push(math.ceil(a))
+            fr.data_push(a-math.ceil(a))
+        else:
+            fr.data_push(math.floor(a))
+            fr.data_push(a-math.floor(a))
+
+
+@instr("sqrt")
+class InstSqrt(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        try:
+            x = math.sqrt(x)
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(x)
+
+
+@instr("sin")
+class InstSin(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        try:
+            x = math.sin(x)
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(x)
+
+
+@instr("cos")
+class InstCos(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        try:
+            x = math.cos(x)
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(x)
+
+
+@instr("tan")
+class InstTan(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        try:
+            x = math.tan(x)
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(x)
+
+
+@instr("asin")
+class InstASin(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        try:
+            x = math.asin(x)
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(x)
+
+
+@instr("acos")
+class InstACos(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        try:
+            x = math.acos(x)
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(x)
+
+
+@instr("atan")
+class InstATan(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        try:
+            x = math.atan(x)
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(x)
+
+
+@instr("atan2")
+class InstATan(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        x = fr.data_pop(float)
+        y = fr.data_pop(float)
+        try:
+            out = math.atan2(y, x)
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(out)
+
+
+@instr("pow")
+class InstPow(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        y = fr.data_pop(float)
+        x = fr.data_pop(float)
+        try:
+            x = x ** y
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(x)
+
+
+@instr("exp")
+class InstExp(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        try:
+            x = math.exp(x)
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(x)
+
+
+@instr("log")
+class InstLog(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        try:
+            x = math.log(x)
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(x)
+
+
+@instr("log10")
+class InstLog10(Instruction):
+    def execute(self, fr):
+        x = fr.data_pop(float)
+        try:
+            x = math.log10(x)
+        except:
+            raise MufRuntimeError("Math domain error.")
+        fr.data_push(x)
+
+
+@instr("diff3")
+class InstDiff3(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(6)
+        z2 = fr.data_pop(float)
+        y2 = fr.data_pop(float)
+        x2 = fr.data_pop(float)
+        z1 = fr.data_pop(float)
+        y1 = fr.data_pop(float)
+        x1 = fr.data_pop(float)
+        fr.data_push(x1-x2)
+        fr.data_push(y1-y2)
+        fr.data_push(z1-z2)
+
+
+@instr("dist3d")
+class InstDist3D(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        z = fr.data_pop(float)
+        y = fr.data_pop(float)
+        x = fr.data_pop(float)
+        fr.data_push(math.sqrt(x*x+y*y+z*z))
+
+
+@instr("xyz_to_polar")
+class InstXyzToPolar(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        z = fr.data_pop(float)
+        y = fr.data_pop(float)
+        x = fr.data_pop(float)
+        xy = math.sqrt(x*x+y*y)
+        t = math.atan2(y, x)
+        p = math.atan2(z, xy)
+        r = math.sqrt(x*x+y*y+z*z)
+        fr.data_push(r)
+        fr.data_push(t)
+        fr.data_push(p)
+
+
+@instr("polar_to_xyz")
+class InstXyzToPolar(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        p = fr.data_pop(float)
+        t = fr.data_pop(float)
+        r = fr.data_pop(float)
+        x = r*math.cos(p)*math.cos(t)
+        y = r*math.cos(p)*math.sin(t)
+        z = r*math.sin(p)
+        fr.data_push(x)
+        fr.data_push(y)
+        fr.data_push(z)
+
+
+@instr("frand")
+class InstFRand(Instruction):
+    def execute(self, fr):
+        fr.data_push(random.random())
+
+
+@instr("gaussian")
+class InstGaussian(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        m = fr.data_pop(float)
+        s = fr.data_pop(float)
+        fr.data_push(random.gauss(m, s))
+
+
+@instr("read_wants_blanks")
+class InstReadWantsBlanks(Instruction):
+    def execute(self, fr):
+        fr.read_wants_blanks = True
+
+
 @instr("read")
 class InstRead(Instruction):
     def execute(self, fr):
-        txt = raw_input("READ>")
+        while True:
+            txt = raw_input("READ>")
+            if txt or fr.read_wants_blanks:
+                break
+            print("Blank line ignored.")
         if txt == "@Q":
             while fr.call_stack:
                 fr.call_pop()
@@ -1119,7 +1432,6 @@ class InstRead(Instruction):
 @instr("tread")
 class InstTRead(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         a = fr.data_pop(int)
         print("Enter '@T' to fake a timeout.")
         txt = raw_input("TIMED READ>")
@@ -1138,10 +1450,25 @@ class InstTRead(Instruction):
             fr.data_push(0)
 
 
+@instr("userlog")
+class InstUserLog(Instruction):
+    def execute(self, fr):
+        s = fr.data_pop(str)
+        # TODO: Use real info instead of hardcoded.
+        msg = "%s(#%d) [%s(#%d)] %s: %s\n" % (
+            john_doe.name, john_doe.dbref,
+            program_object.name, program_object.dbref,
+            time.strftime("%m/%d/%y %H/%M/%S"),
+            s
+        )
+        with open("userlog.log", "a") as f:
+            f.write(msg)
+        print("USERLOG: %s" % msg)
+
+
 @instr("atoi")
 class InstAtoI(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         a = fr.data_pop(str)
         try:
             fr.data_push(int(a))
@@ -1152,7 +1479,6 @@ class InstAtoI(Instruction):
 @instr("stod")
 class InstStoD(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         a = fr.data_pop(str)
         if a[0] == '#':
             a = a[1:]
@@ -1165,7 +1491,6 @@ class InstStoD(Instruction):
 @instr("intostr")
 class InstIntostr(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         a = fr.data_pop(int)
         fr.data_push("%d" % a)
 
@@ -1173,7 +1498,6 @@ class InstIntostr(Instruction):
 @instr("dup")
 class InstDup(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         a = fr.data_pop()
         fr.data_push(a)
         fr.data_push(a)
@@ -1182,7 +1506,6 @@ class InstDup(Instruction):
 @instr("dupn")
 class InstDupN(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         n = fr.data_pop(int)
         fr.check_underflow(n)
         for i in xrange(n):
@@ -1192,7 +1515,6 @@ class InstDupN(Instruction):
 @instr("ldup")
 class InstLDup(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         n = fr.data_pick(1)
         if type(n) is not int:
             raise MufRuntimeError("Expected integer argument.")
@@ -1205,14 +1527,12 @@ class InstLDup(Instruction):
 @instr("pop")
 class InstPop(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         fr.data_pop()
 
 
 @instr("popn")
 class InstPopN(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         n = fr.data_pop(int)
         fr.check_underflow(n)
         for i in xrange(n):
@@ -1240,7 +1560,6 @@ class InstRot(Instruction):
 @instr("rotate")
 class InstRotate(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         num = fr.data_pop(int)
         fr.check_underflow(num)
         if not num:
@@ -1256,7 +1575,6 @@ class InstRotate(Instruction):
 @instr("pick")
 class InstPick(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         num = fr.data_pop(int)
         fr.check_underflow(num)
         if not num:
@@ -1294,7 +1612,6 @@ class InstPut(Instruction):
 @instr("reverse")
 class InstReverse(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         num = fr.data_pop(int)
         fr.check_underflow(num)
         if not num:
@@ -1307,7 +1624,6 @@ class InstReverse(Instruction):
 @instr("lreverse")
 class InstLReverse(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         num = fr.data_pop(int)
         fr.check_underflow(num)
         if not num:
@@ -1414,7 +1730,7 @@ class InstTextAttr(Instruction):
     }
 
     def execute(self, fr):
-        fr.check_underflow(1)
+        fr.check_underflow(2)
         attrs = fr.data_pop(str)
         txt = fr.data_pop(str)
         codes = []
@@ -1432,7 +1748,6 @@ class InstTextAttr(Instruction):
 @instr("array_make")
 class InstArrayMake(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         num = fr.data_pop(int)
         fr.check_underflow(num)
         arr = []
@@ -1444,7 +1759,6 @@ class InstArrayMake(Instruction):
 @instr("array_make_dict")
 class InstArrayMakeDict(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         num = fr.data_pop(int)
         fr.check_underflow(num*2)
         d = {}
@@ -1458,7 +1772,6 @@ class InstArrayMakeDict(Instruction):
 @instr("array_count")
 class InstArrayCount(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         arr = fr.data_pop(list, dict)
         fr.data_push(len(arr))
 
@@ -1684,7 +1997,6 @@ class InstArrayNestedSet(Instruction):
 @instr("array_keys")
 class InstArrayKeys(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         arr = fr.data_pop(list, dict)
         cnt = 0
         if type(arr) is list:
@@ -1702,7 +2014,6 @@ class InstArrayKeys(Instruction):
 @instr("array_vals")
 class InstArrayVals(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         arr = fr.data_pop(list, dict)
         cnt = 0
         if type(arr) is list:
@@ -1712,6 +2023,25 @@ class InstArrayVals(Instruction):
             fr.data_push(cnt)
         elif type(arr) is dict:
             for key, val in arr.iteritems():
+                fr.data_push(val)
+                cnt += 1
+            fr.data_push(cnt)
+
+
+@instr("array_explode")
+class InstArrayExplode(Instruction):
+    def execute(self, fr):
+        arr = fr.data_pop(list, dict)
+        cnt = 0
+        if type(arr) is list:
+            for key, val in enumerate(arr):
+                fr.data_push(key)
+                fr.data_push(val)
+                cnt += 1
+            fr.data_push(cnt)
+        elif type(arr) is dict:
+            for key, val in arr.iteritems():
+                fr.data_push(key)
                 fr.data_push(val)
                 cnt += 1
             fr.data_push(cnt)
@@ -1775,7 +2105,6 @@ class InstArrayExcludeVal(Instruction):
 @instr("array_reverse")
 class InstArrayReverse(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         arr = fr.data_pop(list)
         arr = [x for x in reversed(arr)]
         fr.data_push(arr)
@@ -1843,23 +2172,66 @@ class InstSysTimePrecise(Instruction):
 @instr("match")
 class InstMatch(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
-        pat = fr.data_pop(str)
+        pat = fr.data_pop(str).lower()
         obj = -1
         if pat[0] == "#" and is_int(pat[1:]):
             obj = int(pat[1:])
         elif pat[0] == "*":
-            nam = pat[1:].lower()
+            nam = pat[1:]
             if nam in player_names:
                 obj = player_names[nam]
         elif pat == "me":
+            # TODO: use user from stack frame
             obj = john_doe.dbref
         elif pat == "here":
-            obj = main_room.dbref
+            # TODO: use user from stack frame
+            obj = getobj(john_doe.location).dbref
+        elif pat == "home":
+            # TODO: use user from stack frame
+            obj = getobj(john_doe.links[0]).dbref
         else:
-            # Do local partial name object matches
-            pass
+            # TODO: use user from stack frame
+            targ = john_doe
+            while targ:
+                for exit in targ.exits:
+                    exit = getobj(exit)
+                    for part in exit.name.lower().split(';'):
+                        part = part.strip()
+                        if pat == part:
+                            fr.data_push(StackDBRef(exit.dbref))
+                            return
+                if targ.location < 0:
+                    break
+                targ = getobj(targ.location)
+            obj = -1
+            targ = john_doe
+            while targ:
+                for item in targ.contents:
+                    item = getobj(item)
+                    # TODO: use word start matches.
+                    if pat in item.name.lower():
+                        if obj == -1:
+                            obj = item.dbref
+                        else:
+                            obj = -2
+                if obj != -1:
+                    break
+                if targ.location < 0:
+                    break
+                targ = getobj(targ.location)
         fr.data_push(StackDBRef(obj))
+
+
+@instr("pmatch")
+class InstPMatch(Instruction):
+    def execute(self, fr):
+        nam = fr.data_pop(str)
+        nam = nam.lower()
+        if nam in player_names:
+            obj = player_names[nam]
+            fr.data_push(StackDBRef(obj))
+        else:
+            fr.data_push(StackDBRef(-1))
 
 
 @instr("mode")
@@ -1872,7 +2244,6 @@ class InstMode(Instruction):
 @instr("setmode")
 class InstSetMode(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         mod = fr.data_pop(int)
         global execution_mode
         execution_mode = mod
@@ -1881,7 +2252,6 @@ class InstSetMode(Instruction):
 @instr("name")
 class InstName(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         fr.data_push(obj.name)
 
@@ -1889,7 +2259,6 @@ class InstName(Instruction):
 @instr("pennies")
 class InstPennies(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         fr.data_push(obj.pennies)
 
@@ -1917,7 +2286,6 @@ class InstMovePennies(Instruction):
 @instr("unparseobj")
 class InstUnparseObj(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         if obj.objtype == "program":
             typflag = "F"
@@ -1942,7 +2310,6 @@ class InstSetName(Instruction):
 @instr("set")
 class InstSet(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         flg = fr.data_pop(str)
         obj = fr.data_pop_object()
         flg = flg.strip().upper()[0]
@@ -1964,7 +2331,6 @@ class InstFlagP(Instruction):
 @instr("mlevel")
 class InstMLevel(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         flags = obj.flags.upper()
         if "W" in flags:
@@ -1982,7 +2348,6 @@ class InstMLevel(Instruction):
 @instr("owner")
 class InstOwner(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         fr.data_push(StackDBRef(obj.owner))
 
@@ -1990,7 +2355,6 @@ class InstOwner(Instruction):
 @instr("contents")
 class InstContents(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         if obj.contents:
             fr.data_push(StackDBRef(obj.contents[0]))
@@ -2001,7 +2365,6 @@ class InstContents(Instruction):
 @instr("contents_array")
 class InstContentsArray(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         arr = [StackDBRef(x) for x in obj.contents]
         fr.data_push(arr)
@@ -2016,10 +2379,20 @@ class InstMoveTo(Instruction):
         obj.moveto(dest)
 
 
+@instr("force")
+class InstForce(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        cmd = fr.data_pop(str)
+        obj = fr.data_pop_object()
+        print("FORCE %s(#%d) TO DO: %s" % (obj.name, obj.dbref, cmd))
+        # TODO: Real forcing!  (pipe dream)
+        # obj.force(cmd)
+
+
 @instr("exits")
 class InstExits(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         if obj.exits:
             fr.data_push(StackDBRef(obj.exits[0]))
@@ -2027,10 +2400,17 @@ class InstExits(Instruction):
             fr.data_push(StackDBRef(-1))
 
 
+@instr("exits_array")
+class InstExitsArray(Instruction):
+    def execute(self, fr):
+        obj = fr.data_pop_object()
+        arr = [StackDBRef(x) for x in obj.exits]
+        fr.data_push(arr)
+
+
 @instr("next")
 class InstNext(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         loc = obj.location
         if loc < 0:
@@ -2079,7 +2459,6 @@ class InstDBTop(Instruction):
 @instr("location")
 class InstLocation(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         fr.data_push(StackDBRef(obj.location))
 
@@ -2108,7 +2487,6 @@ class InstSetLinksArray(Instruction):
 @instr("getlink")
 class InstGetLink(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         fr.data_push(StackDBRef(obj.links[0]))
 
@@ -2116,7 +2494,6 @@ class InstGetLink(Instruction):
 @instr("getlinks")
 class InstGetLinks(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         for link in obj.links:
             fr.data_push(StackDBRef(link))
@@ -2126,7 +2503,6 @@ class InstGetLinks(Instruction):
 @instr("getlinks_array")
 class InstGetLinksArray(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_object()
         fr.data_push([StackDBRef(x) for x in obj.links])
 
@@ -2134,7 +2510,6 @@ class InstGetLinksArray(Instruction):
 @instr("ok?")
 class InstOkP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_dbref()
         if not validobj(obj):
             fr.data_push(0)
@@ -2147,7 +2522,6 @@ class InstOkP(Instruction):
 @instr("player?")
 class InstPlayerP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_dbref()
         if not validobj(obj):
             fr.data_push(0)
@@ -2160,7 +2534,6 @@ class InstPlayerP(Instruction):
 @instr("room?")
 class InstRoomP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_dbref()
         if not validobj(obj):
             fr.data_push(0)
@@ -2173,7 +2546,6 @@ class InstRoomP(Instruction):
 @instr("exit?")
 class InstExitP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_dbref()
         if not validobj(obj):
             fr.data_push(0)
@@ -2186,7 +2558,6 @@ class InstExitP(Instruction):
 @instr("program?")
 class InstProgramP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_dbref()
         if not validobj(obj):
             fr.data_push(0)
@@ -2199,7 +2570,6 @@ class InstProgramP(Instruction):
 @instr("thing?")
 class InstThingP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         obj = fr.data_pop_dbref()
         if not validobj(obj):
             fr.data_push(0)
@@ -2244,7 +2614,6 @@ class InstOnlineArray(Instruction):
 @instr("fmtstring")
 class InstFmtString(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         fmt = fr.data_pop(str)
         out = ""
         while fmt:
@@ -2556,7 +2925,6 @@ class InstRegsub(Instruction):
 @instr("toupper")
 class InstToUpper(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         txt = fr.data_pop(str)
         fr.data_push(txt.upper())
 
@@ -2564,7 +2932,6 @@ class InstToUpper(Instruction):
 @instr("tolower")
 class InstToLower(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         txt = fr.data_pop(str)
         fr.data_push(txt.lower())
 
@@ -2614,7 +2981,6 @@ class InstRSplit(Instruction):
 @instr("striplead")
 class InstStripLead(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         txt = fr.data_pop(str)
         fr.data_push(txt.lstrip())
 
@@ -2622,7 +2988,6 @@ class InstStripLead(Instruction):
 @instr("striptail")
 class InstStripTail(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         txt = fr.data_pop(str)
         fr.data_push(txt.rstrip())
 
@@ -2630,7 +2995,6 @@ class InstStripTail(Instruction):
 @instr("strlen")
 class InstStrLen(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         txt = fr.data_pop(str)
         fr.data_push(len(txt))
 
@@ -2690,22 +3054,25 @@ class InstStrCut(Instruction):
         fr.data_push(a[b:])
 
 
+@instr("midstr")
+class InstMidStr(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        num = fr.data_pop(int)
+        pos = fr.data_pop(int)
+        s = fr.data_pop(str)
+        fr.data_push(s[pos-1:pos+num-1])
+
+
 @instr("depth")
 class InstDepth(Instruction):
     def execute(self, fr):
         fr.data_push(fr.data_depth())
 
 
-@instr("random")
-class InstRandom(Instruction):
-    def execute(self, fr):
-        fr.data_push(randint(-(2**31-2), (2**31-2)))
-
-
 @instr("int?")
 class InstIntP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         val = fr.data_pop()
         fr.data_push(1 if type(val) is int else 0)
 
@@ -2713,7 +3080,6 @@ class InstIntP(Instruction):
 @instr("float?")
 class InstFloatP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         val = fr.data_pop()
         fr.data_push(1 if type(val) is float else 0)
 
@@ -2721,7 +3087,6 @@ class InstFloatP(Instruction):
 @instr("number?")
 class InstNumberP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         val = fr.data_pop()
         fr.data_push(1 if type(val) in [int, float] else 0)
 
@@ -2729,7 +3094,6 @@ class InstNumberP(Instruction):
 @instr("dbref?")
 class InstDBRefP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         val = fr.data_pop()
         fr.data_push(1 if type(val) is StackDBRef else 0)
 
@@ -2737,7 +3101,6 @@ class InstDBRefP(Instruction):
 @instr("string?")
 class InstStringP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         val = fr.data_pop()
         fr.data_push(1 if type(val) is str else 0)
 
@@ -2745,7 +3108,6 @@ class InstStringP(Instruction):
 @instr("address?")
 class InstAddressP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         val = fr.data_pop()
         fr.data_push(1 if type(val) is StackAddress else 0)
 
@@ -2753,7 +3115,6 @@ class InstAddressP(Instruction):
 @instr("array?")
 class InstArrayP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         val = fr.data_pop()
         fr.data_push(1 if type(val) in [list, dict] else 0)
 
@@ -2761,15 +3122,20 @@ class InstArrayP(Instruction):
 @instr("dictionary?")
 class InstDictionaryP(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         val = fr.data_pop()
         fr.data_push(1 if type(val) is dict else 0)
+
+
+@instr("lock?")
+class InstLockP(Instruction):
+    def execute(self, fr):
+        val = fr.data_pop()
+        fr.data_push(1 if type(val) is StackLock else 0)
 
 
 @instr("int")
 class InstInt(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         val = fr.data_pop()
         if type(val) is StackGlobalVar:
             val = val.value
@@ -2789,7 +3155,6 @@ class InstInt(Instruction):
 @instr("dbref")
 class InstDBRef(Instruction):
     def execute(self, fr):
-        fr.check_underflow(1)
         val = fr.data_pop(int)
         fr.data_push(StackDBRef(val))
 
@@ -2958,6 +3323,7 @@ class MufStackFrame(object):
     MAX_STACK = 1024
 
     def __init__(self, src, code, addr, funcaddrs, fvars, gvars):
+        self.cycles = 0
         self.start_addr = addr
         self.data_stack = []
         self.call_stack = [MufCallFrame(addr)]
@@ -2971,6 +3337,7 @@ class MufStackFrame(object):
         self.funcaddrs = funcaddrs
         self.all_func_vars = fvars
         self.global_var_names = gvars
+        self.read_wants_blanks = False
 
     def curr_inst(self):
         if not self.call_stack:
@@ -2989,7 +3356,7 @@ class MufStackFrame(object):
 
     def pc_set(self, addr):
         if type(addr) is not StackAddress:
-            raise MufRuntimeError("BLAH2!")
+            raise MufRuntimeError("Expected an address!")
         return self.call_stack[-1].pc_set(addr)
 
     def catch_push(self, detailed, addr, lockdepth):
@@ -3199,6 +3566,7 @@ class MufStackFrame(object):
                       (addr.value, line, self.get_stack_repr(999), inst))
                 sys.stdout.flush()
             try:
+                self.cycles += 1
                 inst.execute(self)
                 self.pc_advance(1)
             except MufRuntimeError as e:
@@ -3827,16 +4195,16 @@ class MufCompiler(object):
             if not self.funcname:
                 raise MufCompileError("NotInFunction: %s" % word)
             if is_int(word):
-                code.append(InstInteger(line, int(word)))
+                code.append(InstPushItem(line, int(word)))
                 continue
             elif is_dbref(word):
-                code.append(InstDBRefPush(line, int(word[1:])))
+                code.append(InstPushItem(line, StackDBRef(int(word[1:]))))
                 continue
             elif is_float(word):
-                code.append(InstFloat(line, float(word)))
+                code.append(InstPushItem(line, float(word)))
                 continue
             elif word[0] == '"':
-                code.append(InstString(line, word[1:-1]))
+                code.append(InstPushItem(line, word[1:-1]))
                 continue
             elif word in self.global_vars:
                 vnum = self.global_vars.index(word)
@@ -3848,11 +4216,11 @@ class MufCompiler(object):
                 continue
             elif word[0] == "'" and word[1:] in self.declared_functions:
                 addr = self.declared_functions[word[1:]]
-                code.append(InstAddress(line, addr))
+                code.append(InstPushItem(line, StackAddress(addr)))
                 continue
             elif word in self.declared_functions:
                 addr = self.declared_functions[word]
-                code.append(InstAddress(line, addr))
+                code.append(InstPushItem(line, StackAddress(addr)))
                 code.append(InstExecute(line))
                 continue
             elif word == "var!":
@@ -3874,9 +4242,9 @@ class MufCompiler(object):
                 subcode, src = self.compile_r(src)
                 inst = self.stmt_stack.pop()
                 if inst.elsecode:
-                    branch = InstBranch(line, len(inst.elsecode)+1)
+                    branch = InstJmp(line, len(inst.elsecode)+1)
                     inst.ifcode.append(branch)
-                branch = InstBranchIfNot(line, len(inst.ifcode)+1)
+                branch = InstJmpIfFalse(line, len(inst.ifcode)+1)
                 code.append(branch)
                 for prim in inst.ifcode:
                     code.append(prim)
@@ -3912,11 +4280,11 @@ class MufCompiler(object):
                 bodylen = len(subcode)
                 for instnum, inst in enumerate(subcode):
                     if type(inst) is InstWhile:
-                        inst = InstBranchIfNot(inst.line, bodylen-instnum)
+                        inst = InstJmpIfFalse(inst.line, bodylen-instnum)
                     elif type(inst) is InstBreak:
-                        inst = InstBranch(inst.line, bodylen-instnum)
+                        inst = InstJmp(inst.line, bodylen-instnum)
                     elif type(inst) is InstContinue:
-                        inst = InstBranch(inst.line, -instnum)
+                        inst = InstJmp(inst.line, -instnum)
                     code.append(inst)
                 continue
             elif word == "for":
@@ -3928,11 +4296,11 @@ class MufCompiler(object):
                 bodylen = len(subcode)
                 for instnum, inst in enumerate(subcode):
                     if type(inst) is InstWhile:
-                        inst = InstBranchIfNot(inst.line, bodylen-instnum)
+                        inst = InstJmpIfFalse(inst.line, bodylen-instnum)
                     elif type(inst) is InstBreak:
-                        inst = InstBranch(inst.line, bodylen-instnum)
+                        inst = InstJmp(inst.line, bodylen-instnum)
                     elif type(inst) is InstContinue:
-                        inst = InstBranch(inst.line, -instnum)
+                        inst = InstJmp(inst.line, -instnum)
                     code.append(inst)
                 code.append(InstForPop(line))
                 continue
@@ -3945,11 +4313,11 @@ class MufCompiler(object):
                 bodylen = len(subcode)
                 for instnum, inst in enumerate(subcode):
                     if type(inst) is InstWhile:
-                        inst = InstBranchIfNot(inst.line, bodylen-instnum)
+                        inst = InstJmpIfFalse(inst.line, bodylen-instnum)
                     elif type(inst) is InstBreak:
-                        inst = InstBranch(inst.line, bodylen-instnum)
+                        inst = InstJmp(inst.line, bodylen-instnum)
                     elif type(inst) is InstContinue:
-                        inst = InstBranch(inst.line, -instnum)
+                        inst = InstJmp(inst.line, -instnum)
                     code.append(inst)
                 code.append(InstForPop(line))
                 continue
@@ -3977,7 +4345,7 @@ class MufCompiler(object):
                     raise MufCompileError("MustBeInsideLoop (repeat)")
                 if type(self.stmt_stack[-1]) is InstIf:
                     raise MufCompileError("MustBeInsideLoop (repeat 2)")
-                code.append(InstBranch(line, -len(code)))
+                code.append(InstJmp(line, -len(code)))
                 return (code, src)
             elif word == "until":
                 loopinst = self.in_loop_inst()
@@ -3985,7 +4353,7 @@ class MufCompiler(object):
                     raise MufCompileError("MustBeInsideLoop (until)")
                 if type(self.stmt_stack[-1]) is InstIf:
                     raise MufCompileError("MustBeInsideLoop (until 2)")
-                code.append(InstBranchIfNot(line, -len(code)))
+                code.append(InstJmpIfFalse(line, -len(code)))
                 return (code, src)
             elif word == "try":
                 inst = InstTry(line)
@@ -3996,7 +4364,7 @@ class MufCompiler(object):
                 if not trycode:
                     raise MufCompileError("Incomplete Try-Catch block.")
                 inst.trycode = None
-                trycode.append(InstBranch(line, len(subcode)+1))
+                trycode.append(InstJmp(line, len(subcode)+1))
                 inst.delta = len(trycode)+1
                 code.append(inst)
                 for prim in trycode:
@@ -4154,6 +4522,7 @@ def main():
                     fr.debug_code(args.trace)
                 else:
                     fr.execute_code(args.trace)
+                    print("Execution completed in %d steps." % fr.cycles)
         if tmpfile:
             os.unlink(tmpfile)
 

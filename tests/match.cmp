@@ -4,22 +4,67 @@
     0: Function: main
     1: "me"
     2: MATCH
-    3: "here"
-    4: MATCH
-    5: "*wizard"
-    6: MATCH
-    7: "#5"
+    3: POP
+    4: "here"
+    5: MATCH
+    6: POP
+    7: "home"
     8: MATCH
-    9: EXIT
+    9: POP
+   10: "*wizard"
+   11: MATCH
+   12: POP
+   13: "#5"
+   14: MATCH
+   15: POP
+   16: "test"
+   17: MATCH
+   18: POP
+   19: "jane"
+   20: MATCH
+   21: POP
+   22: "john"
+   23: MATCH
+   24: POP
+   25: "j"
+   26: MATCH
+   27: POP
+   28: "xyzzy"
+   29: MATCH
+   30: POP
+   31: EXIT
 
 #### Executing Tokens #################################
     0: line 1 ("") Function: main
     1: line 2 ("") "me"
     2: line 2 ("", "me") MATCH
-    3: line 3 ("", #5) "here"
-    4: line 3 ("", #5, "here") MATCH
-    5: line 4 ("", #5, #2) "*wizard"
-    6: line 4 ("", #5, #2, "*wizard") MATCH
-    7: line 5 ("", #5, #2, #1) "#5"
-    8: line 5 ("", #5, #2, #1, "#5") MATCH
-    9: line 6 ("", #5, #2, #1, #5) EXIT
+    3: line 2 ("", #5) POP
+    4: line 3 ("") "here"
+    5: line 3 ("", "here") MATCH
+    6: line 3 ("", #2) POP
+    7: line 4 ("") "home"
+    8: line 4 ("", "home") MATCH
+    9: line 4 ("", #2) POP
+   10: line 5 ("") "*wizard"
+   11: line 5 ("", "*wizard") MATCH
+   12: line 5 ("", #1) POP
+   13: line 6 ("") "#5"
+   14: line 6 ("", "#5") MATCH
+   15: line 6 ("", #5) POP
+   16: line 7 ("") "test"
+   17: line 7 ("", "test") MATCH
+   18: line 7 ("", #3) POP
+   19: line 8 ("") "jane"
+   20: line 8 ("", "jane") MATCH
+   21: line 8 ("", #6) POP
+   22: line 9 ("") "john"
+   23: line 9 ("", "john") MATCH
+   24: line 9 ("", #5) POP
+   25: line 10 ("") "j"
+   26: line 10 ("", "j") MATCH
+   27: line 10 ("", #-2) POP
+   28: line 11 ("") "xyzzy"
+   29: line 11 ("", "xyzzy") MATCH
+   30: line 11 ("", #-1) POP
+   31: line 12 ("") EXIT
+Execution completed in 32 steps.

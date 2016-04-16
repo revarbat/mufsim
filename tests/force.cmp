@@ -1,0 +1,19 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: "*jane_doe"
+    2: MATCH
+    3: "say Hello, World!"
+    4: FORCE
+    5: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") "*jane_doe"
+    2: line 2 ("", "*jane_doe") MATCH
+    3: line 2 ("", #6) "say Hello, World!"
+    4: line 2 ("", #6, "say Hello, World!") FORCE
+FORCE Jane_Doe(#6) TO DO: say Hello, World!
+    5: line 3 ("") EXIT
+Execution completed in 6 steps.

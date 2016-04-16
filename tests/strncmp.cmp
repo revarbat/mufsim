@@ -39,3 +39,4 @@
    15: line 5 ("", 0, 1, 1, "foObar", "fooqux") 3
    16: line 5 ("", 0, 1, 1, "foObar", "fooqux", 3) STRNCMP
    17: line 6 ("", 0, 1, 1, -1) EXIT
+Execution completed in 18 steps.

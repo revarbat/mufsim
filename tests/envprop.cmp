@@ -9,15 +9,15 @@
     5: ARRAY_MAKE
     6: FOREACH
     7: __FORITER__
-    8: BranchIfNot: +66
+    8: JmpIfFalse: +66
     9: SWAP
    10: POP
-   11: BranchIfNot: +6
+   11: JmpIfFalse: +6
    12: #0
    13: "foo"
    14: "C"
    15: SETPROP
-   16: Branch: +4
+   16: JMP: +4
    17: #0
    18: "foo"
    19: REMOVE_PROP
@@ -28,17 +28,17 @@
    24: ARRAY_MAKE
    25: FOREACH
    26: __FORITER__
-   27: BranchIfNot: +45
+   27: JmpIfFalse: +45
    28: SWAP
    29: POP
-   30: BranchIfNot: +8
+   30: JmpIfFalse: +8
    31: LV0: me
    32: @
    33: LOCATION
    34: "foo"
    35: "B"
    36: SETPROP
-   37: Branch: +6
+   37: JMP: +6
    38: LV0: me
    39: @
    40: LOCATION
@@ -51,16 +51,16 @@
    47: ARRAY_MAKE
    48: FOREACH
    49: __FORITER__
-   50: BranchIfNot: +20
+   50: JmpIfFalse: +20
    51: SWAP
    52: POP
-   53: BranchIfNot: +7
+   53: JmpIfFalse: +7
    54: LV0: me
    55: @
    56: "foo"
    57: "A"
    58: SETPROP
-   59: Branch: +5
+   59: JMP: +5
    60: LV0: me
    61: @
    62: "foo"
@@ -70,11 +70,11 @@
    66: "foo"
    67: ENVPROP
    68: POP
-   69: Branch: -20
+   69: JMP: -20
    70: __FORPOP__
-   71: Branch: -45
+   71: JMP: -45
    72: __FORPOP__
-   73: Branch: -66
+   73: JMP: -66
    74: __FORPOP__
    75: EXIT
 
@@ -87,10 +87,10 @@
     5: line 2 ("", 0, 1, 2) ARRAY_MAKE
     6: line 2 ("", [0, 1]) FOREACH
     7: line 2 ("") __FORITER__
-    8: line 2 ("", 0, 0, 1) BranchIfNot: +66
+    8: line 2 ("", 0, 0, 1) JmpIfFalse: +66
     9: line 2 ("", 0, 0) SWAP
    10: line 2 ("", 0, 0) POP
-   11: line 3 ("", 0) BranchIfNot: +6
+   11: line 3 ("", 0) JmpIfFalse: +6
    17: line 7 ("") #0
    18: line 7 ("", #0) "foo"
    19: line 8 ("", #0, "foo") REMOVE_PROP
@@ -102,10 +102,10 @@ DELPROP "foo" on #0
    24: line 10 ("", 0, 1, 2) ARRAY_MAKE
    25: line 10 ("", [0, 1]) FOREACH
    26: line 10 ("") __FORITER__
-   27: line 10 ("", 0, 0, 1) BranchIfNot: +45
+   27: line 10 ("", 0, 0, 1) JmpIfFalse: +45
    28: line 10 ("", 0, 0) SWAP
    29: line 10 ("", 0, 0) POP
-   30: line 11 ("", 0) BranchIfNot: +8
+   30: line 11 ("", 0) JmpIfFalse: +8
    38: line 15 ("") LV0: me
    39: line 15 ("", LV0) @
    40: line 15 ("", #5) LOCATION
@@ -119,10 +119,10 @@ DELPROP "foo" on #2
    47: line 18 ("", 0, 1, 2) ARRAY_MAKE
    48: line 18 ("", [0, 1]) FOREACH
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 0, 0, 1) BranchIfNot: +20
+   50: line 18 ("", 0, 0, 1) JmpIfFalse: +20
    51: line 18 ("", 0, 0) SWAP
    52: line 18 ("", 0, 0) POP
-   53: line 19 ("", 0) BranchIfNot: +7
+   53: line 19 ("", 0) JmpIfFalse: +7
    60: line 23 ("") LV0: me
    61: line 23 ("", LV0) @
    62: line 23 ("", #5) "foo"
@@ -136,35 +136,35 @@ GETPROP "foo" on #5 = None
 GETPROP "foo" on #2 = None
 GETPROP "foo" on #0 = None
    68: line 26 ("", 0) POP
-   69: line 27 ("") Branch: -20
+   69: line 27 ("") JMP: -20
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 1, 1, 1) BranchIfNot: +20
+   50: line 18 ("", 1, 1, 1) JmpIfFalse: +20
    51: line 18 ("", 1, 1) SWAP
    52: line 18 ("", 1, 1) POP
-   53: line 19 ("", 1) BranchIfNot: +7
+   53: line 19 ("", 1) JmpIfFalse: +7
    54: line 20 ("") LV0: me
    55: line 20 ("", LV0) @
    56: line 20 ("", #5) "foo"
    57: line 21 ("", #5, "foo") "A"
    58: line 21 ("", #5, "foo", "A") SETPROP
 SETPROP "foo" on #5 = "A"
-   59: line 19 ("") Branch: +5
+   59: line 19 ("") JMP: +5
    64: line 26 ("") LV0: me
    65: line 26 ("", LV0) @
    66: line 26 ("", #5) "foo"
    67: line 26 ("", #5, "foo") ENVPROP
 GETPROP "foo" on #5 = "A"
    68: line 26 ("", "A") POP
-   69: line 27 ("") Branch: -20
+   69: line 27 ("") JMP: -20
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 0) BranchIfNot: +20
+   50: line 18 ("", 0) JmpIfFalse: +20
    70: line 18 ("") __FORPOP__
-   71: line 28 ("") Branch: -45
+   71: line 28 ("") JMP: -45
    26: line 10 ("") __FORITER__
-   27: line 10 ("", 1, 1, 1) BranchIfNot: +45
+   27: line 10 ("", 1, 1, 1) JmpIfFalse: +45
    28: line 10 ("", 1, 1) SWAP
    29: line 10 ("", 1, 1) POP
-   30: line 11 ("", 1) BranchIfNot: +8
+   30: line 11 ("", 1) JmpIfFalse: +8
    31: line 12 ("") LV0: me
    32: line 12 ("", LV0) @
    33: line 12 ("", #5) LOCATION
@@ -172,7 +172,7 @@ GETPROP "foo" on #5 = "A"
    35: line 13 ("", #2, "foo") "B"
    36: line 13 ("", #2, "foo", "B") SETPROP
 SETPROP "foo" on #2 = "B"
-   37: line 11 ("") Branch: +6
+   37: line 11 ("") JMP: +6
    43: line 18 ("") {
    44: line 18 ("", Mark) 0
    45: line 18 ("", Mark, 0) 1
@@ -180,10 +180,10 @@ SETPROP "foo" on #2 = "B"
    47: line 18 ("", 0, 1, 2) ARRAY_MAKE
    48: line 18 ("", [0, 1]) FOREACH
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 0, 0, 1) BranchIfNot: +20
+   50: line 18 ("", 0, 0, 1) JmpIfFalse: +20
    51: line 18 ("", 0, 0) SWAP
    52: line 18 ("", 0, 0) POP
-   53: line 19 ("", 0) BranchIfNot: +7
+   53: line 19 ("", 0) JmpIfFalse: +7
    60: line 23 ("") LV0: me
    61: line 23 ("", LV0) @
    62: line 23 ("", #5) "foo"
@@ -196,45 +196,45 @@ DELPROP "foo" on #5
 GETPROP "foo" on #5 = None
 GETPROP "foo" on #2 = "B"
    68: line 26 ("", "B") POP
-   69: line 27 ("") Branch: -20
+   69: line 27 ("") JMP: -20
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 1, 1, 1) BranchIfNot: +20
+   50: line 18 ("", 1, 1, 1) JmpIfFalse: +20
    51: line 18 ("", 1, 1) SWAP
    52: line 18 ("", 1, 1) POP
-   53: line 19 ("", 1) BranchIfNot: +7
+   53: line 19 ("", 1) JmpIfFalse: +7
    54: line 20 ("") LV0: me
    55: line 20 ("", LV0) @
    56: line 20 ("", #5) "foo"
    57: line 21 ("", #5, "foo") "A"
    58: line 21 ("", #5, "foo", "A") SETPROP
 SETPROP "foo" on #5 = "A"
-   59: line 19 ("") Branch: +5
+   59: line 19 ("") JMP: +5
    64: line 26 ("") LV0: me
    65: line 26 ("", LV0) @
    66: line 26 ("", #5) "foo"
    67: line 26 ("", #5, "foo") ENVPROP
 GETPROP "foo" on #5 = "A"
    68: line 26 ("", "A") POP
-   69: line 27 ("") Branch: -20
+   69: line 27 ("") JMP: -20
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 0) BranchIfNot: +20
+   50: line 18 ("", 0) JmpIfFalse: +20
    70: line 18 ("") __FORPOP__
-   71: line 28 ("") Branch: -45
+   71: line 28 ("") JMP: -45
    26: line 10 ("") __FORITER__
-   27: line 10 ("", 0) BranchIfNot: +45
+   27: line 10 ("", 0) JmpIfFalse: +45
    72: line 10 ("") __FORPOP__
-   73: line 29 ("") Branch: -66
+   73: line 29 ("") JMP: -66
     7: line 2 ("") __FORITER__
-    8: line 2 ("", 1, 1, 1) BranchIfNot: +66
+    8: line 2 ("", 1, 1, 1) JmpIfFalse: +66
     9: line 2 ("", 1, 1) SWAP
    10: line 2 ("", 1, 1) POP
-   11: line 3 ("", 1) BranchIfNot: +6
+   11: line 3 ("", 1) JmpIfFalse: +6
    12: line 4 ("") #0
    13: line 4 ("", #0) "foo"
    14: line 5 ("", #0, "foo") "C"
    15: line 5 ("", #0, "foo", "C") SETPROP
 SETPROP "foo" on #0 = "C"
-   16: line 3 ("") Branch: +4
+   16: line 3 ("") JMP: +4
    20: line 10 ("") {
    21: line 10 ("", Mark) 0
    22: line 10 ("", Mark, 0) 1
@@ -242,10 +242,10 @@ SETPROP "foo" on #0 = "C"
    24: line 10 ("", 0, 1, 2) ARRAY_MAKE
    25: line 10 ("", [0, 1]) FOREACH
    26: line 10 ("") __FORITER__
-   27: line 10 ("", 0, 0, 1) BranchIfNot: +45
+   27: line 10 ("", 0, 0, 1) JmpIfFalse: +45
    28: line 10 ("", 0, 0) SWAP
    29: line 10 ("", 0, 0) POP
-   30: line 11 ("", 0) BranchIfNot: +8
+   30: line 11 ("", 0) JmpIfFalse: +8
    38: line 15 ("") LV0: me
    39: line 15 ("", LV0) @
    40: line 15 ("", #5) LOCATION
@@ -259,10 +259,10 @@ DELPROP "foo" on #2
    47: line 18 ("", 0, 1, 2) ARRAY_MAKE
    48: line 18 ("", [0, 1]) FOREACH
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 0, 0, 1) BranchIfNot: +20
+   50: line 18 ("", 0, 0, 1) JmpIfFalse: +20
    51: line 18 ("", 0, 0) SWAP
    52: line 18 ("", 0, 0) POP
-   53: line 19 ("", 0) BranchIfNot: +7
+   53: line 19 ("", 0) JmpIfFalse: +7
    60: line 23 ("") LV0: me
    61: line 23 ("", LV0) @
    62: line 23 ("", #5) "foo"
@@ -276,35 +276,35 @@ GETPROP "foo" on #5 = None
 GETPROP "foo" on #2 = None
 GETPROP "foo" on #0 = None
    68: line 26 ("", 0) POP
-   69: line 27 ("") Branch: -20
+   69: line 27 ("") JMP: -20
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 1, 1, 1) BranchIfNot: +20
+   50: line 18 ("", 1, 1, 1) JmpIfFalse: +20
    51: line 18 ("", 1, 1) SWAP
    52: line 18 ("", 1, 1) POP
-   53: line 19 ("", 1) BranchIfNot: +7
+   53: line 19 ("", 1) JmpIfFalse: +7
    54: line 20 ("") LV0: me
    55: line 20 ("", LV0) @
    56: line 20 ("", #5) "foo"
    57: line 21 ("", #5, "foo") "A"
    58: line 21 ("", #5, "foo", "A") SETPROP
 SETPROP "foo" on #5 = "A"
-   59: line 19 ("") Branch: +5
+   59: line 19 ("") JMP: +5
    64: line 26 ("") LV0: me
    65: line 26 ("", LV0) @
    66: line 26 ("", #5) "foo"
    67: line 26 ("", #5, "foo") ENVPROP
 GETPROP "foo" on #5 = "A"
    68: line 26 ("", "A") POP
-   69: line 27 ("") Branch: -20
+   69: line 27 ("") JMP: -20
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 0) BranchIfNot: +20
+   50: line 18 ("", 0) JmpIfFalse: +20
    70: line 18 ("") __FORPOP__
-   71: line 28 ("") Branch: -45
+   71: line 28 ("") JMP: -45
    26: line 10 ("") __FORITER__
-   27: line 10 ("", 1, 1, 1) BranchIfNot: +45
+   27: line 10 ("", 1, 1, 1) JmpIfFalse: +45
    28: line 10 ("", 1, 1) SWAP
    29: line 10 ("", 1, 1) POP
-   30: line 11 ("", 1) BranchIfNot: +8
+   30: line 11 ("", 1) JmpIfFalse: +8
    31: line 12 ("") LV0: me
    32: line 12 ("", LV0) @
    33: line 12 ("", #5) LOCATION
@@ -312,7 +312,7 @@ GETPROP "foo" on #5 = "A"
    35: line 13 ("", #2, "foo") "B"
    36: line 13 ("", #2, "foo", "B") SETPROP
 SETPROP "foo" on #2 = "B"
-   37: line 11 ("") Branch: +6
+   37: line 11 ("") JMP: +6
    43: line 18 ("") {
    44: line 18 ("", Mark) 0
    45: line 18 ("", Mark, 0) 1
@@ -320,10 +320,10 @@ SETPROP "foo" on #2 = "B"
    47: line 18 ("", 0, 1, 2) ARRAY_MAKE
    48: line 18 ("", [0, 1]) FOREACH
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 0, 0, 1) BranchIfNot: +20
+   50: line 18 ("", 0, 0, 1) JmpIfFalse: +20
    51: line 18 ("", 0, 0) SWAP
    52: line 18 ("", 0, 0) POP
-   53: line 19 ("", 0) BranchIfNot: +7
+   53: line 19 ("", 0) JmpIfFalse: +7
    60: line 23 ("") LV0: me
    61: line 23 ("", LV0) @
    62: line 23 ("", #5) "foo"
@@ -336,35 +336,36 @@ DELPROP "foo" on #5
 GETPROP "foo" on #5 = None
 GETPROP "foo" on #2 = "B"
    68: line 26 ("", "B") POP
-   69: line 27 ("") Branch: -20
+   69: line 27 ("") JMP: -20
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 1, 1, 1) BranchIfNot: +20
+   50: line 18 ("", 1, 1, 1) JmpIfFalse: +20
    51: line 18 ("", 1, 1) SWAP
    52: line 18 ("", 1, 1) POP
-   53: line 19 ("", 1) BranchIfNot: +7
+   53: line 19 ("", 1) JmpIfFalse: +7
    54: line 20 ("") LV0: me
    55: line 20 ("", LV0) @
    56: line 20 ("", #5) "foo"
    57: line 21 ("", #5, "foo") "A"
    58: line 21 ("", #5, "foo", "A") SETPROP
 SETPROP "foo" on #5 = "A"
-   59: line 19 ("") Branch: +5
+   59: line 19 ("") JMP: +5
    64: line 26 ("") LV0: me
    65: line 26 ("", LV0) @
    66: line 26 ("", #5) "foo"
    67: line 26 ("", #5, "foo") ENVPROP
 GETPROP "foo" on #5 = "A"
    68: line 26 ("", "A") POP
-   69: line 27 ("") Branch: -20
+   69: line 27 ("") JMP: -20
    49: line 18 ("") __FORITER__
-   50: line 18 ("", 0) BranchIfNot: +20
+   50: line 18 ("", 0) JmpIfFalse: +20
    70: line 18 ("") __FORPOP__
-   71: line 28 ("") Branch: -45
+   71: line 28 ("") JMP: -45
    26: line 10 ("") __FORITER__
-   27: line 10 ("", 0) BranchIfNot: +45
+   27: line 10 ("", 0) JmpIfFalse: +45
    72: line 10 ("") __FORPOP__
-   73: line 29 ("") Branch: -66
+   73: line 29 ("") JMP: -66
     7: line 2 ("") __FORITER__
-    8: line 2 ("", 0) BranchIfNot: +66
+    8: line 2 ("", 0) JmpIfFalse: +66
    74: line 2 ("") __FORPOP__
    75: line 30 ("") EXIT
+Execution completed in 261 steps.

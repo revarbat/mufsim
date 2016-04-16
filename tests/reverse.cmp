@@ -19,3 +19,4 @@
     5: line 2 ("", 4, 5, 6, 7) 4
     6: line 2 ("", 4, 5, 6, 7, 4) REVERSE
     7: line 3 ("", 7, 6, 5, 4) EXIT
+Execution completed in 8 steps.

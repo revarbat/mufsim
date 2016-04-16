@@ -17,3 +17,4 @@
     4: line 2 ("", "hello there", "[a-h]", "y") 1
     5: line 2 ("", "hello there", "[a-h]", "y", 1) REGSUB
     6: line 3 ("", "yyllo tyyry") EXIT
+Execution completed in 7 steps.

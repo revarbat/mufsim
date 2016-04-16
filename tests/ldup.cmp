@@ -17,3 +17,4 @@
     4: line 2 ("", 3, 4, 5) 3
     5: line 2 ("", 3, 4, 5, 3) LDUP
     6: line 3 ("", 3, 4, 5, 3, 3, 4, 5, 3) EXIT
+Execution completed in 7 steps.

@@ -1,0 +1,58 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: 1.0
+    2: ATAN
+    3: POP
+    4: 1.0
+    5: -1.0
+    6: *
+    7: ATAN
+    8: POP
+    9: 0.5
+   10: ATAN
+   11: POP
+   12: 0.5
+   13: -1.0
+   14: *
+   15: ATAN
+   16: POP
+   17: 0.0
+   18: ATAN
+   19: POP
+   20: 0.0
+   21: -1.0
+   22: *
+   23: ATAN
+   24: POP
+   25: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") 1.0
+    2: line 2 ("", 1.0) ATAN
+    3: line 2 ("", 0.785398163397) POP
+    4: line 3 ("") 1.0
+    5: line 3 ("", 1.0) -1.0
+    6: line 3 ("", 1.0, -1.0) *
+    7: line 3 ("", -1.0) ATAN
+    8: line 3 ("", -0.785398163397) POP
+    9: line 4 ("") 0.5
+   10: line 4 ("", 0.5) ATAN
+   11: line 4 ("", 0.463647609001) POP
+   12: line 5 ("") 0.5
+   13: line 5 ("", 0.5) -1.0
+   14: line 5 ("", 0.5, -1.0) *
+   15: line 5 ("", -0.5) ATAN
+   16: line 5 ("", -0.463647609001) POP
+   17: line 6 ("") 0.0
+   18: line 6 ("", 0.0) ATAN
+   19: line 6 ("", 0.0) POP
+   20: line 7 ("") 0.0
+   21: line 7 ("", 0.0) -1.0
+   22: line 7 ("", 0.0, -1.0) *
+   23: line 7 ("", -0.0) ATAN
+   24: line 7 ("", -0.0) POP
+   25: line 8 ("") EXIT
+Execution completed in 26 steps.

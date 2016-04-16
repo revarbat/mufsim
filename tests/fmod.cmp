@@ -1,0 +1,42 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: 7.0
+    2: 3.25
+    3: FMOD
+    4: POP
+    5: 6.0
+    6: 3.0
+    7: FMOD
+    8: POP
+    9: -6.0
+   10: 3.0
+   11: FMOD
+   12: POP
+   13: -7.0
+   14: 3.25
+   15: FMOD
+   16: POP
+   17: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") 7.0
+    2: line 2 ("", 7.0) 3.25
+    3: line 2 ("", 7.0, 3.25) FMOD
+    4: line 2 ("", 0.5) POP
+    5: line 3 ("") 6.0
+    6: line 3 ("", 6.0) 3.0
+    7: line 3 ("", 6.0, 3.0) FMOD
+    8: line 3 ("", 0.0) POP
+    9: line 4 ("") -6.0
+   10: line 4 ("", -6.0) 3.0
+   11: line 4 ("", -6.0, 3.0) FMOD
+   12: line 4 ("", -0.0) POP
+   13: line 5 ("") -7.0
+   14: line 5 ("", -7.0) 3.25
+   15: line 5 ("", -7.0, 3.25) FMOD
+   16: line 5 ("", -0.5) POP
+   17: line 6 ("") EXIT
+Execution completed in 18 steps.

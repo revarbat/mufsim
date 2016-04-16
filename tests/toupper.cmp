@@ -11,3 +11,4 @@
     1: line 2 ("") "FooBar"
     2: line 2 ("", "FooBar") TOUPPER
     3: line 3 ("", "FOOBAR") EXIT
+Execution completed in 4 steps.

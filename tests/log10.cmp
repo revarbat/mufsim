@@ -1,0 +1,39 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: 10000000000.0
+    2: LOG10
+    3: POP
+    4: 1000.0
+    5: LOG10
+    6: POP
+    7: 1.0
+    8: LOG10
+    9: POP
+   10: 1e-06
+   11: LOG10
+   12: POP
+   13: 0.0
+   14: LOG10
+   15: POP
+   16: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") 10000000000.0
+    2: line 2 ("", 10000000000.0) LOG10
+    3: line 2 ("", 10.0) POP
+    4: line 3 ("") 1000.0
+    5: line 3 ("", 1000.0) LOG10
+    6: line 3 ("", 3.0) POP
+    7: line 4 ("") 1.0
+    8: line 4 ("", 1.0) LOG10
+    9: line 4 ("", 0.0) POP
+   10: line 5 ("") 1e-06
+   11: line 5 ("", 1e-06) LOG10
+   12: line 5 ("", -6.0) POP
+   13: line 6 ("") 0.0
+   14: line 6 ("", 0.0) LOG10
+Error in line 6 (LOG10): Math domain error.
+Execution completed in 15 steps.

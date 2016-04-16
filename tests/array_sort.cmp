@@ -28,7 +28,7 @@
    24: ARRAY_MAKE
    25: FOREACH
    26: __FORITER__
-   27: BranchIfNot: +11
+   27: JmpIfFalse: +11
    28: SV1: mode
    29: !
    30: POP
@@ -38,7 +38,7 @@
    34: @
    35: ARRAY_SORT
    36: POP
-   37: Branch: -11
+   37: JMP: -11
    38: __FORPOP__
    39: EXIT
 
@@ -70,7 +70,7 @@
    24: line 9 ("", 0, 1, 2, 3, 4) ARRAY_MAKE
    25: line 9 ("", [0, 1, 2, 3]) FOREACH
    26: line 9 ("") __FORITER__
-   27: line 9 ("", 0, 0, 1) BranchIfNot: +11
+   27: line 9 ("", 0, 0, 1) JmpIfFalse: +11
    28: line 9 ("", 0, 0) SV1: mode
    29: line 9 ("", 0, 0, SV1) !
    30: line 9 ("", 0) POP
@@ -80,9 +80,9 @@
    34: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], SV1) @
    35: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], 0) ARRAY_SORT
    36: line 10 ("", ['B', 'E', 'F', 'G', 'a', 'c', 'd', 'h', 'i', 'j']) POP
-   37: line 11 ("") Branch: -11
+   37: line 11 ("") JMP: -11
    26: line 9 ("") __FORITER__
-   27: line 9 ("", 1, 1, 1) BranchIfNot: +11
+   27: line 9 ("", 1, 1, 1) JmpIfFalse: +11
    28: line 9 ("", 1, 1) SV1: mode
    29: line 9 ("", 1, 1, SV1) !
    30: line 9 ("", 1) POP
@@ -92,9 +92,9 @@
    34: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], SV1) @
    35: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], 1) ARRAY_SORT
    36: line 10 ("", ['a', 'B', 'c', 'd', 'E', 'F', 'G', 'h', 'i', 'j']) POP
-   37: line 11 ("") Branch: -11
+   37: line 11 ("") JMP: -11
    26: line 9 ("") __FORITER__
-   27: line 9 ("", 2, 2, 1) BranchIfNot: +11
+   27: line 9 ("", 2, 2, 1) JmpIfFalse: +11
    28: line 9 ("", 2, 2) SV1: mode
    29: line 9 ("", 2, 2, SV1) !
    30: line 9 ("", 2) POP
@@ -104,9 +104,9 @@
    34: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], SV1) @
    35: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], 2) ARRAY_SORT
    36: line 10 ("", ['j', 'i', 'h', 'd', 'c', 'a', 'G', 'F', 'E', 'B']) POP
-   37: line 11 ("") Branch: -11
+   37: line 11 ("") JMP: -11
    26: line 9 ("") __FORITER__
-   27: line 9 ("", 3, 3, 1) BranchIfNot: +11
+   27: line 9 ("", 3, 3, 1) JmpIfFalse: +11
    28: line 9 ("", 3, 3) SV1: mode
    29: line 9 ("", 3, 3, SV1) !
    30: line 9 ("", 3) POP
@@ -116,8 +116,9 @@
    34: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], SV1) @
    35: line 10 ("", ['d', 'h', 'G', 'B', 'j', 'E', 'a', 'i', 'F', 'c'], 3) ARRAY_SORT
    36: line 10 ("", ['j', 'i', 'h', 'G', 'F', 'E', 'd', 'c', 'B', 'a']) POP
-   37: line 11 ("") Branch: -11
+   37: line 11 ("") JMP: -11
    26: line 9 ("") __FORITER__
-   27: line 9 ("", 0) BranchIfNot: +11
+   27: line 9 ("", 0) JmpIfFalse: +11
    38: line 9 ("") __FORPOP__
    39: line 12 ("") EXIT
+Execution completed in 78 steps.

@@ -13,3 +13,4 @@
     2: line 2 ("", "abcdef") 3
     3: line 2 ("", "abcdef", 3) STRCUT
     4: line 3 ("", "abc", "def") EXIT
+Execution completed in 5 steps.

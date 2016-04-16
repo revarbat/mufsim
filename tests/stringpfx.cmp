@@ -25,3 +25,4 @@
     8: line 4 ("", 1, 1, "foobar") "bar"
     9: line 4 ("", 1, 1, "foobar", "bar") STRINGPFX
    10: line 5 ("", 1, 1, 0) EXIT
+Execution completed in 11 steps.

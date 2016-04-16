@@ -45,3 +45,4 @@
    18: line 3 ("", {'a': {'x': 3}}, "a", "x", 2) ARRAY_MAKE
    19: line 4 ("", {'a': {'x': 3}}, ['a', 'x']) ARRAY_NESTED_GET
    20: line 5 ("", 3) EXIT
+Execution completed in 21 steps.

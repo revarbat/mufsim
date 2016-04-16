@@ -25,3 +25,4 @@ PROPDIR? "sex/" on #5 = False
     8: line 3 ("", 0, #5, "test#") PROPDIR?
 PROPDIR? "test#/" on #5 = True
     9: line 4 ("", 0, 1) EXIT
+Execution completed in 10 steps.

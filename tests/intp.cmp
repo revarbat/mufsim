@@ -19,3 +19,4 @@
     5: line 4 ("", 0, 1) "foo"
     6: line 4 ("", 0, 1, "foo") INT?
     7: line 5 ("", 0, 1, 0) EXIT
+Execution completed in 8 steps.

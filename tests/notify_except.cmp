@@ -22,3 +22,4 @@
     7: line 2 ("", #2, #5, "foo") NOTIFY_EXCEPT
 NOTIFY TO ALL IN #2 EXCEPT #5: foo
     8: line 3 ("") EXIT
+Execution completed in 9 steps.

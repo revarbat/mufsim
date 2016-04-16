@@ -19,3 +19,4 @@ GETPROP "test#/3" on #5 = "This is line three."
 GETPROP "test#/4" on #5 = "This is line four."
 GETPROP "test#/5" on #5 = "This is line five."
     4: line 4 ("", ['This is line one.', 'This is line two.', 'This is line three.', 'This is line four.', 'This is line five.']) EXIT
+Execution completed in 5 steps.

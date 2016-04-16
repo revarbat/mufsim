@@ -19,3 +19,4 @@
     5: line 3 ("", 0, #4) #4
     6: line 3 ("", 0, #4, #4) DBCMP
     7: line 4 ("", 0, 1) EXIT
+Execution completed in 8 steps.

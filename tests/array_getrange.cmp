@@ -31,3 +31,4 @@
    11: line 3 ("", [3, 4, 5, 6, 7, 8], 2) 4
    12: line 3 ("", [3, 4, 5, 6, 7, 8], 2, 4) ARRAY_GETRANGE
    13: line 4 ("", [5, 6, 7]) EXIT
+Execution completed in 14 steps.

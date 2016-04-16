@@ -16,3 +16,4 @@
     4: line 2 ("", #5, "sex") GETPROPSTR
 GETPROP "sex" on #5 = "male"
     5: line 3 ("", "male") EXIT
+Execution completed in 6 steps.

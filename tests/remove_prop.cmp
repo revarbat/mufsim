@@ -16,3 +16,4 @@
     4: line 2 ("", #5, "sex") REMOVE_PROP
 DELPROP "sex" on #5
     5: line 3 ("") EXIT
+Execution completed in 6 steps.

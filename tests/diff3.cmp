@@ -1,0 +1,24 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main
+    1: 1.0
+    2: 2.0
+    3: 3.0
+    4: 0.75
+    5: 1.5
+    6: 2.25
+    7: DIFF3
+    8: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main
+    1: line 2 ("") 1.0
+    2: line 2 ("", 1.0) 2.0
+    3: line 2 ("", 1.0, 2.0) 3.0
+    4: line 2 ("", 1.0, 2.0, 3.0) 0.75
+    5: line 2 ("", 1.0, 2.0, 3.0, 0.75) 1.5
+    6: line 2 ("", 1.0, 2.0, 3.0, 0.75, 1.5) 2.25
+    7: line 2 ("", 1.0, 2.0, 3.0, 0.75, 1.5, 2.25) DIFF3
+    8: line 3 ("", 0.25, 0.5, 0.75) EXIT
+Execution completed in 9 steps.
