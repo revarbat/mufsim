@@ -19,7 +19,7 @@ for f in *.muf ; do
             diff -u $cmpfile $outfile
         fi
     fi
-    #rm -f $outfile
+    rm -f $outfile
 done
 
 for f in *.muv ; do
@@ -35,6 +35,6 @@ for f in *.muv ; do
             diff -u $cmpfile $outfile
         fi
     fi
-    #rm -f $outfile
+    rm -f $outfile
 done
 
