@@ -18,9 +18,9 @@
     2: line 2 ("", "cat dog fog bat") "[bc]at"
     3: line 2 ("", "cat dog fog bat", "[bc]at") 1
     4: line 2 ("", "cat dog fog bat", "[bc]at", 1) REGEXP
-    5: line 3 ("", ['cat'], [(0, 3)]) "cat dog fog bat"
-    6: line 3 ("", ['cat'], [(0, 3)], "cat dog fog bat") "[a-z]og"
-    7: line 3 ("", ['cat'], [(0, 3)], "cat dog fog bat", "[a-z]og") 1
-    8: line 3 ("", ['cat'], [(0, 3)], "cat dog fog bat", "[a-z]og", 1) REGEXP
-    9: line 4 ("", ['cat'], [(0, 3)], ['dog'], [(4, 7)]) EXIT
+    5: line 3 ("", 1["cat"], 1[2[0, 3]]) "cat dog fog bat"
+    6: line 3 ("", 1["cat"], 1[2[0, 3]], "cat dog fog bat") "[a-z]og"
+    7: line 3 ("", 1["cat"], 1[2[0, 3]], "cat dog fog bat", "[a-z]og") 1
+    8: line 3 ("", 1["cat"], 1[2[0, 3]], "cat dog fog bat", "[a-z]og", 1) REGEXP
+    9: line 4 ("", 1["cat"], 1[2[0, 3]], 1["dog"], 1[2[4, 7]]) EXIT
 Execution completed in 10 steps.

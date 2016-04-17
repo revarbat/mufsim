@@ -27,8 +27,8 @@
     7: line 2 ("", Mark, 3, 4, 5, 6, 7) 8
     8: line 2 ("", Mark, 3, 4, 5, 6, 7, 8) }
     9: line 2 ("", 3, 4, 5, 6, 7, 8, 6) ARRAY_MAKE
-   10: line 3 ("", [3, 4, 5, 6, 7, 8]) 3
-   11: line 3 ("", [3, 4, 5, 6, 7, 8], 3) 4
-   12: line 3 ("", [3, 4, 5, 6, 7, 8], 3, 4) ARRAY_DELRANGE
-   13: line 4 ("", [3, 4, 5, 8]) EXIT
+   10: line 3 ("", 6[3, 4, 5, 6, 7, 8]) 3
+   11: line 3 ("", 6[3, 4, 5, 6, 7, 8], 3) 4
+   12: line 3 ("", 6[3, 4, 5, 6, 7, 8], 3, 4) ARRAY_DELRANGE
+   13: line 4 ("", 4[3, 4, 5, 8]) EXIT
 Execution completed in 14 steps.

@@ -25,7 +25,7 @@
     4: line 2 ("", Mark, 3, 4) 5
     5: line 2 ("", Mark, 3, 4, 5) }
     6: line 2 ("", 3, 4, 5, 3) ARRAY_MAKE
-    7: line 3 ("", [3, 4, 5]) FOREACH
+    7: line 3 ("", 3[3, 4, 5]) FOREACH
     8: line 4 ("") __FORITER__
     9: line 4 ("", 0, 3, 1) JmpIfFalse: +4
    10: line 4 ("", 0, 3) POP

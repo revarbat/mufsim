@@ -54,11 +54,11 @@
     9: line 4 ("") SV0: oldloc
    10: line 4 ("", SV0) @
    11: line 4 ("", #2) CONTENTS_ARRAY
-   12: line 4 ("", [#7, #6, #5]) POP
+   12: line 4 ("", 3[#7, #6, #5]) POP
    13: line 5 ("") SV1: newloc
    14: line 5 ("", SV1) @
    15: line 5 ("", #0) CONTENTS_ARRAY
-   16: line 5 ("", [#2, #1]) POP
+   16: line 5 ("", 2[#2, #1]) POP
    17: line 6 ("") LV0: me
    18: line 6 ("", LV0) @
    19: line 6 ("", #5) LOCATION
@@ -71,11 +71,11 @@
    26: line 8 ("") SV0: oldloc
    27: line 8 ("", SV0) @
    28: line 8 ("", #2) CONTENTS_ARRAY
-   29: line 8 ("", [#7, #6]) POP
+   29: line 8 ("", 2[#7, #6]) POP
    30: line 9 ("") SV1: newloc
    31: line 9 ("", SV1) @
    32: line 9 ("", #0) CONTENTS_ARRAY
-   33: line 9 ("", [#5, #2, #1]) POP
+   33: line 9 ("", 3[#5, #2, #1]) POP
    34: line 10 ("") LV0: me
    35: line 10 ("", LV0) @
    36: line 10 ("", #5) LOCATION

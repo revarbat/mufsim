@@ -52,7 +52,7 @@ catch depth=1
    14: line 8 ("", 3, 4, 5, "bar") ABORT
 Caught error in line 8 (ABORT): bar
 catch depth=1
-   17: line 9 ("", 3, {'program': #4, 'line': 8, 'instr': 'ABORT', 'error': 'bar'}) POP
+   17: line 9 ("", 3, 4{"program": #4, "line": 8, "instr": "ABORT", "error": "bar"}) POP
    18: line 11 ("", 3) POP
    19: line 12 ("") 3
    20: line 12 ("", 3) 4

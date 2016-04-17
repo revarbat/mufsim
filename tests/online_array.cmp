@@ -8,5 +8,5 @@
 #### Executing Tokens #################################
     0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") ONLINE_ARRAY
-    2: line 3 ("", [#1, #6, #5]) EXIT
+    2: line 3 ("", 3[#1, #6, #5]) EXIT
 Execution completed in 3 steps.

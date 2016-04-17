@@ -29,13 +29,13 @@
     6: line 2 ("", Mark, #5, #1, "*jane_doe") MATCH
     7: line 2 ("", Mark, #5, #1, #6) }
     8: line 2 ("", #5, #1, #6, 3) ARRAY_MAKE
-    9: line 3 ("", [#5, #1, #6]) {
-   10: line 3 ("", [#5, #1, #6], Mark) "First line."
-   11: line 3 ("", [#5, #1, #6], Mark, "First line.") "Second line."
-   12: line 3 ("", [#5, #1, #6], Mark, "First line.", "Second line.") "Third line."
-   13: line 3 ("", [#5, #1, #6], Mark, "First line.", "Second line.", "Third line.") }
-   14: line 3 ("", [#5, #1, #6], "First line.", "Second line.", "Third line.", 3) ARRAY_MAKE
-   15: line 4 ("", [#5, #1, #6], ['First line.', 'Second line.', 'Third line.']) ARRAY_NOTIFY
+    9: line 3 ("", 3[#5, #1, #6]) {
+   10: line 3 ("", 3[#5, #1, #6], Mark) "First line."
+   11: line 3 ("", 3[#5, #1, #6], Mark, "First line.") "Second line."
+   12: line 3 ("", 3[#5, #1, #6], Mark, "First line.", "Second line.") "Third line."
+   13: line 3 ("", 3[#5, #1, #6], Mark, "First line.", "Second line.", "Third line.") }
+   14: line 3 ("", 3[#5, #1, #6], "First line.", "Second line.", "Third line.", 3) ARRAY_MAKE
+   15: line 4 ("", 3[#5, #1, #6], 3["First line.", "Second line.", "Third line."]) ARRAY_NOTIFY
 NOTIFY TO [#5, #1, #6]: First line.
 NOTIFY TO [#5, #1, #6]: Second line.
 NOTIFY TO [#5, #1, #6]: Third line.

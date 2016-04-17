@@ -34,15 +34,15 @@
     7: line 2 ("", Mark, "a", "x", 3, 2) 2
     8: line 2 ("", Mark, "a", "x", 3, 2, 2) /
     9: line 2 ("", Mark, "a", "x", 3, 1) ARRAY_MAKE_DICT
-   10: line 2 ("", Mark, "a", {'x': 3}) }
-   11: line 2 ("", "a", {'x': 3}, 2) 2
-   12: line 2 ("", "a", {'x': 3}, 2, 2) /
-   13: line 2 ("", "a", {'x': 3}, 1) ARRAY_MAKE_DICT
-   14: line 3 ("", {'a': {'x': 3}}) {
-   15: line 3 ("", {'a': {'x': 3}}, Mark) "a"
-   16: line 3 ("", {'a': {'x': 3}}, Mark, "a") "x"
-   17: line 3 ("", {'a': {'x': 3}}, Mark, "a", "x") }
-   18: line 3 ("", {'a': {'x': 3}}, "a", "x", 2) ARRAY_MAKE
-   19: line 4 ("", {'a': {'x': 3}}, ['a', 'x']) ARRAY_NESTED_GET
+   10: line 2 ("", Mark, "a", 1{"x": 3}) }
+   11: line 2 ("", "a", 1{"x": 3}, 2) 2
+   12: line 2 ("", "a", 1{"x": 3}, 2, 2) /
+   13: line 2 ("", "a", 1{"x": 3}, 1) ARRAY_MAKE_DICT
+   14: line 3 ("", 1{"a": 1{"x": 3}}) {
+   15: line 3 ("", 1{"a": 1{"x": 3}}, Mark) "a"
+   16: line 3 ("", 1{"a": 1{"x": 3}}, Mark, "a") "x"
+   17: line 3 ("", 1{"a": 1{"x": 3}}, Mark, "a", "x") }
+   18: line 3 ("", 1{"a": 1{"x": 3}}, "a", "x", 2) ARRAY_MAKE
+   19: line 4 ("", 1{"a": 1{"x": 3}}, 2["a", "x"]) ARRAY_NESTED_GET
    20: line 5 ("", 3) EXIT
 Execution completed in 21 steps.

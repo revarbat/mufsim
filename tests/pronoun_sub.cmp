@@ -60,7 +60,7 @@
    12: line 4 ("", Mark, "male", "female", "herm", "hermaphrodite") "none"
    13: line 4 ("", Mark, "male", "female", "herm", "hermaphrodite", "none") }
    14: line 4 ("", "male", "female", "herm", "hermaphrodite", "none", 5) ARRAY_MAKE
-   15: line 5 ("", ['male', 'female', 'herm', 'hermaphrodite', 'none']) FOREACH
+   15: line 5 ("", 5["male", "female", "herm", "hermaphrodite", "none"]) FOREACH
    16: line 5 ("") __FORITER__
    17: line 5 ("", 0, "male", 1) JmpIfFalse: +23
    18: line 5 ("", 0, "male") SWAP

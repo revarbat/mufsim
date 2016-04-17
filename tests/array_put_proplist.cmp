@@ -25,7 +25,7 @@
     7: line 2 ("", #5, "outlist", Mark, "This", "is", "a") "test."
     8: line 2 ("", #5, "outlist", Mark, "This", "is", "a", "test.") }
     9: line 2 ("", #5, "outlist", "This", "is", "a", "test.", 4) ARRAY_MAKE
-   10: line 3 ("", #5, "outlist", ['This', 'is', 'a', 'test.']) ARRAY_PUT_PROPLIST
+   10: line 3 ("", #5, "outlist", 4["This", "is", "a", "test."]) ARRAY_PUT_PROPLIST
 SETPROP "outlist#" on #5 = 4
 SETPROP "outlist#/1" on #5 = "This"
 SETPROP "outlist#/2" on #5 = "is"

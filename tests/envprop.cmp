@@ -85,7 +85,7 @@
     3: line 2 ("", Mark, 0) 1
     4: line 2 ("", Mark, 0, 1) }
     5: line 2 ("", 0, 1, 2) ARRAY_MAKE
-    6: line 2 ("", [0, 1]) FOREACH
+    6: line 2 ("", 2[0, 1]) FOREACH
     7: line 2 ("") __FORITER__
     8: line 2 ("", 0, 0, 1) JmpIfFalse: +66
     9: line 2 ("", 0, 0) SWAP
@@ -100,7 +100,7 @@ DELPROP "foo" on #0
    22: line 10 ("", Mark, 0) 1
    23: line 10 ("", Mark, 0, 1) }
    24: line 10 ("", 0, 1, 2) ARRAY_MAKE
-   25: line 10 ("", [0, 1]) FOREACH
+   25: line 10 ("", 2[0, 1]) FOREACH
    26: line 10 ("") __FORITER__
    27: line 10 ("", 0, 0, 1) JmpIfFalse: +45
    28: line 10 ("", 0, 0) SWAP
@@ -117,7 +117,7 @@ DELPROP "foo" on #2
    45: line 18 ("", Mark, 0) 1
    46: line 18 ("", Mark, 0, 1) }
    47: line 18 ("", 0, 1, 2) ARRAY_MAKE
-   48: line 18 ("", [0, 1]) FOREACH
+   48: line 18 ("", 2[0, 1]) FOREACH
    49: line 18 ("") __FORITER__
    50: line 18 ("", 0, 0, 1) JmpIfFalse: +20
    51: line 18 ("", 0, 0) SWAP
@@ -178,7 +178,7 @@ SETPROP "foo" on #2 = "B"
    45: line 18 ("", Mark, 0) 1
    46: line 18 ("", Mark, 0, 1) }
    47: line 18 ("", 0, 1, 2) ARRAY_MAKE
-   48: line 18 ("", [0, 1]) FOREACH
+   48: line 18 ("", 2[0, 1]) FOREACH
    49: line 18 ("") __FORITER__
    50: line 18 ("", 0, 0, 1) JmpIfFalse: +20
    51: line 18 ("", 0, 0) SWAP
@@ -240,7 +240,7 @@ SETPROP "foo" on #0 = "C"
    22: line 10 ("", Mark, 0) 1
    23: line 10 ("", Mark, 0, 1) }
    24: line 10 ("", 0, 1, 2) ARRAY_MAKE
-   25: line 10 ("", [0, 1]) FOREACH
+   25: line 10 ("", 2[0, 1]) FOREACH
    26: line 10 ("") __FORITER__
    27: line 10 ("", 0, 0, 1) JmpIfFalse: +45
    28: line 10 ("", 0, 0) SWAP
@@ -257,7 +257,7 @@ DELPROP "foo" on #2
    45: line 18 ("", Mark, 0) 1
    46: line 18 ("", Mark, 0, 1) }
    47: line 18 ("", 0, 1, 2) ARRAY_MAKE
-   48: line 18 ("", [0, 1]) FOREACH
+   48: line 18 ("", 2[0, 1]) FOREACH
    49: line 18 ("") __FORITER__
    50: line 18 ("", 0, 0, 1) JmpIfFalse: +20
    51: line 18 ("", 0, 0) SWAP
@@ -318,7 +318,7 @@ SETPROP "foo" on #2 = "B"
    45: line 18 ("", Mark, 0) 1
    46: line 18 ("", Mark, 0, 1) }
    47: line 18 ("", 0, 1, 2) ARRAY_MAKE
-   48: line 18 ("", [0, 1]) FOREACH
+   48: line 18 ("", 2[0, 1]) FOREACH
    49: line 18 ("") __FORITER__
    50: line 18 ("", 0, 0, 1) JmpIfFalse: +20
    51: line 18 ("", 0, 0) SWAP

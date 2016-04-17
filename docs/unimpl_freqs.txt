@@ -1,5 +1,4 @@
     217 parseprop
-    142 rmatch
     109 ansi_strcut
     101 clear
      97 locked?

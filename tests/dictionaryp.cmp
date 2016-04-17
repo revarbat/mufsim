@@ -39,7 +39,7 @@
     9: line 2 ("", "a", 1, "b", 2, "c", 3, 6) 2
    10: line 2 ("", "a", 1, "b", 2, "c", 3, 6, 2) /
    11: line 2 ("", "a", 1, "b", 2, "c", 3, 3) ARRAY_MAKE_DICT
-   12: line 3 ("", {'a': 1, 'c': 3, 'b': 2}) DICTIONARY?
+   12: line 3 ("", 3{"a": 1, "c": 3, "b": 2}) DICTIONARY?
    13: line 4 ("", 1) {
    14: line 4 ("", 1, Mark) 3
    15: line 4 ("", 1, Mark, 3) 4
@@ -49,6 +49,6 @@
    19: line 4 ("", 1, Mark, 3, 4, 5, 6, 7) 8
    20: line 4 ("", 1, Mark, 3, 4, 5, 6, 7, 8) }
    21: line 4 ("", 1, 3, 4, 5, 6, 7, 8, 6) ARRAY_MAKE
-   22: line 5 ("", 1, [3, 4, 5, 6, 7, 8]) DICTIONARY?
+   22: line 5 ("", 1, 6[3, 4, 5, 6, 7, 8]) DICTIONARY?
    23: line 6 ("", 1, 0) EXIT
 Execution completed in 24 steps.

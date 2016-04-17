@@ -1,0 +1,6 @@
+[flake8]
+ignore = C901
+max-line-length = 132
+exclude = tests/*
+max-complexity = 20
+

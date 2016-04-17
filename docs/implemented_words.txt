@@ -182,6 +182,7 @@ repeat
 reverse
 rinstr
 rinstring
+rmatch
 room?
 rot
 rotate

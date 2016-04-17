@@ -36,15 +36,15 @@
     8: line 3 ("", 8, Mark, "a", "x", 3, 2) 2
     9: line 3 ("", 8, Mark, "a", "x", 3, 2, 2) /
    10: line 3 ("", 8, Mark, "a", "x", 3, 1) ARRAY_MAKE_DICT
-   11: line 3 ("", 8, Mark, "a", {'x': 3}) }
-   12: line 3 ("", 8, "a", {'x': 3}, 2) 2
-   13: line 3 ("", 8, "a", {'x': 3}, 2, 2) /
-   14: line 3 ("", 8, "a", {'x': 3}, 1) ARRAY_MAKE_DICT
-   15: line 4 ("", 8, {'a': {'x': 3}}) {
-   16: line 4 ("", 8, {'a': {'x': 3}}, Mark) "a"
-   17: line 4 ("", 8, {'a': {'x': 3}}, Mark, "a") "x"
-   18: line 4 ("", 8, {'a': {'x': 3}}, Mark, "a", "x") }
-   19: line 4 ("", 8, {'a': {'x': 3}}, "a", "x", 2) ARRAY_MAKE
-   20: line 5 ("", 8, {'a': {'x': 3}}, ['a', 'x']) ARRAY_NESTED_SET
-   21: line 6 ("", {'a': {'x': 8}}) EXIT
+   11: line 3 ("", 8, Mark, "a", 1{"x": 3}) }
+   12: line 3 ("", 8, "a", 1{"x": 3}, 2) 2
+   13: line 3 ("", 8, "a", 1{"x": 3}, 2, 2) /
+   14: line 3 ("", 8, "a", 1{"x": 3}, 1) ARRAY_MAKE_DICT
+   15: line 4 ("", 8, 1{"a": 1{"x": 3}}) {
+   16: line 4 ("", 8, 1{"a": 1{"x": 3}}, Mark) "a"
+   17: line 4 ("", 8, 1{"a": 1{"x": 3}}, Mark, "a") "x"
+   18: line 4 ("", 8, 1{"a": 1{"x": 3}}, Mark, "a", "x") }
+   19: line 4 ("", 8, 1{"a": 1{"x": 3}}, "a", "x", 2) ARRAY_MAKE
+   20: line 5 ("", 8, 1{"a": 1{"x": 3}}, 2["a", "x"]) ARRAY_NESTED_SET
+   21: line 6 ("", 1{"a": 1{"x": 8}}) EXIT
 Execution completed in 22 steps.

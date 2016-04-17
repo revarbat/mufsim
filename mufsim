@@ -2,9 +2,6 @@
 
 from __future__ import print_function
 
-EMULATED_VERSION = '"Muck2.2fb6.09"'
-MAX_VARS = 54
-
 import os
 import re
 import sys
@@ -15,7 +12,11 @@ import readline
 import argparse
 from subprocess import call
 
+EMULATED_VERSION = '"Muck2.2fb6.09"'
+MAX_VARS = 54
+
 primitives = {}
+
 builtin_defines = {
     '}array':          '} array_make',
     '}list':           '} array_make',
@@ -319,6 +320,36 @@ def getobj(obj):
     return objects_db[obj]
 
 
+def match_from(remote, pat):
+    targ = remote
+    while targ:
+        for exit in targ.exits:
+            exit = getobj(exit)
+            for part in exit.name.lower().split(';'):
+                part = part.strip()
+                if pat == part:
+                    return exit.dbref
+        if targ.location < 0:
+            break
+        targ = getobj(targ.location)
+    obj = -1
+    targ = remote
+    while targ:
+        for item in targ.contents:
+            item = getobj(item)
+            # TODO: use word start matches.
+            if pat in item.name.lower():
+                if obj == -1:
+                    obj = item.dbref
+                else:
+                    obj = -2
+        if obj != -1:
+            break
+        if targ.location < 0:
+            break
+        targ = getobj(targ.location)
+    return obj
+
 global_env = DBObject(
     name="Global Environment Room",
     objtype="room",
@@ -479,6 +510,47 @@ def smatch(pat, txt):
     return False
 
 
+def escape_str(s):
+    out = ''
+    for ch in list(s):
+        if ch == "\r" or ch == "\n":
+            out += "\\r"
+        elif ch == "\033":
+            out += "\\["
+        elif ch == "\\":
+            out += "\\\\"
+        else:
+            out += ch
+    return '"%s"' % out
+
+
+def item_repr(x):
+    if type(x) is int:
+        return "%d" % x
+    elif type(x) is float:
+        x = "%.12g" % x
+        if "e" in x or "." in x:
+            return x
+        else:
+            return "%s.0" % x
+    elif type(x) is str:
+        return escape_str(x)
+    elif type(x) is list or type(x) is tuple:
+        out = "%d[" % len(x)
+        out += ", ".join([item_repr(v) for v in x])
+        out += "]"
+        return out
+    elif type(x) is dict:
+        out = "%d{" % len(x)
+        out += ", ".join(
+            ["%s: %s" % (item_repr(k), item_repr(v)) for k, v in x.iteritems()]
+        )
+        out += "}"
+        return out
+    else:
+        return str(x)
+
+
 class MufCompileError(Exception):
     pass
 
@@ -529,18 +601,7 @@ class InstPushItem(Instruction):
         fr.data_push(self.value)
 
     def __str__(self):
-        if type(self.value) in [StackDBRef, StackAddress, StackLock]:
-            return "%s" % self.value
-        elif type(self.value) is float:
-            x = "%.12g" % self.value
-            if "e" in x or "." in x:
-                return x
-            else:
-                return "%s.0" % x
-        elif type(self.value) is str:
-            return '"%s"' % self.value
-        else:
-            return "%s" % self.value
+        return item_repr(self.value)
 
 
 class InstGlobalVar(Instruction):
@@ -2199,34 +2260,34 @@ class InstMatch(Instruction):
             obj = getobj(john_doe.links[0]).dbref
         else:
             # TODO: use user from stack frame
-            targ = john_doe
-            while targ:
-                for exit in targ.exits:
-                    exit = getobj(exit)
-                    for part in exit.name.lower().split(';'):
-                        part = part.strip()
-                        if pat == part:
-                            fr.data_push(StackDBRef(exit.dbref))
-                            return
-                if targ.location < 0:
-                    break
-                targ = getobj(targ.location)
-            obj = -1
-            targ = john_doe
-            while targ:
-                for item in targ.contents:
-                    item = getobj(item)
-                    # TODO: use word start matches.
-                    if pat in item.name.lower():
-                        if obj == -1:
-                            obj = item.dbref
-                        else:
-                            obj = -2
-                if obj != -1:
-                    break
-                if targ.location < 0:
-                    break
-                targ = getobj(targ.location)
+            obj = match_from(john_doe, pat)
+        fr.data_push(StackDBRef(obj))
+
+
+@instr("rmatch")
+class InstRMatch(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        pat = fr.data_pop(str).lower()
+        remote = fr.data_pop_object()
+        obj = -1
+        if pat[0] == "#" and is_int(pat[1:]):
+            obj = int(pat[1:])
+        elif pat[0] == "*":
+            nam = pat[1:]
+            if nam in player_names:
+                obj = player_names[nam]
+        elif pat == "me":
+            # TODO: use user from stack frame
+            obj = john_doe.dbref
+        elif pat == "here":
+            # TODO: use user from stack frame
+            obj = getobj(john_doe.location).dbref
+        elif pat == "home":
+            # TODO: use user from stack frame
+            obj = getobj(john_doe.links[0]).dbref
+        else:
+            obj = match_from(remote, pat)
         fr.data_push(StackDBRef(obj))
 
 
@@ -2885,7 +2946,7 @@ class InstExplodeArray(Instruction):
 
 
 @instr("regexp")
-class InstRegexp(Instruction):
+class InstRegExp(Instruction):
     def execute(self, fr):
         fr.check_underflow(3)
         flags = fr.data_pop(int)
@@ -2907,13 +2968,13 @@ class InstRegexp(Instruction):
             indexes = []
             for i in xrange(len(matches.groups())+1):
                 submatches.append(matches.group(i))
-                indexes.append(matches.span(i))
+                indexes.append(list(matches.span(i)))
             fr.data_push(submatches)
             fr.data_push(indexes)
 
 
 @instr("regsub")
-class InstRegsub(Instruction):
+class InstRegSub(Instruction):
     def execute(self, fr):
         fr.check_underflow(4)
         flags = fr.data_pop(int)
@@ -3332,6 +3393,8 @@ class MufStackFrame(object):
 
     def __init__(self, src, code, addr, funcaddrs, fvars, gvars):
         self.cycles = 0
+        self.trace = False
+        self.nextline = -1
         self.start_addr = addr
         self.data_stack = []
         self.call_stack = [MufCallFrame(addr)]
@@ -3347,6 +3410,7 @@ class MufStackFrame(object):
         self.global_var_names = gvars
         self.read_wants_blanks = False
         self.matches = []
+        self.breakpoints = []
 
     def curr_inst(self):
         if not self.call_stack:
@@ -3414,6 +3478,33 @@ class MufStackFrame(object):
         self.pc_set(addr)
         return True
 
+    def raise_expected_type_error(self, types):
+        expected = []
+        if int in types and float in types:
+            expected.append("number")
+        elif int in types:
+            expected.append("integer")
+        elif float in types:
+            expected.append("float")
+        if str in types:
+            expected.append("string")
+        if list in types and dict in types:
+            expected.append("array")
+        elif list in types:
+            expected.append("list array")
+        elif dict in types:
+            expected.append("dictionary array")
+        if StackDBRef in types:
+            expected.append("dbref")
+        if StackAddress in types:
+            expected.append("address")
+        if StackLock in types:
+            expected.append("lock")
+        if StackGlobalVar in types or StackFuncVar in types:
+            expected.append("variable")
+        expected = " or ".join(expected)
+        raise MufRuntimeError("Expected %s argument." % expected)
+
     def check_underflow(self, cnt):
         if self.data_depth() < cnt:
             raise MufRuntimeError("Stack underflow.")
@@ -3430,31 +3521,7 @@ class MufStackFrame(object):
         if len(self.data_stack) - self.catch_locklevel() < 1:
             raise MufRuntimeError("Stack underflow.")
         if types and type(self.data_stack[-1]) not in types:
-            expected = []
-            if int in types and float in types:
-                expected.append("number")
-            elif int in types:
-                expected.append("integer")
-            elif float in types:
-                expected.append("float")
-            if str in types:
-                expected.append("string")
-            if list in types and dict in types:
-                expected.append("array")
-            elif list in types:
-                expected.append("list array")
-            elif dict in types:
-                expected.append("dictionary array")
-            if StackDBRef in types:
-                expected.append("dbref")
-            if StackAddress in types:
-                expected.append("address")
-            if StackLock in types:
-                expected.append("lock")
-            if StackGlobalVar in types or StackFuncVar in types:
-                expected.append("variable")
-            expected = " or ".join(expected)
-            raise MufRuntimeError("Expected %s argument." % expected)
+            self.raise_expected_type_error(types)
         return self.data_stack.pop()
 
     def data_pop_dbref(self):
@@ -3541,11 +3608,7 @@ class MufStackFrame(object):
         for i in xrange(-depth, 0):
             if out:
                 out += ', '
-            val = self.data_stack[i]
-            if type(val) is str:
-                out += '"%s"' % val
-            else:
-                out += str(val)
+            out += item_repr(self.data_stack[i])
         return out
 
     def show_compiled_tokens(self):
@@ -3558,19 +3621,17 @@ class MufStackFrame(object):
 
     def execute_code(
         self,
-        dotrace=False,
         isteps=-1,
         steps=-1,
         lines=-1,
         finish=False,
-        breakpoints=[]
     ):
         startlev = len(self.call_stack)
         while self.call_stack:
             inst = self.curr_inst()
             addr = self.curr_addr()
             line = inst.line
-            if dotrace:
+            if self.trace:
                 print("% 5d: line %d (%s) %s" %
                       (addr.value, line, self.get_stack_repr(999), inst))
                 sys.stdout.flush()
@@ -3585,7 +3646,7 @@ class MufStackFrame(object):
                         file=sys.stderr
                     )
                     return
-                elif dotrace:
+                elif self.trace:
                     print("catch depth=%d" % len(self.catch_stack))
                     print(
                         "Caught error in line %d (%s): %s" %
@@ -3599,9 +3660,9 @@ class MufStackFrame(object):
             addr = self.curr_addr()
             line = inst.line
             calllev = len(self.call_stack)
-            if breakpoints:
-                if line in breakpoints and line != self.prevline:
-                    bpnum = breakpoints.index(line)
+            if self.breakpoints:
+                if line in self.breakpoints and line != self.prevline:
+                    bpnum = self.breakpoints.index(line)
                     print("Stopped at breakpoint %d." % bpnum)
                     self.prevline = line
                     self.prevaddr = addr.value
@@ -3671,7 +3732,7 @@ class MufStackFrame(object):
     def complete(self, text, state):
         cmds = [
             'list ', 'quit', 'run', 'show ', 'next', 'step', 'break ',
-            'cont', 'finish', 'stack', 'trace', 'notrace', 'delete ',
+            'continue', 'finish', 'stack', 'trace', 'notrace', 'delete ',
             'print ', 'pop', 'push ', 'rot', 'dup', 'swap', 'help'
         ]
         response = None
@@ -3714,10 +3775,273 @@ class MufStackFrame(object):
             response = None
         return response
 
-    def debug_code(self, dotrace=False):
-        breakpoints = []
+    def debug_cmd_step(self, args):
+        if not args:
+            args = "1"
+        if not is_int(args):
+            print("Usage: step [COUNT]")
+        else:
+            self.execute_code(steps=int(args))
+            self.show_line()
+            self.nextline = -1
+
+    def debug_cmd_next(self, args):
+        if not args:
+            args = "1"
+        if not is_int(args):
+            print("Usage: next [COUNT]")
+        else:
+            self.execute_code(lines=int(args))
+            self.show_line()
+            self.nextline = -1
+
+    def debug_cmd_continue(self, args):
+        self.execute_code()
+        self.show_line()
+        self.nextline = -1
+
+    def debug_cmd_finish(self, args):
+        self.execute_code(finish=True)
+        self.show_line()
+        self.nextline = -1
+
+    def debug_cmd_break(self, args):
+        if args in self.funcaddrs:
+            line = self.code[self.funcaddrs[args]].line
+            self.breakpoints.append(line)
+            print("Added breakpoint %d on line %d." %
+                  (len(self.breakpoints), line))
+        elif is_int(args):
+            self.breakpoints.append(int(args))
+            print("Added breakpoint %d on line %d." %
+                  (len(self.breakpoints), int(args)))
+        else:
+            print("Usage: break LINE")
+            print("   or: break FUNCNAME")
+
+    def debug_cmd_delete(self, args):
+        if (
+            not is_int(args) or
+            int(args) < 0 or
+            int(args) >= len(self.breakpoints)
+        ):
+            print("Usage: delete BREAKPOINTNUM")
+        else:
+            self.breakpoints[int(args)] = -1
+            print("Deleted breakpoint %d." % int(args))
+
+    def debug_cmd_list(self, args):
+        inst = self.curr_inst()
+        if args in self.funcaddrs:
+            start = self.code[self.funcaddrs[args]].line
+            end = start + 10
+        elif ',' in args:
+            start, end = args.split(',', 1)
+            start = start.strip()
+            end = end.strip()
+        elif args:
+            start = end = args
+        elif self.nextline < 0:
+            start = str(inst.line - 5)
+            end = str(inst.line + 5)
+        else:
+            start = self.nextline
+            end = self.nextline + 10
+        if not is_int(start) or not is_int(end):
+            print("Usage: list [LINE[,LINE]]")
+            print("   or: list FUNCNAME")
+        else:
+            start = int(start)
+            if start < 1:
+                start = 1
+            if start > len(self.srclines):
+                start = len(self.srclines)
+            end = int(end)
+            if end < 1:
+                end = 1
+            if end > len(self.srclines):
+                end = len(self.srclines)
+            self.nextline = end + 1
+            for i in range(start, end+1):
+                if i == inst.line:
+                    print(">% 5d: %s" % (i, self.srclines[i-1]))
+                else:
+                    print(" % 5d: %s" % (i, self.srclines[i-1]))
+
+    def debug_cmd_print(self, args):
+        addr = self.curr_addr()
+        fun = self.find_func(addr)
+        if args in self.all_func_vars[fun]:
+            vnum = self.all_func_vars[fun].index(args)
+            val = self.funcvar_get(vnum)
+        elif args in self.global_var_names:
+            vnum = self.global_var_names.index(args)
+            val = self.globalvar_get(vnum)
+        else:
+            print("Variable not found: %s" % args)
+            val = None
+        if val is not None:
+            val = item_repr(val)
+            print("%s = %s" % (args, val))
+
+    def debug_cmd_show_breakpoints(self):
+        print("Breakpoints")
+        cnt = 0
+        for i, line in enumerate(self.breakpoints):
+            if line > 0:
+                print("  %d: Line %d" % (i+1, line))
+                cnt += 1
+        if not cnt:
+            print("  - None -")
+
+    def debug_cmd_show_functions(self):
+        print("Declared Functions")
+        if self.funcaddrs:
+            funcs = self.funcaddrs.keys()
+            funcs.sort()
+            for func in funcs:
+                print("  %s" % func)
+        else:
+            print("  - None -")
+
+    def debug_cmd_show_globals(self):
+        print("Global Variables")
+        if self.global_var_names:
+            for vnum, vname in enumerate(self.global_var_names):
+                val = self.globalvar_get(vnum)
+                val = item_repr(val)
+                print("  LV%-3d %s = %s" % (vnum, vname, val))
+        else:
+            print("  - None -")
+
+    def debug_cmd_show_vars(self):
+        print("Function Variables")
+        addr = self.curr_addr()
+        fun = self.find_func(addr)
+        if self.all_func_vars[fun]:
+            for vnum, vname in enumerate(self.all_func_vars[fun]):
+                val = self.funcvar_get(vnum)
+                val = item_repr(val)
+                print("  SV%-3d %s = %s" % (vnum, vname, val))
+        else:
+            print("  - None -")
+
+    def debug_cmd_show(self, args):
+        if args == "breakpoints":
+            self.debug_cmd_show_breakpoints()
+        elif args == "functions":
+            self.debug_cmd_show_functions()
+        elif args == "globals":
+            self.debug_cmd_show_globals()
+        elif args == "vars":
+            self.debug_cmd_show_vars()
+
+    def debug_cmd_stack(self, args):
+        if not args:
+            args = "999999"
+        if not is_int(args):
+            print("Usage: stack [DEPTH]")
+        else:
+            depth = self.data_depth()
+            args = int(args)
+            if args > depth:
+                args = depth
+            for i in xrange(args):
+                val = self.data_pick(i+1)
+                val = item_repr(val)
+                print("Stack %d: %s" % (depth-i, val))
+            if not depth:
+                print("- Empty Stack -")
+
+    def debug_cmd_trace(self, args):
+        self.trace = True
+        print("Turning on Trace mode.")
+
+    def debug_cmd_notrace(self, args):
+        self.trace = False
+        print("Turning off Trace mode.")
+
+    def debug_cmd_pop(self, args):
+        self.data_pop()
+        print("Stack item POPed.")
+
+    def debug_cmd_dup(self, args):
+        a = self.data_pick(1)
+        self.data_push(a)
+        print("Stack item DUPed.")
+
+    def debug_cmd_swap(self, args):
+        a = self.data_pop()
+        b = self.data_pop()
+        self.data_push(a)
+        self.data_push(b)
+        print("Stack items SWAPed.")
+
+    def debug_cmd_rot(self, args):
+        a = self.data_pop()
+        b = self.data_pop()
+        c = self.data_pop()
+        self.data_push(b)
+        self.data_push(a)
+        self.data_push(c)
+        print("Stack items ROTed.")
+
+    def debug_cmd_push(self, args):
+        if is_int(args):
+            self.data_push(int(args))
+        elif is_float(args):
+            self.data_push(float(args))
+        elif args[0] == '#' and is_int(args[1:]):
+            self.data_push(StackDBRef(int(args[1:])))
+        elif args[0] == '"' and args[-1] == '"':
+            self.data_push(args[1:-1])
+        print("Stack item pushed.")
+
+    def debug_cmd_where(self, args):
+        for callfr in self.call_stack:
+            self.show_call(callfr.pc)
+
+    def debug_cmd_run(self, args):
+        self.data_stack = [args]
+        self.call_stack = [MufCallFrame(self.start_addr)]
+        self.catch_stack = []
+        self.globalvars = {}
+        print("Restarting program.")
+        self.debug_cmd_list("")
+
+    def debug_cmd_help(self, args):
+        print("help               Show this message.")
+        print("where              Display the call stack.")
+        print("stack [DEPTH]      Show top N data stack items.")
+        print("list               List next few source code lines.")
+        print("list LINE          List source code LINE.")
+        print("list START,END     List source code from START to END.")
+        print("list FUNC          List source code at start of FUNC.")
+        print("break LINE         Set breakpoint at given line.")
+        print("break FUNC         Set breakpoint at start of FUNC.")
+        print("delete BREAKNUM    Delete a breakpoint.")
+        print("show breakpoints   Show current breakpoints.")
+        print("show functions     List all declared functions.")
+        print("show globals       List all global vars.")
+        print("show vars          List all vars in the current func.")
+        print("step [COUNT]       Step 1 or COUNT lines, enters calls.")
+        print("next [COUNT]       Step 1 or COUNT lines, skips calls.")
+        print("finish             Finish the current function.")
+        print("cont               Continue until next breakpoint.")
+        print("pop                Pop top data stack item.")
+        print("dup                Duplicate top data stack item.")
+        print("swap               Swap top two data stack items.")
+        print("rot                Rot top three data stack items.")
+        print("push VALUE         Push VALUE onto top of data stack.")
+        print("print VARIABLE     Print the value of the variable.")
+        print("trace              Turn on tracing of each instr.")
+        print("notrace            Turn off tracing if each instr.")
+        print("run COMMANDARG     Re-run program, with COMMANDARG.")
+        print("quit               Exits the debugger.")
+
+    def debug_code(self):
         prevcmd = ""
-        nextline = -1
+        self.nextline = -1
         readline.set_completer(self.complete)
         while True:
             if prevcmd:
@@ -3735,241 +4059,40 @@ class MufStackFrame(object):
             if cmd == "q" or cmd == "quit":
                 print("Exiting.")
                 return
-            elif cmd == "s" or cmd == "step":
-                if not args:
-                    args = "1"
-                if not is_int(args):
-                    print("Usage: step [COUNT]")
-                else:
-                    self.execute_code(
-                        dotrace, steps=int(args), breakpoints=breakpoints)
-                    self.show_line()
-                    nextline = -1
-            elif cmd == "n" or cmd == "next":
-                if not args:
-                    args = "1"
-                if not is_int(args):
-                    print("Usage: next [COUNT]")
-                else:
-                    self.execute_code(
-                        dotrace, lines=int(args), breakpoints=breakpoints)
-                    self.show_line()
-                    nextline = -1
-            elif cmd == "c" or cmd == "cont":
-                self.execute_code(dotrace, breakpoints=breakpoints)
-                self.show_line()
-                nextline = -1
-            elif cmd == "f" or cmd == "finish":
-                self.execute_code(
-                    dotrace, finish=True, breakpoints=breakpoints)
-                self.show_line()
-                nextline = -1
-            elif cmd == "break":
-                if args in self.funcaddrs:
-                    line = self.code[self.funcaddrs[args]].line
-                    breakpoints.append(line)
-                    print("Added breakpoint %d on line %d." %
-                          (len(breakpoints), line))
-                elif is_int(args):
-                    breakpoints.append(int(args))
-                    print("Added breakpoint %d on line %d." %
-                          (len(breakpoints), int(args)))
-                else:
-                    print("Usage: break LINE   or   break FUNCNAME")
-            elif cmd == "delete":
-                if (
-                    not is_int(args) or
-                    int(args) < 1 or
-                    int(args) > len(breakpoints)
-                ):
-                    print("Usage: delete BREAKPOINTNUM")
-                else:
-                    breakpoints[int(args)] = -1
-                    print("Deleted breakpoint %d." % int(args))
-            elif cmd == "show" and args == "breakpoints":
-                cnt = 0
-                for i, line in enumerate(breakpoints):
-                    if line > 0:
-                        print("Breakpoint %d: Line %d" % (i+1, line))
-                        cnt += 1
-                if not cnt:
-                    print("- No Breakpoints -")
-            elif cmd == "show" and args == "functions":
-                print("Declared Functions")
-                if self.funcaddrs:
-                    funcs = self.funcaddrs.keys()
-                    funcs.sort()
-                    for func in funcs:
-                        print("  %s" % func)
-                else:
-                    print("  - None -")
-            elif cmd == "show" and args == "globals":
-                print("Global Variables")
-                if self.global_var_names:
-                    for vnum, vname in enumerate(self.global_var_names):
-                        val = self.globalvar_get(vnum)
-                        if type(val) is str:
-                            val = '"%s"' % val
-                        print("  LV%-3d %s = %s" % (vnum, vname, val))
-                else:
-                    print("  - None -")
-            elif cmd == "show" and args == "vars":
-                print("Function Variables")
-                addr = self.curr_addr()
-                fun = self.find_func(addr)
-                if self.all_func_vars[fun]:
-                    for vnum, vname in enumerate(self.all_func_vars[fun]):
-                        val = self.funcvar_get(vnum)
-                        if type(val) is str:
-                            val = '"%s"' % val
-                        print("  SV%-3d %s = %s" % (vnum, vname, val))
-                else:
-                    print("  - None -")
-            elif cmd == "p" or cmd == "print":
-                addr = self.curr_addr()
-                fun = self.find_func(addr)
-                if args in self.all_func_vars[fun]:
-                    vnum = self.all_func_vars[fun].index(args)
-                    val = self.funcvar_get(vnum)
-                elif args in self.global_var_names:
-                    vnum = self.global_var_names.index(args)
-                    val = self.globalvar_get(vnum)
-                else:
-                    print("Variable not found: %s" % args)
-                    val = None
-                if val is not None:
-                    if type(val) is str:
-                        val = '"%s"' % val
-                    print("Variable %s = %s" % (args, val))
-            elif cmd == "l" or cmd == "list":
-                inst = self.curr_inst()
-                if args in self.funcaddrs:
-                    start = self.code[self.funcaddrs[args]].line
-                    end = start + 10
-                elif ',' in args:
-                    start, end = args.split(',', 1)
-                    start = start.strip()
-                    end = end.strip()
-                elif args:
-                    start = end = args
-                elif nextline < 0:
-                    start = str(inst.line - 5)
-                    end = str(inst.line + 5)
-                else:
-                    start = nextline
-                    end = nextline + 10
-                if not is_int(start) or not is_int(end):
-                    print("Usage: list [COUNT]")
-                else:
-                    start = int(start)
-                    if start < 1:
-                        start = 1
-                    if start > len(self.srclines):
-                        start = len(self.srclines)
-                    end = int(end)
-                    if end < 1:
-                        end = 1
-                    if end > len(self.srclines):
-                        end = len(self.srclines)
-                    nextline = end + 1
-                    for i in range(start, end+1):
-                        if i == inst.line:
-                            print(">% 5d: %s" % (i, self.srclines[i-1]))
-                        else:
-                            print(" % 5d: %s" % (i, self.srclines[i-1]))
-            elif cmd == "stack":
-                if not args:
-                    args = "999999"
-                if not is_int(args):
-                    print("Usage: stack [DEPTH]")
-                else:
-                    depth = self.data_depth()
-                    args = int(args)
-                    if args > depth:
-                        args = depth
-                    for i in xrange(args):
-                        val = self.data_pick(i+1)
-                        if type(val) is str:
-                            val = '"%s"' % val
-                        print("Stack %d: %s" % (depth-i, val))
-                    if not depth:
-                        print("- Empty Stack -")
-            elif cmd == "t" or cmd == "trace":
-                dotrace = True
-                print("Turning on Trace mode.")
-            elif cmd == "notrace":
-                dotrace = False
-                print("Turning off Trace mode.")
-            elif cmd == "pop":
-                self.data_pop()
-                print("Stack item POPed.")
-            elif cmd == "dup":
-                a = self.data_pick(1)
-                self.data_push(a)
-                print("Stack item DUPed.")
-            elif cmd == "swap":
-                a = self.data_pop()
-                b = self.data_pop()
-                self.data_push(a)
-                self.data_push(b)
-                print("Stack items SWAPed.")
-            elif cmd == "rot":
-                a = self.data_pop()
-                b = self.data_pop()
-                c = self.data_pop()
-                self.data_push(b)
-                self.data_push(a)
-                self.data_push(c)
-                print("Stack items ROTed.")
-            elif cmd == "push":
-                if is_int(args):
-                    self.data_push(int(args))
-                elif is_float(args):
-                    self.data_push(float(args))
-                elif args[0] == '#' and is_int(args[1:]):
-                    self.data_push(StackDBRef(int(args[1:])))
-                elif args[0] == '"' and args[-1] == '"':
-                    self.data_push(args[1:-1])
-                print("Stack item pushed.")
-            elif cmd == "w" or cmd == "where":
-                for callfr in self.call_stack:
-                    self.show_call(callfr.pc)
-            elif cmd == "run":
-                self.data_stack = [args]
-                self.call_stack = [MufCallFrame(self.start_addr)]
-                self.catch_stack = []
-                self.globalvars = {}
-                prevcmd = ""
-                print("Restarting program.")
+            commands = {
+                "break": self.debug_cmd_break,
+                "c": self.debug_cmd_continue,
+                "cont": self.debug_cmd_continue,
+                "delete": self.debug_cmd_delete,
+                "dup": self.debug_cmd_dup,
+                "f": self.debug_cmd_finish,
+                "finish": self.debug_cmd_finish,
+                "help": self.debug_cmd_help,
+                "l": self.debug_cmd_list,
+                "list": self.debug_cmd_list,
+                "n": self.debug_cmd_next,
+                "next": self.debug_cmd_next,
+                "notrace": self.debug_cmd_notrace,
+                "pop": self.debug_cmd_pop,
+                "p": self.debug_cmd_print,
+                "print": self.debug_cmd_print,
+                "push": self.debug_cmd_push,
+                "rot": self.debug_cmd_rot,
+                "run": self.debug_cmd_run,
+                "show": self.debug_cmd_show,
+                "stack": self.debug_cmd_stack,
+                "s": self.debug_cmd_step,
+                "step": self.debug_cmd_step,
+                "swap": self.debug_cmd_swap,
+                "t": self.debug_cmd_trace,
+                "trace": self.debug_cmd_trace,
+                "w": self.debug_cmd_where,
+                "where": self.debug_cmd_where,
+            }
+            if cmd in commands:
+                commands[cmd](args)
             else:
-                print("help               Show this message.")
-                print("where              Display the call stack.")
-                print("stack [DEPTH]      Show top N data stack items.")
-                print("list               List next few source code lines.")
-                print("list LINE          List source code LINE.")
-                print("list START,END     List source code from START to END.")
-                print("list FUNC          List source code at start of FUNC.")
-                print("break LINE         Set breakpoint at given line.")
-                print("break FUNC         Set breakpoint at start of FUNC.")
-                print("delete BREAKNUM    Delete a breakpoint.")
-                print("show breakpoints   Show current breakpoints.")
-                print("show functions     List all declared functions.")
-                print("show globals       List all global vars.")
-                print("show vars          List all vars in the current func.")
-                print("step [COUNT]       Step 1 or COUNT lines, enters calls.")
-                print("next [COUNT]       Step 1 or COUNT lines, skips calls.")
-                print("finish             Finish the current function.")
-                print("cont               Continue until next breakpoint.")
-                print("pop                Pop top data stack item.")
-                print("dup                Duplicate top data stack item.")
-                print("swap               Swap top two data stack items.")
-                print("rot                Rot top three data stack items.")
-                print("push VALUE         Push VALUE onto top of data stack.")
-                print("print VARIABLE     Print the value of the variable.")
-                print("trace              Turn on tracing of each instr.")
-                print("notrace            Turn off tracing if each instr.")
-                print("run COMMANDARG     Re-run program, with COMMANDARG.")
-                print("quit               Exits the debugger.")
+                self.debug_cmd_help(args)
             if not self.call_stack:
                 break
             sys.stdout.flush()
@@ -4576,6 +4699,7 @@ def main():
                 fr.globalvar_set(0, StackDBRef(john_doe.dbref))
                 fr.globalvar_set(1, StackDBRef(john_doe.location))
                 fr.globalvar_set(2, StackDBRef(trigger_action.dbref))
+                fr.trace = args.trace
                 if args.command:
                     fr.data_push(args.command)
                     fr.globalvar_set(3, args.command)
@@ -4583,9 +4707,9 @@ def main():
                     fr.data_push("")
                     fr.globalvar_set(3, "")
                 if args.debug:
-                    fr.debug_code(args.trace)
+                    fr.debug_code()
                 else:
-                    fr.execute_code(args.trace)
+                    fr.execute_code()
                     print("Execution completed in %d steps." % fr.cycles)
 
         if tmpfile:

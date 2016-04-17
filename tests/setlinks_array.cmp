@@ -22,9 +22,9 @@
     4: line 2 ("", #3, Mark, #4) #0
     5: line 2 ("", #3, Mark, #4, #0) }
     6: line 2 ("", #3, #4, #0, 2) ARRAY_MAKE
-    7: line 2 ("", #3, [#4, #0]) SETLINKS_ARRAY
+    7: line 2 ("", #3, 2[#4, #0]) SETLINKS_ARRAY
     8: line 3 ("") TRIG
     9: line 3 ("", #3) GETLINKS_ARRAY
-   10: line 3 ("", [#4, #0]) POP
+   10: line 3 ("", 2[#4, #0]) POP
    11: line 4 ("") EXIT
 Execution completed in 12 steps.
