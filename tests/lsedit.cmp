@@ -17,7 +17,7 @@ EXPOSED 'lsedit__basic' AS PUBLIC
 SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
 
 #### Showing Compiled Tokens ##########################
-    0: Function: argparse::init
+    0: Function: argparse::init (0 vars)
     1: ""
     2: LV4: argparse::current_mode
     3: !
@@ -52,2520 +52,2456 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
    32: 0
    33: EXIT
 
-   34: Function: argparse::parse_posargs
-   35: SV1: _posargs
-   36: !
-   37: SV0: _mode
-   38: !
-   39: {
-   40: SV1: _posargs
-   41: @
-   42: "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
-   43: 1
-   44: REGEXP
-   45: }
-   46: ARRAY_MAKE
-   47: 0
-   48: ARRAY_GETITEM
-   49: SV2: _tok
-   50: !
-   51: SV2: _tok
-   52: @
-   53: JmpIfFalse: +53
-   54: LV7: argparse::posargs_map
-   55: @
-   56: SV0: _mode
-   57: @
-   58: ARRAY_GETITEM
-   59: NOT
-   60: JmpIfFalse: +13
-   61: {
-   62: }
-   63: ARRAY_MAKE
-   64: DUP
-   65: LV7: argparse::posargs_map
-   66: @
-   67: SV0: _mode
-   68: @
-   69: ARRAY_SETITEM
-   70: LV7: argparse::posargs_map
-   71: !
-   72: POP
-   73: LV7: argparse::posargs_map
-   74: @
-   75: SV0: _mode
-   76: @
-   77: OVER
-   78: OVER
-   79: ARRAY_GETITEM
-   80: {
-   81: SV2: _tok
-   82: @
-   83: 1
-   84: ARRAY_GETITEM
-   85: TOLOWER
-   86: SV2: _tok
-   87: @
-   88: 2
-   89: ARRAY_GETITEM
-   90: }
-   91: ARRAY_MAKE
-   92: SWAP
-   93: ARRAY_APPENDITEM
-   94: ROT
-   95: ROT
-   96: ARRAY_SETITEM
-   97: LV7: argparse::posargs_map
-   98: !
-   99: SV2: _tok
-  100: @
-  101: 3
-  102: ARRAY_GETITEM
-  103: SV1: _posargs
-  104: !
-  105: JMP: +14
-  106: SV1: _posargs
+   34: Function: argparse::parse_posargs (2 vars)
+   35: {
+   36: SV1: _posargs
+   37: @
+   38: "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
+   39: 1
+   40: REGEXP
+   41: }
+   42: ARRAY_MAKE
+   43: 0
+   44: ARRAY_GETITEM
+   45: SV2: _tok
+   46: !
+   47: SV2: _tok
+   48: @
+   49: JmpIfFalse: +53
+   50: LV7: argparse::posargs_map
+   51: @
+   52: SV0: _mode
+   53: @
+   54: ARRAY_GETITEM
+   55: NOT
+   56: JmpIfFalse: +13
+   57: {
+   58: }
+   59: ARRAY_MAKE
+   60: DUP
+   61: LV7: argparse::posargs_map
+   62: @
+   63: SV0: _mode
+   64: @
+   65: ARRAY_SETITEM
+   66: LV7: argparse::posargs_map
+   67: !
+   68: POP
+   69: LV7: argparse::posargs_map
+   70: @
+   71: SV0: _mode
+   72: @
+   73: OVER
+   74: OVER
+   75: ARRAY_GETITEM
+   76: {
+   77: SV2: _tok
+   78: @
+   79: 1
+   80: ARRAY_GETITEM
+   81: TOLOWER
+   82: SV2: _tok
+   83: @
+   84: 2
+   85: ARRAY_GETITEM
+   86: }
+   87: ARRAY_MAKE
+   88: SWAP
+   89: ARRAY_APPENDITEM
+   90: ROT
+   91: ROT
+   92: ARRAY_SETITEM
+   93: LV7: argparse::posargs_map
+   94: !
+   95: SV2: _tok
+   96: @
+   97: 3
+   98: ARRAY_GETITEM
+   99: SV1: _posargs
+  100: !
+  101: JMP: +14
+  102: SV1: _posargs
+  103: @
+  104: TOLOWER
+  105: DUP
+  106: LV8: argparse::remainder_map
   107: @
-  108: TOLOWER
-  109: DUP
-  110: LV8: argparse::remainder_map
-  111: @
-  112: SV0: _mode
-  113: @
-  114: ARRAY_SETITEM
-  115: LV8: argparse::remainder_map
-  116: !
-  117: POP
-  118: JMP: +2
-  119: JMP: -80
-  120: 0
-  121: EXIT
+  108: SV0: _mode
+  109: @
+  110: ARRAY_SETITEM
+  111: LV8: argparse::remainder_map
+  112: !
+  113: POP
+  114: JMP: +2
+  115: JMP: -80
+  116: 0
+  117: EXIT
 
-  122: Function: argparse::set_mode
-  123: SV0: _name
-  124: !
-  125: SV0: _name
-  126: @
-  127: TOLOWER
-  128: SV0: _name
-  129: !
-  130: SV0: _name
-  131: @
-  132: LV4: argparse::current_mode
-  133: !
-  134: 0
-  135: EXIT
+  118: Function: argparse::set_mode (1 vars)
+  119: SV0: _name
+  120: @
+  121: TOLOWER
+  122: SV0: _name
+  123: !
+  124: SV0: _name
+  125: @
+  126: LV4: argparse::current_mode
+  127: !
+  128: 0
+  129: EXIT
 
-  136: Function: argparse::add_mode
-  137: SV2: _posargs
-  138: !
-  139: SV1: _flags
-  140: !
-  141: SV0: _name
-  142: !
-  143: SV0: _name
-  144: @
-  145: TOLOWER
-  146: SV0: _name
-  147: !
-  148: LV5: argparse::modes_list
+  130: Function: argparse::add_mode (3 vars)
+  131: SV0: _name
+  132: @
+  133: TOLOWER
+  134: SV0: _name
+  135: !
+  136: LV5: argparse::modes_list
+  137: @
+  138: SV0: _name
+  139: @
+  140: SWAP
+  141: ARRAY_APPENDITEM
+  142: LV5: argparse::modes_list
+  143: !
+  144: {
+  145: }
+  146: ARRAY_MAKE
+  147: DUP
+  148: LV6: argparse::flags_map
   149: @
   150: SV0: _name
   151: @
-  152: SWAP
-  153: ARRAY_APPENDITEM
-  154: LV5: argparse::modes_list
-  155: !
+  152: ARRAY_SETITEM
+  153: LV6: argparse::flags_map
+  154: !
+  155: POP
   156: {
   157: }
   158: ARRAY_MAKE
   159: DUP
-  160: LV6: argparse::flags_map
+  160: LV7: argparse::posargs_map
   161: @
   162: SV0: _name
   163: @
   164: ARRAY_SETITEM
-  165: LV6: argparse::flags_map
+  165: LV7: argparse::posargs_map
   166: !
   167: POP
-  168: {
-  169: }
-  170: ARRAY_MAKE
-  171: DUP
-  172: LV7: argparse::posargs_map
-  173: @
-  174: SV0: _name
-  175: @
-  176: ARRAY_SETITEM
-  177: LV7: argparse::posargs_map
-  178: !
-  179: POP
-  180: SV1: _flags
-  181: @
-  182: FOREACH
-  183: __FORITER__
-  184: JmpIfFalse: +41
-  185: SV3: _flag
-  186: !
-  187: POP
-  188: LV6: argparse::flags_map
-  189: @
-  190: SV0: _name
-  191: @
-  192: ARRAY_GETITEM
-  193: NOT
-  194: JmpIfFalse: +13
-  195: {
-  196: }
-  197: ARRAY_MAKE
-  198: DUP
-  199: LV6: argparse::flags_map
-  200: @
-  201: SV0: _name
-  202: @
-  203: ARRAY_SETITEM
-  204: LV6: argparse::flags_map
-  205: !
-  206: POP
-  207: LV6: argparse::flags_map
-  208: @
-  209: SV0: _name
-  210: @
-  211: OVER
-  212: OVER
-  213: ARRAY_GETITEM
-  214: SV3: _flag
+  168: SV1: _flags
+  169: @
+  170: FOREACH
+  171: __FORITER__
+  172: JmpIfFalse: +41
+  173: SV3: _flag
+  174: !
+  175: POP
+  176: LV6: argparse::flags_map
+  177: @
+  178: SV0: _name
+  179: @
+  180: ARRAY_GETITEM
+  181: NOT
+  182: JmpIfFalse: +13
+  183: {
+  184: }
+  185: ARRAY_MAKE
+  186: DUP
+  187: LV6: argparse::flags_map
+  188: @
+  189: SV0: _name
+  190: @
+  191: ARRAY_SETITEM
+  192: LV6: argparse::flags_map
+  193: !
+  194: POP
+  195: LV6: argparse::flags_map
+  196: @
+  197: SV0: _name
+  198: @
+  199: OVER
+  200: OVER
+  201: ARRAY_GETITEM
+  202: SV3: _flag
+  203: @
+  204: TOLOWER
+  205: SWAP
+  206: ARRAY_APPENDITEM
+  207: ROT
+  208: ROT
+  209: ARRAY_SETITEM
+  210: LV6: argparse::flags_map
+  211: !
+  212: JMP: -41
+  213: __FORPOP__
+  214: SV0: _name
   215: @
-  216: TOLOWER
-  217: SWAP
-  218: ARRAY_APPENDITEM
-  219: ROT
-  220: ROT
-  221: ARRAY_SETITEM
-  222: LV6: argparse::flags_map
-  223: !
-  224: JMP: -41
-  225: __FORPOP__
-  226: SV0: _name
-  227: @
-  228: SV2: _posargs
-  229: @
-  230: Addr:34
-  231: EXECUTE
-  232: POP
-  233: 0
-  234: EXIT
+  216: SV2: _posargs
+  217: @
+  218: Addr:34
+  219: EXECUTE
+  220: POP
+  221: 0
+  222: EXIT
 
-  235: Function: argparse::add_flag
-  236: SV0: _name
-  237: !
-  238: SV0: _name
-  239: @
-  240: TOLOWER
-  241: SV0: _name
-  242: !
-  243: LV5: argparse::modes_list
-  244: @
-  245: FOREACH
-  246: __FORITER__
-  247: JmpIfFalse: +59
-  248: SV1: _mode
-  249: !
-  250: POP
-  251: SV1: _mode
+  223: Function: argparse::add_flag (1 vars)
+  224: SV0: _name
+  225: @
+  226: TOLOWER
+  227: SV0: _name
+  228: !
+  229: LV5: argparse::modes_list
+  230: @
+  231: FOREACH
+  232: __FORITER__
+  233: JmpIfFalse: +59
+  234: SV1: _mode
+  235: !
+  236: POP
+  237: SV1: _mode
+  238: @
+  239: TOLOWER
+  240: SV1: _mode
+  241: !
+  242: LV5: argparse::modes_list
+  243: @
+  244: SV1: _mode
+  245: @
+  246: ARRAY_FINDVAL
+  247: NOT
+  248: JmpIfFalse: +8
+  249: SV1: _mode
+  250: @
+  251: SV0: _name
   252: @
-  253: TOLOWER
-  254: SV1: _mode
-  255: !
-  256: LV5: argparse::modes_list
+  253: "ArgParse: Option '%s' declared as part of non-existent mode '%s'!"
+  254: FMTSTRING
+  255: ABORT
+  256: LV6: argparse::flags_map
   257: @
   258: SV1: _mode
   259: @
-  260: ARRAY_FINDVAL
+  260: ARRAY_GETITEM
   261: NOT
-  262: JmpIfFalse: +8
-  263: SV1: _mode
-  264: @
-  265: SV0: _name
-  266: @
-  267: "ArgParse: Option '%s' declared as part of non-existent mode '%s'!"
-  268: FMTSTRING
-  269: ABORT
-  270: LV6: argparse::flags_map
-  271: @
-  272: SV1: _mode
-  273: @
-  274: ARRAY_GETITEM
-  275: NOT
-  276: JmpIfFalse: +13
-  277: {
-  278: }
-  279: ARRAY_MAKE
-  280: DUP
-  281: LV6: argparse::flags_map
-  282: @
-  283: SV1: _mode
-  284: @
-  285: ARRAY_SETITEM
-  286: LV6: argparse::flags_map
-  287: !
-  288: POP
+  262: JmpIfFalse: +13
+  263: {
+  264: }
+  265: ARRAY_MAKE
+  266: DUP
+  267: LV6: argparse::flags_map
+  268: @
+  269: SV1: _mode
+  270: @
+  271: ARRAY_SETITEM
+  272: LV6: argparse::flags_map
+  273: !
+  274: POP
+  275: LV6: argparse::flags_map
+  276: @
+  277: SV1: _mode
+  278: @
+  279: OVER
+  280: OVER
+  281: ARRAY_GETITEM
+  282: SV0: _name
+  283: @
+  284: SWAP
+  285: ARRAY_APPENDITEM
+  286: ROT
+  287: ROT
+  288: ARRAY_SETITEM
   289: LV6: argparse::flags_map
-  290: @
-  291: SV1: _mode
-  292: @
-  293: OVER
-  294: OVER
-  295: ARRAY_GETITEM
-  296: SV0: _name
+  290: !
+  291: JMP: -59
+  292: __FORPOP__
+  293: 0
+  294: EXIT
+
+  295: Function: argparse::add_posargs (1 vars)
+  296: LV5: argparse::modes_list
   297: @
-  298: SWAP
-  299: ARRAY_APPENDITEM
-  300: ROT
-  301: ROT
-  302: ARRAY_SETITEM
-  303: LV6: argparse::flags_map
-  304: !
-  305: JMP: -59
-  306: __FORPOP__
-  307: 0
-  308: EXIT
-
-  309: Function: argparse::add_posargs
-  310: SV0: _posargs
-  311: !
-  312: LV5: argparse::modes_list
-  313: @
-  314: FOREACH
-  315: __FORITER__
-  316: JmpIfFalse: +31
-  317: SV1: _mode
-  318: !
-  319: POP
-  320: SV1: _mode
-  321: @
-  322: TOLOWER
+  298: FOREACH
+  299: __FORITER__
+  300: JmpIfFalse: +31
+  301: SV1: _mode
+  302: !
+  303: POP
+  304: SV1: _mode
+  305: @
+  306: TOLOWER
+  307: SV1: _mode
+  308: !
+  309: LV5: argparse::modes_list
+  310: @
+  311: SV1: _mode
+  312: @
+  313: ARRAY_FINDVAL
+  314: NOT
+  315: JmpIfFalse: +8
+  316: SV1: _mode
+  317: @
+  318: SV1: _mode
+  319: @
+  320: "ArgParse: Option '%s' declared as part of non-existent mode '%s'!"
+  321: FMTSTRING
+  322: ABORT
   323: SV1: _mode
-  324: !
-  325: LV5: argparse::modes_list
+  324: @
+  325: SV0: _posargs
   326: @
-  327: SV1: _mode
-  328: @
-  329: ARRAY_FINDVAL
-  330: NOT
-  331: JmpIfFalse: +8
-  332: SV1: _mode
-  333: @
-  334: SV1: _mode
-  335: @
-  336: "ArgParse: Option '%s' declared as part of non-existent mode '%s'!"
-  337: FMTSTRING
-  338: ABORT
-  339: SV1: _mode
-  340: @
-  341: SV0: _posargs
-  342: @
-  343: Addr:34
-  344: EXECUTE
-  345: POP
-  346: JMP: -31
-  347: __FORPOP__
-  348: 0
-  349: EXIT
+  327: Addr:34
+  328: EXECUTE
+  329: POP
+  330: JMP: -31
+  331: __FORPOP__
+  332: 0
+  333: EXIT
 
-  350: Function: argparse::show_usage
-  351: TRIG
-  352: NAME
-  353: ";"
-  354: SPLIT
-  355: POP
-  356: STRIPLEAD
-  357: STRIPTAIL
-  358: SV0: _cmd
-  359: !
-  360: "Usage:"
-  361: LV0: me
-  362: @
-  363: SWAP
-  364: NOTIFY
-  365: LV5: argparse::modes_list
-  366: @
-  367: FOREACH
-  368: __FORITER__
-  369: JmpIfFalse: +108
-  370: SV1: _mode
-  371: !
-  372: POP
-  373: {
-  374: }
-  375: ARRAY_MAKE
-  376: LV6: argparse::flags_map
-  377: @
-  378: SV1: _mode
-  379: @
-  380: ARRAY_GETITEM
-  381: FOREACH
-  382: __FORITER__
-  383: JmpIfFalse: +16
-  384: SV3: _flag
+  334: Function: argparse::show_usage (0 vars)
+  335: TRIG
+  336: NAME
+  337: ";"
+  338: SPLIT
+  339: POP
+  340: STRIPLEAD
+  341: STRIPTAIL
+  342: SV0: _cmd
+  343: !
+  344: "Usage:"
+  345: LV0: me
+  346: @
+  347: SWAP
+  348: NOTIFY
+  349: LV5: argparse::modes_list
+  350: @
+  351: FOREACH
+  352: __FORITER__
+  353: JmpIfFalse: +108
+  354: SV1: _mode
+  355: !
+  356: POP
+  357: {
+  358: }
+  359: ARRAY_MAKE
+  360: LV6: argparse::flags_map
+  361: @
+  362: SV1: _mode
+  363: @
+  364: ARRAY_GETITEM
+  365: FOREACH
+  366: __FORITER__
+  367: JmpIfFalse: +16
+  368: SV3: _flag
+  369: !
+  370: POP
+  371: {
+  372: "[#"
+  373: SV3: _flag
+  374: @
+  375: "]"
+  376: }
+  377: ARRAY_MAKE
+  378: ""
+  379: ARRAY_JOIN
+  380: SWAP
+  381: ARRAY_APPENDITEM
+  382: JMP: -16
+  383: __FORPOP__
+  384: SV2: _flags
   385: !
-  386: POP
-  387: {
-  388: "[#"
-  389: SV3: _flag
+  386: {
+  387: }
+  388: ARRAY_MAKE
+  389: LV7: argparse::posargs_map
   390: @
-  391: "]"
-  392: }
-  393: ARRAY_MAKE
-  394: ""
-  395: ARRAY_JOIN
-  396: SWAP
-  397: ARRAY_APPENDITEM
-  398: JMP: -16
-  399: __FORPOP__
-  400: SV2: _flags
-  401: !
-  402: {
-  403: }
-  404: ARRAY_MAKE
-  405: LV7: argparse::posargs_map
-  406: @
-  407: SV1: _mode
-  408: @
+  391: SV1: _mode
+  392: @
+  393: ARRAY_GETITEM
+  394: FOREACH
+  395: __FORITER__
+  396: JmpIfFalse: +21
+  397: SV5: _posarg
+  398: !
+  399: POP
+  400: {
+  401: SV5: _posarg
+  402: @
+  403: 0
+  404: ARRAY_GETITEM
+  405: TOUPPER
+  406: SV5: _posarg
+  407: @
+  408: 1
   409: ARRAY_GETITEM
-  410: FOREACH
-  411: __FORITER__
-  412: JmpIfFalse: +21
-  413: SV5: _posarg
-  414: !
-  415: POP
-  416: {
-  417: SV5: _posarg
-  418: @
-  419: 0
-  420: ARRAY_GETITEM
-  421: TOUPPER
-  422: SV5: _posarg
+  410: }
+  411: ARRAY_MAKE
+  412: ""
+  413: ARRAY_JOIN
+  414: SWAP
+  415: ARRAY_APPENDITEM
+  416: JMP: -21
+  417: __FORPOP__
+  418: SV4: _posargs
+  419: !
+  420: LV8: argparse::remainder_map
+  421: @
+  422: SV1: _mode
   423: @
-  424: 1
-  425: ARRAY_GETITEM
-  426: }
-  427: ARRAY_MAKE
+  424: ARRAY_GETITEM
+  425: TOUPPER
+  426: SV4: _posargs
+  427: @
   428: ""
   429: ARRAY_JOIN
-  430: SWAP
-  431: ARRAY_APPENDITEM
-  432: JMP: -21
-  433: __FORPOP__
-  434: SV4: _posargs
-  435: !
-  436: LV8: argparse::remainder_map
+  430: SV2: _flags
+  431: @
+  432: JmpIfFalse: +3
+  433: " "
+  434: JMP: +2
+  435: ""
+  436: SV2: _flags
   437: @
-  438: SV1: _mode
-  439: @
-  440: ARRAY_GETITEM
-  441: TOUPPER
-  442: SV4: _posargs
+  438: " "
+  439: ARRAY_JOIN
+  440: SV1: _mode
+  441: @
+  442: SV1: _mode
   443: @
-  444: ""
-  445: ARRAY_JOIN
-  446: SV2: _flags
-  447: @
-  448: JmpIfFalse: +3
-  449: " "
-  450: JMP: +2
-  451: ""
-  452: SV2: _flags
-  453: @
-  454: " "
-  455: ARRAY_JOIN
-  456: SV1: _mode
+  444: JmpIfFalse: +3
+  445: "#"
+  446: JMP: +2
+  447: ""
+  448: SV0: _cmd
+  449: @
+  450: "%s %s%s %s%s%s%s"
+  451: FMTSTRING
+  452: SV6: _line
+  453: !
+  454: SV6: _line
+  455: @
+  456: LV0: me
   457: @
-  458: SV1: _mode
-  459: @
-  460: JmpIfFalse: +3
-  461: "#"
-  462: JMP: +2
-  463: ""
-  464: SV0: _cmd
-  465: @
-  466: "%s %s%s %s%s%s%s"
-  467: FMTSTRING
-  468: SV6: _line
-  469: !
-  470: SV6: _line
-  471: @
-  472: LV0: me
-  473: @
-  474: SWAP
-  475: NOTIFY
-  476: JMP: -108
-  477: __FORPOP__
-  478: 0
-  479: EXIT
+  458: SWAP
+  459: NOTIFY
+  460: JMP: -108
+  461: __FORPOP__
+  462: 0
+  463: EXIT
 
-  480: Function: argparse::parse
-  481: SV0: _line
-  482: !
-  483: {
-  484: }
-  485: 2
-  486: /
-  487: ARRAY_MAKE_DICT
-  488: SV4: _opts
-  489: !
-  490: 0
-  491: SV5: _mode_given
-  492: !
-  493: SV0: _line
-  494: @
-  495: "#"
-  496: STRINGPFX
-  497: JmpIfFalse: +208
-  498: {
-  499: {
-  500: SV0: _line
-  501: @
-  502: 1
-  503: STRCUT
-  504: }
-  505: ARRAY_MAKE
-  506: 1
-  507: ARRAY_GETITEM
-  508: " "
-  509: SPLIT
-  510: }
-  511: ARRAY_MAKE
-  512: SV1: _parts
-  513: !
-  514: SV1: _parts
-  515: @
-  516: 0
-  517: ARRAY_GETITEM
-  518: SV6: _opt
-  519: !
-  520: SV6: _opt
+  464: Function: argparse::parse (1 vars)
+  465: {
+  466: }
+  467: 2
+  468: /
+  469: ARRAY_MAKE_DICT
+  470: SV4: _opts
+  471: !
+  472: 0
+  473: SV5: _mode_given
+  474: !
+  475: SV0: _line
+  476: @
+  477: "#"
+  478: STRINGPFX
+  479: JmpIfFalse: +208
+  480: {
+  481: {
+  482: SV0: _line
+  483: @
+  484: 1
+  485: STRCUT
+  486: }
+  487: ARRAY_MAKE
+  488: 1
+  489: ARRAY_GETITEM
+  490: " "
+  491: SPLIT
+  492: }
+  493: ARRAY_MAKE
+  494: SV1: _parts
+  495: !
+  496: SV1: _parts
+  497: @
+  498: 0
+  499: ARRAY_GETITEM
+  500: SV6: _opt
+  501: !
+  502: SV6: _opt
+  503: @
+  504: TOLOWER
+  505: SV7: _lc_opt
+  506: !
+  507: 0
+  508: SV8: _found
+  509: !
+  510: LV5: argparse::modes_list
+  511: @
+  512: FOREACH
+  513: __FORITER__
+  514: JmpIfFalse: +19
+  515: SV2: _mode
+  516: !
+  517: POP
+  518: SV2: _mode
+  519: @
+  520: SV7: _lc_opt
   521: @
-  522: TOLOWER
-  523: SV7: _lc_opt
-  524: !
-  525: 0
-  526: SV8: _found
-  527: !
-  528: LV5: argparse::modes_list
-  529: @
-  530: FOREACH
-  531: __FORITER__
-  532: JmpIfFalse: +19
-  533: SV2: _mode
-  534: !
-  535: POP
-  536: SV2: _mode
-  537: @
-  538: SV7: _lc_opt
-  539: @
-  540: STRINGCMP
-  541: NOT
-  542: JmpIfFalse: +8
-  543: SV2: _mode
-  544: @
-  545: LV4: argparse::current_mode
-  546: !
-  547: SV8: _found
-  548: ++
-  549: JMP: +2
-  550: JMP: -19
-  551: __FORPOP__
-  552: SV8: _found
-  553: @
-  554: JmpIfFalse: +10
-  555: SV5: _mode_given
-  556: ++
-  557: SV1: _parts
+  522: STRINGCMP
+  523: NOT
+  524: JmpIfFalse: +8
+  525: SV2: _mode
+  526: @
+  527: LV4: argparse::current_mode
+  528: !
+  529: SV8: _found
+  530: ++
+  531: JMP: +2
+  532: JMP: -19
+  533: __FORPOP__
+  534: SV8: _found
+  535: @
+  536: JmpIfFalse: +10
+  537: SV5: _mode_given
+  538: ++
+  539: SV1: _parts
+  540: @
+  541: 1
+  542: ARRAY_GETITEM
+  543: SV0: _line
+  544: !
+  545: JMP: -70
+  546: LV6: argparse::flags_map
+  547: @
+  548: LV4: argparse::current_mode
+  549: @
+  550: ARRAY_GETITEM
+  551: FOREACH
+  552: __FORITER__
+  553: JmpIfFalse: +26
+  554: SV3: _flag
+  555: !
+  556: POP
+  557: SV3: _flag
   558: @
-  559: 1
-  560: ARRAY_GETITEM
-  561: SV0: _line
-  562: !
-  563: JMP: -70
-  564: LV6: argparse::flags_map
+  559: SV7: _lc_opt
+  560: @
+  561: STRINGCMP
+  562: NOT
+  563: JmpIfFalse: +15
+  564: SV6: _opt
   565: @
-  566: LV4: argparse::current_mode
-  567: @
-  568: ARRAY_GETITEM
-  569: FOREACH
-  570: __FORITER__
-  571: JmpIfFalse: +26
-  572: SV3: _flag
+  566: DUP
+  567: SV4: _opts
+  568: @
+  569: SV3: _flag
+  570: @
+  571: ARRAY_SETITEM
+  572: SV4: _opts
   573: !
   574: POP
-  575: SV3: _flag
-  576: @
-  577: SV7: _lc_opt
-  578: @
-  579: STRINGCMP
-  580: NOT
-  581: JmpIfFalse: +15
-  582: SV6: _opt
-  583: @
-  584: DUP
-  585: SV4: _opts
-  586: @
-  587: SV3: _flag
-  588: @
-  589: ARRAY_SETITEM
-  590: SV4: _opts
-  591: !
-  592: POP
-  593: SV8: _found
-  594: ++
-  595: JMP: +2
-  596: JMP: -26
-  597: __FORPOP__
-  598: SV8: _found
+  575: SV8: _found
+  576: ++
+  577: JMP: +2
+  578: JMP: -26
+  579: __FORPOP__
+  580: SV8: _found
+  581: @
+  582: JmpIfFalse: +8
+  583: SV1: _parts
+  584: @
+  585: 1
+  586: ARRAY_GETITEM
+  587: SV0: _line
+  588: !
+  589: JMP: -114
+  590: LV5: argparse::modes_list
+  591: @
+  592: FOREACH
+  593: __FORITER__
+  594: JmpIfFalse: +17
+  595: SV2: _mode
+  596: !
+  597: POP
+  598: SV2: _mode
   599: @
-  600: JmpIfFalse: +8
-  601: SV1: _parts
-  602: @
-  603: 1
-  604: ARRAY_GETITEM
-  605: SV0: _line
-  606: !
-  607: JMP: -114
-  608: LV5: argparse::modes_list
-  609: @
-  610: FOREACH
-  611: __FORITER__
-  612: JmpIfFalse: +17
-  613: SV2: _mode
-  614: !
-  615: POP
-  616: SV2: _mode
-  617: @
-  618: SV7: _lc_opt
-  619: @
-  620: STRINGPFX
-  621: JmpIfFalse: +7
-  622: SV2: _mode
-  623: @
-  624: LV4: argparse::current_mode
-  625: !
-  626: SV8: _found
-  627: ++
-  628: JMP: -17
-  629: __FORPOP__
-  630: LV6: argparse::flags_map
-  631: @
-  632: LV4: argparse::current_mode
+  600: SV7: _lc_opt
+  601: @
+  602: STRINGPFX
+  603: JmpIfFalse: +7
+  604: SV2: _mode
+  605: @
+  606: LV4: argparse::current_mode
+  607: !
+  608: SV8: _found
+  609: ++
+  610: JMP: -17
+  611: __FORPOP__
+  612: LV6: argparse::flags_map
+  613: @
+  614: LV4: argparse::current_mode
+  615: @
+  616: ARRAY_GETITEM
+  617: FOREACH
+  618: __FORITER__
+  619: JmpIfFalse: +24
+  620: SV3: _flag
+  621: !
+  622: POP
+  623: SV3: _flag
+  624: @
+  625: SV7: _lc_opt
+  626: @
+  627: STRINGPFX
+  628: JmpIfFalse: +14
+  629: SV6: _opt
+  630: @
+  631: DUP
+  632: SV4: _opts
   633: @
-  634: ARRAY_GETITEM
-  635: FOREACH
-  636: __FORITER__
-  637: JmpIfFalse: +24
-  638: SV3: _flag
-  639: !
-  640: POP
-  641: SV3: _flag
-  642: @
-  643: SV7: _lc_opt
-  644: @
-  645: STRINGPFX
-  646: JmpIfFalse: +14
-  647: SV6: _opt
-  648: @
-  649: DUP
-  650: SV4: _opts
-  651: @
-  652: SV3: _flag
-  653: @
-  654: ARRAY_SETITEM
-  655: SV4: _opts
-  656: !
-  657: POP
-  658: SV8: _found
-  659: ++
-  660: JMP: -24
-  661: __FORPOP__
-  662: SV8: _found
+  634: SV3: _flag
+  635: @
+  636: ARRAY_SETITEM
+  637: SV4: _opts
+  638: !
+  639: POP
+  640: SV8: _found
+  641: ++
+  642: JMP: -24
+  643: __FORPOP__
+  644: SV8: _found
+  645: @
+  646: 1
+  647: =
+  648: JmpIfFalse: +9
+  649: SV1: _parts
+  650: @
+  651: 1
+  652: ARRAY_GETITEM
+  653: SV0: _line
+  654: !
+  655: JMP: -180
+  656: JMP: +23
+  657: SV8: _found
+  658: @
+  659: 1
+  660: >
+  661: JmpIfFalse: +10
+  662: SV6: _opt
   663: @
-  664: 1
-  665: =
-  666: JmpIfFalse: +9
-  667: SV1: _parts
-  668: @
-  669: 1
-  670: ARRAY_GETITEM
-  671: SV0: _line
-  672: !
-  673: JMP: -180
-  674: JMP: +23
-  675: SV8: _found
+  664: "Option #%s is ambiguous."
+  665: FMTSTRING
+  666: LV0: me
+  667: @
+  668: SWAP
+  669: NOTIFY
+  670: JMP: +9
+  671: SV6: _opt
+  672: @
+  673: "Option #%s not recognized."
+  674: FMTSTRING
+  675: LV0: me
   676: @
-  677: 1
-  678: >
-  679: JmpIfFalse: +10
-  680: SV6: _opt
-  681: @
-  682: "Option #%s is ambiguous."
-  683: FMTSTRING
-  684: LV0: me
-  685: @
-  686: SWAP
-  687: NOTIFY
-  688: JMP: +9
-  689: SV6: _opt
-  690: @
-  691: "Option #%s not recognized."
-  692: FMTSTRING
+  677: SWAP
+  678: NOTIFY
+  679: Addr:334
+  680: EXECUTE
+  681: POP
+  682: {
+  683: }
+  684: ARRAY_MAKE
+  685: EXIT
+  686: JMP: -211
+  687: SV5: _mode_given
+  688: @
+  689: 1
+  690: >
+  691: JmpIfFalse: +13
+  692: "Cannot mix modes."
   693: LV0: me
   694: @
   695: SWAP
   696: NOTIFY
-  697: Addr:350
+  697: Addr:334
   698: EXECUTE
   699: POP
   700: {
   701: }
   702: ARRAY_MAKE
   703: EXIT
-  704: JMP: -211
-  705: SV5: _mode_given
-  706: @
-  707: 1
-  708: >
-  709: JmpIfFalse: +13
-  710: "Cannot mix modes."
-  711: LV0: me
-  712: @
-  713: SWAP
-  714: NOTIFY
-  715: Addr:350
-  716: EXECUTE
-  717: POP
-  718: {
-  719: }
-  720: ARRAY_MAKE
-  721: EXIT
-  722: LV7: argparse::posargs_map
-  723: @
-  724: LV4: argparse::current_mode
-  725: @
-  726: ARRAY_GETITEM
-  727: FOREACH
-  728: __FORITER__
-  729: JmpIfFalse: +38
-  730: SV9: _posarg
-  731: !
-  732: POP
-  733: {
-  734: SV0: _line
+  704: LV7: argparse::posargs_map
+  705: @
+  706: LV4: argparse::current_mode
+  707: @
+  708: ARRAY_GETITEM
+  709: FOREACH
+  710: __FORITER__
+  711: JmpIfFalse: +38
+  712: SV9: _posarg
+  713: !
+  714: POP
+  715: {
+  716: SV0: _line
+  717: @
+  718: SV9: _posarg
+  719: @
+  720: 1
+  721: ARRAY_GETITEM
+  722: SPLIT
+  723: }
+  724: ARRAY_MAKE
+  725: SV1: _parts
+  726: !
+  727: SV1: _parts
+  728: @
+  729: 0
+  730: ARRAY_GETITEM
+  731: DUP
+  732: SV4: _opts
+  733: @
+  734: SV9: _posarg
   735: @
-  736: SV9: _posarg
-  737: @
-  738: 1
-  739: ARRAY_GETITEM
-  740: SPLIT
-  741: }
-  742: ARRAY_MAKE
-  743: SV1: _parts
-  744: !
-  745: SV1: _parts
-  746: @
-  747: 0
-  748: ARRAY_GETITEM
-  749: DUP
-  750: SV4: _opts
+  736: 0
+  737: ARRAY_GETITEM
+  738: ARRAY_SETITEM
+  739: SV4: _opts
+  740: !
+  741: POP
+  742: SV1: _parts
+  743: @
+  744: 1
+  745: ARRAY_GETITEM
+  746: SV0: _line
+  747: !
+  748: JMP: -38
+  749: __FORPOP__
+  750: SV0: _line
   751: @
-  752: SV9: _posarg
-  753: @
-  754: 0
-  755: ARRAY_GETITEM
-  756: ARRAY_SETITEM
-  757: SV4: _opts
-  758: !
-  759: POP
-  760: SV1: _parts
-  761: @
-  762: 1
-  763: ARRAY_GETITEM
-  764: SV0: _line
-  765: !
-  766: JMP: -38
-  767: __FORPOP__
-  768: SV0: _line
-  769: @
-  770: DUP
+  752: DUP
+  753: SV4: _opts
+  754: @
+  755: LV8: argparse::remainder_map
+  756: @
+  757: LV4: argparse::current_mode
+  758: @
+  759: ARRAY_GETITEM
+  760: ARRAY_SETITEM
+  761: SV4: _opts
+  762: !
+  763: POP
+  764: LV4: argparse::current_mode
+  765: @
+  766: DUP
+  767: SV4: _opts
+  768: @
+  769: "mode"
+  770: ARRAY_SETITEM
   771: SV4: _opts
-  772: @
-  773: LV8: argparse::remainder_map
-  774: @
-  775: LV4: argparse::current_mode
-  776: @
-  777: ARRAY_GETITEM
-  778: ARRAY_SETITEM
-  779: SV4: _opts
-  780: !
-  781: POP
-  782: LV4: argparse::current_mode
-  783: @
-  784: DUP
-  785: SV4: _opts
-  786: @
-  787: "mode"
-  788: ARRAY_SETITEM
-  789: SV4: _opts
-  790: !
-  791: POP
-  792: SV4: _opts
-  793: @
-  794: EXIT
+  772: !
+  773: POP
+  774: SV4: _opts
+  775: @
+  776: EXIT
 
-  795: Function: lsedit__init_help
-  796: {
-  797: }
-  798: ARRAY_MAKE
-  799: LV9: lsedit::help_lines
-  800: !
-  801: 0
-  802: EXIT
+  777: Function: lsedit__init_help (0 vars)
+  778: {
+  779: }
+  780: ARRAY_MAKE
+  781: LV9: lsedit::help_lines
+  782: !
+  783: 0
+  784: EXIT
 
-  803: Function: lsedit__show_help
-  804: {
-  805: {
-  806: "-- Commands: -----------------------------------------------------"
-  807: "..LINE              Insert .LINE at current insertion position."
-  808: ".h                  Show this help message."
-  809: ".q                  Quit editor, saving changes."
-  810: ".x                  Quit editor, aborting changes."
-  811: ".l                  List all lines."
-  812: ".l LINE             List given LINE."
-  813: ".l LINE,LINE        List given LINE range, inclusive."
-  814: ".i LINE             Move insertion to before LINE."
-  815: ".d LINE             Delete LINE."
-  816: ".d LINE,LINE        Delete given LINE range, inclusive."
-  817: ".f                  Format all lines to 75 columns."
-  818: ".f LINE,LINE        Format given line range to 75 columns."
-  819: ".f LINE,LINE=COLS   Format given line range to COLS columns."
-  820: ".s /FIND/REPL       Substitute regexp FIND with REPL in all lines."
-  821: ".s LINE/FIND/REPL   Substitute regexp FIND with REPL in LINE."
-  822: ".s L1,L2/FIND/REPL  Substitute FIND with REPL between L1 and L2."
-  823: ".w                  Write/Save changes without exiting editor."
-  824: ".w OBJ=PROP         Write/Save list to OBJ in proplist PROP."
-  825: }
-  826: ARRAY_MAKE
-  827: LV9: lsedit::help_lines
-  828: @
-  829: {
-  830: "------------------------------------------------------------------"
-  831: }
-  832: ARRAY_MAKE
-  833: }
-  834: ARRAY_MAKE
-  835: {
-  836: }
-  837: ARRAY_MAKE
-  838: SWAP
-  839: ARRAY_REVERSE
-  840: FOREACH
-  841: __FORITER__
-  842: JmpIfFalse: +7
-  843: SWAP
-  844: POP
-  845: 0
-  846: SWAP
-  847: ARRAY_INSERTRANGE
-  848: JMP: -7
-  849: __FORPOP__
-  850: FOREACH
-  851: __FORITER__
-  852: JmpIfFalse: +11
-  853: SV0: _line
-  854: !
-  855: POP
-  856: SV0: _line
-  857: @
-  858: LV0: me
-  859: @
-  860: SWAP
-  861: NOTIFY
-  862: JMP: -11
-  863: __FORPOP__
-  864: 0
-  865: EXIT
+  785: Function: lsedit__show_help (0 vars)
+  786: {
+  787: {
+  788: "-- Commands: -----------------------------------------------------"
+  789: "..LINE              Insert .LINE at current insertion position."
+  790: ".h                  Show this help message."
+  791: ".q                  Quit editor, saving changes."
+  792: ".x                  Quit editor, aborting changes."
+  793: ".l                  List all lines."
+  794: ".l LINE             List given LINE."
+  795: ".l LINE,LINE        List given LINE range, inclusive."
+  796: ".i LINE             Move insertion to before LINE."
+  797: ".d LINE             Delete LINE."
+  798: ".d LINE,LINE        Delete given LINE range, inclusive."
+  799: ".f                  Format all lines to 75 columns."
+  800: ".f LINE,LINE        Format given line range to 75 columns."
+  801: ".f LINE,LINE=COLS   Format given line range to COLS columns."
+  802: ".s /FIND/REPL       Substitute regexp FIND with REPL in all lines."
+  803: ".s LINE/FIND/REPL   Substitute regexp FIND with REPL in LINE."
+  804: ".s L1,L2/FIND/REPL  Substitute FIND with REPL between L1 and L2."
+  805: ".w                  Write/Save changes without exiting editor."
+  806: ".w OBJ=PROP         Write/Save list to OBJ in proplist PROP."
+  807: }
+  808: ARRAY_MAKE
+  809: LV9: lsedit::help_lines
+  810: @
+  811: {
+  812: "------------------------------------------------------------------"
+  813: }
+  814: ARRAY_MAKE
+  815: }
+  816: ARRAY_MAKE
+  817: {
+  818: }
+  819: ARRAY_MAKE
+  820: SWAP
+  821: ARRAY_REVERSE
+  822: FOREACH
+  823: __FORITER__
+  824: JmpIfFalse: +7
+  825: SWAP
+  826: POP
+  827: 0
+  828: SWAP
+  829: ARRAY_INSERTRANGE
+  830: JMP: -7
+  831: __FORPOP__
+  832: FOREACH
+  833: __FORITER__
+  834: JmpIfFalse: +11
+  835: SV0: _line
+  836: !
+  837: POP
+  838: SV0: _line
+  839: @
+  840: LV0: me
+  841: @
+  842: SWAP
+  843: NOTIFY
+  844: JMP: -11
+  845: __FORPOP__
+  846: 0
+  847: EXIT
 
-  866: Function: lsedit__add_helptext
-  867: SV0: _line
+  848: Function: lsedit__add_helptext (1 vars)
+  849: LV9: lsedit::help_lines
+  850: @
+  851: SV0: _line
+  852: @
+  853: SWAP
+  854: ARRAY_APPENDITEM
+  855: LV9: lsedit::help_lines
+  856: !
+  857: 0
+  858: EXIT
+
+  859: Function: lsedit::show_list (4 vars)
+  860: SV0: _lines
+  861: @
+  862: FOREACH
+  863: __FORITER__
+  864: JmpIfFalse: +41
+  865: SV5: _line
+  866: !
+  867: SV4: _lnum
   868: !
-  869: LV9: lsedit::help_lines
-  870: @
-  871: SV0: _line
+  869: SV4: _lnum
+  870: ++
+  871: SV4: _lnum
   872: @
-  873: SWAP
-  874: ARRAY_APPENDITEM
-  875: LV9: lsedit::help_lines
-  876: !
-  877: 0
-  878: EXIT
-
-  879: Function: lsedit::show_list
-  880: SV3: _pos
-  881: !
-  882: SV2: _end
-  883: !
-  884: SV1: _start
-  885: !
-  886: SV0: _lines
-  887: !
-  888: SV0: _lines
-  889: @
-  890: FOREACH
-  891: __FORITER__
-  892: JmpIfFalse: +41
-  893: SV5: _line
-  894: !
-  895: SV4: _lnum
-  896: !
-  897: SV4: _lnum
-  898: ++
-  899: SV4: _lnum
-  900: @
-  901: SV1: _start
-  902: @
-  903: >=
-  904: DUP
-  905: JmpIfFalse: +7
-  906: POP
-  907: SV4: _lnum
-  908: @
-  909: SV2: _end
-  910: @
-  911: <=
-  912: JmpIfFalse: +20
-  913: SV5: _line
-  914: @
-  915: SV4: _lnum
-  916: @
-  917: SV4: _lnum
-  918: @
-  919: SV3: _pos
+  873: SV1: _start
+  874: @
+  875: >=
+  876: DUP
+  877: JmpIfFalse: +7
+  878: POP
+  879: SV4: _lnum
+  880: @
+  881: SV2: _end
+  882: @
+  883: <=
+  884: JmpIfFalse: +20
+  885: SV5: _line
+  886: @
+  887: SV4: _lnum
+  888: @
+  889: SV4: _lnum
+  890: @
+  891: SV3: _pos
+  892: @
+  893: =
+  894: JmpIfFalse: +3
+  895: ">"
+  896: JMP: +2
+  897: " "
+  898: "%s%3i: %s"
+  899: FMTSTRING
+  900: LV0: me
+  901: @
+  902: SWAP
+  903: NOTIFY
+  904: JMP: -41
+  905: __FORPOP__
+  906: SV3: _pos
+  907: @
+  908: SV0: _lines
+  909: @
+  910: ARRAY_COUNT
+  911: >
+  912: JmpIfFalse: +6
+  913: ">"
+  914: LV0: me
+  915: @
+  916: SWAP
+  917: NOTIFY
+  918: "Done."
+  919: LV0: me
   920: @
-  921: =
-  922: JmpIfFalse: +3
-  923: ">"
-  924: JMP: +2
-  925: " "
-  926: "%s%3i: %s"
-  927: FMTSTRING
-  928: LV0: me
-  929: @
-  930: SWAP
-  931: NOTIFY
-  932: JMP: -41
-  933: __FORPOP__
-  934: SV3: _pos
-  935: @
-  936: SV0: _lines
-  937: @
-  938: ARRAY_COUNT
-  939: >
-  940: JmpIfFalse: +6
-  941: ">"
-  942: LV0: me
-  943: @
-  944: SWAP
-  945: NOTIFY
-  946: "Done."
-  947: LV0: me
-  948: @
-  949: SWAP
-  950: NOTIFY
-  951: 0
-  952: EXIT
+  921: SWAP
+  922: NOTIFY
+  923: 0
+  924: EXIT
 
-  953: Function: lsedit::list_split_range
-  954: SV2: _end
-  955: !
-  956: SV1: _start
-  957: !
-  958: SV0: _lines
-  959: !
-  960: {
-  961: }
-  962: ARRAY_MAKE
-  963: SV3: _pfx
-  964: !
-  965: {
-  966: }
-  967: ARRAY_MAKE
-  968: SV4: _mid
-  969: !
-  970: {
-  971: }
-  972: ARRAY_MAKE
-  973: SV5: _sfx
-  974: !
-  975: SV0: _lines
-  976: @
-  977: FOREACH
-  978: __FORITER__
-  979: JmpIfFalse: +58
-  980: SV7: _line
-  981: !
-  982: SV6: _idx
-  983: !
-  984: SV6: _idx
-  985: ++
-  986: SV6: _idx
-  987: @
-  988: SV1: _start
+  925: Function: lsedit::list_split_range (3 vars)
+  926: {
+  927: }
+  928: ARRAY_MAKE
+  929: SV3: _pfx
+  930: !
+  931: {
+  932: }
+  933: ARRAY_MAKE
+  934: SV4: _mid
+  935: !
+  936: {
+  937: }
+  938: ARRAY_MAKE
+  939: SV5: _sfx
+  940: !
+  941: SV0: _lines
+  942: @
+  943: FOREACH
+  944: __FORITER__
+  945: JmpIfFalse: +58
+  946: SV7: _line
+  947: !
+  948: SV6: _idx
+  949: !
+  950: SV6: _idx
+  951: ++
+  952: SV6: _idx
+  953: @
+  954: SV1: _start
+  955: @
+  956: <
+  957: JmpIfFalse: +9
+  958: SV3: _pfx
+  959: @
+  960: SV7: _line
+  961: @
+  962: SWAP
+  963: ARRAY_APPENDITEM
+  964: SV3: _pfx
+  965: !
+  966: SV6: _idx
+  967: @
+  968: SV1: _start
+  969: @
+  970: >=
+  971: DUP
+  972: JmpIfFalse: +7
+  973: POP
+  974: SV6: _idx
+  975: @
+  976: SV2: _end
+  977: @
+  978: <=
+  979: JmpIfFalse: +9
+  980: SV4: _mid
+  981: @
+  982: SV7: _line
+  983: @
+  984: SWAP
+  985: ARRAY_APPENDITEM
+  986: SV4: _mid
+  987: !
+  988: SV6: _idx
   989: @
-  990: <
-  991: JmpIfFalse: +9
-  992: SV3: _pfx
-  993: @
-  994: SV7: _line
+  990: SV2: _end
+  991: @
+  992: >
+  993: JmpIfFalse: +9
+  994: SV5: _sfx
   995: @
-  996: SWAP
-  997: ARRAY_APPENDITEM
-  998: SV3: _pfx
-  999: !
- 1000: SV6: _idx
- 1001: @
- 1002: SV1: _start
- 1003: @
- 1004: >=
- 1005: DUP
- 1006: JmpIfFalse: +7
- 1007: POP
- 1008: SV6: _idx
- 1009: @
- 1010: SV2: _end
- 1011: @
- 1012: <=
- 1013: JmpIfFalse: +9
- 1014: SV4: _mid
- 1015: @
- 1016: SV7: _line
- 1017: @
- 1018: SWAP
- 1019: ARRAY_APPENDITEM
- 1020: SV4: _mid
- 1021: !
- 1022: SV6: _idx
- 1023: @
- 1024: SV2: _end
- 1025: @
- 1026: >
- 1027: JmpIfFalse: +9
- 1028: SV5: _sfx
- 1029: @
- 1030: SV7: _line
- 1031: @
- 1032: SWAP
- 1033: ARRAY_APPENDITEM
- 1034: SV5: _sfx
- 1035: !
- 1036: JMP: -58
- 1037: __FORPOP__
- 1038: {
- 1039: SV3: _pfx
- 1040: @
- 1041: SV4: _mid
- 1042: @
- 1043: SV5: _sfx
- 1044: @
- 1045: }
- 1046: ARRAY_MAKE
- 1047: EXIT
+  996: SV7: _line
+  997: @
+  998: SWAP
+  999: ARRAY_APPENDITEM
+ 1000: SV5: _sfx
+ 1001: !
+ 1002: JMP: -58
+ 1003: __FORPOP__
+ 1004: {
+ 1005: SV3: _pfx
+ 1006: @
+ 1007: SV4: _mid
+ 1008: @
+ 1009: SV5: _sfx
+ 1010: @
+ 1011: }
+ 1012: ARRAY_MAKE
+ 1013: EXIT
 
- 1048: Function: lsedit::regexp_list_sub
- 1049: SV2: _repl
- 1050: !
- 1051: SV1: _fnd
- 1052: !
+ 1014: Function: lsedit::regexp_list_sub (3 vars)
+ 1015: 0
+ 1016: SV3: _changed
+ 1017: !
+ 1018: SV0: _lines
+ 1019: @
+ 1020: FOREACH
+ 1021: __FORITER__
+ 1022: JmpIfFalse: +37
+ 1023: SV5: _line
+ 1024: !
+ 1025: SV4: _idx
+ 1026: !
+ 1027: SV5: _line
+ 1028: @
+ 1029: SV1: _fnd
+ 1030: @
+ 1031: SV2: _repl
+ 1032: @
+ 1033: 2
+ 1034: 1
+ 1035: BITOR
+ 1036: REGSUB
+ 1037: SV6: _newln
+ 1038: !
+ 1039: SV6: _newln
+ 1040: @
+ 1041: SV5: _line
+ 1042: @
+ 1043: STRCMP
+ 1044: JmpIfFalse: +14
+ 1045: SV6: _newln
+ 1046: @
+ 1047: DUP
+ 1048: SV0: _lines
+ 1049: @
+ 1050: SV4: _idx
+ 1051: @
+ 1052: ARRAY_SETITEM
  1053: SV0: _lines
  1054: !
- 1055: 0
+ 1055: POP
  1056: SV3: _changed
- 1057: !
- 1058: SV0: _lines
- 1059: @
- 1060: FOREACH
- 1061: __FORITER__
- 1062: JmpIfFalse: +37
- 1063: SV5: _line
- 1064: !
- 1065: SV4: _idx
- 1066: !
- 1067: SV5: _line
- 1068: @
- 1069: SV1: _fnd
+ 1057: ++
+ 1058: JMP: -37
+ 1059: __FORPOP__
+ 1060: {
+ 1061: SV3: _changed
+ 1062: @
+ 1063: SV0: _lines
+ 1064: @
+ 1065: }
+ 1066: ARRAY_MAKE
+ 1067: EXIT
+
+ 1068: Function: lsedit::format_list (2 vars)
+ 1069: SV0: _lines
  1070: @
- 1071: SV2: _repl
- 1072: @
- 1073: 2
- 1074: 1
- 1075: BITOR
- 1076: REGSUB
- 1077: SV6: _newln
- 1078: !
- 1079: SV6: _newln
- 1080: @
- 1081: SV5: _line
- 1082: @
- 1083: STRCMP
- 1084: JmpIfFalse: +14
- 1085: SV6: _newln
- 1086: @
- 1087: DUP
- 1088: SV0: _lines
+ 1071: " "
+ 1072: ARRAY_JOIN
+ 1073: SV2: _txt
+ 1074: !
+ 1075: SV2: _txt
+ 1076: @
+ 1077: "  *"
+ 1078: " "
+ 1079: 2
+ 1080: REGSUB
+ 1081: SV2: _txt
+ 1082: !
+ 1083: {
+ 1084: }
+ 1085: ARRAY_MAKE
+ 1086: SV3: _out
+ 1087: !
+ 1088: SV2: _txt
  1089: @
- 1090: SV4: _idx
- 1091: @
- 1092: ARRAY_SETITEM
- 1093: SV0: _lines
- 1094: !
- 1095: POP
- 1096: SV3: _changed
- 1097: ++
- 1098: JMP: -37
- 1099: __FORPOP__
- 1100: {
- 1101: SV3: _changed
- 1102: @
- 1103: SV0: _lines
- 1104: @
- 1105: }
- 1106: ARRAY_MAKE
- 1107: EXIT
-
- 1108: Function: lsedit::format_list
- 1109: SV1: _cols
- 1110: !
- 1111: SV0: _lines
- 1112: !
- 1113: SV0: _lines
- 1114: @
- 1115: " "
- 1116: ARRAY_JOIN
- 1117: SV2: _txt
- 1118: !
- 1119: SV2: _txt
- 1120: @
- 1121: "  *"
- 1122: " "
- 1123: 2
- 1124: REGSUB
- 1125: SV2: _txt
- 1126: !
- 1127: {
- 1128: }
- 1129: ARRAY_MAKE
- 1130: SV3: _out
- 1131: !
- 1132: SV2: _txt
- 1133: @
- 1134: STRLEN
- 1135: SV1: _cols
- 1136: @
- 1137: >
- 1138: JmpIfFalse: +94
- 1139: {
- 1140: SV2: _txt
+ 1090: STRLEN
+ 1091: SV1: _cols
+ 1092: @
+ 1093: >
+ 1094: JmpIfFalse: +94
+ 1095: {
+ 1096: SV2: _txt
+ 1097: @
+ 1098: SV1: _cols
+ 1099: @
+ 1100: STRCUT
+ 1101: }
+ 1102: ARRAY_MAKE
+ 1103: DUP
+ 1104: DUP
+ 1105: 0
+ 1106: ARRAY_GETITEM
+ 1107: SV4: _pre
+ 1108: !
+ 1109: DUP
+ 1110: 1
+ 1111: ARRAY_GETITEM
+ 1112: SV2: _txt
+ 1113: !
+ 1114: POP
+ 1115: POP
+ 1116: {
+ 1117: SV4: _pre
+ 1118: @
+ 1119: " "
+ 1120: RSPLIT
+ 1121: }
+ 1122: ARRAY_MAKE
+ 1123: DUP
+ 1124: DUP
+ 1125: 0
+ 1126: ARRAY_GETITEM
+ 1127: SV4: _pre
+ 1128: !
+ 1129: DUP
+ 1130: 1
+ 1131: ARRAY_GETITEM
+ 1132: SV5: _rem
+ 1133: !
+ 1134: POP
+ 1135: POP
+ 1136: SV4: _pre
+ 1137: @
+ 1138: NOT
+ 1139: JmpIfFalse: +9
+ 1140: SV5: _rem
  1141: @
- 1142: SV1: _cols
- 1143: @
- 1144: STRCUT
- 1145: }
- 1146: ARRAY_MAKE
- 1147: DUP
- 1148: DUP
- 1149: 0
- 1150: ARRAY_GETITEM
- 1151: SV4: _pre
- 1152: !
- 1153: DUP
- 1154: 1
- 1155: ARRAY_GETITEM
- 1156: SV2: _txt
- 1157: !
- 1158: POP
- 1159: POP
- 1160: {
- 1161: SV4: _pre
+ 1142: SV4: _pre
+ 1143: !
+ 1144: ""
+ 1145: SV5: _rem
+ 1146: !
+ 1147: JMP: +25
+ 1148: SV5: _rem
+ 1149: @
+ 1150: STRLEN
+ 1151: SV1: _cols
+ 1152: @
+ 1153: 2
+ 1154: /
+ 1155: >
+ 1156: JmpIfFalse: +16
+ 1157: {
+ 1158: SV4: _pre
+ 1159: @
+ 1160: " "
+ 1161: SV5: _rem
  1162: @
- 1163: " "
- 1164: RSPLIT
- 1165: }
- 1166: ARRAY_MAKE
- 1167: DUP
- 1168: DUP
- 1169: 0
- 1170: ARRAY_GETITEM
- 1171: SV4: _pre
- 1172: !
- 1173: DUP
- 1174: 1
- 1175: ARRAY_GETITEM
- 1176: SV5: _rem
- 1177: !
- 1178: POP
- 1179: POP
- 1180: SV4: _pre
+ 1163: }
+ 1164: ARRAY_MAKE
+ 1165: ""
+ 1166: ARRAY_JOIN
+ 1167: SV4: _pre
+ 1168: !
+ 1169: ""
+ 1170: SV5: _rem
+ 1171: !
+ 1172: SV3: _out
+ 1173: @
+ 1174: SV4: _pre
+ 1175: @
+ 1176: SWAP
+ 1177: ARRAY_APPENDITEM
+ 1178: SV3: _out
+ 1179: !
+ 1180: SV5: _rem
  1181: @
- 1182: NOT
- 1183: JmpIfFalse: +9
- 1184: SV5: _rem
- 1185: @
- 1186: SV4: _pre
- 1187: !
- 1188: ""
- 1189: SV5: _rem
- 1190: !
- 1191: JMP: +25
- 1192: SV5: _rem
- 1193: @
- 1194: STRLEN
- 1195: SV1: _cols
+ 1182: SV2: _txt
+ 1183: @
+ 1184: STRCAT
+ 1185: SV2: _txt
+ 1186: !
+ 1187: JMP: -99
+ 1188: SV2: _txt
+ 1189: @
+ 1190: STRIPLEAD
+ 1191: STRIPTAIL
+ 1192: JmpIfFalse: +9
+ 1193: SV3: _out
+ 1194: @
+ 1195: SV2: _txt
  1196: @
- 1197: 2
- 1198: /
- 1199: >
- 1200: JmpIfFalse: +16
- 1201: {
- 1202: SV4: _pre
- 1203: @
- 1204: " "
- 1205: SV5: _rem
- 1206: @
- 1207: }
- 1208: ARRAY_MAKE
- 1209: ""
- 1210: ARRAY_JOIN
- 1211: SV4: _pre
- 1212: !
- 1213: ""
- 1214: SV5: _rem
- 1215: !
- 1216: SV3: _out
- 1217: @
- 1218: SV4: _pre
- 1219: @
- 1220: SWAP
- 1221: ARRAY_APPENDITEM
- 1222: SV3: _out
- 1223: !
- 1224: SV5: _rem
- 1225: @
- 1226: SV2: _txt
- 1227: @
- 1228: STRCAT
- 1229: SV2: _txt
- 1230: !
- 1231: JMP: -99
- 1232: SV2: _txt
- 1233: @
- 1234: STRIPLEAD
- 1235: STRIPTAIL
- 1236: JmpIfFalse: +9
- 1237: SV3: _out
- 1238: @
- 1239: SV2: _txt
- 1240: @
- 1241: SWAP
- 1242: ARRAY_APPENDITEM
- 1243: SV3: _out
- 1244: !
- 1245: SV3: _out
- 1246: @
- 1247: EXIT
+ 1197: SWAP
+ 1198: ARRAY_APPENDITEM
+ 1199: SV3: _out
+ 1200: !
+ 1201: SV3: _out
+ 1202: @
+ 1203: EXIT
 
- 1248: Function: lsedit::parse_lines
- 1249: SV2: _line2
- 1250: !
- 1251: SV1: _line1
- 1252: !
- 1253: SV0: _str
+ 1204: Function: lsedit::parse_lines (3 vars)
+ 1205: SV0: _str
+ 1206: @
+ 1207: ","
+ 1208: INSTR
+ 1209: JmpIfFalse: +25
+ 1210: {
+ 1211: SV0: _str
+ 1212: @
+ 1213: ","
+ 1214: SPLIT
+ 1215: }
+ 1216: ARRAY_MAKE
+ 1217: SV0: _str
+ 1218: !
+ 1219: SV0: _str
+ 1220: @
+ 1221: 0
+ 1222: ARRAY_GETITEM
+ 1223: ATOI
+ 1224: SV1: _line1
+ 1225: !
+ 1226: SV0: _str
+ 1227: @
+ 1228: 1
+ 1229: ARRAY_GETITEM
+ 1230: ATOI
+ 1231: SV2: _line2
+ 1232: !
+ 1233: JMP: +43
+ 1234: SV0: _str
+ 1235: @
+ 1236: " "
+ 1237: INSTR
+ 1238: JmpIfFalse: +25
+ 1239: {
+ 1240: SV0: _str
+ 1241: @
+ 1242: " "
+ 1243: SPLIT
+ 1244: }
+ 1245: ARRAY_MAKE
+ 1246: SV0: _str
+ 1247: !
+ 1248: SV0: _str
+ 1249: @
+ 1250: 0
+ 1251: ARRAY_GETITEM
+ 1252: ATOI
+ 1253: SV1: _line1
  1254: !
  1255: SV0: _str
  1256: @
- 1257: ","
- 1258: INSTR
- 1259: JmpIfFalse: +25
- 1260: {
- 1261: SV0: _str
- 1262: @
- 1263: ","
- 1264: SPLIT
- 1265: }
- 1266: ARRAY_MAKE
- 1267: SV0: _str
- 1268: !
- 1269: SV0: _str
- 1270: @
- 1271: 0
- 1272: ARRAY_GETITEM
- 1273: ATOI
+ 1257: 1
+ 1258: ARRAY_GETITEM
+ 1259: ATOI
+ 1260: SV2: _line2
+ 1261: !
+ 1262: JMP: +14
+ 1263: SV0: _str
+ 1264: @
+ 1265: STRIPLEAD
+ 1266: STRIPTAIL
+ 1267: JmpIfFalse: +9
+ 1268: SV0: _str
+ 1269: @
+ 1270: ATOI
+ 1271: DUP
+ 1272: SV2: _line2
+ 1273: !
  1274: SV1: _line1
  1275: !
- 1276: SV0: _str
- 1277: @
- 1278: 1
- 1279: ARRAY_GETITEM
- 1280: ATOI
- 1281: SV2: _line2
- 1282: !
- 1283: JMP: +43
- 1284: SV0: _str
- 1285: @
- 1286: " "
- 1287: INSTR
- 1288: JmpIfFalse: +25
- 1289: {
- 1290: SV0: _str
- 1291: @
- 1292: " "
- 1293: SPLIT
- 1294: }
- 1295: ARRAY_MAKE
- 1296: SV0: _str
- 1297: !
- 1298: SV0: _str
- 1299: @
- 1300: 0
- 1301: ARRAY_GETITEM
- 1302: ATOI
- 1303: SV1: _line1
- 1304: !
- 1305: SV0: _str
- 1306: @
- 1307: 1
- 1308: ARRAY_GETITEM
- 1309: ATOI
- 1310: SV2: _line2
- 1311: !
- 1312: JMP: +14
- 1313: SV0: _str
- 1314: @
- 1315: STRIPLEAD
- 1316: STRIPTAIL
- 1317: JmpIfFalse: +9
- 1318: SV0: _str
- 1319: @
- 1320: ATOI
- 1321: DUP
- 1322: SV2: _line2
- 1323: !
- 1324: SV1: _line1
- 1325: !
- 1326: {
- 1327: SV1: _line1
- 1328: @
- 1329: SV2: _line2
- 1330: @
- 1331: }
- 1332: ARRAY_MAKE
- 1333: EXIT
+ 1276: {
+ 1277: SV1: _line1
+ 1278: @
+ 1279: SV2: _line2
+ 1280: @
+ 1281: }
+ 1282: ARRAY_MAKE
+ 1283: EXIT
 
- 1334: Function: lsedit__editor
- 1335: SV2: _prop
- 1336: !
- 1337: SV1: _obj
- 1338: !
- 1339: SV0: _lines
- 1340: !
- 1341: 0
- 1342: SV3: _line1
- 1343: !
- 1344: 0
- 1345: SV4: _line2
- 1346: !
- 1347: LV10: lsedit::insert_pos
- 1348: @
- 1349: SV0: _lines
- 1350: @
- 1351: ARRAY_COUNT
- 1352: ++
- 1353: >
- 1354: JmpIfFalse: +15
+ 1284: Function: lsedit__editor (3 vars)
+ 1285: 0
+ 1286: SV3: _line1
+ 1287: !
+ 1288: 0
+ 1289: SV4: _line2
+ 1290: !
+ 1291: LV10: lsedit::insert_pos
+ 1292: @
+ 1293: SV0: _lines
+ 1294: @
+ 1295: ARRAY_COUNT
+ 1296: ++
+ 1297: >
+ 1298: JmpIfFalse: +15
+ 1299: SV0: _lines
+ 1300: @
+ 1301: ARRAY_COUNT
+ 1302: ++
+ 1303: LV10: lsedit::insert_pos
+ 1304: !
+ 1305: LV10: lsedit::insert_pos
+ 1306: @
+ 1307: "Inserting at line %i"
+ 1308: FMTSTRING
+ 1309: LV0: me
+ 1310: @
+ 1311: SWAP
+ 1312: NOTIFY
+ 1313: READ
+ 1314: SV5: _inln
+ 1315: !
+ 1316: SV5: _inln
+ 1317: @
+ 1318: "."
+ 1319: 1
+ 1320: STRNCMP
+ 1321: JmpIfFalse: +14
+ 1322: SV5: _inln
+ 1323: @
+ 1324: SV0: _lines
+ 1325: @
+ 1326: LV10: lsedit::insert_pos
+ 1327: @
+ 1328: --
+ 1329: ARRAY_INSERTITEM
+ 1330: SV0: _lines
+ 1331: !
+ 1332: LV10: lsedit::insert_pos
+ 1333: ++
+ 1334: JMP: -43
+ 1335: SV5: _inln
+ 1336: @
+ 1337: ".."
+ 1338: 2
+ 1339: STRNCMP
+ 1340: NOT
+ 1341: JmpIfFalse: +25
+ 1342: {
+ 1343: SV5: _inln
+ 1344: @
+ 1345: 1
+ 1346: STRCUT
+ 1347: }
+ 1348: ARRAY_MAKE
+ 1349: 1
+ 1350: ARRAY_GETITEM
+ 1351: SV5: _inln
+ 1352: !
+ 1353: SV5: _inln
+ 1354: @
  1355: SV0: _lines
  1356: @
- 1357: ARRAY_COUNT
- 1358: ++
- 1359: LV10: lsedit::insert_pos
- 1360: !
- 1361: LV10: lsedit::insert_pos
- 1362: @
- 1363: "Inserting at line %i"
- 1364: FMTSTRING
- 1365: LV0: me
- 1366: @
- 1367: SWAP
- 1368: NOTIFY
- 1369: READ
- 1370: SV5: _inln
- 1371: !
- 1372: SV5: _inln
- 1373: @
- 1374: "."
- 1375: 1
- 1376: STRNCMP
- 1377: JmpIfFalse: +14
- 1378: SV5: _inln
- 1379: @
- 1380: SV0: _lines
- 1381: @
- 1382: LV10: lsedit::insert_pos
- 1383: @
- 1384: --
- 1385: ARRAY_INSERTITEM
- 1386: SV0: _lines
- 1387: !
- 1388: LV10: lsedit::insert_pos
- 1389: ++
- 1390: JMP: -43
- 1391: SV5: _inln
- 1392: @
- 1393: ".."
- 1394: 2
- 1395: STRNCMP
- 1396: NOT
- 1397: JmpIfFalse: +25
- 1398: {
- 1399: SV5: _inln
- 1400: @
- 1401: 1
- 1402: STRCUT
- 1403: }
- 1404: ARRAY_MAKE
- 1405: 1
- 1406: ARRAY_GETITEM
- 1407: SV5: _inln
- 1408: !
- 1409: SV5: _inln
- 1410: @
- 1411: SV0: _lines
- 1412: @
- 1413: LV10: lsedit::insert_pos
- 1414: @
- 1415: --
- 1416: ARRAY_INSERTITEM
- 1417: SV0: _lines
- 1418: !
- 1419: LV10: lsedit::insert_pos
- 1420: ++
- 1421: JMP: -74
- 1422: {
- 1423: SV5: _inln
- 1424: @
- 1425: " "
- 1426: SPLIT
- 1427: }
- 1428: ARRAY_MAKE
- 1429: DUP
- 1430: DUP
- 1431: 0
- 1432: ARRAY_GETITEM
- 1433: SV6: _cmd
- 1434: !
- 1435: DUP
- 1436: 1
- 1437: ARRAY_GETITEM
- 1438: SV7: _cmdargs
- 1439: !
- 1440: POP
- 1441: POP
- 1442: 0
- 1443: POP
- 1444: SV6: _cmd
- 1445: @
- 1446: DUP
- 1447: ".h"
- 1448: STRCMP
- 1449: NOT
- 1450: JmpIfFalse: +5
- 1451: Addr:803
- 1452: EXECUTE
- 1453: POP
- 1454: JMP: +751
- 1455: DUP
- 1456: ".q"
- 1457: STRCMP
- 1458: NOT
- 1459: JmpIfFalse: +24
- 1460: SV1: _obj
- 1461: @
- 1462: SV2: _prop
- 1463: @
- 1464: SV0: _lines
- 1465: @
- 1466: ARRAY_PUT_PROPLIST
- 1467: "Saved."
- 1468: LV0: me
- 1469: @
- 1470: SWAP
- 1471: NOTIFY
- 1472: {
- 1473: SV6: _cmd
- 1474: @
- 1475: SV7: _cmdargs
- 1476: @
- 1477: SV0: _lines
- 1478: @
- 1479: }
- 1480: ARRAY_MAKE
- 1481: EXIT
- 1482: JMP: +723
- 1483: DUP
- 1484: ".x"
- 1485: STRCMP
- 1486: NOT
- 1487: JmpIfFalse: +17
- 1488: "Aborting."
- 1489: LV0: me
+ 1357: LV10: lsedit::insert_pos
+ 1358: @
+ 1359: --
+ 1360: ARRAY_INSERTITEM
+ 1361: SV0: _lines
+ 1362: !
+ 1363: LV10: lsedit::insert_pos
+ 1364: ++
+ 1365: JMP: -74
+ 1366: {
+ 1367: SV5: _inln
+ 1368: @
+ 1369: " "
+ 1370: SPLIT
+ 1371: }
+ 1372: ARRAY_MAKE
+ 1373: DUP
+ 1374: DUP
+ 1375: 0
+ 1376: ARRAY_GETITEM
+ 1377: SV6: _cmd
+ 1378: !
+ 1379: DUP
+ 1380: 1
+ 1381: ARRAY_GETITEM
+ 1382: SV7: _cmdargs
+ 1383: !
+ 1384: POP
+ 1385: POP
+ 1386: 0
+ 1387: POP
+ 1388: SV6: _cmd
+ 1389: @
+ 1390: DUP
+ 1391: ".h"
+ 1392: STRCMP
+ 1393: NOT
+ 1394: JmpIfFalse: +5
+ 1395: Addr:785
+ 1396: EXECUTE
+ 1397: POP
+ 1398: JMP: +751
+ 1399: DUP
+ 1400: ".q"
+ 1401: STRCMP
+ 1402: NOT
+ 1403: JmpIfFalse: +24
+ 1404: SV1: _obj
+ 1405: @
+ 1406: SV2: _prop
+ 1407: @
+ 1408: SV0: _lines
+ 1409: @
+ 1410: ARRAY_PUT_PROPLIST
+ 1411: "Saved."
+ 1412: LV0: me
+ 1413: @
+ 1414: SWAP
+ 1415: NOTIFY
+ 1416: {
+ 1417: SV6: _cmd
+ 1418: @
+ 1419: SV7: _cmdargs
+ 1420: @
+ 1421: SV0: _lines
+ 1422: @
+ 1423: }
+ 1424: ARRAY_MAKE
+ 1425: EXIT
+ 1426: JMP: +723
+ 1427: DUP
+ 1428: ".x"
+ 1429: STRCMP
+ 1430: NOT
+ 1431: JmpIfFalse: +17
+ 1432: "Aborting."
+ 1433: LV0: me
+ 1434: @
+ 1435: SWAP
+ 1436: NOTIFY
+ 1437: {
+ 1438: SV6: _cmd
+ 1439: @
+ 1440: SV7: _cmdargs
+ 1441: @
+ 1442: SV0: _lines
+ 1443: @
+ 1444: }
+ 1445: ARRAY_MAKE
+ 1446: EXIT
+ 1447: JMP: +702
+ 1448: DUP
+ 1449: ".l"
+ 1450: STRCMP
+ 1451: NOT
+ 1452: JmpIfFalse: +32
+ 1453: SV7: _cmdargs
+ 1454: @
+ 1455: 1
+ 1456: 999999
+ 1457: Addr:1204
+ 1458: EXECUTE
+ 1459: DUP
+ 1460: DUP
+ 1461: 0
+ 1462: ARRAY_GETITEM
+ 1463: SV3: _line1
+ 1464: !
+ 1465: DUP
+ 1466: 1
+ 1467: ARRAY_GETITEM
+ 1468: SV4: _line2
+ 1469: !
+ 1470: POP
+ 1471: POP
+ 1472: SV0: _lines
+ 1473: @
+ 1474: SV3: _line1
+ 1475: @
+ 1476: SV4: _line2
+ 1477: @
+ 1478: LV10: lsedit::insert_pos
+ 1479: @
+ 1480: Addr:859
+ 1481: EXECUTE
+ 1482: POP
+ 1483: JMP: +666
+ 1484: DUP
+ 1485: ".i"
+ 1486: STRCMP
+ 1487: NOT
+ 1488: JmpIfFalse: +60
+ 1489: SV7: _cmdargs
  1490: @
- 1491: SWAP
- 1492: NOTIFY
- 1493: {
- 1494: SV6: _cmd
- 1495: @
- 1496: SV7: _cmdargs
- 1497: @
- 1498: SV0: _lines
- 1499: @
- 1500: }
- 1501: ARRAY_MAKE
- 1502: EXIT
- 1503: JMP: +702
- 1504: DUP
- 1505: ".l"
- 1506: STRCMP
- 1507: NOT
- 1508: JmpIfFalse: +32
- 1509: SV7: _cmdargs
- 1510: @
- 1511: 1
- 1512: 999999
- 1513: Addr:1248
- 1514: EXECUTE
- 1515: DUP
- 1516: DUP
- 1517: 0
- 1518: ARRAY_GETITEM
- 1519: SV3: _line1
- 1520: !
- 1521: DUP
- 1522: 1
- 1523: ARRAY_GETITEM
- 1524: SV4: _line2
- 1525: !
- 1526: POP
- 1527: POP
- 1528: SV0: _lines
- 1529: @
- 1530: SV3: _line1
- 1531: @
- 1532: SV4: _line2
- 1533: @
- 1534: LV10: lsedit::insert_pos
- 1535: @
- 1536: Addr:879
- 1537: EXECUTE
- 1538: POP
- 1539: JMP: +666
- 1540: DUP
- 1541: ".i"
- 1542: STRCMP
- 1543: NOT
- 1544: JmpIfFalse: +60
- 1545: SV7: _cmdargs
- 1546: @
- 1547: 1
- 1548: 1
- 1549: Addr:1248
- 1550: EXECUTE
- 1551: DUP
- 1552: DUP
- 1553: 0
- 1554: ARRAY_GETITEM
- 1555: SV3: _line1
- 1556: !
- 1557: DUP
- 1558: 1
- 1559: ARRAY_GETITEM
- 1560: SV4: _line2
- 1561: !
- 1562: POP
- 1563: POP
- 1564: SV3: _line1
- 1565: @
- 1566: SV4: _line2
- 1567: @
- 1568: =
- 1569: NOT
- 1570: JmpIfFalse: +7
- 1571: "Usage: .i LINENUM"
- 1572: LV0: me
- 1573: @
- 1574: SWAP
- 1575: NOTIFY
- 1576: JMP: +629
- 1577: SV3: _line1
- 1578: @
- 1579: LV10: lsedit::insert_pos
- 1580: !
- 1581: LV10: lsedit::insert_pos
- 1582: @
- 1583: SV0: _lines
- 1584: @
- 1585: ARRAY_COUNT
- 1586: ++
- 1587: >
- 1588: JmpIfFalse: +7
- 1589: SV0: _lines
- 1590: @
- 1591: ARRAY_COUNT
- 1592: ++
- 1593: LV10: lsedit::insert_pos
- 1594: !
- 1595: LV10: lsedit::insert_pos
- 1596: @
- 1597: "Inserting at line %i"
- 1598: FMTSTRING
- 1599: LV0: me
- 1600: @
- 1601: SWAP
- 1602: NOTIFY
- 1603: JMP: +602
- 1604: DUP
- 1605: ".s"
- 1606: STRCMP
- 1607: NOT
- 1608: JmpIfFalse: +175
- 1609: SV7: _cmdargs
- 1610: @
- 1611: "/"
- 1612: EXPLODE_ARRAY
- 1613: SV7: _cmdargs
- 1614: !
- 1615: SV7: _cmdargs
- 1616: @
- 1617: ARRAY_COUNT
- 1618: 3
- 1619: =
- 1620: JmpIfFalse: +157
- 1621: SV7: _cmdargs
- 1622: @
- 1623: DUP
- 1624: DUP
- 1625: 0
- 1626: ARRAY_GETITEM
- 1627: SV3: _line1
- 1628: !
- 1629: DUP
- 1630: 1
- 1631: ARRAY_GETITEM
- 1632: SV8: _fnd
- 1633: !
- 1634: DUP
- 1635: 2
- 1636: ARRAY_GETITEM
- 1637: SV9: _repl
- 1638: !
- 1639: POP
- 1640: POP
- 1641: SV3: _line1
- 1642: @
+ 1491: 1
+ 1492: 1
+ 1493: Addr:1204
+ 1494: EXECUTE
+ 1495: DUP
+ 1496: DUP
+ 1497: 0
+ 1498: ARRAY_GETITEM
+ 1499: SV3: _line1
+ 1500: !
+ 1501: DUP
+ 1502: 1
+ 1503: ARRAY_GETITEM
+ 1504: SV4: _line2
+ 1505: !
+ 1506: POP
+ 1507: POP
+ 1508: SV3: _line1
+ 1509: @
+ 1510: SV4: _line2
+ 1511: @
+ 1512: =
+ 1513: NOT
+ 1514: JmpIfFalse: +7
+ 1515: "Usage: .i LINENUM"
+ 1516: LV0: me
+ 1517: @
+ 1518: SWAP
+ 1519: NOTIFY
+ 1520: JMP: +629
+ 1521: SV3: _line1
+ 1522: @
+ 1523: LV10: lsedit::insert_pos
+ 1524: !
+ 1525: LV10: lsedit::insert_pos
+ 1526: @
+ 1527: SV0: _lines
+ 1528: @
+ 1529: ARRAY_COUNT
+ 1530: ++
+ 1531: >
+ 1532: JmpIfFalse: +7
+ 1533: SV0: _lines
+ 1534: @
+ 1535: ARRAY_COUNT
+ 1536: ++
+ 1537: LV10: lsedit::insert_pos
+ 1538: !
+ 1539: LV10: lsedit::insert_pos
+ 1540: @
+ 1541: "Inserting at line %i"
+ 1542: FMTSTRING
+ 1543: LV0: me
+ 1544: @
+ 1545: SWAP
+ 1546: NOTIFY
+ 1547: JMP: +602
+ 1548: DUP
+ 1549: ".s"
+ 1550: STRCMP
+ 1551: NOT
+ 1552: JmpIfFalse: +175
+ 1553: SV7: _cmdargs
+ 1554: @
+ 1555: "/"
+ 1556: EXPLODE_ARRAY
+ 1557: SV7: _cmdargs
+ 1558: !
+ 1559: SV7: _cmdargs
+ 1560: @
+ 1561: ARRAY_COUNT
+ 1562: 3
+ 1563: =
+ 1564: JmpIfFalse: +157
+ 1565: SV7: _cmdargs
+ 1566: @
+ 1567: DUP
+ 1568: DUP
+ 1569: 0
+ 1570: ARRAY_GETITEM
+ 1571: SV3: _line1
+ 1572: !
+ 1573: DUP
+ 1574: 1
+ 1575: ARRAY_GETITEM
+ 1576: SV8: _fnd
+ 1577: !
+ 1578: DUP
+ 1579: 2
+ 1580: ARRAY_GETITEM
+ 1581: SV9: _repl
+ 1582: !
+ 1583: POP
+ 1584: POP
+ 1585: SV3: _line1
+ 1586: @
+ 1587: 1
+ 1588: 999999
+ 1589: Addr:1204
+ 1590: EXECUTE
+ 1591: DUP
+ 1592: DUP
+ 1593: 0
+ 1594: ARRAY_GETITEM
+ 1595: SV3: _line1
+ 1596: !
+ 1597: DUP
+ 1598: 1
+ 1599: ARRAY_GETITEM
+ 1600: SV4: _line2
+ 1601: !
+ 1602: POP
+ 1603: POP
+ 1604: SV3: _line1
+ 1605: @
+ 1606: NOT
+ 1607: DUP
+ 1608: NOT
+ 1609: JmpIfFalse: +5
+ 1610: POP
+ 1611: SV4: _line2
+ 1612: @
+ 1613: NOT
+ 1614: DUP
+ 1615: NOT
+ 1616: JmpIfFalse: +5
+ 1617: POP
+ 1618: SV8: _fnd
+ 1619: @
+ 1620: NOT
+ 1621: JmpIfFalse: +7
+ 1622: "Usage: .s [LINE[,LINE]]/FIND/REPLACE"
+ 1623: LV0: me
+ 1624: @
+ 1625: SWAP
+ 1626: NOTIFY
+ 1627: JMP: +522
+ 1628: SV0: _lines
+ 1629: @
+ 1630: SV3: _line1
+ 1631: @
+ 1632: SV4: _line2
+ 1633: @
+ 1634: Addr:925
+ 1635: EXECUTE
+ 1636: DUP
+ 1637: DUP
+ 1638: 0
+ 1639: ARRAY_GETITEM
+ 1640: SV10: _pfx
+ 1641: !
+ 1642: DUP
  1643: 1
- 1644: 999999
- 1645: Addr:1248
- 1646: EXECUTE
+ 1644: ARRAY_GETITEM
+ 1645: SV11: _subbed
+ 1646: !
  1647: DUP
- 1648: DUP
- 1649: 0
- 1650: ARRAY_GETITEM
- 1651: SV3: _line1
- 1652: !
- 1653: DUP
- 1654: 1
- 1655: ARRAY_GETITEM
- 1656: SV4: _line2
- 1657: !
- 1658: POP
- 1659: POP
- 1660: SV3: _line1
- 1661: @
- 1662: NOT
+ 1648: 2
+ 1649: ARRAY_GETITEM
+ 1650: SV12: _sfx
+ 1651: !
+ 1652: POP
+ 1653: POP
+ 1654: SV11: _subbed
+ 1655: @
+ 1656: SV8: _fnd
+ 1657: @
+ 1658: SV9: _repl
+ 1659: @
+ 1660: Addr:1014
+ 1661: EXECUTE
+ 1662: DUP
  1663: DUP
- 1664: NOT
- 1665: JmpIfFalse: +5
- 1666: POP
- 1667: SV4: _line2
- 1668: @
- 1669: NOT
- 1670: DUP
- 1671: NOT
- 1672: JmpIfFalse: +5
+ 1664: 0
+ 1665: ARRAY_GETITEM
+ 1666: SV13: _changed
+ 1667: !
+ 1668: DUP
+ 1669: 1
+ 1670: ARRAY_GETITEM
+ 1671: SV11: _subbed
+ 1672: !
  1673: POP
- 1674: SV8: _fnd
- 1675: @
- 1676: NOT
- 1677: JmpIfFalse: +7
- 1678: "Usage: .s [LINE[,LINE]]/FIND/REPLACE"
- 1679: LV0: me
- 1680: @
- 1681: SWAP
- 1682: NOTIFY
- 1683: JMP: +522
- 1684: SV0: _lines
- 1685: @
- 1686: SV3: _line1
- 1687: @
- 1688: SV4: _line2
- 1689: @
- 1690: Addr:953
- 1691: EXECUTE
- 1692: DUP
- 1693: DUP
+ 1674: POP
+ 1675: {
+ 1676: SV10: _pfx
+ 1677: @
+ 1678: SV11: _subbed
+ 1679: @
+ 1680: SV12: _sfx
+ 1681: @
+ 1682: }
+ 1683: ARRAY_MAKE
+ 1684: {
+ 1685: }
+ 1686: ARRAY_MAKE
+ 1687: SWAP
+ 1688: ARRAY_REVERSE
+ 1689: FOREACH
+ 1690: __FORITER__
+ 1691: JmpIfFalse: +7
+ 1692: SWAP
+ 1693: POP
  1694: 0
- 1695: ARRAY_GETITEM
- 1696: SV10: _pfx
- 1697: !
- 1698: DUP
- 1699: 1
- 1700: ARRAY_GETITEM
- 1701: SV11: _subbed
- 1702: !
- 1703: DUP
- 1704: 2
- 1705: ARRAY_GETITEM
- 1706: SV12: _sfx
- 1707: !
- 1708: POP
- 1709: POP
- 1710: SV11: _subbed
- 1711: @
- 1712: SV8: _fnd
- 1713: @
- 1714: SV9: _repl
- 1715: @
- 1716: Addr:1048
- 1717: EXECUTE
- 1718: DUP
- 1719: DUP
- 1720: 0
- 1721: ARRAY_GETITEM
- 1722: SV13: _changed
- 1723: !
- 1724: DUP
- 1725: 1
- 1726: ARRAY_GETITEM
- 1727: SV11: _subbed
- 1728: !
- 1729: POP
- 1730: POP
- 1731: {
- 1732: SV10: _pfx
+ 1695: SWAP
+ 1696: ARRAY_INSERTRANGE
+ 1697: JMP: -7
+ 1698: __FORPOP__
+ 1699: SV0: _lines
+ 1700: !
+ 1701: SV13: _changed
+ 1702: @
+ 1703: "Changed %i lines."
+ 1704: FMTSTRING
+ 1705: LV0: me
+ 1706: @
+ 1707: SWAP
+ 1708: NOTIFY
+ 1709: SV0: _lines
+ 1710: @
+ 1711: SV3: _line1
+ 1712: @
+ 1713: SV4: _line2
+ 1714: @
+ 1715: LV10: lsedit::insert_pos
+ 1716: @
+ 1717: Addr:859
+ 1718: EXECUTE
+ 1719: POP
+ 1720: JMP: +6
+ 1721: "Usage: .s [LINE[,LINE]]/FIND/REPLACE"
+ 1722: LV0: me
+ 1723: @
+ 1724: SWAP
+ 1725: NOTIFY
+ 1726: JMP: +423
+ 1727: DUP
+ 1728: ".d"
+ 1729: STRCMP
+ 1730: NOT
+ 1731: JmpIfFalse: +101
+ 1732: SV0: _lines
  1733: @
- 1734: SV11: _subbed
- 1735: @
- 1736: SV12: _sfx
- 1737: @
- 1738: }
- 1739: ARRAY_MAKE
- 1740: {
- 1741: }
- 1742: ARRAY_MAKE
- 1743: SWAP
- 1744: ARRAY_REVERSE
- 1745: FOREACH
- 1746: __FORITER__
- 1747: JmpIfFalse: +7
- 1748: SWAP
- 1749: POP
- 1750: 0
- 1751: SWAP
- 1752: ARRAY_INSERTRANGE
- 1753: JMP: -7
- 1754: __FORPOP__
- 1755: SV0: _lines
- 1756: !
- 1757: SV13: _changed
- 1758: @
- 1759: "Changed %i lines."
- 1760: FMTSTRING
- 1761: LV0: me
- 1762: @
- 1763: SWAP
- 1764: NOTIFY
- 1765: SV0: _lines
- 1766: @
- 1767: SV3: _line1
- 1768: @
- 1769: SV4: _line2
- 1770: @
- 1771: LV10: lsedit::insert_pos
- 1772: @
- 1773: Addr:879
- 1774: EXECUTE
- 1775: POP
- 1776: JMP: +6
- 1777: "Usage: .s [LINE[,LINE]]/FIND/REPLACE"
- 1778: LV0: me
- 1779: @
- 1780: SWAP
- 1781: NOTIFY
- 1782: JMP: +423
- 1783: DUP
- 1784: ".d"
- 1785: STRCMP
- 1786: NOT
- 1787: JmpIfFalse: +101
- 1788: SV0: _lines
- 1789: @
- 1790: ARRAY_COUNT
- 1791: SV14: _oldcount
- 1792: !
- 1793: SV7: _cmdargs
- 1794: @
- 1795: 0
- 1796: 0
- 1797: Addr:1248
- 1798: EXECUTE
- 1799: DUP
- 1800: DUP
- 1801: 0
- 1802: ARRAY_GETITEM
- 1803: SV3: _line1
- 1804: !
- 1805: DUP
- 1806: 1
- 1807: ARRAY_GETITEM
- 1808: SV4: _line2
- 1809: !
- 1810: POP
- 1811: POP
- 1812: SV3: _line1
- 1813: @
- 1814: NOT
- 1815: DUP
- 1816: NOT
- 1817: JmpIfFalse: +5
- 1818: POP
- 1819: SV4: _line2
+ 1734: ARRAY_COUNT
+ 1735: SV14: _oldcount
+ 1736: !
+ 1737: SV7: _cmdargs
+ 1738: @
+ 1739: 0
+ 1740: 0
+ 1741: Addr:1204
+ 1742: EXECUTE
+ 1743: DUP
+ 1744: DUP
+ 1745: 0
+ 1746: ARRAY_GETITEM
+ 1747: SV3: _line1
+ 1748: !
+ 1749: DUP
+ 1750: 1
+ 1751: ARRAY_GETITEM
+ 1752: SV4: _line2
+ 1753: !
+ 1754: POP
+ 1755: POP
+ 1756: SV3: _line1
+ 1757: @
+ 1758: NOT
+ 1759: DUP
+ 1760: NOT
+ 1761: JmpIfFalse: +5
+ 1762: POP
+ 1763: SV4: _line2
+ 1764: @
+ 1765: NOT
+ 1766: JmpIfFalse: +6
+ 1767: "Usage: .d LINENUM [LINENUM]"
+ 1768: LV0: me
+ 1769: @
+ 1770: SWAP
+ 1771: NOTIFY
+ 1772: SV0: _lines
+ 1773: @
+ 1774: SV3: _line1
+ 1775: @
+ 1776: --
+ 1777: SV4: _line2
+ 1778: @
+ 1779: --
+ 1780: ARRAY_DELRANGE
+ 1781: SV0: _lines
+ 1782: !
+ 1783: SV14: _oldcount
+ 1784: @
+ 1785: SV0: _lines
+ 1786: @
+ 1787: ARRAY_COUNT
+ 1788: -
+ 1789: "Deleted %i lines."
+ 1790: FMTSTRING
+ 1791: LV0: me
+ 1792: @
+ 1793: SWAP
+ 1794: NOTIFY
+ 1795: LV10: lsedit::insert_pos
+ 1796: @
+ 1797: SV3: _line1
+ 1798: @
+ 1799: >=
+ 1800: JmpIfFalse: +23
+ 1801: LV10: lsedit::insert_pos
+ 1802: @
+ 1803: SV4: _line2
+ 1804: @
+ 1805: >
+ 1806: JmpIfFalse: +13
+ 1807: LV10: lsedit::insert_pos
+ 1808: @
+ 1809: SV4: _line2
+ 1810: @
+ 1811: SV3: _line1
+ 1812: @
+ 1813: -
+ 1814: ++
+ 1815: -
+ 1816: LV10: lsedit::insert_pos
+ 1817: !
+ 1818: JMP: +5
+ 1819: SV3: _line1
  1820: @
- 1821: NOT
- 1822: JmpIfFalse: +6
- 1823: "Usage: .d LINENUM [LINENUM]"
- 1824: LV0: me
- 1825: @
- 1826: SWAP
- 1827: NOTIFY
- 1828: SV0: _lines
- 1829: @
- 1830: SV3: _line1
- 1831: @
- 1832: --
- 1833: SV4: _line2
- 1834: @
- 1835: --
- 1836: ARRAY_DELRANGE
- 1837: SV0: _lines
- 1838: !
- 1839: SV14: _oldcount
- 1840: @
- 1841: SV0: _lines
- 1842: @
- 1843: ARRAY_COUNT
- 1844: -
- 1845: "Deleted %i lines."
- 1846: FMTSTRING
- 1847: LV0: me
+ 1821: LV10: lsedit::insert_pos
+ 1822: !
+ 1823: LV10: lsedit::insert_pos
+ 1824: @
+ 1825: "Inserting at line %i"
+ 1826: FMTSTRING
+ 1827: LV0: me
+ 1828: @
+ 1829: SWAP
+ 1830: NOTIFY
+ 1831: JMP: +318
+ 1832: DUP
+ 1833: ".w"
+ 1834: STRCMP
+ 1835: NOT
+ 1836: JmpIfFalse: +138
+ 1837: SV7: _cmdargs
+ 1838: @
+ 1839: "="
+ 1840: EXPLODE_ARRAY
+ 1841: SV7: _cmdargs
+ 1842: !
+ 1843: SV7: _cmdargs
+ 1844: @
+ 1845: NOT
+ 1846: JmpIfFalse: +28
+ 1847: SV1: _obj
  1848: @
- 1849: SWAP
- 1850: NOTIFY
- 1851: LV10: lsedit::insert_pos
- 1852: @
- 1853: SV3: _line1
- 1854: @
- 1855: >=
- 1856: JmpIfFalse: +23
- 1857: LV10: lsedit::insert_pos
+ 1849: DUP
+ 1850: JmpIfFalse: +4
+ 1851: POP
+ 1852: SV2: _prop
+ 1853: @
+ 1854: JmpIfFalse: +14
+ 1855: SV1: _obj
+ 1856: @
+ 1857: SV2: _prop
  1858: @
- 1859: SV4: _line2
+ 1859: SV0: _lines
  1860: @
- 1861: >
- 1862: JmpIfFalse: +13
- 1863: LV10: lsedit::insert_pos
+ 1861: ARRAY_PUT_PROPLIST
+ 1862: "Saved."
+ 1863: LV0: me
  1864: @
- 1865: SV4: _line2
- 1866: @
- 1867: SV3: _line1
- 1868: @
- 1869: -
- 1870: ++
- 1871: -
- 1872: LV10: lsedit::insert_pos
- 1873: !
- 1874: JMP: +5
- 1875: SV3: _line1
- 1876: @
- 1877: LV10: lsedit::insert_pos
- 1878: !
- 1879: LV10: lsedit::insert_pos
- 1880: @
- 1881: "Inserting at line %i"
- 1882: FMTSTRING
- 1883: LV0: me
- 1884: @
- 1885: SWAP
- 1886: NOTIFY
- 1887: JMP: +318
+ 1865: SWAP
+ 1866: NOTIFY
+ 1867: JMP: +6
+ 1868: "Usage: .w OBJECT=LISTPROP"
+ 1869: LV0: me
+ 1870: @
+ 1871: SWAP
+ 1872: NOTIFY
+ 1873: JMP: +100
+ 1874: SV7: _cmdargs
+ 1875: @
+ 1876: ARRAY_COUNT
+ 1877: 2
+ 1878: =
+ 1879: JmpIfFalse: +89
+ 1880: SV7: _cmdargs
+ 1881: @
+ 1882: DUP
+ 1883: DUP
+ 1884: 0
+ 1885: ARRAY_GETITEM
+ 1886: SV15: _saveobj
+ 1887: !
  1888: DUP
- 1889: ".w"
- 1890: STRCMP
- 1891: NOT
- 1892: JmpIfFalse: +138
- 1893: SV7: _cmdargs
- 1894: @
- 1895: "="
- 1896: EXPLODE_ARRAY
- 1897: SV7: _cmdargs
- 1898: !
- 1899: SV7: _cmdargs
- 1900: @
- 1901: NOT
- 1902: JmpIfFalse: +28
- 1903: SV1: _obj
- 1904: @
- 1905: DUP
- 1906: JmpIfFalse: +4
- 1907: POP
- 1908: SV2: _prop
- 1909: @
- 1910: JmpIfFalse: +14
- 1911: SV1: _obj
- 1912: @
- 1913: SV2: _prop
- 1914: @
- 1915: SV0: _lines
- 1916: @
- 1917: ARRAY_PUT_PROPLIST
- 1918: "Saved."
+ 1889: 1
+ 1890: ARRAY_GETITEM
+ 1891: SV16: _savelist
+ 1892: !
+ 1893: POP
+ 1894: POP
+ 1895: SV15: _saveobj
+ 1896: @
+ 1897: MATCH
+ 1898: DUP
+ 1899: #-1
+ 1900: DBCMP
+ 1901: JmpIfFalse: +5
+ 1902: LV0: me
+ 1903: @
+ 1904: "I don't see that here!"
+ 1905: NOTIFY
+ 1906: DUP
+ 1907: #-2
+ 1908: DBCMP
+ 1909: JmpIfFalse: +5
+ 1910: LV0: me
+ 1911: @
+ 1912: "I don't know which one you mean!"
+ 1913: NOTIFY
+ 1914: DUP
+ 1915: #-3
+ 1916: DBCMP
+ 1917: JmpIfFalse: +5
+ 1918: POP
  1919: LV0: me
  1920: @
- 1921: SWAP
- 1922: NOTIFY
- 1923: JMP: +6
- 1924: "Usage: .w OBJECT=LISTPROP"
+ 1921: GETLINK
+ 1922: DUP
+ 1923: OK?
+ 1924: JmpIfFalse: +13
  1925: LV0: me
  1926: @
- 1927: SWAP
- 1928: NOTIFY
- 1929: JMP: +100
- 1930: SV7: _cmdargs
- 1931: @
- 1932: ARRAY_COUNT
- 1933: 2
- 1934: =
- 1935: JmpIfFalse: +89
- 1936: SV7: _cmdargs
- 1937: @
- 1938: DUP
- 1939: DUP
- 1940: 0
- 1941: ARRAY_GETITEM
- 1942: SV15: _saveobj
- 1943: !
- 1944: DUP
- 1945: 1
- 1946: ARRAY_GETITEM
- 1947: SV16: _savelist
- 1948: !
- 1949: POP
- 1950: POP
- 1951: SV15: _saveobj
- 1952: @
- 1953: MATCH
- 1954: DUP
- 1955: #-1
- 1956: DBCMP
- 1957: JmpIfFalse: +5
- 1958: LV0: me
- 1959: @
- 1960: "I don't see that here!"
- 1961: NOTIFY
- 1962: DUP
- 1963: #-2
- 1964: DBCMP
- 1965: JmpIfFalse: +5
- 1966: LV0: me
- 1967: @
- 1968: "I don't know which one you mean!"
- 1969: NOTIFY
- 1970: DUP
- 1971: #-3
- 1972: DBCMP
- 1973: JmpIfFalse: +5
- 1974: POP
- 1975: LV0: me
- 1976: @
- 1977: GETLINK
- 1978: DUP
- 1979: OK?
- 1980: JmpIfFalse: +13
- 1981: LV0: me
- 1982: @
- 1983: OVER
- 1984: CONTROLS
- 1985: NOT
- 1986: JmpIfFalse: +7
- 1987: POP
- 1988: #-1
- 1989: LV0: me
- 1990: @
- 1991: "Permission denied."
- 1992: NOTIFY
- 1993: SV15: _saveobj
- 1994: !
- 1995: SV15: _saveobj
- 1996: @
- 1997: 0
- 1998: <
- 1999: JmpIfFalse: +2
- 2000: JMP: +205
- 2001: SV16: _savelist
- 2002: @
- 2003: NOT
- 2004: JmpIfFalse: +7
- 2005: "Usage: .w [OBJECT=LISTPROP]"
- 2006: LV0: me
- 2007: @
- 2008: SWAP
- 2009: NOTIFY
- 2010: JMP: +195
- 2011: SV15: _saveobj
- 2012: @
- 2013: SV16: _savelist
- 2014: @
- 2015: SV0: _lines
- 2016: @
- 2017: ARRAY_PUT_PROPLIST
- 2018: "Saved."
- 2019: LV0: me
- 2020: @
- 2021: SWAP
- 2022: NOTIFY
- 2023: JMP: +6
- 2024: "Usage: .w [OBJECT=LISTPROP]"
- 2025: LV0: me
- 2026: @
- 2027: SWAP
- 2028: NOTIFY
- 2029: JMP: +176
- 2030: DUP
- 2031: ".f"
- 2032: STRCMP
- 2033: NOT
- 2034: JmpIfFalse: +159
- 2035: {
- 2036: SV7: _cmdargs
- 2037: @
- 2038: "="
- 2039: SPLIT
- 2040: }
- 2041: ARRAY_MAKE
- 2042: DUP
- 2043: DUP
- 2044: 0
- 2045: ARRAY_GETITEM
- 2046: SV7: _cmdargs
- 2047: !
- 2048: DUP
- 2049: 1
- 2050: ARRAY_GETITEM
- 2051: SV17: _cols
- 2052: !
- 2053: POP
- 2054: POP
- 2055: SV7: _cmdargs
- 2056: @
- 2057: 1
- 2058: 999999
- 2059: Addr:1248
- 2060: EXECUTE
+ 1927: OVER
+ 1928: CONTROLS
+ 1929: NOT
+ 1930: JmpIfFalse: +7
+ 1931: POP
+ 1932: #-1
+ 1933: LV0: me
+ 1934: @
+ 1935: "Permission denied."
+ 1936: NOTIFY
+ 1937: SV15: _saveobj
+ 1938: !
+ 1939: SV15: _saveobj
+ 1940: @
+ 1941: 0
+ 1942: <
+ 1943: JmpIfFalse: +2
+ 1944: JMP: +205
+ 1945: SV16: _savelist
+ 1946: @
+ 1947: NOT
+ 1948: JmpIfFalse: +7
+ 1949: "Usage: .w [OBJECT=LISTPROP]"
+ 1950: LV0: me
+ 1951: @
+ 1952: SWAP
+ 1953: NOTIFY
+ 1954: JMP: +195
+ 1955: SV15: _saveobj
+ 1956: @
+ 1957: SV16: _savelist
+ 1958: @
+ 1959: SV0: _lines
+ 1960: @
+ 1961: ARRAY_PUT_PROPLIST
+ 1962: "Saved."
+ 1963: LV0: me
+ 1964: @
+ 1965: SWAP
+ 1966: NOTIFY
+ 1967: JMP: +6
+ 1968: "Usage: .w [OBJECT=LISTPROP]"
+ 1969: LV0: me
+ 1970: @
+ 1971: SWAP
+ 1972: NOTIFY
+ 1973: JMP: +176
+ 1974: DUP
+ 1975: ".f"
+ 1976: STRCMP
+ 1977: NOT
+ 1978: JmpIfFalse: +159
+ 1979: {
+ 1980: SV7: _cmdargs
+ 1981: @
+ 1982: "="
+ 1983: SPLIT
+ 1984: }
+ 1985: ARRAY_MAKE
+ 1986: DUP
+ 1987: DUP
+ 1988: 0
+ 1989: ARRAY_GETITEM
+ 1990: SV7: _cmdargs
+ 1991: !
+ 1992: DUP
+ 1993: 1
+ 1994: ARRAY_GETITEM
+ 1995: SV17: _cols
+ 1996: !
+ 1997: POP
+ 1998: POP
+ 1999: SV7: _cmdargs
+ 2000: @
+ 2001: 1
+ 2002: 999999
+ 2003: Addr:1204
+ 2004: EXECUTE
+ 2005: DUP
+ 2006: DUP
+ 2007: 0
+ 2008: ARRAY_GETITEM
+ 2009: SV3: _line1
+ 2010: !
+ 2011: DUP
+ 2012: 1
+ 2013: ARRAY_GETITEM
+ 2014: SV4: _line2
+ 2015: !
+ 2016: POP
+ 2017: POP
+ 2018: SV17: _cols
+ 2019: @
+ 2020: JmpIfFalse: +5
+ 2021: SV17: _cols
+ 2022: @
+ 2023: ATOI
+ 2024: JMP: +2
+ 2025: 75
+ 2026: SV17: _cols
+ 2027: !
+ 2028: SV17: _cols
+ 2029: @
+ 2030: NOT
+ 2031: DUP
+ 2032: NOT
+ 2033: JmpIfFalse: +5
+ 2034: POP
+ 2035: SV3: _line1
+ 2036: @
+ 2037: NOT
+ 2038: DUP
+ 2039: NOT
+ 2040: JmpIfFalse: +5
+ 2041: POP
+ 2042: SV4: _line2
+ 2043: @
+ 2044: NOT
+ 2045: JmpIfFalse: +7
+ 2046: "Usage: .f [L1,[L2]][=LISTPROP]"
+ 2047: LV0: me
+ 2048: @
+ 2049: SWAP
+ 2050: NOTIFY
+ 2051: JMP: +98
+ 2052: SV0: _lines
+ 2053: @
+ 2054: SV3: _line1
+ 2055: @
+ 2056: SV4: _line2
+ 2057: @
+ 2058: Addr:925
+ 2059: EXECUTE
+ 2060: DUP
  2061: DUP
- 2062: DUP
- 2063: 0
- 2064: ARRAY_GETITEM
- 2065: SV3: _line1
- 2066: !
- 2067: DUP
- 2068: 1
- 2069: ARRAY_GETITEM
- 2070: SV4: _line2
- 2071: !
- 2072: POP
- 2073: POP
- 2074: SV17: _cols
- 2075: @
- 2076: JmpIfFalse: +5
- 2077: SV17: _cols
- 2078: @
- 2079: ATOI
- 2080: JMP: +2
- 2081: 75
- 2082: SV17: _cols
- 2083: !
- 2084: SV17: _cols
- 2085: @
- 2086: NOT
- 2087: DUP
- 2088: NOT
- 2089: JmpIfFalse: +5
- 2090: POP
- 2091: SV3: _line1
- 2092: @
- 2093: NOT
- 2094: DUP
- 2095: NOT
- 2096: JmpIfFalse: +5
- 2097: POP
- 2098: SV4: _line2
- 2099: @
- 2100: NOT
- 2101: JmpIfFalse: +7
- 2102: "Usage: .f [L1,[L2]][=LISTPROP]"
- 2103: LV0: me
- 2104: @
- 2105: SWAP
- 2106: NOTIFY
- 2107: JMP: +98
- 2108: SV0: _lines
- 2109: @
- 2110: SV3: _line1
- 2111: @
- 2112: SV4: _line2
- 2113: @
- 2114: Addr:953
- 2115: EXECUTE
- 2116: DUP
- 2117: DUP
- 2118: 0
- 2119: ARRAY_GETITEM
- 2120: SV18: _pfx2
- 2121: !
- 2122: DUP
- 2123: 1
- 2124: ARRAY_GETITEM
- 2125: SV19: _mid
- 2126: !
- 2127: DUP
- 2128: 2
- 2129: ARRAY_GETITEM
- 2130: SV20: _sfx2
- 2131: !
- 2132: POP
- 2133: POP
- 2134: SV19: _mid
- 2135: @
- 2136: ARRAY_COUNT
- 2137: SV21: _origcnt
- 2138: !
- 2139: SV19: _mid
- 2140: @
- 2141: SV17: _cols
- 2142: @
- 2143: Addr:1108
- 2144: EXECUTE
- 2145: SV19: _mid
- 2146: !
- 2147: {
- 2148: SV18: _pfx2
- 2149: @
- 2150: SV19: _mid
- 2151: @
- 2152: SV20: _sfx2
- 2153: @
- 2154: }
- 2155: ARRAY_MAKE
- 2156: {
- 2157: }
- 2158: ARRAY_MAKE
- 2159: SWAP
- 2160: ARRAY_REVERSE
- 2161: FOREACH
- 2162: __FORITER__
- 2163: JmpIfFalse: +7
- 2164: SWAP
- 2165: POP
- 2166: 0
- 2167: SWAP
- 2168: ARRAY_INSERTRANGE
- 2169: JMP: -7
- 2170: __FORPOP__
- 2171: SV0: _lines
- 2172: !
- 2173: SV21: _origcnt
- 2174: @
- 2175: "Formatted %i lines."
- 2176: FMTSTRING
- 2177: LV0: me
- 2178: @
- 2179: SWAP
- 2180: NOTIFY
- 2181: SV0: _lines
- 2182: @
- 2183: SV3: _line1
- 2184: @
- 2185: SV4: _line2
- 2186: @
- 2187: LV10: lsedit::insert_pos
- 2188: @
- 2189: Addr:879
- 2190: EXECUTE
- 2191: POP
- 2192: JMP: +13
- 2193: {
- 2194: SV6: _cmd
- 2195: @
- 2196: SV7: _cmdargs
- 2197: @
- 2198: SV0: _lines
- 2199: @
- 2200: }
- 2201: ARRAY_MAKE
- 2202: EXIT
- 2203: JMP: +2
- 2204: JMP: -761
- 2205: POP
- 2206: JMP: -859
- 2207: 0
- 2208: EXIT
+ 2062: 0
+ 2063: ARRAY_GETITEM
+ 2064: SV18: _pfx2
+ 2065: !
+ 2066: DUP
+ 2067: 1
+ 2068: ARRAY_GETITEM
+ 2069: SV19: _mid
+ 2070: !
+ 2071: DUP
+ 2072: 2
+ 2073: ARRAY_GETITEM
+ 2074: SV20: _sfx2
+ 2075: !
+ 2076: POP
+ 2077: POP
+ 2078: SV19: _mid
+ 2079: @
+ 2080: ARRAY_COUNT
+ 2081: SV21: _origcnt
+ 2082: !
+ 2083: SV19: _mid
+ 2084: @
+ 2085: SV17: _cols
+ 2086: @
+ 2087: Addr:1068
+ 2088: EXECUTE
+ 2089: SV19: _mid
+ 2090: !
+ 2091: {
+ 2092: SV18: _pfx2
+ 2093: @
+ 2094: SV19: _mid
+ 2095: @
+ 2096: SV20: _sfx2
+ 2097: @
+ 2098: }
+ 2099: ARRAY_MAKE
+ 2100: {
+ 2101: }
+ 2102: ARRAY_MAKE
+ 2103: SWAP
+ 2104: ARRAY_REVERSE
+ 2105: FOREACH
+ 2106: __FORITER__
+ 2107: JmpIfFalse: +7
+ 2108: SWAP
+ 2109: POP
+ 2110: 0
+ 2111: SWAP
+ 2112: ARRAY_INSERTRANGE
+ 2113: JMP: -7
+ 2114: __FORPOP__
+ 2115: SV0: _lines
+ 2116: !
+ 2117: SV21: _origcnt
+ 2118: @
+ 2119: "Formatted %i lines."
+ 2120: FMTSTRING
+ 2121: LV0: me
+ 2122: @
+ 2123: SWAP
+ 2124: NOTIFY
+ 2125: SV0: _lines
+ 2126: @
+ 2127: SV3: _line1
+ 2128: @
+ 2129: SV4: _line2
+ 2130: @
+ 2131: LV10: lsedit::insert_pos
+ 2132: @
+ 2133: Addr:859
+ 2134: EXECUTE
+ 2135: POP
+ 2136: JMP: +13
+ 2137: {
+ 2138: SV6: _cmd
+ 2139: @
+ 2140: SV7: _cmdargs
+ 2141: @
+ 2142: SV0: _lines
+ 2143: @
+ 2144: }
+ 2145: ARRAY_MAKE
+ 2146: EXIT
+ 2147: JMP: +2
+ 2148: JMP: -761
+ 2149: POP
+ 2150: JMP: -859
+ 2151: 0
+ 2152: EXIT
 
- 2209: Function: lsedit__basic
- 2210: SV0: _arg
- 2211: !
- 2212: Addr:0
- 2213: EXECUTE
- 2214: POP
- 2215: ""
- 2216: Addr:122
- 2217: EXECUTE
- 2218: POP
- 2219: ""
- 2220: {
- 2221: }
- 2222: ARRAY_MAKE
- 2223: "obj=list"
- 2224: Addr:136
- 2225: EXECUTE
+ 2153: Function: lsedit__basic (1 vars)
+ 2154: Addr:0
+ 2155: EXECUTE
+ 2156: POP
+ 2157: ""
+ 2158: Addr:118
+ 2159: EXECUTE
+ 2160: POP
+ 2161: ""
+ 2162: {
+ 2163: }
+ 2164: ARRAY_MAKE
+ 2165: "obj=list"
+ 2166: Addr:130
+ 2167: EXECUTE
+ 2168: POP
+ 2169: SV0: _arg
+ 2170: @
+ 2171: Addr:464
+ 2172: EXECUTE
+ 2173: SV1: _opts
+ 2174: !
+ 2175: SV1: _opts
+ 2176: @
+ 2177: NOT
+ 2178: JmpIfFalse: +3
+ 2179: 0
+ 2180: EXIT
+ 2181: SV1: _opts
+ 2182: @
+ 2183: "obj"
+ 2184: ARRAY_GETITEM
+ 2185: NOT
+ 2186: DUP
+ 2187: NOT
+ 2188: JmpIfFalse: +7
+ 2189: POP
+ 2190: SV1: _opts
+ 2191: @
+ 2192: "list"
+ 2193: ARRAY_GETITEM
+ 2194: NOT
+ 2195: JmpIfFalse: +6
+ 2196: Addr:334
+ 2197: EXECUTE
+ 2198: POP
+ 2199: 0
+ 2200: EXIT
+ 2201: SV1: _opts
+ 2202: @
+ 2203: "obj"
+ 2204: ARRAY_GETITEM
+ 2205: MATCH
+ 2206: DUP
+ 2207: #-1
+ 2208: DBCMP
+ 2209: JmpIfFalse: +5
+ 2210: LV0: me
+ 2211: @
+ 2212: "I don't see that here!"
+ 2213: NOTIFY
+ 2214: DUP
+ 2215: #-2
+ 2216: DBCMP
+ 2217: JmpIfFalse: +5
+ 2218: LV0: me
+ 2219: @
+ 2220: "I don't know which one you mean!"
+ 2221: NOTIFY
+ 2222: DUP
+ 2223: #-3
+ 2224: DBCMP
+ 2225: JmpIfFalse: +5
  2226: POP
- 2227: SV0: _arg
+ 2227: LV0: me
  2228: @
- 2229: Addr:480
- 2230: EXECUTE
- 2231: SV1: _opts
- 2232: !
- 2233: SV1: _opts
+ 2229: GETLINK
+ 2230: DUP
+ 2231: OK?
+ 2232: JmpIfFalse: +13
+ 2233: LV0: me
  2234: @
- 2235: NOT
- 2236: JmpIfFalse: +3
- 2237: 0
- 2238: EXIT
- 2239: SV1: _opts
- 2240: @
- 2241: "obj"
- 2242: ARRAY_GETITEM
- 2243: NOT
- 2244: DUP
- 2245: NOT
- 2246: JmpIfFalse: +7
- 2247: POP
- 2248: SV1: _opts
- 2249: @
- 2250: "list"
- 2251: ARRAY_GETITEM
- 2252: NOT
- 2253: JmpIfFalse: +6
- 2254: Addr:350
- 2255: EXECUTE
- 2256: POP
- 2257: 0
- 2258: EXIT
+ 2235: OVER
+ 2236: CONTROLS
+ 2237: NOT
+ 2238: JmpIfFalse: +7
+ 2239: POP
+ 2240: #-1
+ 2241: LV0: me
+ 2242: @
+ 2243: "Permission denied."
+ 2244: NOTIFY
+ 2245: SV2: _obj
+ 2246: !
+ 2247: SV2: _obj
+ 2248: @
+ 2249: 0
+ 2250: <
+ 2251: JmpIfFalse: +3
+ 2252: 0
+ 2253: EXIT
+ 2254: 1
+ 2255: LV10: lsedit::insert_pos
+ 2256: !
+ 2257: SV2: _obj
+ 2258: @
  2259: SV1: _opts
  2260: @
- 2261: "obj"
+ 2261: "list"
  2262: ARRAY_GETITEM
- 2263: MATCH
- 2264: DUP
- 2265: #-1
- 2266: DBCMP
- 2267: JmpIfFalse: +5
- 2268: LV0: me
- 2269: @
- 2270: "I don't see that here!"
- 2271: NOTIFY
- 2272: DUP
- 2273: #-2
- 2274: DBCMP
- 2275: JmpIfFalse: +5
- 2276: LV0: me
- 2277: @
- 2278: "I don't know which one you mean!"
- 2279: NOTIFY
- 2280: DUP
- 2281: #-3
- 2282: DBCMP
- 2283: JmpIfFalse: +5
- 2284: POP
- 2285: LV0: me
- 2286: @
- 2287: GETLINK
- 2288: DUP
- 2289: OK?
- 2290: JmpIfFalse: +13
- 2291: LV0: me
- 2292: @
- 2293: OVER
- 2294: CONTROLS
- 2295: NOT
- 2296: JmpIfFalse: +7
- 2297: POP
- 2298: #-1
- 2299: LV0: me
- 2300: @
- 2301: "Permission denied."
- 2302: NOTIFY
- 2303: SV2: _obj
- 2304: !
- 2305: SV2: _obj
- 2306: @
- 2307: 0
- 2308: <
- 2309: JmpIfFalse: +3
- 2310: 0
- 2311: EXIT
- 2312: 1
- 2313: LV10: lsedit::insert_pos
- 2314: !
- 2315: SV2: _obj
- 2316: @
- 2317: SV1: _opts
+ 2263: ARRAY_GET_PROPLIST
+ 2264: SV5: _lines
+ 2265: !
+ 2266: SV5: _lines
+ 2267: @
+ 2268: 1
+ 2269: 999999
+ 2270: LV10: lsedit::insert_pos
+ 2271: @
+ 2272: Addr:859
+ 2273: EXECUTE
+ 2274: POP
+ 2275: SV5: _lines
+ 2276: @
+ 2277: SV2: _obj
+ 2278: @
+ 2279: SV1: _opts
+ 2280: @
+ 2281: "list"
+ 2282: ARRAY_GETITEM
+ 2283: Addr:1284
+ 2284: EXECUTE
+ 2285: DUP
+ 2286: DUP
+ 2287: 0
+ 2288: ARRAY_GETITEM
+ 2289: SV3: _cmd
+ 2290: !
+ 2291: DUP
+ 2292: 1
+ 2293: ARRAY_GETITEM
+ 2294: SV4: _args
+ 2295: !
+ 2296: DUP
+ 2297: 2
+ 2298: ARRAY_GETITEM
+ 2299: SV5: _lines
+ 2300: !
+ 2301: POP
+ 2302: POP
+ 2303: {
+ 2304: ".x"
+ 2305: ".q"
+ 2306: }
+ 2307: ARRAY_MAKE
+ 2308: SV3: _cmd
+ 2309: @
+ 2310: ARRAY_FINDVAL
+ 2311: JmpIfFalse: +2
+ 2312: JMP: +10
+ 2313: SV3: _cmd
+ 2314: @
+ 2315: "Unrecognized editor command '%s'."
+ 2316: FMTSTRING
+ 2317: LV0: me
  2318: @
- 2319: "list"
- 2320: ARRAY_GETITEM
- 2321: ARRAY_GET_PROPLIST
- 2322: SV5: _lines
- 2323: !
- 2324: SV5: _lines
- 2325: @
- 2326: 1
- 2327: 999999
- 2328: LV10: lsedit::insert_pos
- 2329: @
- 2330: Addr:879
- 2331: EXECUTE
- 2332: POP
- 2333: SV5: _lines
- 2334: @
- 2335: SV2: _obj
- 2336: @
- 2337: SV1: _opts
- 2338: @
- 2339: "list"
- 2340: ARRAY_GETITEM
- 2341: Addr:1334
- 2342: EXECUTE
- 2343: DUP
- 2344: DUP
- 2345: 0
- 2346: ARRAY_GETITEM
- 2347: SV3: _cmd
- 2348: !
- 2349: DUP
- 2350: 1
- 2351: ARRAY_GETITEM
- 2352: SV4: _args
+ 2319: SWAP
+ 2320: NOTIFY
+ 2321: JMP: -46
+ 2322: {
+ 2323: SV3: _cmd
+ 2324: @
+ 2325: SV4: _args
+ 2326: @
+ 2327: SV5: _lines
+ 2328: @
+ 2329: }
+ 2330: ARRAY_MAKE
+ 2331: EXIT
+
+ 2332: Function: _main (1 vars)
+ 2333: Addr:777
+ 2334: EXECUTE
+ 2335: POP
+ 2336: SV0: _arg
+ 2337: @
+ 2338: Addr:2153
+ 2339: EXECUTE
+ 2340: EXIT
+
+ 2341: Function: __start (0 vars)
+ 2342: "me"
+ 2343: MATCH
+ 2344: LV0: me
+ 2345: !
+ 2346: LV0: me
+ 2347: @
+ 2348: LOCATION
+ 2349: LV1: loc
+ 2350: !
+ 2351: TRIG
+ 2352: LV2: trigger
  2353: !
- 2354: DUP
- 2355: 2
- 2356: ARRAY_GETITEM
- 2357: SV5: _lines
- 2358: !
- 2359: POP
- 2360: POP
- 2361: {
- 2362: ".x"
- 2363: ".q"
- 2364: }
- 2365: ARRAY_MAKE
- 2366: SV3: _cmd
- 2367: @
- 2368: ARRAY_FINDVAL
- 2369: JmpIfFalse: +2
- 2370: JMP: +10
- 2371: SV3: _cmd
- 2372: @
- 2373: "Unrecognized editor command '%s'."
- 2374: FMTSTRING
- 2375: LV0: me
- 2376: @
- 2377: SWAP
- 2378: NOTIFY
- 2379: JMP: -46
- 2380: {
- 2381: SV3: _cmd
- 2382: @
- 2383: SV4: _args
- 2384: @
- 2385: SV5: _lines
- 2386: @
- 2387: }
- 2388: ARRAY_MAKE
- 2389: EXIT
-
- 2390: Function: _main
- 2391: SV0: _arg
- 2392: !
- 2393: Addr:795
- 2394: EXECUTE
- 2395: POP
- 2396: SV0: _arg
- 2397: @
- 2398: Addr:2209
- 2399: EXECUTE
- 2400: EXIT
-
- 2401: Function: __start
- 2402: "me"
- 2403: MATCH
- 2404: LV0: me
- 2405: !
- 2406: LV0: me
- 2407: @
- 2408: LOCATION
- 2409: LV1: loc
- 2410: !
- 2411: TRIG
- 2412: LV2: trigger
- 2413: !
- 2414: ""
- 2415: LV4: argparse::current_mode
- 2416: !
- 2417: {
- 2418: }
- 2419: ARRAY_MAKE
- 2420: LV5: argparse::modes_list
- 2421: !
- 2422: {
- 2423: }
- 2424: 2
- 2425: /
- 2426: ARRAY_MAKE_DICT
- 2427: LV6: argparse::flags_map
- 2428: !
- 2429: {
- 2430: }
- 2431: 2
- 2432: /
- 2433: ARRAY_MAKE_DICT
- 2434: LV7: argparse::posargs_map
- 2435: !
- 2436: {
- 2437: ""
- 2438: "remainder"
- 2439: }
- 2440: 2
- 2441: /
- 2442: ARRAY_MAKE_DICT
- 2443: LV8: argparse::remainder_map
- 2444: !
- 2445: {
- 2446: }
- 2447: ARRAY_MAKE
- 2448: LV9: lsedit::help_lines
- 2449: !
- 2450: Addr:2390
- 2451: EXECUTE
- 2452: EXIT
+ 2354: ""
+ 2355: LV4: argparse::current_mode
+ 2356: !
+ 2357: {
+ 2358: }
+ 2359: ARRAY_MAKE
+ 2360: LV5: argparse::modes_list
+ 2361: !
+ 2362: {
+ 2363: }
+ 2364: 2
+ 2365: /
+ 2366: ARRAY_MAKE_DICT
+ 2367: LV6: argparse::flags_map
+ 2368: !
+ 2369: {
+ 2370: }
+ 2371: 2
+ 2372: /
+ 2373: ARRAY_MAKE_DICT
+ 2374: LV7: argparse::posargs_map
+ 2375: !
+ 2376: {
+ 2377: ""
+ 2378: "remainder"
+ 2379: }
+ 2380: 2
+ 2381: /
+ 2382: ARRAY_MAKE_DICT
+ 2383: LV8: argparse::remainder_map
+ 2384: !
+ 2385: {
+ 2386: }
+ 2387: ARRAY_MAKE
+ 2388: LV9: lsedit::help_lines
+ 2389: !
+ 2390: Addr:2332
+ 2391: EXECUTE
+ 2392: EXIT
 
 #### Executing Tokens #################################
- 2401: line 550 ("") Function: __start
- 2402: line 551 ("") "me"
- 2403: line 551 ("", "me") MATCH
- 2404: line 551 ("", #5) LV0: me
- 2405: line 551 ("", #5, LV0) !
- 2406: line 551 ("") LV0: me
- 2407: line 551 ("", LV0) @
- 2408: line 551 ("", #5) LOCATION
- 2409: line 551 ("", #2) LV1: loc
- 2410: line 551 ("", #2, LV1) !
- 2411: line 551 ("") TRIG
- 2412: line 551 ("", #3) LV2: trigger
- 2413: line 551 ("", #3, LV2) !
- 2414: line 552 ("") ""
- 2415: line 552 ("", "") LV4: argparse::current_mode
- 2416: line 552 ("", "", LV4) !
- 2417: line 553 ("") {
- 2418: line 553 ("", Mark) }
- 2419: line 553 ("", 0) ARRAY_MAKE
- 2420: line 553 ("", []) LV5: argparse::modes_list
- 2421: line 553 ("", [], LV5) !
- 2422: line 554 ("") {
- 2423: line 554 ("", Mark) }
- 2424: line 554 ("", 0) 2
- 2425: line 554 ("", 0, 2) /
- 2426: line 554 ("", 0) ARRAY_MAKE_DICT
- 2427: line 554 ("", {}) LV6: argparse::flags_map
- 2428: line 554 ("", {}, LV6) !
- 2429: line 555 ("") {
- 2430: line 555 ("", Mark) }
- 2431: line 555 ("", 0) 2
- 2432: line 555 ("", 0, 2) /
- 2433: line 555 ("", 0) ARRAY_MAKE_DICT
- 2434: line 555 ("", {}) LV7: argparse::posargs_map
- 2435: line 555 ("", {}, LV7) !
- 2436: line 556 ("") {
- 2437: line 556 ("", Mark) ""
- 2438: line 556 ("", Mark, "") "remainder"
- 2439: line 556 ("", Mark, "", "remainder") }
- 2440: line 556 ("", "", "remainder", 2) 2
- 2441: line 556 ("", "", "remainder", 2, 2) /
- 2442: line 556 ("", "", "remainder", 1) ARRAY_MAKE_DICT
- 2443: line 556 ("", {'': 'remainder'}) LV8: argparse::remainder_map
- 2444: line 556 ("", {'': 'remainder'}, LV8) !
- 2445: line 557 ("") {
- 2446: line 557 ("", Mark) }
- 2447: line 557 ("", 0) ARRAY_MAKE
- 2448: line 557 ("", []) LV9: lsedit::help_lines
- 2449: line 557 ("", [], LV9) !
- 2450: line 558 ("") Addr:2390
- 2451: line 558 ("", Addr:2390) EXECUTE
- 2390: line 546 ("") Function: _main
- 2391: line 546 ("") SV0: _arg
- 2392: line 546 ("", SV0) !
- 2393: line 547 () Addr:795
- 2394: line 547 (Addr:795) EXECUTE
-  795: line 207 () Function: lsedit__init_help
-  796: line 208 () {
-  797: line 208 (Mark) }
-  798: line 208 (0) ARRAY_MAKE
-  799: line 208 ([]) LV9: lsedit::help_lines
-  800: line 208 ([], LV9) !
-  801: line 209 () 0
-  802: line 210 (0) EXIT
- 2395: line 547 (0) POP
- 2396: line 548 () SV0: _arg
- 2397: line 548 (SV0) @
- 2398: line 548 ("") Addr:2209
- 2399: line 548 ("", Addr:2209) EXECUTE
- 2209: line 510 ("") Function: lsedit__basic
- 2210: line 510 ("") SV0: _arg
- 2211: line 510 ("", SV0) !
- 2212: line 512 () Addr:0
- 2213: line 512 (Addr:0) EXECUTE
-    0: line 12 () Function: argparse::init
+ 2341: line 550 ("") Function: __start (0 vars)
+ 2342: line 551 ("") "me"
+ 2343: line 551 ("", "me") MATCH
+ 2344: line 551 ("", #5) LV0: me
+ 2345: line 551 ("", #5, LV0) !
+ 2346: line 551 ("") LV0: me
+ 2347: line 551 ("", LV0) @
+ 2348: line 551 ("", #5) LOCATION
+ 2349: line 551 ("", #2) LV1: loc
+ 2350: line 551 ("", #2, LV1) !
+ 2351: line 551 ("") TRIG
+ 2352: line 551 ("", #3) LV2: trigger
+ 2353: line 551 ("", #3, LV2) !
+ 2354: line 552 ("") ""
+ 2355: line 552 ("", "") LV4: argparse::current_mode
+ 2356: line 552 ("", "", LV4) !
+ 2357: line 553 ("") {
+ 2358: line 553 ("", Mark) }
+ 2359: line 553 ("", 0) ARRAY_MAKE
+ 2360: line 553 ("", []) LV5: argparse::modes_list
+ 2361: line 553 ("", [], LV5) !
+ 2362: line 554 ("") {
+ 2363: line 554 ("", Mark) }
+ 2364: line 554 ("", 0) 2
+ 2365: line 554 ("", 0, 2) /
+ 2366: line 554 ("", 0) ARRAY_MAKE_DICT
+ 2367: line 554 ("", {}) LV6: argparse::flags_map
+ 2368: line 554 ("", {}, LV6) !
+ 2369: line 555 ("") {
+ 2370: line 555 ("", Mark) }
+ 2371: line 555 ("", 0) 2
+ 2372: line 555 ("", 0, 2) /
+ 2373: line 555 ("", 0) ARRAY_MAKE_DICT
+ 2374: line 555 ("", {}) LV7: argparse::posargs_map
+ 2375: line 555 ("", {}, LV7) !
+ 2376: line 556 ("") {
+ 2377: line 556 ("", Mark) ""
+ 2378: line 556 ("", Mark, "") "remainder"
+ 2379: line 556 ("", Mark, "", "remainder") }
+ 2380: line 556 ("", "", "remainder", 2) 2
+ 2381: line 556 ("", "", "remainder", 2, 2) /
+ 2382: line 556 ("", "", "remainder", 1) ARRAY_MAKE_DICT
+ 2383: line 556 ("", {'': 'remainder'}) LV8: argparse::remainder_map
+ 2384: line 556 ("", {'': 'remainder'}, LV8) !
+ 2385: line 557 ("") {
+ 2386: line 557 ("", Mark) }
+ 2387: line 557 ("", 0) ARRAY_MAKE
+ 2388: line 557 ("", []) LV9: lsedit::help_lines
+ 2389: line 557 ("", [], LV9) !
+ 2390: line 558 ("") Addr:2332
+ 2391: line 558 ("", Addr:2332) EXECUTE
+ 2332: line 546 ("") Function: _main (1 vars)
+ 2333: line 547 () Addr:777
+ 2334: line 547 (Addr:777) EXECUTE
+  777: line 207 () Function: lsedit__init_help (0 vars)
+  778: line 208 () {
+  779: line 208 (Mark) }
+  780: line 208 (0) ARRAY_MAKE
+  781: line 208 ([]) LV9: lsedit::help_lines
+  782: line 208 ([], LV9) !
+  783: line 209 () 0
+  784: line 210 (0) EXIT
+ 2335: line 547 (0) POP
+ 2336: line 548 () SV0: _arg
+ 2337: line 548 (SV0) @
+ 2338: line 548 ("") Addr:2153
+ 2339: line 548 ("", Addr:2153) EXECUTE
+ 2153: line 510 ("") Function: lsedit__basic (1 vars)
+ 2154: line 512 () Addr:0
+ 2155: line 512 (Addr:0) EXECUTE
+    0: line 12 () Function: argparse::init (0 vars)
     1: line 13 () ""
     2: line 13 ("") LV4: argparse::current_mode
     3: line 13 ("", LV4) !
@@ -2599,434 +2535,420 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
    31: line 17 ({'': 'remainder'}, LV8) !
    32: line 18 () 0
    33: line 19 (0) EXIT
- 2214: line 512 (0) POP
- 2215: line 513 () ""
- 2216: line 513 ("") Addr:122
- 2217: line 513 ("", Addr:122) EXECUTE
-  122: line 41 ("") Function: argparse::set_mode
-  123: line 41 ("") SV0: _name
-  124: line 41 ("", SV0) !
-  125: line 42 () SV0: _name
-  126: line 42 (SV0) @
-  127: line 42 ("") TOLOWER
-  128: line 42 ("") SV0: _name
-  129: line 42 ("", SV0) !
-  130: line 43 () SV0: _name
-  131: line 43 (SV0) @
-  132: line 43 ("") LV4: argparse::current_mode
-  133: line 43 ("", LV4) !
-  134: line 44 () 0
-  135: line 45 (0) EXIT
- 2218: line 513 (0) POP
- 2219: line 514 () ""
- 2220: line 514 ("") {
- 2221: line 514 ("", Mark) }
- 2222: line 514 ("", 0) ARRAY_MAKE
- 2223: line 514 ("", []) "obj=list"
- 2224: line 514 ("", [], "obj=list") Addr:136
- 2225: line 514 ("", [], "obj=list", Addr:136) EXECUTE
-  136: line 46 ("", [], "obj=list") Function: argparse::add_mode
-  137: line 46 ("", [], "obj=list") SV2: _posargs
-  138: line 46 ("", [], "obj=list", SV2) !
-  139: line 46 ("", []) SV1: _flags
-  140: line 46 ("", [], SV1) !
-  141: line 46 ("") SV0: _name
-  142: line 46 ("", SV0) !
-  143: line 48 () SV0: _name
-  144: line 48 (SV0) @
-  145: line 48 ("") TOLOWER
-  146: line 48 ("") SV0: _name
-  147: line 48 ("", SV0) !
-  148: line 49 () LV5: argparse::modes_list
-  149: line 49 (LV5) @
-  150: line 49 ([]) SV0: _name
-  151: line 49 ([], SV0) @
-  152: line 49 ([], "") SWAP
-  153: line 49 ("", []) ARRAY_APPENDITEM
-  154: line 49 (['']) LV5: argparse::modes_list
-  155: line 49 ([''], LV5) !
-  156: line 50 () {
-  157: line 50 (Mark) }
-  158: line 50 (0) ARRAY_MAKE
-  159: line 50 ([]) DUP
-  160: line 51 ([], []) LV6: argparse::flags_map
-  161: line 51 ([], [], LV6) @
-  162: line 51 ([], [], {}) SV0: _name
-  163: line 51 ([], [], {}, SV0) @
-  164: line 51 ([], [], {}, "") ARRAY_SETITEM
-  165: line 51 ([], {'': []}) LV6: argparse::flags_map
-  166: line 51 ([], {'': []}, LV6) !
-  167: line 51 ([]) POP
-  168: line 52 () {
-  169: line 52 (Mark) }
-  170: line 52 (0) ARRAY_MAKE
-  171: line 52 ([]) DUP
-  172: line 53 ([], []) LV7: argparse::posargs_map
-  173: line 53 ([], [], LV7) @
-  174: line 53 ([], [], {}) SV0: _name
-  175: line 53 ([], [], {}, SV0) @
-  176: line 53 ([], [], {}, "") ARRAY_SETITEM
-  177: line 53 ([], {'': []}) LV7: argparse::posargs_map
-  178: line 53 ([], {'': []}, LV7) !
-  179: line 53 ([]) POP
-  180: line 54 () SV1: _flags
-  181: line 54 (SV1) @
-  182: line 54 ([]) FOREACH
-  183: line 55 () __FORITER__
-  184: line 55 (0) JmpIfFalse: +41
-  225: line 54 () __FORPOP__
-  226: line 63 () SV0: _name
-  227: line 63 (SV0) @
-  228: line 63 ("") SV2: _posargs
-  229: line 63 ("", SV2) @
-  230: line 63 ("", "obj=list") Addr:34
-  231: line 63 ("", "obj=list", Addr:34) EXECUTE
-   34: line 20 ("", "obj=list") Function: argparse::parse_posargs
-   35: line 20 ("", "obj=list") SV1: _posargs
-   36: line 20 ("", "obj=list", SV1) !
-   37: line 20 ("") SV0: _mode
-   38: line 20 ("", SV0) !
-   39: line 23 () {
-   40: line 23 (Mark) SV1: _posargs
-   41: line 23 (Mark, SV1) @
-   42: line 23 (Mark, "obj=list") "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
-   43: line 23 (Mark, "obj=list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$") 1
-   44: line 23 (Mark, "obj=list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$", 1) REGEXP
-   45: line 23 (Mark, ['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)]) }
-   46: line 23 (['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)], 2) ARRAY_MAKE
-   47: line 23 ([['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)]]) 0
-   48: line 23 ([['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)]], 0) ARRAY_GETITEM
-   49: line 24 (['obj=list', 'obj', '=', 'list']) SV2: _tok
-   50: line 24 (['obj=list', 'obj', '=', 'list'], SV2) !
-   51: line 25 () SV2: _tok
-   52: line 25 (SV2) @
-   53: line 25 (['obj=list', 'obj', '=', 'list']) JmpIfFalse: +53
-   54: line 26 () LV7: argparse::posargs_map
-   55: line 26 (LV7) @
-   56: line 26 ({'': []}) SV0: _mode
-   57: line 26 ({'': []}, SV0) @
-   58: line 26 ({'': []}, "") ARRAY_GETITEM
-   59: line 26 ([]) NOT
-   60: line 26 (1) JmpIfFalse: +13
-   61: line 27 () {
-   62: line 27 (Mark) }
-   63: line 27 (0) ARRAY_MAKE
-   64: line 27 ([]) DUP
-   65: line 28 ([], []) LV7: argparse::posargs_map
-   66: line 28 ([], [], LV7) @
-   67: line 28 ([], [], {'': []}) SV0: _mode
-   68: line 28 ([], [], {'': []}, SV0) @
-   69: line 28 ([], [], {'': []}, "") ARRAY_SETITEM
-   70: line 28 ([], {'': []}) LV7: argparse::posargs_map
-   71: line 28 ([], {'': []}, LV7) !
-   72: line 28 ([]) POP
-   73: line 30 () LV7: argparse::posargs_map
-   74: line 30 (LV7) @
-   75: line 30 ({'': []}) SV0: _mode
-   76: line 30 ({'': []}, SV0) @
-   77: line 30 ({'': []}, "") OVER
-   78: line 30 ({'': []}, "", {'': []}) OVER
-   79: line 30 ({'': []}, "", {'': []}, "") ARRAY_GETITEM
-   80: line 31 ({'': []}, "", []) {
-   81: line 31 ({'': []}, "", [], Mark) SV2: _tok
-   82: line 31 ({'': []}, "", [], Mark, SV2) @
-   83: line 31 ({'': []}, "", [], Mark, ['obj=list', 'obj', '=', 'list']) 1
-   84: line 31 ({'': []}, "", [], Mark, ['obj=list', 'obj', '=', 'list'], 1) ARRAY_GETITEM
-   85: line 31 ({'': []}, "", [], Mark, "obj") TOLOWER
-   86: line 31 ({'': []}, "", [], Mark, "obj") SV2: _tok
-   87: line 31 ({'': []}, "", [], Mark, "obj", SV2) @
-   88: line 31 ({'': []}, "", [], Mark, "obj", ['obj=list', 'obj', '=', 'list']) 2
-   89: line 31 ({'': []}, "", [], Mark, "obj", ['obj=list', 'obj', '=', 'list'], 2) ARRAY_GETITEM
-   90: line 31 ({'': []}, "", [], Mark, "obj", "=") }
-   91: line 31 ({'': []}, "", [], "obj", "=", 2) ARRAY_MAKE
-   92: line 31 ({'': []}, "", [], ['obj', '=']) SWAP
-   93: line 31 ({'': []}, "", ['obj', '='], []) ARRAY_APPENDITEM
-   94: line 31 ({'': [['obj', '=']]}, "", [['obj', '=']]) ROT
-   95: line 31 ("", [['obj', '=']], {'': [['obj', '=']]}) ROT
-   96: line 31 ([['obj', '=']], {'': [['obj', '=']]}, "") ARRAY_SETITEM
-   97: line 31 ({'': [['obj', '=']]}) LV7: argparse::posargs_map
-   98: line 31 ({'': [['obj', '=']]}, LV7) !
-   99: line 32 () SV2: _tok
-  100: line 32 (SV2) @
-  101: line 32 (['obj=list', 'obj', '=', 'list']) 3
-  102: line 32 (['obj=list', 'obj', '=', 'list'], 3) ARRAY_GETITEM
-  103: line 32 ("list") SV1: _posargs
-  104: line 32 ("list", SV1) !
-  105: line 25 () JMP: +14
-  119: line 38 () JMP: -80
-   39: line 23 () {
-   40: line 23 (Mark) SV1: _posargs
-   41: line 23 (Mark, SV1) @
-   42: line 23 (Mark, "list") "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
-   43: line 23 (Mark, "list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$") 1
-   44: line 23 (Mark, "list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$", 1) REGEXP
-   45: line 23 (Mark, [], []) }
-   46: line 23 ([], [], 2) ARRAY_MAKE
-   47: line 23 ([[], []]) 0
-   48: line 23 ([[], []], 0) ARRAY_GETITEM
-   49: line 24 ([]) SV2: _tok
-   50: line 24 ([], SV2) !
-   51: line 25 () SV2: _tok
-   52: line 25 (SV2) @
-   53: line 25 ([]) JmpIfFalse: +53
-  106: line 34 () SV1: _posargs
-  107: line 34 (SV1) @
-  108: line 34 ("list") TOLOWER
-  109: line 34 ("list") DUP
-  110: line 35 ("list", "list") LV8: argparse::remainder_map
-  111: line 35 ("list", "list", LV8) @
-  112: line 35 ("list", "list", {'': 'remainder'}) SV0: _mode
-  113: line 35 ("list", "list", {'': 'remainder'}, SV0) @
-  114: line 35 ("list", "list", {'': 'remainder'}, "") ARRAY_SETITEM
-  115: line 35 ("list", {'': 'list'}) LV8: argparse::remainder_map
-  116: line 35 ("list", {'': 'list'}, LV8) !
-  117: line 35 ("list") POP
-  118: line 36 () JMP: +2
-  120: line 39 () 0
-  121: line 40 (0) EXIT
-  232: line 63 (0) POP
-  233: line 64 () 0
-  234: line 65 (0) EXIT
- 2226: line 514 (0) POP
- 2227: line 515 () SV0: _arg
- 2228: line 515 (SV0) @
- 2229: line 515 ("") Addr:480
- 2230: line 515 ("", Addr:480) EXECUTE
-  480: line 124 ("") Function: argparse::parse
-  481: line 124 ("") SV0: _line
-  482: line 124 ("", SV0) !
-  483: line 127 () {
-  484: line 127 (Mark) }
-  485: line 127 (0) 2
-  486: line 127 (0, 2) /
-  487: line 127 (0) ARRAY_MAKE_DICT
-  488: line 127 ({}) SV4: _opts
-  489: line 127 ({}, SV4) !
-  490: line 128 () 0
-  491: line 128 (0) SV5: _mode_given
-  492: line 128 (0, SV5) !
-  493: line 130 () SV0: _line
-  494: line 130 (SV0) @
-  495: line 130 ("") "#"
-  496: line 130 ("", "#") STRINGPFX
-  497: line 131 (0) JmpIfFalse: +208
-  705: line 189 () SV5: _mode_given
-  706: line 189 (SV5) @
-  707: line 189 (0) 1
-  708: line 189 (0, 1) >
-  709: line 189 (0) JmpIfFalse: +13
-  722: line 194 () LV7: argparse::posargs_map
-  723: line 194 (LV7) @
-  724: line 194 ({'': [['obj', '=']]}) LV4: argparse::current_mode
-  725: line 194 ({'': [['obj', '=']]}, LV4) @
-  726: line 194 ({'': [['obj', '=']]}, "") ARRAY_GETITEM
-  727: line 194 ([['obj', '=']]) FOREACH
-  728: line 195 () __FORITER__
-  729: line 195 (0, ['obj', '='], 1) JmpIfFalse: +38
-  730: line 195 (0, ['obj', '=']) SV9: _posarg
-  731: line 195 (0, ['obj', '='], SV9) !
-  732: line 195 (0) POP
-  733: line 196 () {
-  734: line 196 (Mark) SV0: _line
-  735: line 196 (Mark, SV0) @
-  736: line 196 (Mark, "") SV9: _posarg
-  737: line 196 (Mark, "", SV9) @
-  738: line 196 (Mark, "", ['obj', '=']) 1
-  739: line 196 (Mark, "", ['obj', '='], 1) ARRAY_GETITEM
-  740: line 196 (Mark, "", "=") SPLIT
-  741: line 196 (Mark, "", "") }
-  742: line 196 ("", "", 2) ARRAY_MAKE
-  743: line 196 (['', '']) SV1: _parts
-  744: line 196 (['', ''], SV1) !
-  745: line 197 () SV1: _parts
-  746: line 197 (SV1) @
-  747: line 197 (['', '']) 0
-  748: line 197 (['', ''], 0) ARRAY_GETITEM
-  749: line 197 ("") DUP
-  750: line 197 ("", "") SV4: _opts
-  751: line 197 ("", "", SV4) @
-  752: line 197 ("", "", {}) SV9: _posarg
-  753: line 197 ("", "", {}, SV9) @
-  754: line 197 ("", "", {}, ['obj', '=']) 0
-  755: line 197 ("", "", {}, ['obj', '='], 0) ARRAY_GETITEM
-  756: line 197 ("", "", {}, "obj") ARRAY_SETITEM
-  757: line 197 ("", {'obj': ''}) SV4: _opts
-  758: line 197 ("", {'obj': ''}, SV4) !
-  759: line 197 ("") POP
-  760: line 198 () SV1: _parts
-  761: line 198 (SV1) @
-  762: line 198 (['', '']) 1
-  763: line 198 (['', ''], 1) ARRAY_GETITEM
-  764: line 198 ("") SV0: _line
-  765: line 198 ("", SV0) !
-  766: line 199 () JMP: -38
-  728: line 195 () __FORITER__
-  729: line 195 (0) JmpIfFalse: +38
-  767: line 194 () __FORPOP__
-  768: line 200 () SV0: _line
-  769: line 200 (SV0) @
-  770: line 200 ("") DUP
-  771: line 201 ("", "") SV4: _opts
-  772: line 201 ("", "", SV4) @
-  773: line 201 ("", "", {'obj': ''}) LV8: argparse::remainder_map
-  774: line 201 ("", "", {'obj': ''}, LV8) @
-  775: line 201 ("", "", {'obj': ''}, {'': 'list'}) LV4: argparse::current_mode
-  776: line 201 ("", "", {'obj': ''}, {'': 'list'}, LV4) @
-  777: line 201 ("", "", {'obj': ''}, {'': 'list'}, "") ARRAY_GETITEM
-  778: line 201 ("", "", {'obj': ''}, "list") ARRAY_SETITEM
-  779: line 201 ("", {'list': '', 'obj': ''}) SV4: _opts
-  780: line 201 ("", {'list': '', 'obj': ''}, SV4) !
-  781: line 201 ("") POP
-  782: line 202 () LV4: argparse::current_mode
-  783: line 202 (LV4) @
-  784: line 202 ("") DUP
-  785: line 202 ("", "") SV4: _opts
-  786: line 202 ("", "", SV4) @
-  787: line 202 ("", "", {'list': '', 'obj': ''}) "mode"
-  788: line 202 ("", "", {'list': '', 'obj': ''}, "mode") ARRAY_SETITEM
-  789: line 202 ("", {'list': '', 'obj': '', 'mode': ''}) SV4: _opts
-  790: line 202 ("", {'list': '', 'obj': '', 'mode': ''}, SV4) !
-  791: line 202 ("") POP
-  792: line 203 () SV4: _opts
-  793: line 203 (SV4) @
-  794: line 204 ({'list': '', 'obj': '', 'mode': ''}) EXIT
- 2231: line 515 ({'list': '', 'obj': '', 'mode': ''}) SV1: _opts
- 2232: line 515 ({'list': '', 'obj': '', 'mode': ''}, SV1) !
- 2233: line 516 () SV1: _opts
- 2234: line 516 (SV1) @
- 2235: line 516 ({'list': '', 'obj': '', 'mode': ''}) NOT
- 2236: line 516 (0) JmpIfFalse: +3
- 2239: line 517 () SV1: _opts
- 2240: line 517 (SV1) @
- 2241: line 517 ({'list': '', 'obj': '', 'mode': ''}) "obj"
- 2242: line 517 ({'list': '', 'obj': '', 'mode': ''}, "obj") ARRAY_GETITEM
- 2243: line 517 ("") NOT
- 2244: line 518 (1) DUP
- 2245: line 518 (1, 1) NOT
- 2246: line 518 (1, 0) JmpIfFalse: +7
- 2253: line 518 (1) JmpIfFalse: +6
- 2254: line 519 () Addr:350
- 2255: line 519 (Addr:350) EXECUTE
-  350: line 100 () Function: argparse::show_usage
-  351: line 103 () TRIG
-  352: line 103 (#3) NAME
-  353: line 103 ("test") ";"
-  354: line 103 ("test", ";") SPLIT
-  355: line 103 ("test", "") POP
-  356: line 103 ("test") STRIPLEAD
-  357: line 103 ("test") STRIPTAIL
-  358: line 103 ("test") SV0: _cmd
-  359: line 103 ("test", SV0) !
-  360: line 104 () "Usage:"
-  361: line 104 ("Usage:") LV0: me
-  362: line 104 ("Usage:", LV0) @
-  363: line 104 ("Usage:", #5) SWAP
-  364: line 104 (#5, "Usage:") NOTIFY
+ 2156: line 512 (0) POP
+ 2157: line 513 () ""
+ 2158: line 513 ("") Addr:118
+ 2159: line 513 ("", Addr:118) EXECUTE
+  118: line 41 ("") Function: argparse::set_mode (1 vars)
+  119: line 42 () SV0: _name
+  120: line 42 (SV0) @
+  121: line 42 ("") TOLOWER
+  122: line 42 ("") SV0: _name
+  123: line 42 ("", SV0) !
+  124: line 43 () SV0: _name
+  125: line 43 (SV0) @
+  126: line 43 ("") LV4: argparse::current_mode
+  127: line 43 ("", LV4) !
+  128: line 44 () 0
+  129: line 45 (0) EXIT
+ 2160: line 513 (0) POP
+ 2161: line 514 () ""
+ 2162: line 514 ("") {
+ 2163: line 514 ("", Mark) }
+ 2164: line 514 ("", 0) ARRAY_MAKE
+ 2165: line 514 ("", []) "obj=list"
+ 2166: line 514 ("", [], "obj=list") Addr:130
+ 2167: line 514 ("", [], "obj=list", Addr:130) EXECUTE
+  130: line 46 ("", [], "obj=list") Function: argparse::add_mode (3 vars)
+  131: line 48 () SV0: _name
+  132: line 48 (SV0) @
+  133: line 48 ("") TOLOWER
+  134: line 48 ("") SV0: _name
+  135: line 48 ("", SV0) !
+  136: line 49 () LV5: argparse::modes_list
+  137: line 49 (LV5) @
+  138: line 49 ([]) SV0: _name
+  139: line 49 ([], SV0) @
+  140: line 49 ([], "") SWAP
+  141: line 49 ("", []) ARRAY_APPENDITEM
+  142: line 49 (['']) LV5: argparse::modes_list
+  143: line 49 ([''], LV5) !
+  144: line 50 () {
+  145: line 50 (Mark) }
+  146: line 50 (0) ARRAY_MAKE
+  147: line 50 ([]) DUP
+  148: line 51 ([], []) LV6: argparse::flags_map
+  149: line 51 ([], [], LV6) @
+  150: line 51 ([], [], {}) SV0: _name
+  151: line 51 ([], [], {}, SV0) @
+  152: line 51 ([], [], {}, "") ARRAY_SETITEM
+  153: line 51 ([], {'': []}) LV6: argparse::flags_map
+  154: line 51 ([], {'': []}, LV6) !
+  155: line 51 ([]) POP
+  156: line 52 () {
+  157: line 52 (Mark) }
+  158: line 52 (0) ARRAY_MAKE
+  159: line 52 ([]) DUP
+  160: line 53 ([], []) LV7: argparse::posargs_map
+  161: line 53 ([], [], LV7) @
+  162: line 53 ([], [], {}) SV0: _name
+  163: line 53 ([], [], {}, SV0) @
+  164: line 53 ([], [], {}, "") ARRAY_SETITEM
+  165: line 53 ([], {'': []}) LV7: argparse::posargs_map
+  166: line 53 ([], {'': []}, LV7) !
+  167: line 53 ([]) POP
+  168: line 54 () SV1: _flags
+  169: line 54 (SV1) @
+  170: line 54 ([]) FOREACH
+  171: line 55 () __FORITER__
+  172: line 55 (0) JmpIfFalse: +41
+  213: line 54 () __FORPOP__
+  214: line 63 () SV0: _name
+  215: line 63 (SV0) @
+  216: line 63 ("") SV2: _posargs
+  217: line 63 ("", SV2) @
+  218: line 63 ("", "obj=list") Addr:34
+  219: line 63 ("", "obj=list", Addr:34) EXECUTE
+   34: line 20 ("", "obj=list") Function: argparse::parse_posargs (2 vars)
+   35: line 23 () {
+   36: line 23 (Mark) SV1: _posargs
+   37: line 23 (Mark, SV1) @
+   38: line 23 (Mark, "obj=list") "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
+   39: line 23 (Mark, "obj=list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$") 1
+   40: line 23 (Mark, "obj=list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$", 1) REGEXP
+   41: line 23 (Mark, ['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)]) }
+   42: line 23 (['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)], 2) ARRAY_MAKE
+   43: line 23 ([['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)]]) 0
+   44: line 23 ([['obj=list', 'obj', '=', 'list'], [(0, 8), (0, 3), (3, 4), (4, 8)]], 0) ARRAY_GETITEM
+   45: line 24 (['obj=list', 'obj', '=', 'list']) SV2: _tok
+   46: line 24 (['obj=list', 'obj', '=', 'list'], SV2) !
+   47: line 25 () SV2: _tok
+   48: line 25 (SV2) @
+   49: line 25 (['obj=list', 'obj', '=', 'list']) JmpIfFalse: +53
+   50: line 26 () LV7: argparse::posargs_map
+   51: line 26 (LV7) @
+   52: line 26 ({'': []}) SV0: _mode
+   53: line 26 ({'': []}, SV0) @
+   54: line 26 ({'': []}, "") ARRAY_GETITEM
+   55: line 26 ([]) NOT
+   56: line 26 (1) JmpIfFalse: +13
+   57: line 27 () {
+   58: line 27 (Mark) }
+   59: line 27 (0) ARRAY_MAKE
+   60: line 27 ([]) DUP
+   61: line 28 ([], []) LV7: argparse::posargs_map
+   62: line 28 ([], [], LV7) @
+   63: line 28 ([], [], {'': []}) SV0: _mode
+   64: line 28 ([], [], {'': []}, SV0) @
+   65: line 28 ([], [], {'': []}, "") ARRAY_SETITEM
+   66: line 28 ([], {'': []}) LV7: argparse::posargs_map
+   67: line 28 ([], {'': []}, LV7) !
+   68: line 28 ([]) POP
+   69: line 30 () LV7: argparse::posargs_map
+   70: line 30 (LV7) @
+   71: line 30 ({'': []}) SV0: _mode
+   72: line 30 ({'': []}, SV0) @
+   73: line 30 ({'': []}, "") OVER
+   74: line 30 ({'': []}, "", {'': []}) OVER
+   75: line 30 ({'': []}, "", {'': []}, "") ARRAY_GETITEM
+   76: line 31 ({'': []}, "", []) {
+   77: line 31 ({'': []}, "", [], Mark) SV2: _tok
+   78: line 31 ({'': []}, "", [], Mark, SV2) @
+   79: line 31 ({'': []}, "", [], Mark, ['obj=list', 'obj', '=', 'list']) 1
+   80: line 31 ({'': []}, "", [], Mark, ['obj=list', 'obj', '=', 'list'], 1) ARRAY_GETITEM
+   81: line 31 ({'': []}, "", [], Mark, "obj") TOLOWER
+   82: line 31 ({'': []}, "", [], Mark, "obj") SV2: _tok
+   83: line 31 ({'': []}, "", [], Mark, "obj", SV2) @
+   84: line 31 ({'': []}, "", [], Mark, "obj", ['obj=list', 'obj', '=', 'list']) 2
+   85: line 31 ({'': []}, "", [], Mark, "obj", ['obj=list', 'obj', '=', 'list'], 2) ARRAY_GETITEM
+   86: line 31 ({'': []}, "", [], Mark, "obj", "=") }
+   87: line 31 ({'': []}, "", [], "obj", "=", 2) ARRAY_MAKE
+   88: line 31 ({'': []}, "", [], ['obj', '=']) SWAP
+   89: line 31 ({'': []}, "", ['obj', '='], []) ARRAY_APPENDITEM
+   90: line 31 ({'': [['obj', '=']]}, "", [['obj', '=']]) ROT
+   91: line 31 ("", [['obj', '=']], {'': [['obj', '=']]}) ROT
+   92: line 31 ([['obj', '=']], {'': [['obj', '=']]}, "") ARRAY_SETITEM
+   93: line 31 ({'': [['obj', '=']]}) LV7: argparse::posargs_map
+   94: line 31 ({'': [['obj', '=']]}, LV7) !
+   95: line 32 () SV2: _tok
+   96: line 32 (SV2) @
+   97: line 32 (['obj=list', 'obj', '=', 'list']) 3
+   98: line 32 (['obj=list', 'obj', '=', 'list'], 3) ARRAY_GETITEM
+   99: line 32 ("list") SV1: _posargs
+  100: line 32 ("list", SV1) !
+  101: line 25 () JMP: +14
+  115: line 38 () JMP: -80
+   35: line 23 () {
+   36: line 23 (Mark) SV1: _posargs
+   37: line 23 (Mark, SV1) @
+   38: line 23 (Mark, "list") "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
+   39: line 23 (Mark, "list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$") 1
+   40: line 23 (Mark, "list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$", 1) REGEXP
+   41: line 23 (Mark, [], []) }
+   42: line 23 ([], [], 2) ARRAY_MAKE
+   43: line 23 ([[], []]) 0
+   44: line 23 ([[], []], 0) ARRAY_GETITEM
+   45: line 24 ([]) SV2: _tok
+   46: line 24 ([], SV2) !
+   47: line 25 () SV2: _tok
+   48: line 25 (SV2) @
+   49: line 25 ([]) JmpIfFalse: +53
+  102: line 34 () SV1: _posargs
+  103: line 34 (SV1) @
+  104: line 34 ("list") TOLOWER
+  105: line 34 ("list") DUP
+  106: line 35 ("list", "list") LV8: argparse::remainder_map
+  107: line 35 ("list", "list", LV8) @
+  108: line 35 ("list", "list", {'': 'remainder'}) SV0: _mode
+  109: line 35 ("list", "list", {'': 'remainder'}, SV0) @
+  110: line 35 ("list", "list", {'': 'remainder'}, "") ARRAY_SETITEM
+  111: line 35 ("list", {'': 'list'}) LV8: argparse::remainder_map
+  112: line 35 ("list", {'': 'list'}, LV8) !
+  113: line 35 ("list") POP
+  114: line 36 () JMP: +2
+  116: line 39 () 0
+  117: line 40 (0) EXIT
+  220: line 63 (0) POP
+  221: line 64 () 0
+  222: line 65 (0) EXIT
+ 2168: line 514 (0) POP
+ 2169: line 515 () SV0: _arg
+ 2170: line 515 (SV0) @
+ 2171: line 515 ("") Addr:464
+ 2172: line 515 ("", Addr:464) EXECUTE
+  464: line 124 ("") Function: argparse::parse (1 vars)
+  465: line 127 () {
+  466: line 127 (Mark) }
+  467: line 127 (0) 2
+  468: line 127 (0, 2) /
+  469: line 127 (0) ARRAY_MAKE_DICT
+  470: line 127 ({}) SV4: _opts
+  471: line 127 ({}, SV4) !
+  472: line 128 () 0
+  473: line 128 (0) SV5: _mode_given
+  474: line 128 (0, SV5) !
+  475: line 130 () SV0: _line
+  476: line 130 (SV0) @
+  477: line 130 ("") "#"
+  478: line 130 ("", "#") STRINGPFX
+  479: line 131 (0) JmpIfFalse: +208
+  687: line 189 () SV5: _mode_given
+  688: line 189 (SV5) @
+  689: line 189 (0) 1
+  690: line 189 (0, 1) >
+  691: line 189 (0) JmpIfFalse: +13
+  704: line 194 () LV7: argparse::posargs_map
+  705: line 194 (LV7) @
+  706: line 194 ({'': [['obj', '=']]}) LV4: argparse::current_mode
+  707: line 194 ({'': [['obj', '=']]}, LV4) @
+  708: line 194 ({'': [['obj', '=']]}, "") ARRAY_GETITEM
+  709: line 194 ([['obj', '=']]) FOREACH
+  710: line 195 () __FORITER__
+  711: line 195 (0, ['obj', '='], 1) JmpIfFalse: +38
+  712: line 195 (0, ['obj', '=']) SV9: _posarg
+  713: line 195 (0, ['obj', '='], SV9) !
+  714: line 195 (0) POP
+  715: line 196 () {
+  716: line 196 (Mark) SV0: _line
+  717: line 196 (Mark, SV0) @
+  718: line 196 (Mark, "") SV9: _posarg
+  719: line 196 (Mark, "", SV9) @
+  720: line 196 (Mark, "", ['obj', '=']) 1
+  721: line 196 (Mark, "", ['obj', '='], 1) ARRAY_GETITEM
+  722: line 196 (Mark, "", "=") SPLIT
+  723: line 196 (Mark, "", "") }
+  724: line 196 ("", "", 2) ARRAY_MAKE
+  725: line 196 (['', '']) SV1: _parts
+  726: line 196 (['', ''], SV1) !
+  727: line 197 () SV1: _parts
+  728: line 197 (SV1) @
+  729: line 197 (['', '']) 0
+  730: line 197 (['', ''], 0) ARRAY_GETITEM
+  731: line 197 ("") DUP
+  732: line 197 ("", "") SV4: _opts
+  733: line 197 ("", "", SV4) @
+  734: line 197 ("", "", {}) SV9: _posarg
+  735: line 197 ("", "", {}, SV9) @
+  736: line 197 ("", "", {}, ['obj', '=']) 0
+  737: line 197 ("", "", {}, ['obj', '='], 0) ARRAY_GETITEM
+  738: line 197 ("", "", {}, "obj") ARRAY_SETITEM
+  739: line 197 ("", {'obj': ''}) SV4: _opts
+  740: line 197 ("", {'obj': ''}, SV4) !
+  741: line 197 ("") POP
+  742: line 198 () SV1: _parts
+  743: line 198 (SV1) @
+  744: line 198 (['', '']) 1
+  745: line 198 (['', ''], 1) ARRAY_GETITEM
+  746: line 198 ("") SV0: _line
+  747: line 198 ("", SV0) !
+  748: line 199 () JMP: -38
+  710: line 195 () __FORITER__
+  711: line 195 (0) JmpIfFalse: +38
+  749: line 194 () __FORPOP__
+  750: line 200 () SV0: _line
+  751: line 200 (SV0) @
+  752: line 200 ("") DUP
+  753: line 201 ("", "") SV4: _opts
+  754: line 201 ("", "", SV4) @
+  755: line 201 ("", "", {'obj': ''}) LV8: argparse::remainder_map
+  756: line 201 ("", "", {'obj': ''}, LV8) @
+  757: line 201 ("", "", {'obj': ''}, {'': 'list'}) LV4: argparse::current_mode
+  758: line 201 ("", "", {'obj': ''}, {'': 'list'}, LV4) @
+  759: line 201 ("", "", {'obj': ''}, {'': 'list'}, "") ARRAY_GETITEM
+  760: line 201 ("", "", {'obj': ''}, "list") ARRAY_SETITEM
+  761: line 201 ("", {'list': '', 'obj': ''}) SV4: _opts
+  762: line 201 ("", {'list': '', 'obj': ''}, SV4) !
+  763: line 201 ("") POP
+  764: line 202 () LV4: argparse::current_mode
+  765: line 202 (LV4) @
+  766: line 202 ("") DUP
+  767: line 202 ("", "") SV4: _opts
+  768: line 202 ("", "", SV4) @
+  769: line 202 ("", "", {'list': '', 'obj': ''}) "mode"
+  770: line 202 ("", "", {'list': '', 'obj': ''}, "mode") ARRAY_SETITEM
+  771: line 202 ("", {'list': '', 'obj': '', 'mode': ''}) SV4: _opts
+  772: line 202 ("", {'list': '', 'obj': '', 'mode': ''}, SV4) !
+  773: line 202 ("") POP
+  774: line 203 () SV4: _opts
+  775: line 203 (SV4) @
+  776: line 204 ({'list': '', 'obj': '', 'mode': ''}) EXIT
+ 2173: line 515 ({'list': '', 'obj': '', 'mode': ''}) SV1: _opts
+ 2174: line 515 ({'list': '', 'obj': '', 'mode': ''}, SV1) !
+ 2175: line 516 () SV1: _opts
+ 2176: line 516 (SV1) @
+ 2177: line 516 ({'list': '', 'obj': '', 'mode': ''}) NOT
+ 2178: line 516 (0) JmpIfFalse: +3
+ 2181: line 517 () SV1: _opts
+ 2182: line 517 (SV1) @
+ 2183: line 517 ({'list': '', 'obj': '', 'mode': ''}) "obj"
+ 2184: line 517 ({'list': '', 'obj': '', 'mode': ''}, "obj") ARRAY_GETITEM
+ 2185: line 517 ("") NOT
+ 2186: line 518 (1) DUP
+ 2187: line 518 (1, 1) NOT
+ 2188: line 518 (1, 0) JmpIfFalse: +7
+ 2195: line 518 (1) JmpIfFalse: +6
+ 2196: line 519 () Addr:334
+ 2197: line 519 (Addr:334) EXECUTE
+  334: line 100 () Function: argparse::show_usage (0 vars)
+  335: line 103 () TRIG
+  336: line 103 (#3) NAME
+  337: line 103 ("test") ";"
+  338: line 103 ("test", ";") SPLIT
+  339: line 103 ("test", "") POP
+  340: line 103 ("test") STRIPLEAD
+  341: line 103 ("test") STRIPTAIL
+  342: line 103 ("test") SV0: _cmd
+  343: line 103 ("test", SV0) !
+  344: line 104 () "Usage:"
+  345: line 104 ("Usage:") LV0: me
+  346: line 104 ("Usage:", LV0) @
+  347: line 104 ("Usage:", #5) SWAP
+  348: line 104 (#5, "Usage:") NOTIFY
 NOTIFY TO #5: Usage:
-  365: line 105 () LV5: argparse::modes_list
-  366: line 105 (LV5) @
-  367: line 105 (['']) FOREACH
-  368: line 106 () __FORITER__
-  369: line 106 (0, "", 1) JmpIfFalse: +108
-  370: line 106 (0, "") SV1: _mode
-  371: line 106 (0, "", SV1) !
-  372: line 106 (0) POP
-  373: line 107 () {
-  374: line 107 (Mark) }
-  375: line 107 (0) ARRAY_MAKE
-  376: line 107 ([]) LV6: argparse::flags_map
-  377: line 107 ([], LV6) @
-  378: line 107 ([], {'': []}) SV1: _mode
-  379: line 107 ([], {'': []}, SV1) @
-  380: line 107 ([], {'': []}, "") ARRAY_GETITEM
-  381: line 107 ([], []) FOREACH
-  382: line 108 ([]) __FORITER__
-  383: line 108 ([], 0) JmpIfFalse: +16
-  399: line 107 ([]) __FORPOP__
-  400: line 110 ([]) SV2: _flags
-  401: line 110 ([], SV2) !
-  402: line 111 () {
-  403: line 111 (Mark) }
-  404: line 111 (0) ARRAY_MAKE
-  405: line 111 ([]) LV7: argparse::posargs_map
-  406: line 111 ([], LV7) @
-  407: line 111 ([], {'': [['obj', '=']]}) SV1: _mode
-  408: line 111 ([], {'': [['obj', '=']]}, SV1) @
-  409: line 111 ([], {'': [['obj', '=']]}, "") ARRAY_GETITEM
-  410: line 111 ([], [['obj', '=']]) FOREACH
-  411: line 112 ([]) __FORITER__
-  412: line 112 ([], 0, ['obj', '='], 1) JmpIfFalse: +21
-  413: line 112 ([], 0, ['obj', '=']) SV5: _posarg
-  414: line 112 ([], 0, ['obj', '='], SV5) !
-  415: line 112 ([], 0) POP
-  416: line 113 ([]) {
-  417: line 113 ([], Mark) SV5: _posarg
-  418: line 113 ([], Mark, SV5) @
-  419: line 113 ([], Mark, ['obj', '=']) 0
-  420: line 113 ([], Mark, ['obj', '='], 0) ARRAY_GETITEM
-  421: line 113 ([], Mark, "obj") TOUPPER
-  422: line 113 ([], Mark, "OBJ") SV5: _posarg
-  423: line 113 ([], Mark, "OBJ", SV5) @
-  424: line 113 ([], Mark, "OBJ", ['obj', '=']) 1
-  425: line 113 ([], Mark, "OBJ", ['obj', '='], 1) ARRAY_GETITEM
-  426: line 113 ([], Mark, "OBJ", "=") }
-  427: line 113 ([], "OBJ", "=", 2) ARRAY_MAKE
-  428: line 113 ([], ['OBJ', '=']) ""
-  429: line 113 ([], ['OBJ', '='], "") ARRAY_JOIN
-  430: line 114 ([], "OBJ=") SWAP
-  431: line 114 ("OBJ=", []) ARRAY_APPENDITEM
-  432: line 115 (['OBJ=']) JMP: -21
-  411: line 112 (['OBJ=']) __FORITER__
-  412: line 112 (['OBJ='], 0) JmpIfFalse: +21
-  433: line 111 (['OBJ=']) __FORPOP__
-  434: line 115 (['OBJ=']) SV4: _posargs
-  435: line 115 (['OBJ='], SV4) !
-  436: line 116 () LV8: argparse::remainder_map
-  437: line 116 (LV8) @
-  438: line 116 ({'': 'list'}) SV1: _mode
-  439: line 116 ({'': 'list'}, SV1) @
-  440: line 116 ({'': 'list'}, "") ARRAY_GETITEM
-  441: line 116 ("list") TOUPPER
-  442: line 117 ("LIST") SV4: _posargs
-  443: line 117 ("LIST", SV4) @
-  444: line 117 ("LIST", ['OBJ=']) ""
-  445: line 117 ("LIST", ['OBJ='], "") ARRAY_JOIN
-  446: line 117 ("LIST", "OBJ=") SV2: _flags
-  447: line 117 ("LIST", "OBJ=", SV2) @
-  448: line 117 ("LIST", "OBJ=", []) JmpIfFalse: +3
-  451: line 117 ("LIST", "OBJ=") ""
-  452: line 118 ("LIST", "OBJ=", "") SV2: _flags
-  453: line 118 ("LIST", "OBJ=", "", SV2) @
-  454: line 118 ("LIST", "OBJ=", "", []) " "
-  455: line 118 ("LIST", "OBJ=", "", [], " ") ARRAY_JOIN
-  456: line 118 ("LIST", "OBJ=", "", "") SV1: _mode
-  457: line 118 ("LIST", "OBJ=", "", "", SV1) @
-  458: line 118 ("LIST", "OBJ=", "", "", "") SV1: _mode
-  459: line 118 ("LIST", "OBJ=", "", "", "", SV1) @
-  460: line 118 ("LIST", "OBJ=", "", "", "", "") JmpIfFalse: +3
-  463: line 118 ("LIST", "OBJ=", "", "", "") ""
-  464: line 119 ("LIST", "OBJ=", "", "", "", "") SV0: _cmd
-  465: line 119 ("LIST", "OBJ=", "", "", "", "", SV0) @
-  466: line 119 ("LIST", "OBJ=", "", "", "", "", "test") "%s %s%s %s%s%s%s"
-  467: line 119 ("LIST", "OBJ=", "", "", "", "", "test", "%s %s%s %s%s%s%s") FMTSTRING
-  468: line 119 ("test  OBJ=LIST") SV6: _line
-  469: line 119 ("test  OBJ=LIST", SV6) !
-  470: line 120 () SV6: _line
-  471: line 120 (SV6) @
-  472: line 120 ("test  OBJ=LIST") LV0: me
-  473: line 120 ("test  OBJ=LIST", LV0) @
-  474: line 120 ("test  OBJ=LIST", #5) SWAP
-  475: line 120 (#5, "test  OBJ=LIST") NOTIFY
+  349: line 105 () LV5: argparse::modes_list
+  350: line 105 (LV5) @
+  351: line 105 (['']) FOREACH
+  352: line 106 () __FORITER__
+  353: line 106 (0, "", 1) JmpIfFalse: +108
+  354: line 106 (0, "") SV1: _mode
+  355: line 106 (0, "", SV1) !
+  356: line 106 (0) POP
+  357: line 107 () {
+  358: line 107 (Mark) }
+  359: line 107 (0) ARRAY_MAKE
+  360: line 107 ([]) LV6: argparse::flags_map
+  361: line 107 ([], LV6) @
+  362: line 107 ([], {'': []}) SV1: _mode
+  363: line 107 ([], {'': []}, SV1) @
+  364: line 107 ([], {'': []}, "") ARRAY_GETITEM
+  365: line 107 ([], []) FOREACH
+  366: line 108 ([]) __FORITER__
+  367: line 108 ([], 0) JmpIfFalse: +16
+  383: line 107 ([]) __FORPOP__
+  384: line 110 ([]) SV2: _flags
+  385: line 110 ([], SV2) !
+  386: line 111 () {
+  387: line 111 (Mark) }
+  388: line 111 (0) ARRAY_MAKE
+  389: line 111 ([]) LV7: argparse::posargs_map
+  390: line 111 ([], LV7) @
+  391: line 111 ([], {'': [['obj', '=']]}) SV1: _mode
+  392: line 111 ([], {'': [['obj', '=']]}, SV1) @
+  393: line 111 ([], {'': [['obj', '=']]}, "") ARRAY_GETITEM
+  394: line 111 ([], [['obj', '=']]) FOREACH
+  395: line 112 ([]) __FORITER__
+  396: line 112 ([], 0, ['obj', '='], 1) JmpIfFalse: +21
+  397: line 112 ([], 0, ['obj', '=']) SV5: _posarg
+  398: line 112 ([], 0, ['obj', '='], SV5) !
+  399: line 112 ([], 0) POP
+  400: line 113 ([]) {
+  401: line 113 ([], Mark) SV5: _posarg
+  402: line 113 ([], Mark, SV5) @
+  403: line 113 ([], Mark, ['obj', '=']) 0
+  404: line 113 ([], Mark, ['obj', '='], 0) ARRAY_GETITEM
+  405: line 113 ([], Mark, "obj") TOUPPER
+  406: line 113 ([], Mark, "OBJ") SV5: _posarg
+  407: line 113 ([], Mark, "OBJ", SV5) @
+  408: line 113 ([], Mark, "OBJ", ['obj', '=']) 1
+  409: line 113 ([], Mark, "OBJ", ['obj', '='], 1) ARRAY_GETITEM
+  410: line 113 ([], Mark, "OBJ", "=") }
+  411: line 113 ([], "OBJ", "=", 2) ARRAY_MAKE
+  412: line 113 ([], ['OBJ', '=']) ""
+  413: line 113 ([], ['OBJ', '='], "") ARRAY_JOIN
+  414: line 114 ([], "OBJ=") SWAP
+  415: line 114 ("OBJ=", []) ARRAY_APPENDITEM
+  416: line 115 (['OBJ=']) JMP: -21
+  395: line 112 (['OBJ=']) __FORITER__
+  396: line 112 (['OBJ='], 0) JmpIfFalse: +21
+  417: line 111 (['OBJ=']) __FORPOP__
+  418: line 115 (['OBJ=']) SV4: _posargs
+  419: line 115 (['OBJ='], SV4) !
+  420: line 116 () LV8: argparse::remainder_map
+  421: line 116 (LV8) @
+  422: line 116 ({'': 'list'}) SV1: _mode
+  423: line 116 ({'': 'list'}, SV1) @
+  424: line 116 ({'': 'list'}, "") ARRAY_GETITEM
+  425: line 116 ("list") TOUPPER
+  426: line 117 ("LIST") SV4: _posargs
+  427: line 117 ("LIST", SV4) @
+  428: line 117 ("LIST", ['OBJ=']) ""
+  429: line 117 ("LIST", ['OBJ='], "") ARRAY_JOIN
+  430: line 117 ("LIST", "OBJ=") SV2: _flags
+  431: line 117 ("LIST", "OBJ=", SV2) @
+  432: line 117 ("LIST", "OBJ=", []) JmpIfFalse: +3
+  435: line 117 ("LIST", "OBJ=") ""
+  436: line 118 ("LIST", "OBJ=", "") SV2: _flags
+  437: line 118 ("LIST", "OBJ=", "", SV2) @
+  438: line 118 ("LIST", "OBJ=", "", []) " "
+  439: line 118 ("LIST", "OBJ=", "", [], " ") ARRAY_JOIN
+  440: line 118 ("LIST", "OBJ=", "", "") SV1: _mode
+  441: line 118 ("LIST", "OBJ=", "", "", SV1) @
+  442: line 118 ("LIST", "OBJ=", "", "", "") SV1: _mode
+  443: line 118 ("LIST", "OBJ=", "", "", "", SV1) @
+  444: line 118 ("LIST", "OBJ=", "", "", "", "") JmpIfFalse: +3
+  447: line 118 ("LIST", "OBJ=", "", "", "") ""
+  448: line 119 ("LIST", "OBJ=", "", "", "", "") SV0: _cmd
+  449: line 119 ("LIST", "OBJ=", "", "", "", "", SV0) @
+  450: line 119 ("LIST", "OBJ=", "", "", "", "", "test") "%s %s%s %s%s%s%s"
+  451: line 119 ("LIST", "OBJ=", "", "", "", "", "test", "%s %s%s %s%s%s%s") FMTSTRING
+  452: line 119 ("test  OBJ=LIST") SV6: _line
+  453: line 119 ("test  OBJ=LIST", SV6) !
+  454: line 120 () SV6: _line
+  455: line 120 (SV6) @
+  456: line 120 ("test  OBJ=LIST") LV0: me
+  457: line 120 ("test  OBJ=LIST", LV0) @
+  458: line 120 ("test  OBJ=LIST", #5) SWAP
+  459: line 120 (#5, "test  OBJ=LIST") NOTIFY
 NOTIFY TO #5: test  OBJ=LIST
-  476: line 121 () JMP: -108
-  368: line 106 () __FORITER__
-  369: line 106 (0) JmpIfFalse: +108
-  477: line 105 () __FORPOP__
-  478: line 122 () 0
-  479: line 123 (0) EXIT
- 2256: line 519 (0) POP
- 2257: line 520 () 0
- 2258: line 520 (0) EXIT
- 2400: line 549 (0) EXIT
- 2452: line 559 (0) EXIT
-Execution completed in 536 steps.
+  460: line 121 () JMP: -108
+  352: line 106 () __FORITER__
+  353: line 106 (0) JmpIfFalse: +108
+  461: line 105 () __FORPOP__
+  462: line 122 () 0
+  463: line 123 (0) EXIT
+ 2198: line 519 (0) POP
+ 2199: line 520 () 0
+ 2200: line 520 (0) EXIT
+ 2340: line 549 (0) EXIT
+ 2392: line 559 (0) EXIT
+Execution completed in 518 steps.

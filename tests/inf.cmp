@@ -1,13 +1,13 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: main
+    0: Function: main (0 vars)
     1: inf.0
     2: POP
     3: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main
+    0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") inf.0
     2: line 2 ("", inf) POP
     3: line 3 ("") EXIT

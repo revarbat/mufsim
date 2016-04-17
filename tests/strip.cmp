@@ -1,14 +1,14 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: main
+    0: Function: main (0 vars)
     1: " foo "
     2: STRIPLEAD
     3: STRIPTAIL
     4: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main
+    0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") " foo "
     2: line 2 ("", " foo ") STRIPLEAD
     3: line 2 ("", "foo ") STRIPTAIL

@@ -1,7 +1,7 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: main
+    0: Function: main (0 vars)
     1: #0
     2: "sex"
     3: "male"
@@ -15,7 +15,7 @@
    11: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main
+    0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") #0
     2: line 2 ("", #0) "sex"
     3: line 2 ("", #0, "sex") "male"

@@ -1,7 +1,7 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: main
+    0: Function: main (0 vars)
     1: "foo"
     2: "bar"
     3: STRCMP
@@ -29,7 +29,7 @@
    25: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main
+    0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") "foo"
     2: line 2 ("", "foo") "bar"
     3: line 2 ("", "foo", "bar") STRCMP

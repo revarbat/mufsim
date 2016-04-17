@@ -1,7 +1,7 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: main
+    0: Function: main (0 vars)
     1: "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it."
     2: SV0: msg
     3: !
@@ -45,7 +45,7 @@
    41: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main
+    0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it."
     2: line 2 ("", "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") SV0: msg
     3: line 2 ("", "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.", SV0) !

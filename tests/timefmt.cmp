@@ -1,14 +1,14 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: main
+    0: Function: main (0 vars)
     1: "%x %X %Z"
     2: 1460103025
     3: TIMEFMT
     4: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main
+    0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") "%x %X %Z"
     2: line 2 ("", "%x %X %Z") 1460103025
     3: line 2 ("", "%x %X %Z", 1460103025) TIMEFMT

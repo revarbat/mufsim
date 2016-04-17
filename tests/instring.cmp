@@ -1,7 +1,7 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: main
+    0: Function: main (0 vars)
     1: "abcde"
     2: "bcd"
     3: INSTRING
@@ -17,7 +17,7 @@
    13: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main
+    0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") "abcde"
     2: line 2 ("", "abcde") "bcd"
     3: line 2 ("", "abcde", "bcd") INSTRING

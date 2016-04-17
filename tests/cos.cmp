@@ -1,7 +1,7 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: main
+    0: Function: main (0 vars)
     1: PI
     2: COS
     3: POP
@@ -57,7 +57,7 @@
    53: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main
+    0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") PI
     2: line 2 ("", 3.14159265359) COS
     3: line 2 ("", -1.0) POP

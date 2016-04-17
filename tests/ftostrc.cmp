@@ -1,7 +1,7 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: main
+    0: Function: main (0 vars)
     1: 3.14
     2: FTOSTRC
     3: POP
@@ -17,7 +17,7 @@
    13: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main
+    0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") 3.14
     2: line 2 ("", 3.14) FTOSTRC
     3: line 2 ("", "3.14") POP

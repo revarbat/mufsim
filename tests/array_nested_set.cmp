@@ -1,7 +1,7 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: main
+    0: Function: main (0 vars)
     1: 8
     2: {
     3: "a"
@@ -25,7 +25,7 @@
    21: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main
+    0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") 8
     2: line 3 ("", 8) {
     3: line 3 ("", 8, Mark) "a"

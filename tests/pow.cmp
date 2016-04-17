@@ -1,7 +1,7 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: main
+    0: Function: main (0 vars)
     1: 625.0
     2: 0.25
     3: POW
@@ -21,7 +21,7 @@
    17: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main
+    0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") 625.0
     2: line 2 ("", 625.0) 0.25
     3: line 2 ("", 625.0, 0.25) POW

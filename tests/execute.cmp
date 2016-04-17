@@ -1,20 +1,20 @@
 #### Compiling MUF Code to Tokens #####################
 
 #### Showing Compiled Tokens ##########################
-    0: Function: foo
+    0: Function: foo (0 vars)
     1: 42
     2: EXIT
 
-    3: Function: main
+    3: Function: main (0 vars)
     4: Addr:0
     5: EXECUTE
     6: EXIT
 
 #### Executing Tokens #################################
-    3: line 2 ("") Function: main
+    3: line 2 ("") Function: main (0 vars)
     4: line 3 ("") Addr:0
     5: line 3 ("", Addr:0) EXECUTE
-    0: line 1 ("") Function: foo
+    0: line 1 ("") Function: foo (0 vars)
     1: line 1 ("") 42
     2: line 1 ("", 42) EXIT
     6: line 4 ("", 42) EXIT
