@@ -606,14 +606,21 @@ class InstJmpIfFalse(Instruction):
 
 
 class InstFunc(Instruction):
-    value = "Unknown"
+    funcname = "Unknown"
+    varcount = 0
 
-    def __init__(self, line, funcname):
-        self.value = funcname
+    def __init__(self, line, funcname, varcount):
+        self.funcname = funcname
+        self.varcount = varcount
         super(InstFunc, self).__init__(line)
 
+    def execute(self, fr):
+        fr.check_underflow(self.varcount)
+        for i in reversed(range(self.varcount)):
+            fr.funcvar_set(i, fr.data_pop())
+
     def __str__(self):
-        return "Function: %s" % self.value
+        return "Function: %s (%d vars)" % (self.funcname, self.varcount)
 
 
 @instr("execute")
@@ -1062,7 +1069,7 @@ class InstAbs(Instruction):
 class InstSign(Instruction):
     def execute(self, fr):
         a = fr.data_pop(int)
-        fr.data_push(cmp(a,0))
+        fr.data_push(cmp(a, 0))
 
 
 # TODO: Figure out a way to implement GETSEED
@@ -1074,7 +1081,7 @@ class InstSetSeed(Instruction):
 
 
 @instr("srand")
-class InstRandom(Instruction):
+class InstSRand(Instruction):
     def execute(self, fr):
         fr.data_push(random.randint(-(2**31-2), (2**31-2)))
 
@@ -1277,7 +1284,7 @@ class InstATan(Instruction):
 
 
 @instr("atan2")
-class InstATan(Instruction):
+class InstATan2(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
         x = fr.data_pop(float)
@@ -1377,7 +1384,7 @@ class InstXyzToPolar(Instruction):
 
 
 @instr("polar_to_xyz")
-class InstXyzToPolar(Instruction):
+class InstPolarToXyz(Instruction):
     def execute(self, fr):
         fr.check_underflow(3)
         p = fr.data_pop(float)
@@ -1432,7 +1439,8 @@ class InstRead(Instruction):
 @instr("tread")
 class InstTRead(Instruction):
     def execute(self, fr):
-        a = fr.data_pop(int)
+        # TODO: make real timed read.
+        fr.data_pop(int)
         print("Enter '@T' to fake a timeout.")
         txt = raw_input("TIMED READ>")
         if txt == "@T":
@@ -2806,7 +2814,7 @@ class InstEnvProp(Instruction):
 
 
 @instr("envpropstr")
-class InstEnvProp(Instruction):
+class InstEnvPropStr(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
         prop = fr.data_pop(str)
@@ -3338,6 +3346,7 @@ class MufStackFrame(object):
         self.all_func_vars = fvars
         self.global_var_names = gvars
         self.read_wants_blanks = False
+        self.matches = []
 
     def curr_inst(self):
         if not self.call_stack:
@@ -3645,7 +3654,7 @@ class MufStackFrame(object):
             funcinum = inum
             while funcinum > 0 and type(self.code[funcinum]) is not InstFunc:
                 funcinum -= 1
-            fun = self.code[funcinum].value
+            fun = self.code[funcinum].funcname
             return fun
         return None
 
@@ -3659,10 +3668,57 @@ class MufStackFrame(object):
             print("In function '%s', Line %d:" % (fun, inst.line))
             print("%s" % self.srclines[inst.line-1])
 
+    def complete(self, text, state):
+        cmds = [
+            'list ', 'quit', 'run', 'show ', 'next', 'step', 'break ',
+            'cont', 'finish', 'stack', 'trace', 'notrace', 'delete ',
+            'print ', 'pop', 'push ', 'rot', 'dup', 'swap', 'help'
+        ]
+        response = None
+
+        origline = readline.get_line_buffer()
+        begin = readline.get_begidx()
+        end = readline.get_endidx()
+        text = origline[begin:end]
+        words = origline.split(' ')
+
+        if state == 0:
+            # This is the first time for this text, so build a match list.
+            if begin == 0:
+                self.matches = [s for s in cmds if s and s.startswith(text)]
+            elif words[0] in ['l', 'list', 'b', 'break']:
+                self.matches = [
+                    x.funcname
+                    for x in self.code
+                    if type(x) is InstFunc and x.funcname.startswith(text)
+                ]
+            elif words[0] == 'show':
+                showcmds = ['breakpoints', 'functions', 'globals', 'vars']
+                self.matches = [x for x in showcmds if x.startswith(text)]
+            elif words[0] in ['p', 'print']:
+                addr = self.curr_addr()
+                fun = self.find_func(addr)
+                fvars = self.all_func_vars[fun]
+                gvars = self.global_var_names
+                self.matches = [
+                    x for x in (fvars + gvars) if x.startswith(text)
+                ]
+            else:
+                self.matches = cmds[:]
+
+        # Return the state'th item from the match list,
+        # if we have that many.
+        try:
+            response = self.matches[state]
+        except IndexError:
+            response = None
+        return response
+
     def debug_code(self, dotrace=False):
         breakpoints = []
         prevcmd = ""
         nextline = -1
+        readline.set_completer(self.complete)
         while True:
             if prevcmd:
                 cmd = raw_input("DEBUG>")
@@ -4055,11 +4111,8 @@ class MufCompiler(object):
                     raise MufCompileError("FunctionAlreadyDeclared")
                 self.funcname = funcname
                 subcode = []
-                subcode.append(InstFunc(line, funcname))
-                for i in reversed(range(len(self.function_vars))):
-                    vname = self.function_vars[i]
-                    subcode.append(InstFuncVar(line, i, vname))
-                    subcode.append(InstBang(line))
+                varcount = len(self.function_vars)
+                subcode.append(InstFunc(line, funcname, varcount))
                 self.declared_functions[funcname] = len(code)
                 self.lastfunction = StackAddress(len(code))
                 fcode, src = self.compile_r(src)
@@ -4472,6 +4525,17 @@ def main():
     args = parser.parse_args()
     if args.debug:
         args.run = True
+
+    history_file = os.path.expanduser("~/.mufsim_history")
+
+    try:
+        readline.read_history_file(history_file)
+    except:
+        pass
+    readline.set_history_length(1000)
+    readline.parse_and_bind('tab: complete')
+    readline.set_completer_delims(""" `~!@#$%^&*()-=+[{]}\|;'",<>/?""")
+
     infile = args.infile
     tmpfile = ""
     if args.muv:
@@ -4523,8 +4587,14 @@ def main():
                 else:
                     fr.execute_code(args.trace)
                     print("Execution completed in %d steps." % fr.cycles)
+
         if tmpfile:
             os.unlink(tmpfile)
+
+    try:
+        readline.write_history_file(history_file)
+    except:
+        pass
 
 if __name__ == "__main__":
     main()
