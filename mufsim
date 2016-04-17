@@ -4534,7 +4534,7 @@ def main():
         pass
     readline.set_history_length(1000)
     readline.parse_and_bind('tab: complete')
-    readline.set_completer_delims(""" `~!@#$%^&*()-=+[{]}\|;'",<>/?""")
+    readline.set_completer_delims(" ")
 
     infile = args.infile
     tmpfile = ""
