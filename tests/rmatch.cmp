@@ -1,0 +1,50 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: #1
+    2: "me"
+    3: RMATCH
+    4: POP
+    5: #1
+    6: "here"
+    7: RMATCH
+    8: POP
+    9: #1
+   10: "home"
+   11: RMATCH
+   12: POP
+   13: #1
+   14: "test"
+   15: RMATCH
+   16: POP
+   17: #1
+   18: "John_Doe"
+   19: RMATCH
+   20: POP
+   21: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") #1
+    2: line 2 ("", #1) "me"
+    3: line 2 ("", #1, "me") RMATCH
+    4: line 2 ("", #1) POP
+    5: line 3 ("") #1
+    6: line 3 ("", #1) "here"
+    7: line 3 ("", #1, "here") RMATCH
+    8: line 3 ("", #0) POP
+    9: line 4 ("") #1
+   10: line 4 ("", #1) "home"
+   11: line 4 ("", #1, "home") RMATCH
+   12: line 4 ("", #-3) POP
+   13: line 5 ("") #1
+   14: line 5 ("", #1) "test"
+   15: line 5 ("", #1, "test") RMATCH
+   16: line 5 ("", #4) POP
+   17: line 6 ("") #1
+   18: line 6 ("", #1) "John_Doe"
+   19: line 6 ("", #1, "John_Doe") RMATCH
+   20: line 6 ("", #-1) POP
+   21: line 7 ("") EXIT
+Execution completed in 22 steps.

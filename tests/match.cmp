@@ -44,7 +44,7 @@
     6: line 3 ("", #2) POP
     7: line 4 ("") "home"
     8: line 4 ("", "home") MATCH
-    9: line 4 ("", #2) POP
+    9: line 4 ("", #-3) POP
    10: line 5 ("") "*wizard"
    11: line 5 ("", "*wizard") MATCH
    12: line 5 ("", #1) POP

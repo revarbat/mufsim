@@ -12,10 +12,25 @@ import readline
 import argparse
 from subprocess import call
 
-EMULATED_VERSION = '"Muck2.2fb6.09"'
+EMULATED_VERSION = 'Muck2.2fb6.09'
 MAX_VARS = 54
 
 primitives = {}
+
+
+def escape_str(s):
+    out = ''
+    for ch in list(s):
+        if ch == "\r" or ch == "\n":
+            out += "\\r"
+        elif ch == "\033":
+            out += "\\["
+        elif ch == "\\":
+            out += "\\\\"
+        else:
+            out += ch
+    return '"%s"' % out
+
 
 builtin_defines = {
     '}array':          '} array_make',
@@ -73,8 +88,8 @@ builtin_defines = {
     'reg_extended':    '4',
 
     'version':         '__version',
-    '__version':       EMULATED_VERSION,
-    '__muckname':      '"MufSim"',
+    '__version':       escape_str(EMULATED_VERSION),
+    '__muckname':      escape_str("MufSim"),
     '__fuzzball__':    '1',
 
     'max_variable_count':       str(MAX_VARS),
@@ -89,7 +104,9 @@ builtin_defines = {
     'sorttype_shuffle':         '4',
 }
 
+# This is a deliberate deep copy.
 defines = dict(builtin_defines)
+
 player_names = {}
 
 objects_db = {}
@@ -508,20 +525,6 @@ def smatch(pat, txt):
     if pat.search(txt):
         return True
     return False
-
-
-def escape_str(s):
-    out = ''
-    for ch in list(s):
-        if ch == "\r" or ch == "\n":
-            out += "\\r"
-        elif ch == "\033":
-            out += "\\["
-        elif ch == "\\":
-            out += "\\\\"
-        else:
-            out += ch
-    return '"%s"' % out
 
 
 def item_repr(x):
@@ -2256,8 +2259,7 @@ class InstMatch(Instruction):
             # TODO: use user from stack frame
             obj = getobj(john_doe.location).dbref
         elif pat == "home":
-            # TODO: use user from stack frame
-            obj = getobj(john_doe.links[0]).dbref
+            obj = -3
         else:
             # TODO: use user from stack frame
             obj = match_from(john_doe, pat)
@@ -2279,13 +2281,12 @@ class InstRMatch(Instruction):
                 obj = player_names[nam]
         elif pat == "me":
             # TODO: use user from stack frame
-            obj = john_doe.dbref
+            obj = remote.dbref
         elif pat == "here":
             # TODO: use user from stack frame
-            obj = getobj(john_doe.location).dbref
+            obj = getobj(remote.location).dbref
         elif pat == "home":
-            # TODO: use user from stack frame
-            obj = getobj(john_doe.links[0]).dbref
+            obj = -3
         else:
             obj = match_from(remote, pat)
         fr.data_push(StackDBRef(obj))
