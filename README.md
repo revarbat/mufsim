@@ -14,15 +14,17 @@ Positional argument   | What it is.
 ----------------------|-----------------------------------------------
 infile                | Input MUF sourcecode filename.
 
-Optional argument     | What it does.
-----------------------|-----------------------------------------------
--h, --help            | Show help message and exit.
--m, --muv             | Use muv to compile from MUV sources.
--u, --uncompile       | Show compiled MUF tokens.
--r, --run             | Run compiled MUF tokens.
--t, --trace           | Show stacktrace for each instrution.
--d, --debug           | Run MUF program in interactive debugger.
--c COMMAND, --command | COMMAND Specify command to push onto the stack for run.
+Optional argument        | What it does.
+-------------------------|-----------------------------------------------
+-h, --help               | Show help message and exit.
+-m, --muv                | Use muv to compile from MUV sources.
+-u, --uncompile          | Show compiled MUF tokens.
+-r, --run                | Run compiled MUF tokens.
+-t, --trace              | Show stacktrace for each instrution.
+-d, --debug              | Run MUF program in interactive debugger.
+-c STR, --command STR    | Specify string to push onto the stack for run.
+-e TXT, --textentry TXT  | Text line to feed to READs. (multiple allowed)
+-f FILE, --textfile FILE | File of text lines to feed to READs.
 
 
 ## Interactive Debugger
