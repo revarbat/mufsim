@@ -2844,7 +2844,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   346: line 104 ("Usage:", LV0) @
   347: line 104 ("Usage:", #5) SWAP
   348: line 104 (#5, "Usage:") NOTIFY
-NOTIFY TO #5: Usage:
+NOTIFY: Usage:
   349: line 105 () LV5: argparse::modes_list
   350: line 105 (LV5) @
   351: line 105 (1[""]) FOREACH
@@ -2939,7 +2939,7 @@ NOTIFY TO #5: Usage:
   457: line 120 ("test  OBJ=LIST", LV0) @
   458: line 120 ("test  OBJ=LIST", #5) SWAP
   459: line 120 (#5, "test  OBJ=LIST") NOTIFY
-NOTIFY TO #5: test  OBJ=LIST
+NOTIFY: test  OBJ=LIST
   460: line 121 () JMP: -108
   352: line 106 () __FORITER__
   353: line 106 (0) JmpIfFalse: +108

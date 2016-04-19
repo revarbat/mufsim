@@ -26,6 +26,6 @@
     8: line 3 ("", #2, #5, #6) 2
     9: line 4 ("", #2, #5, #6, 2) "Foo."
    10: line 4 ("", #2, #5, #6, 2, "Foo.") NOTIFY_EXCLUDE
-NOTIFY TO ALL IN #2 EXCEPT [#6, #5]: Foo.
+NOTIFY TO ALL IN Main Room(#2) EXCEPT [Jane_Doe(#6), John_Doe(#5)]: Foo.
    11: line 5 ("") EXIT
 Execution completed in 12 steps.

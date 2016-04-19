@@ -36,8 +36,8 @@
    13: line 3 ("", 3[#5, #1, #6], Mark, "First line.", "Second line.", "Third line.") }
    14: line 3 ("", 3[#5, #1, #6], "First line.", "Second line.", "Third line.", 3) ARRAY_MAKE
    15: line 4 ("", 3[#5, #1, #6], 3["First line.", "Second line.", "Third line."]) ARRAY_NOTIFY
-NOTIFY TO [#5, #1, #6]: First line.
-NOTIFY TO [#5, #1, #6]: Second line.
-NOTIFY TO [#5, #1, #6]: Third line.
+NOTIFY TO [John_Doe(#5), Wizard(#1), Jane_Doe(#6)]: First line.
+NOTIFY TO [John_Doe(#5), Wizard(#1), Jane_Doe(#6)]: Second line.
+NOTIFY TO [John_Doe(#5), Wizard(#1), Jane_Doe(#6)]: Third line.
    16: line 5 ("") EXIT
 Execution completed in 17 steps.
