@@ -80,6 +80,7 @@ array_sort
 array_vals
 asin
 atan
+atan2
 atoi
 awake?
 begin
@@ -105,6 +106,7 @@ contents_array
 contime
 continue
 controls
+cos
 ctoi
 date
 dbcmp
@@ -123,7 +125,7 @@ descrmostidle
 descrtime
 dictionary?
 diff3
-dist3D
+dist3d
 dup
 dupn
 envprop
@@ -248,6 +250,7 @@ setprop
 setpropstr
 setseed
 sign
+sin
 smatch
 split
 sqrt
@@ -269,6 +272,7 @@ subst
 swap
 systime
 systime_precise
+tan
 textattr
 then
 thing?
