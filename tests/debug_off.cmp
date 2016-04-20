@@ -1,0 +1,16 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: DEBUG_OFF
+    2: POP
+    3: 0
+    4: POP
+    5: DEBUG_ON
+    6: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") DEBUG_OFF
+    6: line 5 () EXIT
+Execution completed in 7 steps.

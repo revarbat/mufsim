@@ -1,0 +1,84 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: CLEAR
+    2: "DIV_ZERO"
+    3: IS_SET?
+    4: POP
+    5: "FBOUNDS"
+    6: IS_SET?
+    7: POP
+    8: 1
+    9: 0
+   10: /
+   11: POP
+   12: 1
+   13: inf
+   14: /
+   15: POP
+   16: "DIV_ZERO"
+   17: IS_SET?
+   18: POP
+   19: "FBOUNDS"
+   20: IS_SET?
+   21: POP
+   22: "FBOUNDS"
+   23: CLEAR_ERROR
+   24: "DIV_ZERO"
+   25: IS_SET?
+   26: POP
+   27: "FBOUNDS"
+   28: IS_SET?
+   29: POP
+   30: "DIV_ZERO"
+   31: CLEAR_ERROR
+   32: "DIV_ZERO"
+   33: IS_SET?
+   34: POP
+   35: "FBOUNDS"
+   36: IS_SET?
+   37: POP
+   38: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") CLEAR
+    2: line 3 ("") "DIV_ZERO"
+    3: line 3 ("", "DIV_ZERO") IS_SET?
+    4: line 3 ("", 0) POP
+    5: line 4 ("") "FBOUNDS"
+    6: line 4 ("", "FBOUNDS") IS_SET?
+    7: line 4 ("", 0) POP
+    8: line 5 ("") 1
+    9: line 5 ("", 1) 0
+   10: line 5 ("", 1, 0) /
+   11: line 5 ("", 0) POP
+   12: line 6 ("") 1
+   13: line 6 ("", 1) inf
+   14: line 6 ("", 1, inf) /
+   15: line 6 ("", 0.0) POP
+   16: line 7 ("") "DIV_ZERO"
+   17: line 7 ("", "DIV_ZERO") IS_SET?
+   18: line 7 ("", 1) POP
+   19: line 8 ("") "FBOUNDS"
+   20: line 8 ("", "FBOUNDS") IS_SET?
+   21: line 8 ("", 1) POP
+   22: line 9 ("") "FBOUNDS"
+   23: line 9 ("", "FBOUNDS") CLEAR_ERROR
+   24: line 10 ("") "DIV_ZERO"
+   25: line 10 ("", "DIV_ZERO") IS_SET?
+   26: line 10 ("", 1) POP
+   27: line 11 ("") "FBOUNDS"
+   28: line 11 ("", "FBOUNDS") IS_SET?
+   29: line 11 ("", 0) POP
+   30: line 12 ("") "DIV_ZERO"
+   31: line 12 ("", "DIV_ZERO") CLEAR_ERROR
+   32: line 13 ("") "DIV_ZERO"
+   33: line 13 ("", "DIV_ZERO") IS_SET?
+   34: line 13 ("", 0) POP
+   35: line 14 ("") "FBOUNDS"
+   36: line 14 ("", "FBOUNDS") IS_SET?
+   37: line 14 ("", 0) POP
+   38: line 15 ("") EXIT
+Execution completed in 39 steps.

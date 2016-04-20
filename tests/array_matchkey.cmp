@@ -1,0 +1,42 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: {
+    2: "foo"
+    3: 3
+    4: "bar"
+    5: 8
+    6: "baz"
+    7: 2
+    8: "qux"
+    9: 9
+   10: }
+   11: 2
+   12: /
+   13: ARRAY_MAKE_DICT
+   14: "ba*"
+   15: ARRAY_MATCHKEY
+   16: POP
+   17: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") {
+    2: line 2 ("", Mark) "foo"
+    3: line 2 ("", Mark, "foo") 3
+    4: line 2 ("", Mark, "foo", 3) "bar"
+    5: line 2 ("", Mark, "foo", 3, "bar") 8
+    6: line 2 ("", Mark, "foo", 3, "bar", 8) "baz"
+    7: line 2 ("", Mark, "foo", 3, "bar", 8, "baz") 2
+    8: line 2 ("", Mark, "foo", 3, "bar", 8, "baz", 2) "qux"
+    9: line 2 ("", Mark, "foo", 3, "bar", 8, "baz", 2, "qux") 9
+   10: line 2 ("", Mark, "foo", 3, "bar", 8, "baz", 2, "qux", 9) }
+   11: line 2 ("", "foo", 3, "bar", 8, "baz", 2, "qux", 9, 8) 2
+   12: line 2 ("", "foo", 3, "bar", 8, "baz", 2, "qux", 9, 8, 2) /
+   13: line 2 ("", "foo", 3, "bar", 8, "baz", 2, "qux", 9, 4) ARRAY_MAKE_DICT
+   14: line 2 ("", 4{"bar": 8, "baz": 2, "foo": 3, "qux": 9}) "ba*"
+   15: line 2 ("", 4{"bar": 8, "baz": 2, "foo": 3, "qux": 9}, "ba*") ARRAY_MATCHKEY
+   16: line 2 ("", 2{"bar": 8, "baz": 2}) POP
+   17: line 3 ("") EXIT
+Execution completed in 18 steps.

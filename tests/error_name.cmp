@@ -1,0 +1,54 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: 0
+    2: ERROR_NUM
+    3: --
+    4: 1
+    5: FOR
+    6: __FORITER__
+    7: JmpIfFalse: +4
+    8: ERROR_NAME
+    9: POP
+   10: JMP: -4
+   11: __FORPOP__
+   12: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") 0
+    2: line 2 ("", 0) ERROR_NUM
+    3: line 2 ("", 0, 5) --
+    4: line 2 ("", 0, 4) 1
+    5: line 2 ("", 0, 4, 1) FOR
+    6: line 3 ("") __FORITER__
+    7: line 3 ("", 0, 1) JmpIfFalse: +4
+    8: line 3 ("", 0) ERROR_NAME
+    9: line 3 ("", "DIV_ZERO") POP
+   10: line 4 ("") JMP: -4
+    6: line 3 ("") __FORITER__
+    7: line 3 ("", 1, 1) JmpIfFalse: +4
+    8: line 3 ("", 1) ERROR_NAME
+    9: line 3 ("", "NAN") POP
+   10: line 4 ("") JMP: -4
+    6: line 3 ("") __FORITER__
+    7: line 3 ("", 2, 1) JmpIfFalse: +4
+    8: line 3 ("", 2) ERROR_NAME
+    9: line 3 ("", "IMAGINARY") POP
+   10: line 4 ("") JMP: -4
+    6: line 3 ("") __FORITER__
+    7: line 3 ("", 3, 1) JmpIfFalse: +4
+    8: line 3 ("", 3) ERROR_NAME
+    9: line 3 ("", "FBOUNDS") POP
+   10: line 4 ("") JMP: -4
+    6: line 3 ("") __FORITER__
+    7: line 3 ("", 4, 1) JmpIfFalse: +4
+    8: line 3 ("", 4) ERROR_NAME
+    9: line 3 ("", "IBOUNDS") POP
+   10: line 4 ("") JMP: -4
+    6: line 3 ("") __FORITER__
+    7: line 3 ("", 0) JmpIfFalse: +4
+   11: line 2 ("") __FORPOP__
+   12: line 5 ("") EXIT
+Execution completed in 35 steps.

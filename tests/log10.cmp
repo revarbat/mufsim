@@ -14,10 +14,16 @@
    10: 1e-06
    11: LOG10
    12: POP
-   13: 0.0
-   14: LOG10
+   13: "FBOUNDS"
+   14: IS_SET?
    15: POP
-   16: EXIT
+   16: 0.0
+   17: LOG10
+   18: POP
+   19: "FBOUNDS"
+   20: IS_SET?
+   21: POP
+   22: EXIT
 
 #### Executing Tokens #################################
     0: line 1 ("") Function: main (0 vars)
@@ -33,7 +39,14 @@
    10: line 5 ("") 1e-06
    11: line 5 ("", 1e-06) LOG10
    12: line 5 ("", -6.0) POP
-   13: line 6 ("") 0.0
-   14: line 6 ("", 0.0) LOG10
-Error in line 6 (LOG10): Math domain error.
-Execution completed in 15 steps.
+   13: line 6 ("") "FBOUNDS"
+   14: line 6 ("", "FBOUNDS") IS_SET?
+   15: line 6 ("", 0) POP
+   16: line 7 ("") 0.0
+   17: line 7 ("", 0.0) LOG10
+   18: line 7 ("", 0.0) POP
+   19: line 8 ("") "FBOUNDS"
+   20: line 8 ("", "FBOUNDS") IS_SET?
+   21: line 8 ("", 1) POP
+   22: line 9 ("") EXIT
+Execution completed in 23 steps.

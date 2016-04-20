@@ -1,0 +1,106 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: {
+    2: "a"
+    3: 3
+    4: "b"
+    5: 4
+    6: "c"
+    7: 5
+    8: }
+    9: 2
+   10: /
+   11: ARRAY_MAKE_DICT
+   12: {
+   13: "c"
+   14: 5
+   15: "b"
+   16: 4
+   17: "a"
+   18: 3
+   19: }
+   20: 2
+   21: /
+   22: ARRAY_MAKE_DICT
+   23: ARRAY_COMPARE
+   24: POP
+   25: {
+   26: "a"
+   27: 3
+   28: "b"
+   29: 4
+   30: "c"
+   31: 5
+   32: }
+   33: 2
+   34: /
+   35: ARRAY_MAKE_DICT
+   36: {
+   37: "c"
+   38: 5
+   39: "b"
+   40: 6
+   41: "a"
+   42: 3
+   43: }
+   44: 2
+   45: /
+   46: ARRAY_MAKE_DICT
+   47: ARRAY_COMPARE
+   48: POP
+   49: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") {
+    2: line 2 ("", Mark) "a"
+    3: line 2 ("", Mark, "a") 3
+    4: line 2 ("", Mark, "a", 3) "b"
+    5: line 2 ("", Mark, "a", 3, "b") 4
+    6: line 2 ("", Mark, "a", 3, "b", 4) "c"
+    7: line 2 ("", Mark, "a", 3, "b", 4, "c") 5
+    8: line 2 ("", Mark, "a", 3, "b", 4, "c", 5) }
+    9: line 2 ("", "a", 3, "b", 4, "c", 5, 6) 2
+   10: line 2 ("", "a", 3, "b", 4, "c", 5, 6, 2) /
+   11: line 2 ("", "a", 3, "b", 4, "c", 5, 3) ARRAY_MAKE_DICT
+   12: line 3 ("", 3{"a": 3, "b": 4, "c": 5}) {
+   13: line 3 ("", 3{"a": 3, "b": 4, "c": 5}, Mark) "c"
+   14: line 3 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c") 5
+   15: line 3 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c", 5) "b"
+   16: line 3 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c", 5, "b") 4
+   17: line 3 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c", 5, "b", 4) "a"
+   18: line 3 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c", 5, "b", 4, "a") 3
+   19: line 3 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c", 5, "b", 4, "a", 3) }
+   20: line 3 ("", 3{"a": 3, "b": 4, "c": 5}, "c", 5, "b", 4, "a", 3, 6) 2
+   21: line 3 ("", 3{"a": 3, "b": 4, "c": 5}, "c", 5, "b", 4, "a", 3, 6, 2) /
+   22: line 3 ("", 3{"a": 3, "b": 4, "c": 5}, "c", 5, "b", 4, "a", 3, 3) ARRAY_MAKE_DICT
+   23: line 4 ("", 3{"a": 3, "b": 4, "c": 5}, 3{"a": 3, "b": 4, "c": 5}) ARRAY_COMPARE
+   24: line 4 ("", 0) POP
+   25: line 5 ("") {
+   26: line 5 ("", Mark) "a"
+   27: line 5 ("", Mark, "a") 3
+   28: line 5 ("", Mark, "a", 3) "b"
+   29: line 5 ("", Mark, "a", 3, "b") 4
+   30: line 5 ("", Mark, "a", 3, "b", 4) "c"
+   31: line 5 ("", Mark, "a", 3, "b", 4, "c") 5
+   32: line 5 ("", Mark, "a", 3, "b", 4, "c", 5) }
+   33: line 5 ("", "a", 3, "b", 4, "c", 5, 6) 2
+   34: line 5 ("", "a", 3, "b", 4, "c", 5, 6, 2) /
+   35: line 5 ("", "a", 3, "b", 4, "c", 5, 3) ARRAY_MAKE_DICT
+   36: line 6 ("", 3{"a": 3, "b": 4, "c": 5}) {
+   37: line 6 ("", 3{"a": 3, "b": 4, "c": 5}, Mark) "c"
+   38: line 6 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c") 5
+   39: line 6 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c", 5) "b"
+   40: line 6 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c", 5, "b") 6
+   41: line 6 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c", 5, "b", 6) "a"
+   42: line 6 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c", 5, "b", 6, "a") 3
+   43: line 6 ("", 3{"a": 3, "b": 4, "c": 5}, Mark, "c", 5, "b", 6, "a", 3) }
+   44: line 6 ("", 3{"a": 3, "b": 4, "c": 5}, "c", 5, "b", 6, "a", 3, 6) 2
+   45: line 6 ("", 3{"a": 3, "b": 4, "c": 5}, "c", 5, "b", 6, "a", 3, 6, 2) /
+   46: line 6 ("", 3{"a": 3, "b": 4, "c": 5}, "c", 5, "b", 6, "a", 3, 3) ARRAY_MAKE_DICT
+   47: line 7 ("", 3{"a": 3, "b": 4, "c": 5}, 3{"a": 3, "b": 6, "c": 5}) ARRAY_COMPARE
+   48: line 7 ("", -1) POP
+   49: line 8 ("") EXIT
+Execution completed in 50 steps.

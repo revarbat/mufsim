@@ -1,34 +1,18 @@
     217 parseprop
-    109 ansi_strcut
-    101 clear
      97 locked?
      71 pid
-     71 online
-     62 descrcon
-     62 condbref
      59 kill
-     58 ansi_strlen
      54 setlockstr
      50 sysparm
      49 descriptors
-     49 concount
      47 checkargs
      42 stats
      40 timestamps
-     39 conidle
-     39 array_matchval
      32 descr
      31 recycle
      29 newexit
-     29 array_last
-     29 address?
      27 tokensplit
-     27 ansi_strip
-     25 localvar
      24 getlockstr
-     24 array_get_reflist
-     21 connotify
-     18 array_first
      17 gmtoffset
      17 fork
      17 array_get_propvals
@@ -36,13 +20,9 @@
      16 newobject
      16 ispid?
      16 gui_available
-     16 contime
-     16 conboot
      15 timesplit
      15 gui_dlog_show
-     14 ctoi
      13 queue
-     12 array_next
      11 strencrypt
      11 setown
      11 part_pmatch
@@ -50,25 +30,16 @@
      11 newroom
      11 compile
      10 strdecrypt
-     10 itoc
-     10 debug_off
-     10 conhost
      10 array_put_propvals
-      9 reflist_find
       9 gui_dlog_close
       9 copyobj
-      9 array_put_reflist
       8 gui_value_set
-      8 condescr
       8 array_sort_indexed
-      8 ansi_midstr
       7 prettylock
       7 descrflush
       7 descr_array
-      6 reflist_add
       6 gui_value_get
       6 array_get_propdirs
-      5 reflist_del
       5 program_getlines
       5 mcp_supports
       5 mcp_send
@@ -76,24 +47,18 @@
       5 ignoring?
       5 descr_setuser
       5 cancall?
-      5 array_matchkey
       4 gui_values_get
       4 event_send
       4 checkpassword
       3 unparselock
       3 timer_start
-      3 descr_idle
       3 array_fmtstrings
-      3 array_compare
       2 nextowned
-      2 name-ok?
       2 gui_dlog_create
       2 gui_ctrl_command
-      2 array_cut
       1 sysparm_array
       1 setsysparm
       1 program_setlines
-      1 pname-ok?
       1 nextdescr
       1 newprogram
       1 newpassword
@@ -101,6 +66,4 @@
       1 gui_ctrl_create
       1 firstdescr
       1 findnext
-      1 error_str
-      1 debug_line
       1 blessed?

@@ -1,0 +1,30 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: {
+    2: "foo"
+    3: "bar"
+    4: "baz"
+    5: "qux"
+    6: }
+    7: ARRAY_MAKE
+    8: "ba*"
+    9: ARRAY_MATCHVAL
+   10: POP
+   11: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") {
+    2: line 2 ("", Mark) "foo"
+    3: line 2 ("", Mark, "foo") "bar"
+    4: line 2 ("", Mark, "foo", "bar") "baz"
+    5: line 2 ("", Mark, "foo", "bar", "baz") "qux"
+    6: line 2 ("", Mark, "foo", "bar", "baz", "qux") }
+    7: line 2 ("", "foo", "bar", "baz", "qux", 4) ARRAY_MAKE
+    8: line 2 ("", 4["foo", "bar", "baz", "qux"]) "ba*"
+    9: line 2 ("", 4["foo", "bar", "baz", "qux"], "ba*") ARRAY_MATCHVAL
+   10: line 2 ("", 2{1: "bar", 2: "baz"}) POP
+   11: line 3 ("") EXIT
+Execution completed in 12 steps.

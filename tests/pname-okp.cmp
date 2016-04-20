@@ -1,0 +1,28 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: "Jack&Jill"
+    2: PNAME-OK?
+    3: POP
+    4: "Jack_Doe"
+    5: PNAME-OK?
+    6: POP
+    7: "Jack Doe"
+    8: PNAME-OK?
+    9: POP
+   10: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") "Jack&Jill"
+    2: line 2 ("", "Jack&Jill") PNAME-OK?
+    3: line 2 ("", 0) POP
+    4: line 3 ("") "Jack_Doe"
+    5: line 3 ("", "Jack_Doe") PNAME-OK?
+    6: line 3 ("", 1) POP
+    7: line 4 ("") "Jack Doe"
+    8: line 4 ("", "Jack Doe") PNAME-OK?
+    9: line 4 ("", 0) POP
+   10: line 5 ("") EXIT
+Execution completed in 11 steps.

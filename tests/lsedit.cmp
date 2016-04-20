@@ -2806,22 +2806,22 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
   768: line 202 ("", "", SV4) @
   769: line 202 ("", "", 2{"list": "", "obj": ""}) "mode"
   770: line 202 ("", "", 2{"list": "", "obj": ""}, "mode") ARRAY_SETITEM
-  771: line 202 ("", 3{"list": "", "obj": "", "mode": ""}) SV4: _opts
-  772: line 202 ("", 3{"list": "", "obj": "", "mode": ""}, SV4) !
+  771: line 202 ("", 3{"list": "", "mode": "", "obj": ""}) SV4: _opts
+  772: line 202 ("", 3{"list": "", "mode": "", "obj": ""}, SV4) !
   773: line 202 ("") POP
   774: line 203 () SV4: _opts
   775: line 203 (SV4) @
-  776: line 204 (3{"list": "", "obj": "", "mode": ""}) EXIT
- 2173: line 515 (3{"list": "", "obj": "", "mode": ""}) SV1: _opts
- 2174: line 515 (3{"list": "", "obj": "", "mode": ""}, SV1) !
+  776: line 204 (3{"list": "", "mode": "", "obj": ""}) EXIT
+ 2173: line 515 (3{"list": "", "mode": "", "obj": ""}) SV1: _opts
+ 2174: line 515 (3{"list": "", "mode": "", "obj": ""}, SV1) !
  2175: line 516 () SV1: _opts
  2176: line 516 (SV1) @
- 2177: line 516 (3{"list": "", "obj": "", "mode": ""}) NOT
+ 2177: line 516 (3{"list": "", "mode": "", "obj": ""}) NOT
  2178: line 516 (0) JmpIfFalse: +3
  2181: line 517 () SV1: _opts
  2182: line 517 (SV1) @
- 2183: line 517 (3{"list": "", "obj": "", "mode": ""}) "obj"
- 2184: line 517 (3{"list": "", "obj": "", "mode": ""}, "obj") ARRAY_GETITEM
+ 2183: line 517 (3{"list": "", "mode": "", "obj": ""}) "obj"
+ 2184: line 517 (3{"list": "", "mode": "", "obj": ""}, "obj") ARRAY_GETITEM
  2185: line 517 ("") NOT
  2186: line 518 (1) DUP
  2187: line 518 (1, 1) NOT

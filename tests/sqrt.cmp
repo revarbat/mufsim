@@ -4,19 +4,37 @@
     0: Function: main (0 vars)
     1: 25.0
     2: SQRT
-    3: 2.0
-    4: SQRT
-    5: -1.0
-    6: SQRT
-    7: EXIT
+    3: POP
+    4: 2.0
+    5: SQRT
+    6: POP
+    7: "IMAGINARY"
+    8: IS_SET?
+    9: POP
+   10: -1.0
+   11: SQRT
+   12: POP
+   13: "IMAGINARY"
+   14: IS_SET?
+   15: POP
+   16: EXIT
 
 #### Executing Tokens #################################
     0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") 25.0
     2: line 2 ("", 25.0) SQRT
-    3: line 3 ("", 5.0) 2.0
-    4: line 3 ("", 5.0, 2.0) SQRT
-    5: line 4 ("", 5.0, 1.41421356237) -1.0
-    6: line 4 ("", 5.0, 1.41421356237, -1.0) SQRT
-Error in line 4 (SQRT): Math domain error.
-Execution completed in 7 steps.
+    3: line 2 ("", 5.0) POP
+    4: line 3 ("") 2.0
+    5: line 3 ("", 2.0) SQRT
+    6: line 3 ("", 1.41421356237) POP
+    7: line 4 ("") "IMAGINARY"
+    8: line 4 ("", "IMAGINARY") IS_SET?
+    9: line 4 ("", 0) POP
+   10: line 5 ("") -1.0
+   11: line 5 ("", -1.0) SQRT
+   12: line 5 ("", 0) POP
+   13: line 6 ("") "IMAGINARY"
+   14: line 6 ("", "IMAGINARY") IS_SET?
+   15: line 6 ("", 1) POP
+   16: line 7 ("") EXIT
+Execution completed in 17 steps.

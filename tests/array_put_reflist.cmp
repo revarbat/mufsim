@@ -1,0 +1,35 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: POP
+    2: LV0: me
+    3: @
+    4: "refs"
+    5: {
+    6: LV0: me
+    7: @
+    8: PROG
+    9: TRIG
+   10: }
+   11: ARRAY_MAKE
+   12: ARRAY_PUT_REFLIST
+   13: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") POP
+    2: line 3 () LV0: me
+    3: line 3 (LV0) @
+    4: line 3 (#5) "refs"
+    5: line 3 (#5, "refs") {
+    6: line 3 (#5, "refs", Mark) LV0: me
+    7: line 3 (#5, "refs", Mark, LV0) @
+    8: line 3 (#5, "refs", Mark, #5) PROG
+    9: line 3 (#5, "refs", Mark, #5, #4) TRIG
+   10: line 3 (#5, "refs", Mark, #5, #4, #3) }
+   11: line 3 (#5, "refs", #5, #4, #3, 3) ARRAY_MAKE
+   12: line 3 (#5, "refs", 3[#5, #4, #3]) ARRAY_PUT_REFLIST
+SETPROP "refs" on #5 = "#5 #4 #3"
+   13: line 4 () EXIT
+Execution completed in 14 steps.

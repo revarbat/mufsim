@@ -1,0 +1,28 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: "Normal text."
+    2: ANSI_STRLEN
+    3: POP
+    4: "\[[1mBold\[[0m text."
+    5: ANSI_STRLEN
+    6: POP
+    7: "\[[31;43mColor\[[0m text."
+    8: ANSI_STRLEN
+    9: POP
+   10: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") "Normal text."
+    2: line 2 ("", "Normal text.") ANSI_STRLEN
+    3: line 2 ("", 12) POP
+    4: line 3 ("") "\[[1mBold\[[0m text."
+    5: line 3 ("", "\[[1mBold\[[0m text.") ANSI_STRLEN
+    6: line 3 ("", 10) POP
+    7: line 4 ("") "\[[31;43mColor\[[0m text."
+    8: line 4 ("", "\[[31;43mColor\[[0m text.") ANSI_STRLEN
+    9: line 4 ("", 11) POP
+   10: line 5 ("") EXIT
+Execution completed in 11 steps.

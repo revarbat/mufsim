@@ -1,0 +1,46 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: "Foolbar"
+    2: LV0: me
+    3: @
+    4: EXT-NAME-OK?
+    5: POP
+    6: "Foolbar"
+    7: TRIG
+    8: EXT-NAME-OK?
+    9: POP
+   10: "Foo bar"
+   11: LV0: me
+   12: @
+   13: EXT-NAME-OK?
+   14: POP
+   15: "Foo bar"
+   16: TRIG
+   17: EXT-NAME-OK?
+   18: POP
+   19: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") "Foolbar"
+    2: line 2 ("", "Foolbar") LV0: me
+    3: line 2 ("", "Foolbar", LV0) @
+    4: line 2 ("", "Foolbar", #5) EXT-NAME-OK?
+    5: line 2 ("", 1) POP
+    6: line 3 ("") "Foolbar"
+    7: line 3 ("", "Foolbar") TRIG
+    8: line 3 ("", "Foolbar", #3) EXT-NAME-OK?
+    9: line 3 ("", 1) POP
+   10: line 4 ("") "Foo bar"
+   11: line 4 ("", "Foo bar") LV0: me
+   12: line 4 ("", "Foo bar", LV0) @
+   13: line 4 ("", "Foo bar", #5) EXT-NAME-OK?
+   14: line 4 ("", 0) POP
+   15: line 5 ("") "Foo bar"
+   16: line 5 ("", "Foo bar") TRIG
+   17: line 5 ("", "Foo bar", #3) EXT-NAME-OK?
+   18: line 5 ("", 1) POP
+   19: line 6 ("") EXIT
+Execution completed in 20 steps.

@@ -1,0 +1,47 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: 0
+    2: CONCOUNT
+    3: --
+    4: 1
+    5: FOR
+    6: __FORITER__
+    7: JmpIfFalse: +4
+    8: "Foobar"
+    9: CONNOTIFY
+   10: JMP: -4
+   11: __FORPOP__
+   12: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") 0
+    2: line 2 ("", 0) CONCOUNT
+    3: line 2 ("", 0, 3) --
+    4: line 2 ("", 0, 2) 1
+    5: line 2 ("", 0, 2, 1) FOR
+    6: line 3 ("") __FORITER__
+    7: line 3 ("", 0, 1) JmpIfFalse: +4
+    8: line 3 ("", 0) "Foobar"
+    9: line 3 ("", 0, "Foobar") CONNOTIFY
+NOTIFY TO DESCR 3, USER Wizard(#1): Foobar
+   10: line 4 ("") JMP: -4
+    6: line 3 ("") __FORITER__
+    7: line 3 ("", 1, 1) JmpIfFalse: +4
+    8: line 3 ("", 1) "Foobar"
+    9: line 3 ("", 1, "Foobar") CONNOTIFY
+NOTIFY TO DESCR 11, USER John_Doe(#5): Foobar
+   10: line 4 ("") JMP: -4
+    6: line 3 ("") __FORITER__
+    7: line 3 ("", 2, 1) JmpIfFalse: +4
+    8: line 3 ("", 2) "Foobar"
+    9: line 3 ("", 2, "Foobar") CONNOTIFY
+NOTIFY TO DESCR 13, USER Jane_Doe(#6): Foobar
+   10: line 4 ("") JMP: -4
+    6: line 3 ("") __FORITER__
+    7: line 3 ("", 0) JmpIfFalse: +4
+   11: line 2 ("") __FORPOP__
+   12: line 5 ("") EXIT
+Execution completed in 25 steps.
