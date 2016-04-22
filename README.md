@@ -62,3 +62,65 @@ trace                 | Turn on tracing of each instr.
 notrace               | Turn off tracing if each instr.
 run COMMANDARG        | Re-run program, with COMMANDARG.
 
+
+## The Simulated MUCK Database
+A small database is simulated to be able to support various property and
+database related primitives.  This database is as follows:
+
+    Room: Global Environment Room(#0R)
+        Owner: Wizard(#1PWM3)
+        Properties:
+            _defs/.tell: "me @ swap notify"
+            _reg/cmd/test: #4
+
+    Player: Wizard(#1PWM3)
+        Location: Global Environment Room(#0R)
+        Home: Global Environment Room(#0R)
+        Descriptor: 3 (First online.)
+        Properties:
+            sex: "male"
+
+    Room: Main Room(#2R)
+        Owner: Wizard(#1PWM3)
+
+    Exit: test(#3E)
+        Owner: Wizard(#1PWM3)
+        Location: Main Room(#2R)
+        Linked to: cmd-test(#4FM3)
+
+    Program: cmd-test(#4FM3)
+        Owner: Wizard(#1PWM3)
+        Location: Wizard(#1PWM3)
+        Registered: $cmd/test
+
+    Player: John_Doe(#5PM3)
+        Location: Main Room(#2R)
+        Home: Main Room(#2R)
+        Descriptor: 11 (Second online.)
+        Properties:
+            sex: "male"
+            test#: 5
+            test#/1: "This is line one."
+            test#/2: "This is line two."
+            test#/3: "This is line three."
+            test#/4: "This is line four."
+            test#/5: "This is line five."
+            abc: "prop_abc"
+            abc/def: "prop_def"
+            abc/efg: "prop_efg"
+            abc/efg/hij: "prop_hij"
+            abc/efg/klm: "prop_klm"
+            abc/nop/qrs: "prop_qrs"
+            abc/nop/tuv: "prop_tuv"
+
+    Player: Jane_Doe(#6PM1)
+        Location: Main Room(#2R)
+        Home: Main Room(#2R)
+        Descriptor: 13 (Third online.)
+        Properties:
+            sex: "female"
+
+    Thing: My Thing(#7)
+        Location: Main Room(#2R)
+
+

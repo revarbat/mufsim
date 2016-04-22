@@ -24,3 +24,4 @@
     8: line 2 ("", "d", 3["a", "b", "c"]) ARRAY_APPENDITEM
     9: line 3 ("", 4["a", "b", "c", "d"]) EXIT
 Execution completed in 10 steps.
+

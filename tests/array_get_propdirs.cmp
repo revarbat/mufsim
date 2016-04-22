@@ -1,0 +1,43 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: LV0: me
+    2: @
+    3: "abc"
+    4: ARRAY_GET_PROPDIRS
+    5: POP
+    6: LV0: me
+    7: @
+    8: "abc/efg"
+    9: ARRAY_GET_PROPDIRS
+   10: POP
+   11: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") LV0: me
+    2: line 2 ("", LV0) @
+    3: line 2 ("", #5) "abc"
+    4: line 2 ("", #5, "abc") ARRAY_GET_PROPDIRS
+NEXTPROP "abc" on #5 = "abc/def"
+PROPDIR? "abc/def/" on #5 = False
+NEXTPROP "abc/def" on #5 = "abc/efg"
+PROPDIR? "abc/efg/" on #5 = True
+NEXTPROP "abc/efg" on #5 = "abc/nop"
+PROPDIR? "abc/nop/" on #5 = True
+NEXTPROP "abc/nop" on #5 = ""
+    5: line 2 ("", 2["abc/efg", "abc/nop"]) POP
+    6: line 3 ("") LV0: me
+    7: line 3 ("", LV0) @
+    8: line 3 ("", #5) "abc/efg"
+    9: line 3 ("", #5, "abc/efg") ARRAY_GET_PROPDIRS
+NEXTPROP "abc/efg" on #5 = "abc/efg/hij"
+PROPDIR? "abc/efg/hij/" on #5 = False
+NEXTPROP "abc/efg/hij" on #5 = "abc/efg/klm"
+PROPDIR? "abc/efg/klm/" on #5 = False
+NEXTPROP "abc/efg/klm" on #5 = ""
+   10: line 3 ("", 0[]) POP
+   11: line 4 ("") EXIT
+Execution completed in 12 steps.
+

@@ -1,0 +1,177 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: {
+    2: {
+    3: "name"
+    4: "John"
+    5: "age"
+    6: 23
+    7: }
+    8: 2
+    9: /
+   10: ARRAY_MAKE_DICT
+   11: {
+   12: "name"
+   13: "Jane"
+   14: "age"
+   15: 25
+   16: }
+   17: 2
+   18: /
+   19: ARRAY_MAKE_DICT
+   20: {
+   21: "name"
+   22: "Mary"
+   23: "age"
+   24: 37
+   25: }
+   26: 2
+   27: /
+   28: ARRAY_MAKE_DICT
+   29: {
+   30: "name"
+   31: "Raul"
+   32: "age"
+   33: 17
+   34: }
+   35: 2
+   36: /
+   37: ARRAY_MAKE_DICT
+   38: {
+   39: "name"
+   40: "Faun"
+   41: "age"
+   42: 26
+   43: }
+   44: 2
+   45: /
+   46: ARRAY_MAKE_DICT
+   47: {
+   48: "name"
+   49: "Mike"
+   50: "age"
+   51: 35
+   52: }
+   53: 2
+   54: /
+   55: ARRAY_MAKE_DICT
+   56: }
+   57: ARRAY_MAKE
+   58: SV0: items
+   59: !
+   60: SV0: items
+   61: @
+   62: 1
+   63: "age"
+   64: ARRAY_SORT_INDEXED
+   65: POP
+   66: SV0: items
+   67: @
+   68: 3
+   69: "age"
+   70: ARRAY_SORT_INDEXED
+   71: POP
+   72: SV0: items
+   73: @
+   74: 1
+   75: "name"
+   76: ARRAY_SORT_INDEXED
+   77: POP
+   78: SV0: items
+   79: @
+   80: 3
+   81: "name"
+   82: ARRAY_SORT_INDEXED
+   83: POP
+   84: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") {
+    2: line 3 ("", Mark) {
+    3: line 3 ("", Mark, Mark) "name"
+    4: line 3 ("", Mark, Mark, "name") "John"
+    5: line 3 ("", Mark, Mark, "name", "John") "age"
+    6: line 3 ("", Mark, Mark, "name", "John", "age") 23
+    7: line 3 ("", Mark, Mark, "name", "John", "age", 23) }
+    8: line 3 ("", Mark, "name", "John", "age", 23, 4) 2
+    9: line 3 ("", Mark, "name", "John", "age", 23, 4, 2) /
+   10: line 3 ("", Mark, "name", "John", "age", 23, 2) ARRAY_MAKE_DICT
+   11: line 4 ("", Mark, 2{"age": 23, "name": "John"}) {
+   12: line 4 ("", Mark, 2{"age": 23, "name": "John"}, Mark) "name"
+   13: line 4 ("", Mark, 2{"age": 23, "name": "John"}, Mark, "name") "Jane"
+   14: line 4 ("", Mark, 2{"age": 23, "name": "John"}, Mark, "name", "Jane") "age"
+   15: line 4 ("", Mark, 2{"age": 23, "name": "John"}, Mark, "name", "Jane", "age") 25
+   16: line 4 ("", Mark, 2{"age": 23, "name": "John"}, Mark, "name", "Jane", "age", 25) }
+   17: line 4 ("", Mark, 2{"age": 23, "name": "John"}, "name", "Jane", "age", 25, 4) 2
+   18: line 4 ("", Mark, 2{"age": 23, "name": "John"}, "name", "Jane", "age", 25, 4, 2) /
+   19: line 4 ("", Mark, 2{"age": 23, "name": "John"}, "name", "Jane", "age", 25, 2) ARRAY_MAKE_DICT
+   20: line 5 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}) {
+   21: line 5 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, Mark) "name"
+   22: line 5 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, Mark, "name") "Mary"
+   23: line 5 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, Mark, "name", "Mary") "age"
+   24: line 5 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, Mark, "name", "Mary", "age") 37
+   25: line 5 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, Mark, "name", "Mary", "age", 37) }
+   26: line 5 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, "name", "Mary", "age", 37, 4) 2
+   27: line 5 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, "name", "Mary", "age", 37, 4, 2) /
+   28: line 5 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, "name", "Mary", "age", 37, 2) ARRAY_MAKE_DICT
+   29: line 6 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}) {
+   30: line 6 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, Mark) "name"
+   31: line 6 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, Mark, "name") "Raul"
+   32: line 6 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, Mark, "name", "Raul") "age"
+   33: line 6 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, Mark, "name", "Raul", "age") 17
+   34: line 6 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, Mark, "name", "Raul", "age", 17) }
+   35: line 6 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, "name", "Raul", "age", 17, 4) 2
+   36: line 6 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, "name", "Raul", "age", 17, 4, 2) /
+   37: line 6 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, "name", "Raul", "age", 17, 2) ARRAY_MAKE_DICT
+   38: line 7 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}) {
+   39: line 7 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, Mark) "name"
+   40: line 7 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, Mark, "name") "Faun"
+   41: line 7 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, Mark, "name", "Faun") "age"
+   42: line 7 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, Mark, "name", "Faun", "age") 26
+   43: line 7 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, Mark, "name", "Faun", "age", 26) }
+   44: line 7 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, "name", "Faun", "age", 26, 4) 2
+   45: line 7 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, "name", "Faun", "age", 26, 4, 2) /
+   46: line 7 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, "name", "Faun", "age", 26, 2) ARRAY_MAKE_DICT
+   47: line 8 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}) {
+   48: line 8 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, Mark) "name"
+   49: line 8 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, Mark, "name") "Mike"
+   50: line 8 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, Mark, "name", "Mike") "age"
+   51: line 8 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, Mark, "name", "Mike", "age") 35
+   52: line 8 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, Mark, "name", "Mike", "age", 35) }
+   53: line 8 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, "name", "Mike", "age", 35, 4) 2
+   54: line 8 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, "name", "Mike", "age", 35, 4, 2) /
+   55: line 8 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, "name", "Mike", "age", 35, 2) ARRAY_MAKE_DICT
+   56: line 9 ("", Mark, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}) }
+   57: line 9 ("", 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}, 6) ARRAY_MAKE
+   58: line 9 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}]) SV0: items
+   59: line 9 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}], SV0) !
+   60: line 10 ("") SV0: items
+   61: line 10 ("", SV0) @
+   62: line 10 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}]) 1
+   63: line 10 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}], 1) "age"
+   64: line 10 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}], 1, "age") ARRAY_SORT_INDEXED
+   65: line 10 ("", 6[2{"age": 17, "name": "Raul"}, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}, 2{"age": 37, "name": "Mary"}]) POP
+   66: line 11 ("") SV0: items
+   67: line 11 ("", SV0) @
+   68: line 11 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}]) 3
+   69: line 11 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}], 3) "age"
+   70: line 11 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}], 3, "age") ARRAY_SORT_INDEXED
+   71: line 11 ("", 6[2{"age": 37, "name": "Mary"}, 2{"age": 35, "name": "Mike"}, 2{"age": 26, "name": "Faun"}, 2{"age": 25, "name": "Jane"}, 2{"age": 23, "name": "John"}, 2{"age": 17, "name": "Raul"}]) POP
+   72: line 12 ("") SV0: items
+   73: line 12 ("", SV0) @
+   74: line 12 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}]) 1
+   75: line 12 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}], 1) "name"
+   76: line 12 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}], 1, "name") ARRAY_SORT_INDEXED
+   77: line 12 ("", 6[2{"age": 26, "name": "Faun"}, 2{"age": 25, "name": "Jane"}, 2{"age": 23, "name": "John"}, 2{"age": 37, "name": "Mary"}, 2{"age": 35, "name": "Mike"}, 2{"age": 17, "name": "Raul"}]) POP
+   78: line 13 ("") SV0: items
+   79: line 13 ("", SV0) @
+   80: line 13 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}]) 3
+   81: line 13 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}], 3) "name"
+   82: line 13 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}], 3, "name") ARRAY_SORT_INDEXED
+   83: line 13 ("", 6[2{"age": 17, "name": "Raul"}, 2{"age": 35, "name": "Mike"}, 2{"age": 37, "name": "Mary"}, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 26, "name": "Faun"}]) POP
+   84: line 14 ("") EXIT
+Execution completed in 85 steps.
+

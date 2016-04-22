@@ -1,0 +1,23 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: -1
+    2: DESCRFLUSH
+    3: DESCR
+    4: DESCRFLUSH
+    5: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") -1
+    2: line 2 ("", -1) DESCRFLUSH
+DESCRFLUSH 3, Wizard(#1)
+DESCRFLUSH 11, John_Doe(#5)
+DESCRFLUSH 13, Jane_Doe(#6)
+    3: line 3 ("") DESCR
+    4: line 3 ("", 11) DESCRFLUSH
+DESCRFLUSH 11, John_Doe(#5)
+    5: line 4 ("") EXIT
+Execution completed in 6 steps.
+

@@ -274,8 +274,8 @@ DELPROP "foo" on #5
    67: line 26 ("", #5, "foo") ENVPROP
 GETPROP "foo" on #5 = None
 GETPROP "foo" on #2 = None
-GETPROP "foo" on #0 = None
-   68: line 26 ("", 0) POP
+GETPROP "foo" on #0 = "C"
+   68: line 26 ("", "C") POP
    69: line 27 ("") JMP: -20
    49: line 18 ("") __FORITER__
    50: line 18 ("", 1, 1, 1) JmpIfFalse: +20
@@ -369,3 +369,4 @@ GETPROP "foo" on #5 = "A"
    74: line 2 ("") __FORPOP__
    75: line 30 ("") EXIT
 Execution completed in 261 steps.
+

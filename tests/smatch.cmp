@@ -26,3 +26,4 @@
     9: line 4 ("", 1, 1, "foo bar", "*c*") SMATCH
    10: line 5 ("", 1, 1, 0) EXIT
 Execution completed in 11 steps.
+

@@ -14,3 +14,4 @@
     3: line 2 ("", "foo", "bar") STRCAT
     4: line 3 ("", "foobar") EXIT
 Execution completed in 5 steps.
+

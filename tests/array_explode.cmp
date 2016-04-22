@@ -36,3 +36,4 @@
    14: line 8 ("", 4{"bar": 8, "baz": 5, "foo": 9, "qux": 2}) ARRAY_EXPLODE
    15: line 9 ("", "qux", 2, "foo", 9, "baz", 5, "bar", 8, 4) EXIT
 Execution completed in 16 steps.
+

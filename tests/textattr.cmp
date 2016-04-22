@@ -32,3 +32,4 @@
    12: line 4 ("", "\[[1;31;42mFoobar\[[0m") POP
    13: line 5 ("") EXIT
 Execution completed in 14 steps.
+

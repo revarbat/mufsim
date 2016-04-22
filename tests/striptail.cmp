@@ -12,3 +12,4 @@
     2: line 2 ("", " foo ") STRIPTAIL
     3: line 3 ("", " foo") EXIT
 Execution completed in 4 steps.
+

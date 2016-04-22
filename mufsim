@@ -8,8 +8,8 @@ import sys
 import time
 import math
 import random
-import readline
 import argparse
+import readline
 from subprocess import call
 
 EMULATED_VERSION = 'Muck2.2fb6.09'
@@ -255,13 +255,15 @@ class DBObject(object):
             print("GETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
         return val
 
-    def setprop(self, prop, val):
+    def setprop(self, prop, val, suppress=False):
         prop = self.normalize_prop(prop)
         self.properties[prop] = val
-        if type(val) is str:
-            print("SETPROP \"%s\" on #%d = \"%s\"" % (prop, self.dbref, val))
-        else:
-            print("SETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
+        if not suppress:
+            if type(val) is str:
+                print("SETPROP \"%s\" on #%d = \"%s\"" %
+                      (prop, self.dbref, val))
+            else:
+                print("SETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
 
     def delprop(self, prop):
         prop = self.normalize_prop(prop)
@@ -357,6 +359,23 @@ def getobj(obj):
     return objects_db[obj]
 
 
+def get_content_objects(obj):
+    return [getobj(x) for x in getobj(obj).contents]
+
+
+def get_action_objects(obj):
+    return [getobj(x) for x in getobj(obj).exits]
+
+
+def get_env_objects(obj):
+    obj = getobj(obj)
+    if not validobj(obj.location):
+        return [obj]
+    out = get_env_objects(obj.location)
+    out.insert(0, obj)
+    return out
+
+
 def ok_name(s):
     return (
         s and
@@ -384,40 +403,107 @@ def ok_player_name(s):
     )
 
 
-def match_from(remote, pat):
-    targ = remote
-    while targ:
-        for exit in targ.exits:
-            exit = getobj(exit)
-            for part in exit.name.lower().split(';'):
-                part = part.strip()
-                if pat == part:
-                    return exit.dbref
-        if targ.location < 0:
-            break
-        targ = getobj(targ.location)
+def match_playername(pat):
+    if not pat.startswith("*"):
+        return -1
+    pat = pat[1:].strip().lower()
+    if pat not in player_names:
+        return -1
+    return player_names[pat]
+
+
+def match_dbref(pat):
+    if not pat.startswith("#"):
+        return -1
+    if not is_int(pat[1:]):
+        return -1
+    return int(pat[1:])
+
+
+def match_registered(remote, pat):
+    if not pat.startswith("$"):
+        return -1
     obj = -1
-    targ = remote
-    while targ:
-        for item in targ.contents:
-            item = getobj(item)
-            # TODO: use word start matches.
-            if pat in item.name.lower():
-                if obj == -1:
-                    obj = item.dbref
-                else:
-                    obj = -2
-        if obj != -1:
-            break
-        if targ.location < 0:
-            break
-        targ = getobj(targ.location)
+    for targ in get_env_objects(remote):
+        val = targ.getprop("_reg/" + pat[1:])
+        if val:
+            if type(val) is StackDBRef:
+                val = val.value
+            elif type(val) is str and val[0] == '#':
+                val = int(val[1:])
+            if type(val) is int:
+                val = val
+            if validobj(val):
+                obj = val
+                break
     return obj
+
+
+def match_exits_on(remote, pat):
+    for exit in get_action_objects(remote):
+        for part in exit.name.lower().split(';'):
+            part = part.strip()
+            if pat == part:
+                return exit.dbref
+    return -1
+
+
+def match_env_exits(remote, pat):
+    for targ in get_env_objects(remote):
+        obj = match_exits_on(targ, pat)
+        if obj != -1:
+            return obj
+    return -1
+
+
+def match_content_exits(remote, pat):
+    for targ in get_content_objects(remote):
+        if targ.objtype == "thing":
+            obj = match_exits_on(targ, pat)
+            if obj != -1:
+                return obj
+    return -1
+
+
+def match_contents(remote, pat):
+    obj = -1
+    for item in get_content_objects(remote):
+        # TODO: use word start matches.
+        if pat in item.name.lower():
+            if obj == -1:
+                obj = item.dbref
+            else:
+                return -2
+    return obj
+
+
+def match_from(remote, pat):
+    pat = pat.strip()
+    obj = match_dbref(pat)
+    if obj == -1:
+        obj = match_registered(remote, pat)
+    if obj == -1:
+        obj = match_playername(pat)
+    if obj == -1:
+        obj = match_content_exits(remote, pat)
+    if obj == -1:
+        obj = match_content_exits(getobj(remote).location, pat)
+    if obj == -1:
+        obj = match_env_exits(remote, pat)
+    if obj == -1:
+        obj = match_contents(remote, pat)
+    if obj == -1:
+        obj = match_contents(getobj(remote).location, pat)
+    return obj
+
 
 global_env = DBObject(
     name="Global Environment Room",
     objtype="room",
     owner=1,
+    props={
+        "_defs/.tell": "me @ swap notify",
+    },
 )
 
 
@@ -456,6 +542,8 @@ program_object = DBObject(
     location=wizard_player.dbref,
 )
 trigger_action.links.append(program_object.dbref)
+global_env.setprop("_reg/cmd/test", StackDBRef(program_object.dbref),
+                   suppress=True)
 
 
 john_doe = DBObject(
@@ -471,6 +559,13 @@ john_doe = DBObject(
         "test#/3": "This is line three.",
         "test#/4": "This is line four.",
         "test#/5": "This is line five.",
+        "abc": "prop_abc",
+        "abc/def": "prop_def",
+        "abc/efg": "prop_efg",
+        "abc/efg/hij": "prop_hij",
+        "abc/efg/klm": "prop_klm",
+        "abc/nop/qrs": "prop_qrs",
+        "abc/nop/tuv": "prop_tuv",
     },
 )
 
@@ -1736,10 +1831,9 @@ class InstTRead(Instruction):
 class InstUserLog(Instruction):
     def execute(self, fr):
         s = fr.data_pop(str)
-        # TODO: Use real info instead of hardcoded.
-        msg = "%s(#%d) [%s(#%d)] %s: %s\n" % (
-            john_doe.name, john_doe.dbref,
-            program_object.name, program_object.dbref,
+        msg = "%s [%s] %s: %s\n" % (
+            getobj(fr.user),
+            getobj(fr.program),
             time.strftime("%m/%d/%y %H/%M/%S"),
             s
         )
@@ -1971,14 +2065,14 @@ class InstNotify(Instruction):
 class InstArrayNotify(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
-        msgs = fr.data_pop(list)
         targs = fr.data_pop(list)
+        msgs = fr.data_pop(list)
         for targ in targs:
             if type(targ) is not StackDBRef:
-                raise MufRuntimeError("Expected list array of dbrefs. (1)")
+                raise MufRuntimeError("Expected list array of dbrefs. (2)")
         for msg in msgs:
             if type(msg) is not str:
-                raise MufRuntimeError("Expected list array of strings. (2)")
+                raise MufRuntimeError("Expected list array of strings. (1)")
             targs = [getobj(o) for o in targs]
             print("NOTIFY TO %s: %s" % (targs, msg))
 
@@ -2316,6 +2410,41 @@ class InstArrayNestedSet(Instruction):
         fr.data_push(arr)
 
 
+@instr("array_nested_del")
+class InstArrayNestedDel(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        keys = fr.data_pop(list)
+        arr = fr.data_pop(list, dict)
+        subarr = arr
+        keyslen = len(keys)
+        for keynum, key in enumerate(keys):
+            if type(subarr) is list:
+                if type(key) is not int:
+                    raise MufRuntimeError("List array expects integer index.")
+                elif key < 0 or key > len(subarr):
+                    raise MufRuntimeError("Index out of list array bounds.")
+                if keynum < keyslen - 1:
+                    if key == len(subarr):
+                        subarr[key] = {}
+                    subarr = subarr[key]
+                else:
+                    del subarr[key]
+            elif type(subarr) is dict:
+                if type(key) is not int and type(key) is not str:
+                    raise MufRuntimeError(
+                        "Dictionary array index must be integer or string.")
+                if keynum < keyslen - 1:
+                    if key not in subarr:
+                        subarr[key] = {}
+                    subarr = subarr[key]
+                else:
+                    del subarr[key]
+            elif keynum < keyslen - 1:
+                raise MufRuntimeError("Nested array not a list or dictionary.")
+        fr.data_push(arr)
+
+
 @instr("array_keys")
 class InstArrayKeys(Instruction):
     def execute(self, fr):
@@ -2506,6 +2635,31 @@ class InstArraySort(Instruction):
         fr.data_push(arr)
 
 
+@instr("array_sort_indexed")
+class InstArraySortIndexed(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        idx = fr.data_pop(int, str)
+        flags = fr.data_pop(int)
+        arr = fr.data_pop(list)[:]
+        nocase = flags & 1 != 0
+        dorev = flags & 2 != 0
+        doshuffle = flags & 4 != 0
+        if doshuffle:
+            random.shuffle(arr)
+        elif nocase:
+            arr = sorted(
+                arr, key=lambda x: x[idx],
+                cmp=sortcompi, reverse=dorev
+            )
+        else:
+            arr = sorted(
+                arr, key=lambda x: x[idx],
+                cmp=sortcomp, reverse=dorev
+            )
+        fr.data_push(arr)
+
+
 @instr("array_first")
 class InstArrayFirst(Instruction):
     def execute(self, fr):
@@ -2604,6 +2758,19 @@ class InstTime(Instruction):
         fr.data_push(int(when.tm_hour))
 
 
+@instr("gmtoffset")
+class InstGmtOffset(Instruction):
+    def execute(self, fr):
+        fr.data_push(-time.timezone)
+
+
+@instr("force_level")
+class InstForceLevel(Instruction):
+    def execute(self, fr):
+        # TODO: use real force level.
+        fr.data_push(0)
+
+
 @instr("timefmt")
 class InstTimeFmt(Instruction):
     def execute(self, fr):
@@ -2630,24 +2797,14 @@ class InstSysTimePrecise(Instruction):
 class InstMatch(Instruction):
     def execute(self, fr):
         pat = fr.data_pop(str).lower()
-        obj = -1
-        if pat[0] == "#" and is_int(pat[1:]):
-            obj = int(pat[1:])
-        elif pat[0] == "*":
-            nam = pat[1:]
-            if nam in player_names:
-                obj = player_names[nam]
-        elif pat == "me":
-            # TODO: use user from stack frame
-            obj = john_doe.dbref
+        if pat == "me":
+            obj = getobj(fr.user).dbref
         elif pat == "here":
-            # TODO: use user from stack frame
-            obj = getobj(john_doe.location).dbref
+            obj = getobj(getobj(fr.user).location).dbref
         elif pat == "home":
             obj = -3
         else:
-            # TODO: use user from stack frame
-            obj = match_from(john_doe, pat)
+            obj = match_from(getobj(fr.user), pat)
         fr.data_push(StackDBRef(obj))
 
 
@@ -2657,19 +2814,10 @@ class InstRMatch(Instruction):
         fr.check_underflow(2)
         pat = fr.data_pop(str).lower()
         remote = fr.data_pop_object()
-        obj = -1
-        if pat[0] == "#" and is_int(pat[1:]):
-            obj = int(pat[1:])
-        elif pat[0] == "*":
-            nam = pat[1:]
-            if nam in player_names:
-                obj = player_names[nam]
-        elif pat == "me":
-            # TODO: use user from stack frame
-            obj = remote.dbref
+        if pat == "me":
+            obj = getobj(fr.user).dbref
         elif pat == "here":
-            # TODO: use user from stack frame
-            obj = getobj(remote.location).dbref
+            obj = getobj(getobj(fr.user).location).dbref
         elif pat == "home":
             obj = -3
         else:
@@ -2836,6 +2984,17 @@ class InstOwner(Instruction):
         fr.data_push(StackDBRef(obj.owner))
 
 
+@instr("setown")
+class InstSetOwn(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        newowner = fr.data_pop_object()
+        obj = fr.data_pop_object()
+        if newowner.objtype != "player":
+            raise MufRuntimeError("Expected player dbref.")
+        obj.owner = newowner.dbref
+
+
 @instr("contents")
 class InstContents(Instruction):
     def execute(self, fr):
@@ -2914,24 +3073,29 @@ class InstNext(Instruction):
             fr.data_push(StackDBRef(arr[idx + 1]))
 
 
+@instr("caller")
+class InstCaller(Instruction):
+    def execute(self, fr):
+        # TODO: return actual caller
+        fr.data_push(fr.trigger)
+
+
 @instr("prog")
 class InstProg(Instruction):
     def execute(self, fr):
         fr.data_push(fr.program)
 
 
-@instr("caller")
-class InstCaller(Instruction):
-    def execute(self, fr):
-        # TODO: return actual caller
-        fr.data_push(StackDBRef(trigger_action.dbref))
-
-
 @instr("trig")
 class InstTrig(Instruction):
     def execute(self, fr):
-        # TODO: return actual trigger
-        fr.data_push(StackDBRef(trigger_action.dbref))
+        fr.data_push(fr.trigger)
+
+
+@instr("cmd")
+class InstCmd(Instruction):
+    def execute(self, fr):
+        fr.data_push(fr.command)
 
 
 @instr("dbtop")
@@ -3087,19 +3251,17 @@ class InstAwakeP(Instruction):
 @instr("online")
 class InstOnline(Instruction):
     def execute(self, fr):
-        cnt = 0
-        for descr, who in descriptors.iteritems():
-            fr.data_push(StackDBRef(getobj(who).dbref))
-            cnt += 1
-        fr.data_push(cnt)
+        for descr in descriptors_list:
+            fr.data_push(StackDBRef(descriptors[descr]))
+        fr.data_push(len(descriptors_list))
 
 
 @instr("online_array")
 class InstOnlineArray(Instruction):
     def execute(self, fr):
         out = []
-        for descr, who in descriptors.iteritems():
-            out.append(StackDBRef(getobj(who).dbref))
+        for descr in descriptors_list:
+            out.append(StackDBRef(descriptors[descr]))
         fr.data_push(out)
 
 
@@ -3182,6 +3344,7 @@ class InstConBoot(Instruction):
 @instr("connotify")
 class InstConNotify(Instruction):
     def execute(self, fr):
+        fr.check_underflow(2)
         msg = fr.data_pop(str)
         con = fr.data_pop(int)
         if con >= 0 and con < len(descriptors_list):
@@ -3200,6 +3363,38 @@ class InstConDescr(Instruction):
             fr.data_push(descr)
         except:
             fr.data_push(-1)
+
+
+@instr("descriptors")
+class InstDescriptors(Instruction):
+    def execute(self, fr):
+        who = fr.data_pop_dbref()
+        if who.value == -1:
+            descrs = descriptors_list
+        else:
+            if getobj(who).objtype != "player":
+                raise MufRuntimeError("Expected #-1 or player dbref.")
+            descrs = [
+                d for d in descriptors_list if descriptors[d] == who.value
+            ]
+        for descr in descrs:
+            fr.data_push(descr)
+        fr.data_push(len(descrs))
+
+
+@instr("descr_array")
+class InstDescrArray(Instruction):
+    def execute(self, fr):
+        who = fr.data_pop_dbref()
+        if who.value == -1:
+            descrs = descriptors_list
+        else:
+            if getobj(who).objtype != "player":
+                raise MufRuntimeError("Expected #-1 or player dbref.")
+            descrs = [
+                d for d in descriptors_list if descriptors[d] == who.value
+            ]
+        fr.data_push(descrs)
 
 
 @instr("descrcon")
@@ -3221,6 +3416,142 @@ class InstDescrDBRef(Instruction):
             fr.data_push(StackDBRef(who))
         else:
             fr.data_push(StackDBRef(-1))
+
+
+@instr("descr_setuser")
+class InstDescrSetUser(Instruction):
+    def execute(self, fr):
+        pw = fr.data_pop(str)
+        who = fr.data_pop_object()
+        descr = fr.data_pop(int)
+        if descr in descriptors:
+            was = descriptors[descr]
+            descriptors[descr] = who.dbref
+            print("BOOTED DESCRIPTOR %d: %s" % (descr, getobj(was)))
+            # TODO: actually check password?
+            print("RECONNECTED DESCRIPTOR %d TO %s USING PW '%s'" %
+                  (descr, who, pw))
+
+
+@instr("descrboot")
+class InstDescrBoot(Instruction):
+    def execute(self, fr):
+        descr = fr.data_pop(int)
+        if descr in descriptors:
+            who = descriptors[descr]
+            descriptors_list.remove(descr)
+            del descriptors[descr]
+            print("BOOTED DESCRIPTOR %d: %s" % (descr, getobj(who)))
+
+
+@instr("descrnotify")
+class InstDescrNotify(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        msg = fr.data_pop(str)
+        descr = fr.data_pop(int)
+        if descr in descriptors:
+            who = descriptors[descr]
+            print("NOTIFY TO DESCR %d, %s: %s" %
+                  (descr, getobj(who), msg))
+
+
+@instr("descrflush")
+class InstDescrFlush(Instruction):
+    def execute(self, fr):
+        descr = fr.data_pop(int)
+        if descr == -1:
+            for descr in descriptors_list:
+                who = descriptors[descr]
+                print("DESCRFLUSH %d, %s" %
+                      (descr, getobj(who)))
+        elif descr in descriptors:
+            who = descriptors[descr]
+            print("DESCRFLUSH %d, %s" % (descr, getobj(who)))
+
+
+@instr("descr")
+class InstDescr(Instruction):
+    def execute(self, fr):
+        fr.data_push(getobj(fr.user).descr)
+
+
+@instr("firstdescr")
+class InstFirstDescr(Instruction):
+    def execute(self, fr):
+        who = fr.data_pop_dbref()
+        for descr in descriptors_list:
+            if who.value == -1 or descriptors[descr] == who.value:
+                fr.data_push(descr)
+                return
+        fr.data_push(0)
+
+
+@instr("lastdescr")
+class InstLastDescr(Instruction):
+    def execute(self, fr):
+        who = fr.data_pop_dbref()
+        for descr in reversed(descriptors_list):
+            if who.value == -1 or descriptors[descr] == who.value:
+                fr.data_push(descr)
+                return
+        fr.data_push(0)
+
+
+@instr("nextdescr")
+class InstNextDescr(Instruction):
+    def execute(self, fr):
+        descr = fr.data_pop(int)
+        if descr in descriptors:
+            pos = descriptors_list.index(descr) + 1
+            if pos >= len(descriptors_list):
+                fr.data_push(0)
+            else:
+                fr.data_push(descriptors_list[pos])
+        else:
+            fr.data_push(0)
+
+
+@instr("descrbufsize")
+class InstDescrBufSize(Instruction):
+    def execute(self, fr):
+        descr = fr.data_pop(int)
+        if descr in descriptors:
+            fr.data_push(4096)
+        else:
+            fr.data_push(0)
+
+
+@instr("descrsecure?")
+class InstDescrSecureP(Instruction):
+    def execute(self, fr):
+        descr = fr.data_pop(int)
+        if descr in descriptors:
+            who = descriptors[descr]
+            fr.data_push(who % 2)
+        else:
+            fr.data_push(0)
+
+
+@instr("descruser")
+class InstDescrUser(Instruction):
+    def execute(self, fr):
+        descr = fr.data_pop(int)
+        if descr in descriptors:
+            who = descriptors[descr]
+            fr.data_push(getobj(who).name)
+        else:
+            fr.data_push("")
+
+
+@instr("descrhost")
+class InstDescrHost(Instruction):
+    def execute(self, fr):
+        descr = fr.data_pop(int)
+        if descr in descriptors:
+            fr.data_push("host%d.remotedomain.com" % descr)
+        else:
+            fr.data_push("")
 
 
 @instr("descrtime")
@@ -3281,78 +3612,113 @@ class InstLocalVar(Instruction):
 @instr("fmtstring")
 class InstFmtString(Instruction):
     def execute(self, fr):
-        fmt = fr.data_pop(str)
-        out = ""
-        while fmt:
-            if fmt[0] != "%":
-                if "%" in fmt:
-                    pos = fmt.index("%")
-                    out += fmt[:pos]
-                    fmt = fmt[pos:]
-                else:
-                    out += fmt
-                    fmt = ""
-                continue
-            fmt = fmt[1:]
-            if fmt[0] == "%":
-                out += "%"
-                fmt = fmt[1:]
-                continue
-            fmt2 = ""
-            while fmt and not fmt[0].isalpha():
-                fmt2 += fmt[0]
-                fmt = fmt[1:]
-            if not fmt:
-                raise MufRuntimeError("Badly formed format string.")
-            fmt3 = fmt[0]
-            fmt = fmt[1:]
-            if fmt3 == "i":
+        def subfunc(matchobj):
+            fmt = matchobj.group(1)
+            ftyp = matchobj.group(3)
+            if ftyp == "%":
+                return "%"
+            elif ftyp == "i":
                 val = fr.data_pop(int)
-                fmt3 = "d"
-                out += ("%" + fmt2 + fmt3) % val
-            elif fmt3 == "e":
+                ftyp = "d"
+            elif ftyp.lower() in ["e", "f", "g"]:
                 val = fr.data_pop(float)
-                out += ("%" + fmt2 + fmt3) % val
-            elif fmt3 == "f":
-                val = fr.data_pop(float)
-                out += ("%" + fmt2 + fmt3) % val
-            elif fmt3 == "g":
-                val = fr.data_pop(float)
-                out += ("%" + fmt2 + fmt3) % val
-            elif fmt3 == "d":
-                val = fr.data_pop_dbref()
-                fmt3 = "s"
-                out += ("%" + fmt2 + fmt3) % str(val)
-            elif fmt3 == "D":
-                val = fr.data_pop_object()
-                fmt3 = "s"
-                out += ("%" + fmt2 + fmt3) % val.name
-            elif fmt3 == "s":
+            elif ftyp == "s":
                 val = fr.data_pop(str)
-                out += ("%" + fmt2 + fmt3) % val
-            elif fmt3 == "~":
+            elif ftyp == "D":
+                val = fr.data_pop_object().name
+                ftyp = "s"
+            elif ftyp == "d":
+                val = fr.data_pop_dbref()
+                ftyp = "s"
+            elif ftyp == "~":
+                val = item_repr(fr.data_pop())
+                ftyp = "s"
+            elif ftyp == "?":
                 val = fr.data_pop()
-                if type(val) is int:
-                    fmt3 = "d"
-                elif type(val) is float:
-                    fmt3 = "g"
-                elif type(val) is str:
-                    fmt3 = "s"
+                if type(val) in [int, float, str, list, dict]:
+                    val = str(type(val)).split("'")[1].title()
                 else:
-                    fmt3 = "s"
-                    val = str(val)
-                out += ("%" + fmt2 + fmt3) % val
-            elif fmt3 == "?":
-                val = fr.data_pop()
-                if type(val) is int:
-                    out += "Int"
-                elif type(val) is float:
-                    out += "Float"
-                elif type(val) is str:
-                    out += "String"
-                else:
-                    out += type(val)[5:]
+                    val = str(type(val)).split("'")[1].split(".")[1][5:]
+                ftyp = "s"
+            else:
+                return ""
+            while '*' in fmt:
+                pre, post = fmt.split('*', 1)
+                x = fr.data_pop(int)
+                fmt = pre + str(x) + post
+            fmt = fmt.replace('|', '^')
+            fmt = fmt + ftyp
+            return fmt % val
+
+        fmt = fr.data_pop(str)
+        out = re.sub(
+            r'(%[| 0+-]*[0-9]*(\.[0-9]*)?)([idDefgEFGsl%?~])',
+            subfunc, fmt
+        )
         fr.data_push(out)
+
+
+@instr("array_fmtstrings")
+class InstArrayFmtStrings(Instruction):
+    def execute(self, fr):
+        def subfunc(matchobj):
+            fmt = matchobj.group(1)
+            key = matchobj.group(3)
+            ftyp = matchobj.group(4)
+            if ftyp == "%":
+                return "%"
+            elif ftyp == "i":
+                val = d.get(key, 0)
+                if type(val) is not int:
+                    raise MufRuntimeError("Expected integer.")
+                ftyp = "d"
+            elif ftyp.lower() in ["e", "f", "g"]:
+                val = d.get(key, 0.0)
+                if type(val) is not float:
+                    raise MufRuntimeError("Expected float.")
+            elif ftyp == "s":
+                val = d.get(key, '')
+                if type(val) is not str:
+                    raise MufRuntimeError("Expected string.")
+            elif ftyp == "D":
+                val = d.get(key, StackDBRef(-1))
+                if type(val) is not StackDBRef:
+                    raise MufRuntimeError("Expected dbref.")
+                val = getobj(val).name
+                ftyp = "s"
+            elif ftyp == "d":
+                val = d.get(key, StackDBRef(-1))
+                if type(val) is not StackDBRef:
+                    raise MufRuntimeError("Expected dbref.")
+                ftyp = "s"
+            elif ftyp == "~":
+                val = d.get(key, 0)
+                ftyp = "s"
+            elif ftyp == "?":
+                val = d.get(key, 0)
+                if type(val) in [int, float, str, list, dict]:
+                    val = str(type(val)).split("'")[1].title()
+                else:
+                    val = str(type(val)).split("'")[1].split(".")[1][5:]
+                ftyp = "s"
+            else:
+                return ""
+            fmt = fmt.replace('|', '^')
+            fmt = fmt + ftyp
+            return fmt % val
+
+        fmt = fr.data_pop(str)
+        arr = fr.data_pop(list)
+        outarr = []
+        for d in arr:
+            if type(d) is not dict:
+                raise MufRuntimeError("Expected list of dictionaries.")
+            out = re.sub(
+                r'(%[| 0+-]*[0-9]*(\.[0-9]*)?)\[([^]]+)\]([idDefgEFGsl%?~])',
+                subfunc, fmt
+            )
+            outarr.append(out)
+        fr.data_push(outarr)
 
 
 @instr("addprop")
@@ -3406,6 +3772,22 @@ class InstNextProp(Instruction):
         obj = fr.data_pop_object()
         val = obj.next_prop(prop)
         fr.data_push(val)
+
+
+@instr("array_get_propdirs")
+class InstArrayGetPropDirs(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop(str) + '/'
+        obj = fr.data_pop_object()
+        out = []
+        while True:
+            prop = obj.next_prop(prop)
+            if not prop:
+                break
+            if obj.is_propdir(prop):
+                out.append(prop)
+        fr.data_push(out)
 
 
 @instr("getprop")
@@ -3624,6 +4006,24 @@ class InstRefListFind(Instruction):
             fr.data_push(0)
 
 
+@instr("array_filter_prop")
+class InstArrayFilterProp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        pat = fr.data_pop(str)
+        prop = fr.data_pop(str)
+        objs = fr.data_pop(list)
+        found = []
+        for obj in objs:
+            if type(obj) is not StackDBRef:
+                raise MufRuntimeError("Expected list of dbrefs.")
+            if validobj(obj):
+                val = getobj(obj).getprop(prop)
+                if val and smatch(pat, val):
+                    found.append(obj)
+        fr.data_push(found)
+
+
 @instr("dbcmp")
 class InstDBCmp(Instruction):
     def execute(self, fr):
@@ -3836,6 +4236,12 @@ class InstDepth(Instruction):
         fr.data_push(fr.data_depth())
 
 
+@instr("fulldepth")
+class InstFullDepth(Instruction):
+    def execute(self, fr):
+        fr.data_push(fr.data_depth())
+
+
 @instr("int?")
 class InstIntP(Instruction):
     def execute(self, fr):
@@ -3987,6 +4393,27 @@ class InstSMatch(Instruction):
         pat = fr.data_pop(str).upper()
         txt = fr.data_pop(str).upper()
         fr.data_push(1 if smatch(pat, txt) else 0)
+
+
+@instr("tokensplit")
+class InstTokenSplit(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        esc = fr.data_pop(str)
+        delim = fr.data_pop(str)
+        txt = fr.data_pop(str)
+        txtlen = len(txt)
+        pos = 0
+        while pos < txtlen:
+            if txt[pos] in esc:
+                pos += 2
+                continue
+            if txt[pos] in delim:
+                break
+            pos += 1
+        fr.data_push(txt[:pos])
+        fr.data_push(txt[pos + 1:])
+        fr.data_push(txt[pos])
 
 
 @instr("pronoun_sub")
@@ -4307,21 +4734,43 @@ class MufStackFrame(object):
 
     def __init__(self, compiled):
         self.compiled = compiled
-        self.cycles = 0
-        self.trace = False
-        self.nextline = -1
-        self.data_stack = []
-        self.call_stack = [MufCallFrame(compiled.lastfunction)]
-        self.catch_stack = []
-        self.globalvars = {}
+        self.user = StackDBRef(-1)
         self.program = StackDBRef(program_object.dbref)
+        self.trigger = StackDBRef(-1)
+        self.command = ""
+        self.catch_stack = []
+        self.call_stack = [MufCallFrame(compiled.lastfunction)]
+        self.data_stack = []
+        self.globalvars = {}
+        self.fp_errors = 0
+        self.read_wants_blanks = False
+        self.trace = False
+        self.cycles = 0
+        self.breakpoints = []
         self.prevaddr = -1
         self.prevline = -1
-        self.read_wants_blanks = False
+        self.nextline = -1
         self.matches = []
-        self.breakpoints = []
         self.text_entry = []
-        self.fp_errors = 0
+
+    def setup(self, prog, user, trig, cmd):
+        self.program = StackDBRef(prog.dbref)
+        self.trigger = StackDBRef(trig.dbref)
+        self.user = StackDBRef(user.dbref)
+        self.command = cmd
+        self.globalvar_set(0, StackDBRef(user.dbref))
+        self.globalvar_set(1, StackDBRef(user.location))
+        self.globalvar_set(2, StackDBRef(trig.dbref))
+        self.globalvar_set(3, cmd)
+
+    def set_trace(self, on_off):
+        self.trace = on_off
+
+    def set_text_entry(self, text):
+        if type(text) is list:
+            self.text_entry = text
+        else:
+            self.text_entry = text.split('\n')
 
     def curr_inst(self):
         if not self.call_stack:
@@ -5083,7 +5532,7 @@ class MufCompiler(object):
         else:
             return (src, "")
 
-    def get_word(self, src):
+    def get_word(self, src, expand=True):
         while True:
             # Strip whitespace
             src = self.lstrip(src)
@@ -5099,7 +5548,7 @@ class MufCompiler(object):
         # Get next word.
         word, src = self.splitword(src)
         # Expand defines if needed
-        if word in defines:
+        if expand and word in defines:
             src = defines[word] + " " + src
             word, line, src = self.get_word(src)
             return (word, line, src)
@@ -5204,6 +5653,12 @@ class MufCompiler(object):
                     raise MufCompileError("Unrecognized identifier: %s" % nam)
                 print("EXPOSED '%s' AS PUBLIC" % nam)
                 continue
+            elif word == "$abort":
+                val, src = self.get_to_eol(src)
+                raise MufCompileError(val)
+            elif word == "$echo":
+                val, src = self.get_to_eol(src)
+                print("$ECHO: %s" % val)
             elif word == "$language":
                 val, src = self.get_to_eol(src)
                 if val.strip().lower() == '"muv"':
@@ -5246,8 +5701,24 @@ class MufCompiler(object):
                     del defines[nam]
                 continue
             elif word == "$include":
-                nam, src = self.get_word(src)
-                raise MufCompileError("'$include' is not yet supported.")
+                targ, line, src = self.get_word(src)
+                if targ == "this":
+                    # TODO: Use real program dbref
+                    obj = program_object.dbref
+                else:
+                    # TODO: Start search from program owner.
+                    obj = match_from(john_doe, targ)
+                if not validobj(obj):
+                    raise MufCompileError("Invalid object: '%s'" % targ)
+                obj = getobj(obj)
+                prop = "_defs/"
+                while prop:
+                    prop = obj.next_prop(prop)
+                    if not prop:
+                        break
+                    val = obj.getprop(prop)
+                    if val:
+                        defines[prop[6:]] = val
             elif word == "$pubdef":
                 nam, line, src = self.get_word(src)
                 val, src = self.get_to_eol(src)
@@ -5275,6 +5746,104 @@ class MufCompiler(object):
                 val, src = self.get_to_eol(src)
                 val = val.strip()
                 defines = dict(builtin_defines)
+                continue
+            elif word.startswith("$if"):
+                istrue = True
+                if word in ["$ifdef", "$ifndef"]:
+                    cond, line, src = self.get_word(src, expand=False)
+                    if '=' in cond:
+                        nam, val = cond.split('=', 1)
+                        istrue = nam in defines and defines[nam] == val
+                    elif '>' in cond:
+                        nam, val = cond.split('>', 1)
+                        istrue = nam in defines and defines[nam] > val
+                    elif '<' in cond:
+                        nam, val = cond.split('<', 1)
+                        istrue = nam in defines and defines[nam] < val
+                    else:
+                        istrue = cond in defines
+                elif word in ["$ifver", "$ifnver", "$iflibver", "$ifnlibver"]:
+                    obj, line, src = self.get_word(src)
+                    ver, line, src = self.get_word(src)
+                    if obj == "this":
+                        # TODO: Use real program dbref
+                        obj = program_object.dbref
+                    else:
+                        # TODO: Start search from program owner.
+                        obj = match_from(john_doe, obj)
+                    if not validobj(obj):
+                        istrue = False
+                    else:
+                        if word in ["$iflibver", "$ifnlibver"]:
+                            val = getobj(obj).getprop("_lib-version")
+                        else:
+                            val = getobj(obj).getprop("_version")
+                        if not val:
+                            istrue = False
+                        else:
+                            istrue = val >= ver
+                elif word in ["$iflib", "$ifnlib"]:
+                    obj, line, src = self.get_word(src)
+                    if obj == "this":
+                        # TODO: Use real program dbref
+                        obj = program_object.dbref
+                    else:
+                        # TODO: Start search from program owner.
+                        obj = match_from(john_doe, obj)
+                    istrue = validobj(obj) and getobj(obj).objtype == "program"
+                elif word in ["$ifcancall", "$ifncancall"]:
+                    obj, line, src = self.get_word(src)
+                    pub, line, src = self.get_word(src)
+                    if obj == "this":
+                        # TODO: Use real program dbref
+                        obj = program_object.dbref
+                    else:
+                        # TODO: Start search from program owner.
+                        obj = match_from(john_doe, obj)
+                    # TODO: Check for real public declared calls.
+                    istrue = False
+                else:
+                    raise MufCompileError("Unrecognized directive: '%s'" % word)
+                if word.startswith("$ifn"):
+                    istrue = not istrue
+                level = 0
+                while not istrue:
+                    if not src:
+                        raise MufCompileError(
+                            "Incomplete $if* $endif directive construct."
+                        )
+                    word, line, src = self.get_word(src)
+                    if word.startswith("$if"):
+                        cond, line, src = self.get_word(src, expand=False)
+                        level += 1
+                    elif word == "$endif":
+                        if not level:
+                            break
+                        level -= 1
+                    elif word == "$else":
+                        if not level:
+                            break
+                continue
+            elif word == "$else":
+                level = 0
+                while True:
+                    if not src:
+                        raise MufCompileError(
+                            "Incomplete $if* $else $endif directive construct."
+                        )
+                    word, line, src = self.get_word(src, expand=False)
+                    if word.startswith("$if"):
+                        cond, line, src = self.get_word(src, expand=False)
+                        level += 1
+                    elif word == "$endif":
+                        if not level:
+                            break
+                        level -= 1
+                    elif word == "$else":
+                        if not level:
+                            raise MufCompileError("Multiple $else clauses.")
+                continue
+            elif word == "$endif":
                 continue
             if not self.funcname:
                 raise MufCompileError("Not in function: %s" % word)
@@ -5527,6 +6096,15 @@ class MufCompiler(object):
 
 
 class MufSim(object):
+    def print(self, *args):
+        print(*args)
+        sys.stdout.flush()
+
+    def print_header(self, header):
+        out = '#### %s ' % header
+        out += '#' * (55-len(out))
+        self.print(out)
+
     def process_cmdline(self):
         parser = argparse.ArgumentParser(prog='mufsim')
         parser.add_argument("-m", "--muv",
@@ -5578,8 +6156,6 @@ class MufSim(object):
             pass
 
     def process_muv(self, infile):
-        print("#### Compiling MUV Code to MUF ########################")
-        sys.stdout.flush()
         tmpfile = infile
         if tmpfile[-4:] == ".muv":
             tmpfile = tmpfile[:-1] + 'f'
@@ -5587,61 +6163,49 @@ class MufSim(object):
             tmpfile += ".muf"
         retcode = call(["muv", "-o", tmpfile, infile], stderr=sys.stderr)
         if retcode != 0:
-            print("Aborting.")
+            self.print("Aborting.")
             return None
-        print("")
-        sys.stdout.flush()
         return tmpfile
 
-    def show_uncompile(self, fr):
-        print("")
-        print("#### Showing Compiled Tokens ##########################")
-        sys.stdout.flush()
-        fr.show_compiled_tokens()
-        sys.stdout.flush()
-
     def run_code(self, fr):
-        print("")
-        print("#### Executing Tokens #################################")
-        sys.stdout.flush()
-        fr.globalvar_set(0, StackDBRef(john_doe.dbref))
-        fr.globalvar_set(1, StackDBRef(john_doe.location))
-        fr.globalvar_set(2, StackDBRef(trigger_action.dbref))
-        fr.globalvar_set(3, self.opts.command)
-        fr.trace = self.opts.trace
-        fr.text_entry = self.opts.textentry
+        fr.setup(program_object, john_doe, trigger_action, self.opts.command)
+        fr.set_trace(self.opts.trace)
+        fr.set_text_entry(self.opts.textentry)
         fr.data_push(self.opts.command)
         if self.opts.debug:
             fr.debug_code()
         else:
             fr.execute_code()
-            print("Execution completed in %d steps." % fr.cycles)
+            self.print("Execution completed in %d steps." % fr.cycles)
 
     def main(self):
         self.process_cmdline()
         self.readline_setup()
         infile = self.opts.infile
         if self.opts.muv:
+            self.print_header("Compiling MUV Code to MUF")
             infile = self.process_muv(infile)
+            self.print("")
         if not infile:
             return
-
         srcs = ""
         with open(infile, "r") as f:
             srcs = f.read()
-
-        print("#### Compiling MUF Code to Tokens #####################")
-        sys.stdout.flush()
+        self.print_header("Compiling MUF Code to Tokens")
         mufcomp = MufCompiler()
         fr = mufcomp.compile_source(srcs)
+        self.print("")
         if fr:
             if self.opts.uncompile:
-                self.show_uncompile(fr)
+                self.print_header("Showing Compiled Tokens")
+                fr.show_compiled_tokens()
+                self.print("")
             if self.opts.run:
+                self.print_header("Executing Tokens")
                 self.run_code(fr)
+                self.print("")
         if self.opts.muv:
             os.unlink(infile)
-
         self.readline_teardown()
 
 

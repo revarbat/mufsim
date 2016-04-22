@@ -1,0 +1,16 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: DESCR
+    2: DESCRBOOT
+    3: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") DESCR
+    2: line 2 ("", 11) DESCRBOOT
+BOOTED DESCRIPTOR 11: John_Doe(#5)
+    3: line 3 ("") EXIT
+Execution completed in 4 steps.
+

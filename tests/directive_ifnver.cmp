@@ -1,0 +1,21 @@
+#### Compiling MUF Code to Tokens #####################
+SETPROP "_version" on #4 = "3.14"
+GETPROP "_version" on #4 = "3.14"
+GETPROP "_version" on #4 = "3.14"
+GETPROP "_version" on #4 = "3.14"
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: "Pass"
+    2: "Pass"
+    3: "Pass"
+    4: EXIT
+
+#### Executing Tokens #################################
+    0: line 2 ("") Function: main (0 vars)
+    1: line 6 ("") "Pass"
+    2: line 11 ("", "Pass") "Pass"
+    3: line 14 ("", "Pass", "Pass") "Pass"
+    4: line 18 ("", "Pass", "Pass", "Pass") EXIT
+Execution completed in 5 steps.
+

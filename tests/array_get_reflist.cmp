@@ -44,3 +44,4 @@ GETPROP "refs" on #5 = "#5 #4 #3"
    17: line 4 (3[#5, #4, #3]) POP
    18: line 5 () EXIT
 Execution completed in 19 steps.
+

@@ -28,3 +28,4 @@
    10: line 2 ("", 2{1: "bar", 2: "baz"}) POP
    11: line 3 ("") EXIT
 Execution completed in 12 steps.
+

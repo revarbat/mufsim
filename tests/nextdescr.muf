@@ -1,0 +1,3 @@
+: main
+    descr nextdescr pop
+;

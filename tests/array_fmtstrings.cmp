@@ -1,0 +1,83 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: {
+    2: {
+    3: "username"
+    4: "Johnny"
+    5: "count"
+    6: 4
+    7: "object"
+    8: #6
+    9: "foo"
+   10: PI
+   11: }
+   12: 2
+   13: /
+   14: ARRAY_MAKE_DICT
+   15: {
+   16: "username"
+   17: "Ghaladahsk_Fadja"
+   18: "count"
+   19: 123
+   20: "object"
+   21: #5
+   22: }
+   23: 2
+   24: /
+   25: ARRAY_MAKE_DICT
+   26: }
+   27: ARRAY_MAKE
+   28: "%-21.20[username]s %4[count]i %15[object]D %5.3[foo]g"
+   29: ARRAY_FMTSTRINGS
+   30: {
+   31: LV0: me
+   32: @
+   33: }
+   34: ARRAY_MAKE
+   35: ARRAY_NOTIFY
+   36: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") {
+    2: line 3 ("", Mark) {
+    3: line 4 ("", Mark, Mark) "username"
+    4: line 4 ("", Mark, Mark, "username") "Johnny"
+    5: line 5 ("", Mark, Mark, "username", "Johnny") "count"
+    6: line 5 ("", Mark, Mark, "username", "Johnny", "count") 4
+    7: line 6 ("", Mark, Mark, "username", "Johnny", "count", 4) "object"
+    8: line 6 ("", Mark, Mark, "username", "Johnny", "count", 4, "object") #6
+    9: line 7 ("", Mark, Mark, "username", "Johnny", "count", 4, "object", #6) "foo"
+   10: line 7 ("", Mark, Mark, "username", "Johnny", "count", 4, "object", #6, "foo") PI
+   11: line 8 ("", Mark, Mark, "username", "Johnny", "count", 4, "object", #6, "foo", 3.14159265359) }
+   12: line 8 ("", Mark, "username", "Johnny", "count", 4, "object", #6, "foo", 3.14159265359, 8) 2
+   13: line 8 ("", Mark, "username", "Johnny", "count", 4, "object", #6, "foo", 3.14159265359, 8, 2) /
+   14: line 8 ("", Mark, "username", "Johnny", "count", 4, "object", #6, "foo", 3.14159265359, 4) ARRAY_MAKE_DICT
+   15: line 9 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}) {
+   16: line 10 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, Mark) "username"
+   17: line 10 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, Mark, "username") "Ghaladahsk_Fadja"
+   18: line 11 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, Mark, "username", "Ghaladahsk_Fadja") "count"
+   19: line 11 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, Mark, "username", "Ghaladahsk_Fadja", "count") 123
+   20: line 12 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, Mark, "username", "Ghaladahsk_Fadja", "count", 123) "object"
+   21: line 12 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, Mark, "username", "Ghaladahsk_Fadja", "count", 123, "object") #5
+   22: line 13 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, Mark, "username", "Ghaladahsk_Fadja", "count", 123, "object", #5) }
+   23: line 13 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, "username", "Ghaladahsk_Fadja", "count", 123, "object", #5, 6) 2
+   24: line 13 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, "username", "Ghaladahsk_Fadja", "count", 123, "object", #5, 6, 2) /
+   25: line 13 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, "username", "Ghaladahsk_Fadja", "count", 123, "object", #5, 3) ARRAY_MAKE_DICT
+   26: line 14 ("", Mark, 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, 3{"count": 123, "object": #5, "username": "Ghaladahsk_Fadja"}) }
+   27: line 14 ("", 4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, 3{"count": 123, "object": #5, "username": "Ghaladahsk_Fadja"}, 2) ARRAY_MAKE
+   28: line 15 ("", 2[4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, 3{"count": 123, "object": #5, "username": "Ghaladahsk_Fadja"}]) "%-21.20[username]s %4[count]i %15[object]D %5.3[foo]g"
+   29: line 16 ("", 2[4{"count": 4, "foo": 3.14159265359, "object": #6, "username": "Johnny"}, 3{"count": 123, "object": #5, "username": "Ghaladahsk_Fadja"}], "%-21.20[username]s %4[count]i %15[object]D %5.3[foo]g") ARRAY_FMTSTRINGS
+   30: line 17 ("", 2["Johnny                   4        Jane_Doe  3.14", "Ghaladahsk_Fadja       123        John_Doe     0"]) {
+   31: line 17 ("", 2["Johnny                   4        Jane_Doe  3.14", "Ghaladahsk_Fadja       123        John_Doe     0"], Mark) LV0: me
+   32: line 17 ("", 2["Johnny                   4        Jane_Doe  3.14", "Ghaladahsk_Fadja       123        John_Doe     0"], Mark, LV0) @
+   33: line 17 ("", 2["Johnny                   4        Jane_Doe  3.14", "Ghaladahsk_Fadja       123        John_Doe     0"], Mark, #5) }
+   34: line 17 ("", 2["Johnny                   4        Jane_Doe  3.14", "Ghaladahsk_Fadja       123        John_Doe     0"], #5, 1) ARRAY_MAKE
+   35: line 17 ("", 2["Johnny                   4        Jane_Doe  3.14", "Ghaladahsk_Fadja       123        John_Doe     0"], 1[#5]) ARRAY_NOTIFY
+NOTIFY TO [John_Doe(#5)]: Johnny                   4        Jane_Doe  3.14
+NOTIFY TO [John_Doe(#5)]: Ghaladahsk_Fadja       123        John_Doe     0
+   36: line 18 ("") EXIT
+Execution completed in 37 steps.
+

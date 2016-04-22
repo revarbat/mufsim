@@ -48,3 +48,4 @@
    20: line 5 ("", 8, 1{"a": 1{"x": 3}}, 2["a", "x"]) ARRAY_NESTED_SET
    21: line 6 ("", 1{"a": 1{"x": 8}}) EXIT
 Execution completed in 22 steps.
+

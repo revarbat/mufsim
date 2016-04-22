@@ -1,0 +1,4 @@
+: main
+    cmd strcmp pop
+;
+

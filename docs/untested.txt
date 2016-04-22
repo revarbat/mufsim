@@ -1,6 +1,0 @@
-descrcon
-descrdbref
-descridle
-descrleastidle
-descrmostidle
-descrtime

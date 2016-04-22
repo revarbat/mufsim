@@ -1,0 +1,4 @@
+: main
+    descr descrbufsize pop
+;
+

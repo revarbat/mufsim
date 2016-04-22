@@ -12,3 +12,4 @@
     2: line 2 ("", "FooBar") TOLOWER
     3: line 3 ("", "foobar") EXIT
 Execution completed in 4 steps.
+

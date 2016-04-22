@@ -41,3 +41,4 @@ SETPROP "val" on #5 = 42
 SETPROP "fval" on #5 = 3.14
    16: line 5 ("") EXIT
 Execution completed in 17 steps.
+

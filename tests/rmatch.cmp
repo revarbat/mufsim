@@ -29,11 +29,11 @@
     1: line 2 ("") #1
     2: line 2 ("", #1) "me"
     3: line 2 ("", #1, "me") RMATCH
-    4: line 2 ("", #1) POP
+    4: line 2 ("", #5) POP
     5: line 3 ("") #1
     6: line 3 ("", #1) "here"
     7: line 3 ("", #1, "here") RMATCH
-    8: line 3 ("", #0) POP
+    8: line 3 ("", #2) POP
     9: line 4 ("") #1
    10: line 4 ("", #1) "home"
    11: line 4 ("", #1, "home") RMATCH
@@ -48,3 +48,4 @@
    20: line 6 ("", #-1) POP
    21: line 7 ("") EXIT
 Execution completed in 22 steps.
+

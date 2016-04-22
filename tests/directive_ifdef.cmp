@@ -1,0 +1,27 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: "Pass"
+    2: "Pass"
+    3: "Pass"
+    4: "Pass"
+    5: "Pass"
+    6: "Pass"
+    7: "Pass"
+    8: "Pass"
+    9: EXIT
+
+#### Executing Tokens #################################
+    0: line 2 ("") Function: main (0 vars)
+    1: line 6 ("") "Pass"
+    2: line 9 ("", "Pass") "Pass"
+    3: line 14 ("", "Pass", "Pass") "Pass"
+    4: line 21 ("", "Pass", "Pass", "Pass") "Pass"
+    5: line 24 ("", "Pass", "Pass", "Pass", "Pass") "Pass"
+    6: line 31 ("", "Pass", "Pass", "Pass", "Pass", "Pass") "Pass"
+    7: line 36 ("", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass") "Pass"
+    8: line 39 ("", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass") "Pass"
+    9: line 43 ("", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass") EXIT
+Execution completed in 10 steps.
+

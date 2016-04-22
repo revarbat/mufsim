@@ -3,17 +3,17 @@
 #### Showing Compiled Tokens ##########################
     0: Function: main (0 vars)
     1: {
-    2: LV0: me
-    3: @
-    4: #1
-    5: "*jane_doe"
-    6: MATCH
-    7: }
-    8: ARRAY_MAKE
-    9: {
-   10: "First line."
-   11: "Second line."
-   12: "Third line."
+    2: "First line."
+    3: "Second line."
+    4: "Third line."
+    5: }
+    6: ARRAY_MAKE
+    7: {
+    8: LV0: me
+    9: @
+   10: #1
+   11: "*jane_doe"
+   12: MATCH
    13: }
    14: ARRAY_MAKE
    15: ARRAY_NOTIFY
@@ -22,22 +22,23 @@
 #### Executing Tokens #################################
     0: line 1 ("") Function: main (0 vars)
     1: line 2 ("") {
-    2: line 2 ("", Mark) LV0: me
-    3: line 2 ("", Mark, LV0) @
-    4: line 2 ("", Mark, #5) #1
-    5: line 2 ("", Mark, #5, #1) "*jane_doe"
-    6: line 2 ("", Mark, #5, #1, "*jane_doe") MATCH
-    7: line 2 ("", Mark, #5, #1, #6) }
-    8: line 2 ("", #5, #1, #6, 3) ARRAY_MAKE
-    9: line 3 ("", 3[#5, #1, #6]) {
-   10: line 3 ("", 3[#5, #1, #6], Mark) "First line."
-   11: line 3 ("", 3[#5, #1, #6], Mark, "First line.") "Second line."
-   12: line 3 ("", 3[#5, #1, #6], Mark, "First line.", "Second line.") "Third line."
-   13: line 3 ("", 3[#5, #1, #6], Mark, "First line.", "Second line.", "Third line.") }
-   14: line 3 ("", 3[#5, #1, #6], "First line.", "Second line.", "Third line.", 3) ARRAY_MAKE
-   15: line 4 ("", 3[#5, #1, #6], 3["First line.", "Second line.", "Third line."]) ARRAY_NOTIFY
+    2: line 2 ("", Mark) "First line."
+    3: line 2 ("", Mark, "First line.") "Second line."
+    4: line 2 ("", Mark, "First line.", "Second line.") "Third line."
+    5: line 2 ("", Mark, "First line.", "Second line.", "Third line.") }
+    6: line 2 ("", "First line.", "Second line.", "Third line.", 3) ARRAY_MAKE
+    7: line 3 ("", 3["First line.", "Second line.", "Third line."]) {
+    8: line 3 ("", 3["First line.", "Second line.", "Third line."], Mark) LV0: me
+    9: line 3 ("", 3["First line.", "Second line.", "Third line."], Mark, LV0) @
+   10: line 3 ("", 3["First line.", "Second line.", "Third line."], Mark, #5) #1
+   11: line 3 ("", 3["First line.", "Second line.", "Third line."], Mark, #5, #1) "*jane_doe"
+   12: line 3 ("", 3["First line.", "Second line.", "Third line."], Mark, #5, #1, "*jane_doe") MATCH
+   13: line 3 ("", 3["First line.", "Second line.", "Third line."], Mark, #5, #1, #6) }
+   14: line 3 ("", 3["First line.", "Second line.", "Third line."], #5, #1, #6, 3) ARRAY_MAKE
+   15: line 4 ("", 3["First line.", "Second line.", "Third line."], 3[#5, #1, #6]) ARRAY_NOTIFY
 NOTIFY TO [John_Doe(#5), Wizard(#1), Jane_Doe(#6)]: First line.
 NOTIFY TO [John_Doe(#5), Wizard(#1), Jane_Doe(#6)]: Second line.
 NOTIFY TO [John_Doe(#5), Wizard(#1), Jane_Doe(#6)]: Third line.
    16: line 5 ("") EXIT
 Execution completed in 17 steps.
+

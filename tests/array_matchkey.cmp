@@ -40,3 +40,4 @@
    16: line 2 ("", 2{"bar": 8, "baz": 2}) POP
    17: line 3 ("") EXIT
 Execution completed in 18 steps.
+

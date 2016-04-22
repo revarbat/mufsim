@@ -4,16 +4,12 @@
      59 kill
      54 setlockstr
      50 sysparm
-     49 descriptors
      47 checkargs
      42 stats
      40 timestamps
-     32 descr
      31 recycle
      29 newexit
-     27 tokensplit
      24 getlockstr
-     17 gmtoffset
      17 fork
      17 array_get_propvals
      16 testlock
@@ -24,7 +20,6 @@
      15 gui_dlog_show
      13 queue
      11 strencrypt
-     11 setown
      11 part_pmatch
      11 parselock
      11 newroom
@@ -34,36 +29,28 @@
       9 gui_dlog_close
       9 copyobj
       8 gui_value_set
-      8 array_sort_indexed
       7 prettylock
-      7 descrflush
-      7 descr_array
       6 gui_value_get
-      6 array_get_propdirs
       5 program_getlines
       5 mcp_supports
       5 mcp_send
       5 mcp_register_event
       5 ignoring?
-      5 descr_setuser
       5 cancall?
       4 gui_values_get
       4 event_send
       4 checkpassword
       3 unparselock
       3 timer_start
-      3 array_fmtstrings
       2 nextowned
       2 gui_dlog_create
       2 gui_ctrl_command
       1 sysparm_array
       1 setsysparm
       1 program_setlines
-      1 nextdescr
       1 newprogram
       1 newpassword
       1 instances
       1 gui_ctrl_create
-      1 firstdescr
       1 findnext
       1 blessed?

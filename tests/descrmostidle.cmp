@@ -1,0 +1,47 @@
+#### Compiling MUF Code to Tokens #####################
+
+#### Showing Compiled Tokens ##########################
+    0: Function: main (0 vars)
+    1: ONLINE_ARRAY
+    2: FOREACH
+    3: __FORITER__
+    4: JmpIfFalse: +6
+    5: SWAP
+    6: POP
+    7: DESCRMOSTIDLE
+    8: POP
+    9: JMP: -6
+   10: __FORPOP__
+   11: EXIT
+
+#### Executing Tokens #################################
+    0: line 1 ("") Function: main (0 vars)
+    1: line 2 ("") ONLINE_ARRAY
+    2: line 3 ("", 3[#1, #5, #6]) FOREACH
+    3: line 3 ("") __FORITER__
+    4: line 3 ("", 0, #1, 1) JmpIfFalse: +6
+    5: line 3 ("", 0, #1) SWAP
+    6: line 3 ("", #1, 0) POP
+    7: line 4 ("", #1) DESCRMOSTIDLE
+    8: line 4 ("", 238) POP
+    9: line 5 ("") JMP: -6
+    3: line 3 ("") __FORITER__
+    4: line 3 ("", 1, #5, 1) JmpIfFalse: +6
+    5: line 3 ("", 1, #5) SWAP
+    6: line 3 ("", #5, 1) POP
+    7: line 4 ("", #5) DESCRMOSTIDLE
+    8: line 4 ("", 870) POP
+    9: line 5 ("") JMP: -6
+    3: line 3 ("") __FORITER__
+    4: line 3 ("", 2, #6, 1) JmpIfFalse: +6
+    5: line 3 ("", 2, #6) SWAP
+    6: line 3 ("", #6, 2) POP
+    7: line 4 ("", #6) DESCRMOSTIDLE
+    8: line 4 ("", 1028) POP
+    9: line 5 ("") JMP: -6
+    3: line 3 ("") __FORITER__
+    4: line 3 ("", 0) JmpIfFalse: +6
+   10: line 3 ("") __FORPOP__
+   11: line 6 ("") EXIT
+Execution completed in 28 steps.
+

@@ -45,3 +45,4 @@ GETPROP "refs" on #5 = "#5 #4 #3"
 SETPROP "refs" on #5 = "#5 #3"
    18: line 5 () EXIT
 Execution completed in 19 steps.
+
