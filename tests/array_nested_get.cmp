@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: {
     2: "a"
@@ -24,26 +24,26 @@
    20: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") {
-    2: line 2 ("", Mark) "a"
-    3: line 2 ("", Mark, "a") {
-    4: line 2 ("", Mark, "a", Mark) "x"
-    5: line 2 ("", Mark, "a", Mark, "x") 3
-    6: line 2 ("", Mark, "a", Mark, "x", 3) }
-    7: line 2 ("", Mark, "a", "x", 3, 2) 2
-    8: line 2 ("", Mark, "a", "x", 3, 2, 2) /
-    9: line 2 ("", Mark, "a", "x", 3, 1) ARRAY_MAKE_DICT
-   10: line 2 ("", Mark, "a", 1{"x": 3}) }
-   11: line 2 ("", "a", 1{"x": 3}, 2) 2
-   12: line 2 ("", "a", 1{"x": 3}, 2, 2) /
-   13: line 2 ("", "a", 1{"x": 3}, 1) ARRAY_MAKE_DICT
-   14: line 3 ("", 1{"a": 1{"x": 3}}) {
-   15: line 3 ("", 1{"a": 1{"x": 3}}, Mark) "a"
-   16: line 3 ("", 1{"a": 1{"x": 3}}, Mark, "a") "x"
-   17: line 3 ("", 1{"a": 1{"x": 3}}, Mark, "a", "x") }
-   18: line 3 ("", 1{"a": 1{"x": 3}}, "a", "x", 2) ARRAY_MAKE
-   19: line 4 ("", 1{"a": 1{"x": 3}}, 2["a", "x"]) ARRAY_NESTED_GET
-   20: line 5 ("", 3) EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") {
+    2: #4 line 2 ("", Mark) "a"
+    3: #4 line 2 ("", Mark, "a") {
+    4: #4 line 2 ("", Mark, "a", Mark) "x"
+    5: #4 line 2 ("", Mark, "a", Mark, "x") 3
+    6: #4 line 2 ("", Mark, "a", Mark, "x", 3) }
+    7: #4 line 2 ("", Mark, "a", "x", 3, 2) 2
+    8: #4 line 2 ("", Mark, "a", "x", 3, 2, 2) /
+    9: #4 line 2 ("", Mark, "a", "x", 3, 1) ARRAY_MAKE_DICT
+   10: #4 line 2 ("", Mark, "a", 1{"x": 3}) }
+   11: #4 line 2 ("", "a", 1{"x": 3}, 2) 2
+   12: #4 line 2 ("", "a", 1{"x": 3}, 2, 2) /
+   13: #4 line 2 ("", "a", 1{"x": 3}, 1) ARRAY_MAKE_DICT
+   14: #4 line 3 ("", 1{"a": 1{"x": 3}}) {
+   15: #4 line 3 ("", 1{"a": 1{"x": 3}}, Mark) "a"
+   16: #4 line 3 ("", 1{"a": 1{"x": 3}}, Mark, "a") "x"
+   17: #4 line 3 ("", 1{"a": 1{"x": 3}}, Mark, "a", "x") }
+   18: #4 line 3 ("", 1{"a": 1{"x": 3}}, "a", "x", 2) ARRAY_MAKE
+   19: #4 line 4 ("", 1{"a": 1{"x": 3}}, 2["a", "x"]) ARRAY_NESTED_GET
+   20: #4 line 5 ("", 3) EXIT
 Execution completed in 21 steps.
 

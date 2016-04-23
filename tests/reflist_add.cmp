@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: POP
     2: LV0: me
@@ -28,35 +28,35 @@
    24: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") POP
-    2: line 3 () LV0: me
-    3: line 3 (LV0) @
-    4: line 3 (#5) "refs"
-    5: line 3 (#5, "refs") {
-    6: line 3 (#5, "refs", Mark) LV0: me
-    7: line 3 (#5, "refs", Mark, LV0) @
-    8: line 3 (#5, "refs", Mark, #5) PROG
-    9: line 3 (#5, "refs", Mark, #5, #4) TRIG
-   10: line 3 (#5, "refs", Mark, #5, #4, #3) }
-   11: line 3 (#5, "refs", #5, #4, #3, 3) ARRAY_MAKE
-   12: line 3 (#5, "refs", 3[#5, #4, #3]) ARRAY_PUT_REFLIST
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") POP
+    2: #4 line 3 () LV0: me
+    3: #4 line 3 (LV0) @
+    4: #4 line 3 (#5) "refs"
+    5: #4 line 3 (#5, "refs") {
+    6: #4 line 3 (#5, "refs", Mark) LV0: me
+    7: #4 line 3 (#5, "refs", Mark, LV0) @
+    8: #4 line 3 (#5, "refs", Mark, #5) PROG
+    9: #4 line 3 (#5, "refs", Mark, #5, #4) TRIG
+   10: #4 line 3 (#5, "refs", Mark, #5, #4, #3) }
+   11: #4 line 3 (#5, "refs", #5, #4, #3, 3) ARRAY_MAKE
+   12: #4 line 3 (#5, "refs", 3[#5, #4, #3]) ARRAY_PUT_REFLIST
 SETPROP "refs" on #5 = "#5 #4 #3"
-   13: line 4 () LV0: me
-   14: line 4 (LV0) @
-   15: line 4 (#5) "refs"
-   16: line 4 (#5, "refs") #1
-   17: line 4 (#5, "refs", #1) REFLIST_ADD
+   13: #4 line 4 () LV0: me
+   14: #4 line 4 (LV0) @
+   15: #4 line 4 (#5) "refs"
+   16: #4 line 4 (#5, "refs") #1
+   17: #4 line 4 (#5, "refs", #1) REFLIST_ADD
 GETPROP "refs" on #5 = "#5 #4 #3"
 SETPROP "refs" on #5 = "#5 #4 #3 #1"
-   18: line 5 () LV0: me
-   19: line 5 (LV0) @
-   20: line 5 (#5) "refs"
-   21: line 5 (#5, "refs") LV0: me
-   22: line 5 (#5, "refs", LV0) @
-   23: line 5 (#5, "refs", #5) REFLIST_ADD
+   18: #4 line 5 () LV0: me
+   19: #4 line 5 (LV0) @
+   20: #4 line 5 (#5) "refs"
+   21: #4 line 5 (#5, "refs") LV0: me
+   22: #4 line 5 (#5, "refs", LV0) @
+   23: #4 line 5 (#5, "refs", #5) REFLIST_ADD
 GETPROP "refs" on #5 = "#5 #4 #3 #1"
 SETPROP "refs" on #5 = "#4 #3 #1 #5"
-   24: line 6 () EXIT
+   24: #4 line 6 () EXIT
 Execution completed in 25 steps.
 

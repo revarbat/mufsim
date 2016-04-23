@@ -2,16 +2,16 @@
 
 #### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
-    1: 5
-    2: 3
-    3: -
+    1: ONLINE_ARRAY
+    2: "P!W"
+    3: ARRAY_FILTER_FLAGS
     4: EXIT
 
 #### Executing Tokens #################################
     0: #4 line 1 ("") Function: main (0 vars)
-    1: #4 line 2 ("") 5
-    2: #4 line 2 ("", 5) 3
-    3: #4 line 2 ("", 5, 3) -
-    4: #4 line 3 ("", 2) EXIT
+    1: #4 line 2 ("") ONLINE_ARRAY
+    2: #4 line 3 ("", 3[#1, #5, #6]) "P!W"
+    3: #4 line 3 ("", 3[#1, #5, #6], "P!W") ARRAY_FILTER_FLAGS
+    4: #4 line 4 ("", 2[#5, #6]) EXIT
 Execution completed in 5 steps.
 

@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: CLEAR
     2: "DIV_ZERO"
@@ -30,32 +30,32 @@
    26: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") CLEAR
-    2: line 3 ("") "DIV_ZERO"
-    3: line 3 ("", "DIV_ZERO") IS_SET?
-    4: line 3 ("", 0) POP
-    5: line 4 ("") 1
-    6: line 4 ("", 1) 0
-    7: line 4 ("", 1, 0) /
-    8: line 4 ("", 0) POP
-    9: line 5 ("") "DIV_ZERO"
-   10: line 5 ("", "DIV_ZERO") IS_SET?
-   11: line 5 ("", 1) POP
-   12: line 6 ("") 1
-   13: line 6 ("", 1) inf
-   14: line 6 ("", 1, inf) /
-   15: line 6 ("", 0.0) POP
-   16: line 7 ("") "FBOUNDS"
-   17: line 7 ("", "FBOUNDS") IS_SET?
-   18: line 7 ("", 1) POP
-   19: line 8 ("") CLEAR
-   20: line 9 ("") "DIV_ZERO"
-   21: line 9 ("", "DIV_ZERO") IS_SET?
-   22: line 9 ("", 0) POP
-   23: line 10 ("") "FBOUNDS"
-   24: line 10 ("", "FBOUNDS") IS_SET?
-   25: line 10 ("", 0) POP
-   26: line 11 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") CLEAR
+    2: #4 line 3 ("") "DIV_ZERO"
+    3: #4 line 3 ("", "DIV_ZERO") IS_SET?
+    4: #4 line 3 ("", 0) POP
+    5: #4 line 4 ("") 1
+    6: #4 line 4 ("", 1) 0
+    7: #4 line 4 ("", 1, 0) /
+    8: #4 line 4 ("", 0) POP
+    9: #4 line 5 ("") "DIV_ZERO"
+   10: #4 line 5 ("", "DIV_ZERO") IS_SET?
+   11: #4 line 5 ("", 1) POP
+   12: #4 line 6 ("") 1
+   13: #4 line 6 ("", 1) inf
+   14: #4 line 6 ("", 1, inf) /
+   15: #4 line 6 ("", 0.0) POP
+   16: #4 line 7 ("") "FBOUNDS"
+   17: #4 line 7 ("", "FBOUNDS") IS_SET?
+   18: #4 line 7 ("", 1) POP
+   19: #4 line 8 ("") CLEAR
+   20: #4 line 9 ("") "DIV_ZERO"
+   21: #4 line 9 ("", "DIV_ZERO") IS_SET?
+   22: #4 line 9 ("", 0) POP
+   23: #4 line 10 ("") "FBOUNDS"
+   24: #4 line 10 ("", "FBOUNDS") IS_SET?
+   25: #4 line 10 ("", 0) POP
+   26: #4 line 11 ("") EXIT
 Execution completed in 27 steps.
 

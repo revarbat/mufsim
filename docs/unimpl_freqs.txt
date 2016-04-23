@@ -36,7 +36,6 @@
       5 mcp_send
       5 mcp_register_event
       5 ignoring?
-      5 cancall?
       4 gui_values_get
       4 event_send
       4 checkpassword

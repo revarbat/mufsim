@@ -1,22 +1,22 @@
 #### Compiling MUV Code to MUF ########################
 
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 SETPROP "_author" on #4 = "Revar Desmera <revar@gmail.com>"
 SETPROP "_note" on #4 = "An example replacement for the lsedit program, written in MUV."
 SETPROP "_version" on #4 = "1.0"
 SETPROP "_lib-version" on #4 = "1.0"
 EXPOSED 'lsedit__init_help' AS PUBLIC
-SETPROP "_defs/lsedit__init_help" on #4 = "#4 "lsedit__init_help" call"
+SETPROP "_defs/lsedit__init_help" on #4 = "#4 \"lsedit__init_help\" call"
 EXPOSED 'lsedit__show_help' AS PUBLIC
-SETPROP "_defs/lsedit__show_help" on #4 = "#4 "lsedit__show_help" call"
+SETPROP "_defs/lsedit__show_help" on #4 = "#4 \"lsedit__show_help\" call"
 EXPOSED 'lsedit__add_helptext' AS PUBLIC
-SETPROP "_defs/lsedit__add_helptext" on #4 = "#4 "lsedit__add_helptext" call"
+SETPROP "_defs/lsedit__add_helptext" on #4 = "#4 \"lsedit__add_helptext\" call"
 EXPOSED 'lsedit__editor' AS PUBLIC
-SETPROP "_defs/lsedit__editor" on #4 = "#4 "lsedit__editor" call"
+SETPROP "_defs/lsedit__editor" on #4 = "#4 \"lsedit__editor\" call"
 EXPOSED 'lsedit__basic' AS PUBLIC
-SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
+SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: argparse::init (0 vars)
     1: ""
     2: LV4: argparse::current_mode
@@ -2431,525 +2431,525 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 "lsedit__basic" call"
  2392: EXIT
 
 #### Executing Tokens #################################
- 2341: line 550 ("") Function: __start (0 vars)
- 2342: line 551 ("") "me"
- 2343: line 551 ("", "me") MATCH
- 2344: line 551 ("", #5) LV0: me
- 2345: line 551 ("", #5, LV0) !
- 2346: line 551 ("") LV0: me
- 2347: line 551 ("", LV0) @
- 2348: line 551 ("", #5) LOCATION
- 2349: line 551 ("", #2) LV1: loc
- 2350: line 551 ("", #2, LV1) !
- 2351: line 551 ("") TRIG
- 2352: line 551 ("", #3) LV2: trigger
- 2353: line 551 ("", #3, LV2) !
- 2354: line 552 ("") ""
- 2355: line 552 ("", "") LV4: argparse::current_mode
- 2356: line 552 ("", "", LV4) !
- 2357: line 553 ("") {
- 2358: line 553 ("", Mark) }
- 2359: line 553 ("", 0) ARRAY_MAKE
- 2360: line 553 ("", 0[]) LV5: argparse::modes_list
- 2361: line 553 ("", 0[], LV5) !
- 2362: line 554 ("") {
- 2363: line 554 ("", Mark) }
- 2364: line 554 ("", 0) 2
- 2365: line 554 ("", 0, 2) /
- 2366: line 554 ("", 0) ARRAY_MAKE_DICT
- 2367: line 554 ("", 0{}) LV6: argparse::flags_map
- 2368: line 554 ("", 0{}, LV6) !
- 2369: line 555 ("") {
- 2370: line 555 ("", Mark) }
- 2371: line 555 ("", 0) 2
- 2372: line 555 ("", 0, 2) /
- 2373: line 555 ("", 0) ARRAY_MAKE_DICT
- 2374: line 555 ("", 0{}) LV7: argparse::posargs_map
- 2375: line 555 ("", 0{}, LV7) !
- 2376: line 556 ("") {
- 2377: line 556 ("", Mark) ""
- 2378: line 556 ("", Mark, "") "remainder"
- 2379: line 556 ("", Mark, "", "remainder") }
- 2380: line 556 ("", "", "remainder", 2) 2
- 2381: line 556 ("", "", "remainder", 2, 2) /
- 2382: line 556 ("", "", "remainder", 1) ARRAY_MAKE_DICT
- 2383: line 556 ("", 1{"": "remainder"}) LV8: argparse::remainder_map
- 2384: line 556 ("", 1{"": "remainder"}, LV8) !
- 2385: line 557 ("") {
- 2386: line 557 ("", Mark) }
- 2387: line 557 ("", 0) ARRAY_MAKE
- 2388: line 557 ("", 0[]) LV9: lsedit::help_lines
- 2389: line 557 ("", 0[], LV9) !
- 2390: line 558 ("") Addr:2332
- 2391: line 558 ("", Addr:2332) EXECUTE
- 2332: line 546 ("") Function: _main (1 vars)
- 2333: line 547 () Addr:777
- 2334: line 547 (Addr:777) EXECUTE
-  777: line 207 () Function: lsedit__init_help (0 vars)
-  778: line 208 () {
-  779: line 208 (Mark) }
-  780: line 208 (0) ARRAY_MAKE
-  781: line 208 (0[]) LV9: lsedit::help_lines
-  782: line 208 (0[], LV9) !
-  783: line 209 () 0
-  784: line 210 (0) EXIT
- 2335: line 547 (0) POP
- 2336: line 548 () SV0: _arg
- 2337: line 548 (SV0) @
- 2338: line 548 ("") Addr:2153
- 2339: line 548 ("", Addr:2153) EXECUTE
- 2153: line 510 ("") Function: lsedit__basic (1 vars)
- 2154: line 512 () Addr:0
- 2155: line 512 (Addr:0) EXECUTE
-    0: line 12 () Function: argparse::init (0 vars)
-    1: line 13 () ""
-    2: line 13 ("") LV4: argparse::current_mode
-    3: line 13 ("", LV4) !
-    4: line 14 () {
-    5: line 14 (Mark) }
-    6: line 14 (0) ARRAY_MAKE
-    7: line 14 (0[]) LV5: argparse::modes_list
-    8: line 14 (0[], LV5) !
-    9: line 15 () {
-   10: line 15 (Mark) }
-   11: line 15 (0) 2
-   12: line 15 (0, 2) /
-   13: line 15 (0) ARRAY_MAKE_DICT
-   14: line 15 (0{}) LV6: argparse::flags_map
-   15: line 15 (0{}, LV6) !
-   16: line 16 () {
-   17: line 16 (Mark) }
-   18: line 16 (0) 2
-   19: line 16 (0, 2) /
-   20: line 16 (0) ARRAY_MAKE_DICT
-   21: line 16 (0{}) LV7: argparse::posargs_map
-   22: line 16 (0{}, LV7) !
-   23: line 17 () {
-   24: line 17 (Mark) ""
-   25: line 17 (Mark, "") "remainder"
-   26: line 17 (Mark, "", "remainder") }
-   27: line 17 ("", "remainder", 2) 2
-   28: line 17 ("", "remainder", 2, 2) /
-   29: line 17 ("", "remainder", 1) ARRAY_MAKE_DICT
-   30: line 17 (1{"": "remainder"}) LV8: argparse::remainder_map
-   31: line 17 (1{"": "remainder"}, LV8) !
-   32: line 18 () 0
-   33: line 19 (0) EXIT
- 2156: line 512 (0) POP
- 2157: line 513 () ""
- 2158: line 513 ("") Addr:118
- 2159: line 513 ("", Addr:118) EXECUTE
-  118: line 41 ("") Function: argparse::set_mode (1 vars)
-  119: line 42 () SV0: _name
-  120: line 42 (SV0) @
-  121: line 42 ("") TOLOWER
-  122: line 42 ("") SV0: _name
-  123: line 42 ("", SV0) !
-  124: line 43 () SV0: _name
-  125: line 43 (SV0) @
-  126: line 43 ("") LV4: argparse::current_mode
-  127: line 43 ("", LV4) !
-  128: line 44 () 0
-  129: line 45 (0) EXIT
- 2160: line 513 (0) POP
- 2161: line 514 () ""
- 2162: line 514 ("") {
- 2163: line 514 ("", Mark) }
- 2164: line 514 ("", 0) ARRAY_MAKE
- 2165: line 514 ("", 0[]) "obj=list"
- 2166: line 514 ("", 0[], "obj=list") Addr:130
- 2167: line 514 ("", 0[], "obj=list", Addr:130) EXECUTE
-  130: line 46 ("", 0[], "obj=list") Function: argparse::add_mode (3 vars)
-  131: line 48 () SV0: _name
-  132: line 48 (SV0) @
-  133: line 48 ("") TOLOWER
-  134: line 48 ("") SV0: _name
-  135: line 48 ("", SV0) !
-  136: line 49 () LV5: argparse::modes_list
-  137: line 49 (LV5) @
-  138: line 49 (0[]) SV0: _name
-  139: line 49 (0[], SV0) @
-  140: line 49 (0[], "") SWAP
-  141: line 49 ("", 0[]) ARRAY_APPENDITEM
-  142: line 49 (1[""]) LV5: argparse::modes_list
-  143: line 49 (1[""], LV5) !
-  144: line 50 () {
-  145: line 50 (Mark) }
-  146: line 50 (0) ARRAY_MAKE
-  147: line 50 (0[]) DUP
-  148: line 51 (0[], 0[]) LV6: argparse::flags_map
-  149: line 51 (0[], 0[], LV6) @
-  150: line 51 (0[], 0[], 0{}) SV0: _name
-  151: line 51 (0[], 0[], 0{}, SV0) @
-  152: line 51 (0[], 0[], 0{}, "") ARRAY_SETITEM
-  153: line 51 (0[], 1{"": 0[]}) LV6: argparse::flags_map
-  154: line 51 (0[], 1{"": 0[]}, LV6) !
-  155: line 51 (0[]) POP
-  156: line 52 () {
-  157: line 52 (Mark) }
-  158: line 52 (0) ARRAY_MAKE
-  159: line 52 (0[]) DUP
-  160: line 53 (0[], 0[]) LV7: argparse::posargs_map
-  161: line 53 (0[], 0[], LV7) @
-  162: line 53 (0[], 0[], 0{}) SV0: _name
-  163: line 53 (0[], 0[], 0{}, SV0) @
-  164: line 53 (0[], 0[], 0{}, "") ARRAY_SETITEM
-  165: line 53 (0[], 1{"": 0[]}) LV7: argparse::posargs_map
-  166: line 53 (0[], 1{"": 0[]}, LV7) !
-  167: line 53 (0[]) POP
-  168: line 54 () SV1: _flags
-  169: line 54 (SV1) @
-  170: line 54 (0[]) FOREACH
-  171: line 55 () __FORITER__
-  172: line 55 (0) JmpIfFalse: +41
-  213: line 54 () __FORPOP__
-  214: line 63 () SV0: _name
-  215: line 63 (SV0) @
-  216: line 63 ("") SV2: _posargs
-  217: line 63 ("", SV2) @
-  218: line 63 ("", "obj=list") Addr:34
-  219: line 63 ("", "obj=list", Addr:34) EXECUTE
-   34: line 20 ("", "obj=list") Function: argparse::parse_posargs (2 vars)
-   35: line 23 () {
-   36: line 23 (Mark) SV1: _posargs
-   37: line 23 (Mark, SV1) @
-   38: line 23 (Mark, "obj=list") "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
-   39: line 23 (Mark, "obj=list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$") 1
-   40: line 23 (Mark, "obj=list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$", 1) REGEXP
-   41: line 23 (Mark, 4["obj=list", "obj", "=", "list"], 4[2[0, 8], 2[0, 3], 2[3, 4], 2[4, 8]]) }
-   42: line 23 (4["obj=list", "obj", "=", "list"], 4[2[0, 8], 2[0, 3], 2[3, 4], 2[4, 8]], 2) ARRAY_MAKE
-   43: line 23 (2[4["obj=list", "obj", "=", "list"], 4[2[0, 8], 2[0, 3], 2[3, 4], 2[4, 8]]]) 0
-   44: line 23 (2[4["obj=list", "obj", "=", "list"], 4[2[0, 8], 2[0, 3], 2[3, 4], 2[4, 8]]], 0) ARRAY_GETITEM
-   45: line 24 (4["obj=list", "obj", "=", "list"]) SV2: _tok
-   46: line 24 (4["obj=list", "obj", "=", "list"], SV2) !
-   47: line 25 () SV2: _tok
-   48: line 25 (SV2) @
-   49: line 25 (4["obj=list", "obj", "=", "list"]) JmpIfFalse: +53
-   50: line 26 () LV7: argparse::posargs_map
-   51: line 26 (LV7) @
-   52: line 26 (1{"": 0[]}) SV0: _mode
-   53: line 26 (1{"": 0[]}, SV0) @
-   54: line 26 (1{"": 0[]}, "") ARRAY_GETITEM
-   55: line 26 (0[]) NOT
-   56: line 26 (1) JmpIfFalse: +13
-   57: line 27 () {
-   58: line 27 (Mark) }
-   59: line 27 (0) ARRAY_MAKE
-   60: line 27 (0[]) DUP
-   61: line 28 (0[], 0[]) LV7: argparse::posargs_map
-   62: line 28 (0[], 0[], LV7) @
-   63: line 28 (0[], 0[], 1{"": 0[]}) SV0: _mode
-   64: line 28 (0[], 0[], 1{"": 0[]}, SV0) @
-   65: line 28 (0[], 0[], 1{"": 0[]}, "") ARRAY_SETITEM
-   66: line 28 (0[], 1{"": 0[]}) LV7: argparse::posargs_map
-   67: line 28 (0[], 1{"": 0[]}, LV7) !
-   68: line 28 (0[]) POP
-   69: line 30 () LV7: argparse::posargs_map
-   70: line 30 (LV7) @
-   71: line 30 (1{"": 0[]}) SV0: _mode
-   72: line 30 (1{"": 0[]}, SV0) @
-   73: line 30 (1{"": 0[]}, "") OVER
-   74: line 30 (1{"": 0[]}, "", 1{"": 0[]}) OVER
-   75: line 30 (1{"": 0[]}, "", 1{"": 0[]}, "") ARRAY_GETITEM
-   76: line 31 (1{"": 0[]}, "", 0[]) {
-   77: line 31 (1{"": 0[]}, "", 0[], Mark) SV2: _tok
-   78: line 31 (1{"": 0[]}, "", 0[], Mark, SV2) @
-   79: line 31 (1{"": 0[]}, "", 0[], Mark, 4["obj=list", "obj", "=", "list"]) 1
-   80: line 31 (1{"": 0[]}, "", 0[], Mark, 4["obj=list", "obj", "=", "list"], 1) ARRAY_GETITEM
-   81: line 31 (1{"": 0[]}, "", 0[], Mark, "obj") TOLOWER
-   82: line 31 (1{"": 0[]}, "", 0[], Mark, "obj") SV2: _tok
-   83: line 31 (1{"": 0[]}, "", 0[], Mark, "obj", SV2) @
-   84: line 31 (1{"": 0[]}, "", 0[], Mark, "obj", 4["obj=list", "obj", "=", "list"]) 2
-   85: line 31 (1{"": 0[]}, "", 0[], Mark, "obj", 4["obj=list", "obj", "=", "list"], 2) ARRAY_GETITEM
-   86: line 31 (1{"": 0[]}, "", 0[], Mark, "obj", "=") }
-   87: line 31 (1{"": 0[]}, "", 0[], "obj", "=", 2) ARRAY_MAKE
-   88: line 31 (1{"": 0[]}, "", 0[], 2["obj", "="]) SWAP
-   89: line 31 (1{"": 0[]}, "", 2["obj", "="], 0[]) ARRAY_APPENDITEM
-   90: line 31 (1{"": 1[2["obj", "="]]}, "", 1[2["obj", "="]]) ROT
-   91: line 31 ("", 1[2["obj", "="]], 1{"": 1[2["obj", "="]]}) ROT
-   92: line 31 (1[2["obj", "="]], 1{"": 1[2["obj", "="]]}, "") ARRAY_SETITEM
-   93: line 31 (1{"": 1[2["obj", "="]]}) LV7: argparse::posargs_map
-   94: line 31 (1{"": 1[2["obj", "="]]}, LV7) !
-   95: line 32 () SV2: _tok
-   96: line 32 (SV2) @
-   97: line 32 (4["obj=list", "obj", "=", "list"]) 3
-   98: line 32 (4["obj=list", "obj", "=", "list"], 3) ARRAY_GETITEM
-   99: line 32 ("list") SV1: _posargs
-  100: line 32 ("list", SV1) !
-  101: line 25 () JMP: +14
-  115: line 38 () JMP: -80
-   35: line 23 () {
-   36: line 23 (Mark) SV1: _posargs
-   37: line 23 (Mark, SV1) @
-   38: line 23 (Mark, "list") "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
-   39: line 23 (Mark, "list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$") 1
-   40: line 23 (Mark, "list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$", 1) REGEXP
-   41: line 23 (Mark, 0[], 0[]) }
-   42: line 23 (0[], 0[], 2) ARRAY_MAKE
-   43: line 23 (2[0[], 0[]]) 0
-   44: line 23 (2[0[], 0[]], 0) ARRAY_GETITEM
-   45: line 24 (0[]) SV2: _tok
-   46: line 24 (0[], SV2) !
-   47: line 25 () SV2: _tok
-   48: line 25 (SV2) @
-   49: line 25 (0[]) JmpIfFalse: +53
-  102: line 34 () SV1: _posargs
-  103: line 34 (SV1) @
-  104: line 34 ("list") TOLOWER
-  105: line 34 ("list") DUP
-  106: line 35 ("list", "list") LV8: argparse::remainder_map
-  107: line 35 ("list", "list", LV8) @
-  108: line 35 ("list", "list", 1{"": "remainder"}) SV0: _mode
-  109: line 35 ("list", "list", 1{"": "remainder"}, SV0) @
-  110: line 35 ("list", "list", 1{"": "remainder"}, "") ARRAY_SETITEM
-  111: line 35 ("list", 1{"": "list"}) LV8: argparse::remainder_map
-  112: line 35 ("list", 1{"": "list"}, LV8) !
-  113: line 35 ("list") POP
-  114: line 36 () JMP: +2
-  116: line 39 () 0
-  117: line 40 (0) EXIT
-  220: line 63 (0) POP
-  221: line 64 () 0
-  222: line 65 (0) EXIT
- 2168: line 514 (0) POP
- 2169: line 515 () SV0: _arg
- 2170: line 515 (SV0) @
- 2171: line 515 ("") Addr:464
- 2172: line 515 ("", Addr:464) EXECUTE
-  464: line 124 ("") Function: argparse::parse (1 vars)
-  465: line 127 () {
-  466: line 127 (Mark) }
-  467: line 127 (0) 2
-  468: line 127 (0, 2) /
-  469: line 127 (0) ARRAY_MAKE_DICT
-  470: line 127 (0{}) SV4: _opts
-  471: line 127 (0{}, SV4) !
-  472: line 128 () 0
-  473: line 128 (0) SV5: _mode_given
-  474: line 128 (0, SV5) !
-  475: line 130 () SV0: _line
-  476: line 130 (SV0) @
-  477: line 130 ("") "#"
-  478: line 130 ("", "#") STRINGPFX
-  479: line 131 (0) JmpIfFalse: +208
-  687: line 189 () SV5: _mode_given
-  688: line 189 (SV5) @
-  689: line 189 (0) 1
-  690: line 189 (0, 1) >
-  691: line 189 (0) JmpIfFalse: +13
-  704: line 194 () LV7: argparse::posargs_map
-  705: line 194 (LV7) @
-  706: line 194 (1{"": 1[2["obj", "="]]}) LV4: argparse::current_mode
-  707: line 194 (1{"": 1[2["obj", "="]]}, LV4) @
-  708: line 194 (1{"": 1[2["obj", "="]]}, "") ARRAY_GETITEM
-  709: line 194 (1[2["obj", "="]]) FOREACH
-  710: line 195 () __FORITER__
-  711: line 195 (0, 2["obj", "="], 1) JmpIfFalse: +38
-  712: line 195 (0, 2["obj", "="]) SV9: _posarg
-  713: line 195 (0, 2["obj", "="], SV9) !
-  714: line 195 (0) POP
-  715: line 196 () {
-  716: line 196 (Mark) SV0: _line
-  717: line 196 (Mark, SV0) @
-  718: line 196 (Mark, "") SV9: _posarg
-  719: line 196 (Mark, "", SV9) @
-  720: line 196 (Mark, "", 2["obj", "="]) 1
-  721: line 196 (Mark, "", 2["obj", "="], 1) ARRAY_GETITEM
-  722: line 196 (Mark, "", "=") SPLIT
-  723: line 196 (Mark, "", "") }
-  724: line 196 ("", "", 2) ARRAY_MAKE
-  725: line 196 (2["", ""]) SV1: _parts
-  726: line 196 (2["", ""], SV1) !
-  727: line 197 () SV1: _parts
-  728: line 197 (SV1) @
-  729: line 197 (2["", ""]) 0
-  730: line 197 (2["", ""], 0) ARRAY_GETITEM
-  731: line 197 ("") DUP
-  732: line 197 ("", "") SV4: _opts
-  733: line 197 ("", "", SV4) @
-  734: line 197 ("", "", 0{}) SV9: _posarg
-  735: line 197 ("", "", 0{}, SV9) @
-  736: line 197 ("", "", 0{}, 2["obj", "="]) 0
-  737: line 197 ("", "", 0{}, 2["obj", "="], 0) ARRAY_GETITEM
-  738: line 197 ("", "", 0{}, "obj") ARRAY_SETITEM
-  739: line 197 ("", 1{"obj": ""}) SV4: _opts
-  740: line 197 ("", 1{"obj": ""}, SV4) !
-  741: line 197 ("") POP
-  742: line 198 () SV1: _parts
-  743: line 198 (SV1) @
-  744: line 198 (2["", ""]) 1
-  745: line 198 (2["", ""], 1) ARRAY_GETITEM
-  746: line 198 ("") SV0: _line
-  747: line 198 ("", SV0) !
-  748: line 199 () JMP: -38
-  710: line 195 () __FORITER__
-  711: line 195 (0) JmpIfFalse: +38
-  749: line 194 () __FORPOP__
-  750: line 200 () SV0: _line
-  751: line 200 (SV0) @
-  752: line 200 ("") DUP
-  753: line 201 ("", "") SV4: _opts
-  754: line 201 ("", "", SV4) @
-  755: line 201 ("", "", 1{"obj": ""}) LV8: argparse::remainder_map
-  756: line 201 ("", "", 1{"obj": ""}, LV8) @
-  757: line 201 ("", "", 1{"obj": ""}, 1{"": "list"}) LV4: argparse::current_mode
-  758: line 201 ("", "", 1{"obj": ""}, 1{"": "list"}, LV4) @
-  759: line 201 ("", "", 1{"obj": ""}, 1{"": "list"}, "") ARRAY_GETITEM
-  760: line 201 ("", "", 1{"obj": ""}, "list") ARRAY_SETITEM
-  761: line 201 ("", 2{"list": "", "obj": ""}) SV4: _opts
-  762: line 201 ("", 2{"list": "", "obj": ""}, SV4) !
-  763: line 201 ("") POP
-  764: line 202 () LV4: argparse::current_mode
-  765: line 202 (LV4) @
-  766: line 202 ("") DUP
-  767: line 202 ("", "") SV4: _opts
-  768: line 202 ("", "", SV4) @
-  769: line 202 ("", "", 2{"list": "", "obj": ""}) "mode"
-  770: line 202 ("", "", 2{"list": "", "obj": ""}, "mode") ARRAY_SETITEM
-  771: line 202 ("", 3{"list": "", "mode": "", "obj": ""}) SV4: _opts
-  772: line 202 ("", 3{"list": "", "mode": "", "obj": ""}, SV4) !
-  773: line 202 ("") POP
-  774: line 203 () SV4: _opts
-  775: line 203 (SV4) @
-  776: line 204 (3{"list": "", "mode": "", "obj": ""}) EXIT
- 2173: line 515 (3{"list": "", "mode": "", "obj": ""}) SV1: _opts
- 2174: line 515 (3{"list": "", "mode": "", "obj": ""}, SV1) !
- 2175: line 516 () SV1: _opts
- 2176: line 516 (SV1) @
- 2177: line 516 (3{"list": "", "mode": "", "obj": ""}) NOT
- 2178: line 516 (0) JmpIfFalse: +3
- 2181: line 517 () SV1: _opts
- 2182: line 517 (SV1) @
- 2183: line 517 (3{"list": "", "mode": "", "obj": ""}) "obj"
- 2184: line 517 (3{"list": "", "mode": "", "obj": ""}, "obj") ARRAY_GETITEM
- 2185: line 517 ("") NOT
- 2186: line 518 (1) DUP
- 2187: line 518 (1, 1) NOT
- 2188: line 518 (1, 0) JmpIfFalse: +7
- 2195: line 518 (1) JmpIfFalse: +6
- 2196: line 519 () Addr:334
- 2197: line 519 (Addr:334) EXECUTE
-  334: line 100 () Function: argparse::show_usage (0 vars)
-  335: line 103 () TRIG
-  336: line 103 (#3) NAME
-  337: line 103 ("test") ";"
-  338: line 103 ("test", ";") SPLIT
-  339: line 103 ("test", "") POP
-  340: line 103 ("test") STRIPLEAD
-  341: line 103 ("test") STRIPTAIL
-  342: line 103 ("test") SV0: _cmd
-  343: line 103 ("test", SV0) !
-  344: line 104 () "Usage:"
-  345: line 104 ("Usage:") LV0: me
-  346: line 104 ("Usage:", LV0) @
-  347: line 104 ("Usage:", #5) SWAP
-  348: line 104 (#5, "Usage:") NOTIFY
+ 2341: #4 line 550 ("") Function: __start (0 vars)
+ 2342: #4 line 551 ("") "me"
+ 2343: #4 line 551 ("", "me") MATCH
+ 2344: #4 line 551 ("", #5) LV0: me
+ 2345: #4 line 551 ("", #5, LV0) !
+ 2346: #4 line 551 ("") LV0: me
+ 2347: #4 line 551 ("", LV0) @
+ 2348: #4 line 551 ("", #5) LOCATION
+ 2349: #4 line 551 ("", #2) LV1: loc
+ 2350: #4 line 551 ("", #2, LV1) !
+ 2351: #4 line 551 ("") TRIG
+ 2352: #4 line 551 ("", #3) LV2: trigger
+ 2353: #4 line 551 ("", #3, LV2) !
+ 2354: #4 line 552 ("") ""
+ 2355: #4 line 552 ("", "") LV4: argparse::current_mode
+ 2356: #4 line 552 ("", "", LV4) !
+ 2357: #4 line 553 ("") {
+ 2358: #4 line 553 ("", Mark) }
+ 2359: #4 line 553 ("", 0) ARRAY_MAKE
+ 2360: #4 line 553 ("", 0[]) LV5: argparse::modes_list
+ 2361: #4 line 553 ("", 0[], LV5) !
+ 2362: #4 line 554 ("") {
+ 2363: #4 line 554 ("", Mark) }
+ 2364: #4 line 554 ("", 0) 2
+ 2365: #4 line 554 ("", 0, 2) /
+ 2366: #4 line 554 ("", 0) ARRAY_MAKE_DICT
+ 2367: #4 line 554 ("", 0{}) LV6: argparse::flags_map
+ 2368: #4 line 554 ("", 0{}, LV6) !
+ 2369: #4 line 555 ("") {
+ 2370: #4 line 555 ("", Mark) }
+ 2371: #4 line 555 ("", 0) 2
+ 2372: #4 line 555 ("", 0, 2) /
+ 2373: #4 line 555 ("", 0) ARRAY_MAKE_DICT
+ 2374: #4 line 555 ("", 0{}) LV7: argparse::posargs_map
+ 2375: #4 line 555 ("", 0{}, LV7) !
+ 2376: #4 line 556 ("") {
+ 2377: #4 line 556 ("", Mark) ""
+ 2378: #4 line 556 ("", Mark, "") "remainder"
+ 2379: #4 line 556 ("", Mark, "", "remainder") }
+ 2380: #4 line 556 ("", "", "remainder", 2) 2
+ 2381: #4 line 556 ("", "", "remainder", 2, 2) /
+ 2382: #4 line 556 ("", "", "remainder", 1) ARRAY_MAKE_DICT
+ 2383: #4 line 556 ("", 1{"": "remainder"}) LV8: argparse::remainder_map
+ 2384: #4 line 556 ("", 1{"": "remainder"}, LV8) !
+ 2385: #4 line 557 ("") {
+ 2386: #4 line 557 ("", Mark) }
+ 2387: #4 line 557 ("", 0) ARRAY_MAKE
+ 2388: #4 line 557 ("", 0[]) LV9: lsedit::help_lines
+ 2389: #4 line 557 ("", 0[], LV9) !
+ 2390: #4 line 558 ("") Addr:2332
+ 2391: #4 line 558 ("", Addr:2332) EXECUTE
+ 2332: #4 line 546 ("") Function: _main (1 vars)
+ 2333: #4 line 547 () Addr:777
+ 2334: #4 line 547 (Addr:777) EXECUTE
+  777: #4 line 207 () Function: lsedit__init_help (0 vars)
+  778: #4 line 208 () {
+  779: #4 line 208 (Mark) }
+  780: #4 line 208 (0) ARRAY_MAKE
+  781: #4 line 208 (0[]) LV9: lsedit::help_lines
+  782: #4 line 208 (0[], LV9) !
+  783: #4 line 209 () 0
+  784: #4 line 210 (0) EXIT
+ 2335: #4 line 547 (0) POP
+ 2336: #4 line 548 () SV0: _arg
+ 2337: #4 line 548 (SV0) @
+ 2338: #4 line 548 ("") Addr:2153
+ 2339: #4 line 548 ("", Addr:2153) EXECUTE
+ 2153: #4 line 510 ("") Function: lsedit__basic (1 vars)
+ 2154: #4 line 512 () Addr:0
+ 2155: #4 line 512 (Addr:0) EXECUTE
+    0: #4 line 12 () Function: argparse::init (0 vars)
+    1: #4 line 13 () ""
+    2: #4 line 13 ("") LV4: argparse::current_mode
+    3: #4 line 13 ("", LV4) !
+    4: #4 line 14 () {
+    5: #4 line 14 (Mark) }
+    6: #4 line 14 (0) ARRAY_MAKE
+    7: #4 line 14 (0[]) LV5: argparse::modes_list
+    8: #4 line 14 (0[], LV5) !
+    9: #4 line 15 () {
+   10: #4 line 15 (Mark) }
+   11: #4 line 15 (0) 2
+   12: #4 line 15 (0, 2) /
+   13: #4 line 15 (0) ARRAY_MAKE_DICT
+   14: #4 line 15 (0{}) LV6: argparse::flags_map
+   15: #4 line 15 (0{}, LV6) !
+   16: #4 line 16 () {
+   17: #4 line 16 (Mark) }
+   18: #4 line 16 (0) 2
+   19: #4 line 16 (0, 2) /
+   20: #4 line 16 (0) ARRAY_MAKE_DICT
+   21: #4 line 16 (0{}) LV7: argparse::posargs_map
+   22: #4 line 16 (0{}, LV7) !
+   23: #4 line 17 () {
+   24: #4 line 17 (Mark) ""
+   25: #4 line 17 (Mark, "") "remainder"
+   26: #4 line 17 (Mark, "", "remainder") }
+   27: #4 line 17 ("", "remainder", 2) 2
+   28: #4 line 17 ("", "remainder", 2, 2) /
+   29: #4 line 17 ("", "remainder", 1) ARRAY_MAKE_DICT
+   30: #4 line 17 (1{"": "remainder"}) LV8: argparse::remainder_map
+   31: #4 line 17 (1{"": "remainder"}, LV8) !
+   32: #4 line 18 () 0
+   33: #4 line 19 (0) EXIT
+ 2156: #4 line 512 (0) POP
+ 2157: #4 line 513 () ""
+ 2158: #4 line 513 ("") Addr:118
+ 2159: #4 line 513 ("", Addr:118) EXECUTE
+  118: #4 line 41 ("") Function: argparse::set_mode (1 vars)
+  119: #4 line 42 () SV0: _name
+  120: #4 line 42 (SV0) @
+  121: #4 line 42 ("") TOLOWER
+  122: #4 line 42 ("") SV0: _name
+  123: #4 line 42 ("", SV0) !
+  124: #4 line 43 () SV0: _name
+  125: #4 line 43 (SV0) @
+  126: #4 line 43 ("") LV4: argparse::current_mode
+  127: #4 line 43 ("", LV4) !
+  128: #4 line 44 () 0
+  129: #4 line 45 (0) EXIT
+ 2160: #4 line 513 (0) POP
+ 2161: #4 line 514 () ""
+ 2162: #4 line 514 ("") {
+ 2163: #4 line 514 ("", Mark) }
+ 2164: #4 line 514 ("", 0) ARRAY_MAKE
+ 2165: #4 line 514 ("", 0[]) "obj=list"
+ 2166: #4 line 514 ("", 0[], "obj=list") Addr:130
+ 2167: #4 line 514 ("", 0[], "obj=list", Addr:130) EXECUTE
+  130: #4 line 46 ("", 0[], "obj=list") Function: argparse::add_mode (3 vars)
+  131: #4 line 48 () SV0: _name
+  132: #4 line 48 (SV0) @
+  133: #4 line 48 ("") TOLOWER
+  134: #4 line 48 ("") SV0: _name
+  135: #4 line 48 ("", SV0) !
+  136: #4 line 49 () LV5: argparse::modes_list
+  137: #4 line 49 (LV5) @
+  138: #4 line 49 (0[]) SV0: _name
+  139: #4 line 49 (0[], SV0) @
+  140: #4 line 49 (0[], "") SWAP
+  141: #4 line 49 ("", 0[]) ARRAY_APPENDITEM
+  142: #4 line 49 (1[""]) LV5: argparse::modes_list
+  143: #4 line 49 (1[""], LV5) !
+  144: #4 line 50 () {
+  145: #4 line 50 (Mark) }
+  146: #4 line 50 (0) ARRAY_MAKE
+  147: #4 line 50 (0[]) DUP
+  148: #4 line 51 (0[], 0[]) LV6: argparse::flags_map
+  149: #4 line 51 (0[], 0[], LV6) @
+  150: #4 line 51 (0[], 0[], 0{}) SV0: _name
+  151: #4 line 51 (0[], 0[], 0{}, SV0) @
+  152: #4 line 51 (0[], 0[], 0{}, "") ARRAY_SETITEM
+  153: #4 line 51 (0[], 1{"": 0[]}) LV6: argparse::flags_map
+  154: #4 line 51 (0[], 1{"": 0[]}, LV6) !
+  155: #4 line 51 (0[]) POP
+  156: #4 line 52 () {
+  157: #4 line 52 (Mark) }
+  158: #4 line 52 (0) ARRAY_MAKE
+  159: #4 line 52 (0[]) DUP
+  160: #4 line 53 (0[], 0[]) LV7: argparse::posargs_map
+  161: #4 line 53 (0[], 0[], LV7) @
+  162: #4 line 53 (0[], 0[], 0{}) SV0: _name
+  163: #4 line 53 (0[], 0[], 0{}, SV0) @
+  164: #4 line 53 (0[], 0[], 0{}, "") ARRAY_SETITEM
+  165: #4 line 53 (0[], 1{"": 0[]}) LV7: argparse::posargs_map
+  166: #4 line 53 (0[], 1{"": 0[]}, LV7) !
+  167: #4 line 53 (0[]) POP
+  168: #4 line 54 () SV1: _flags
+  169: #4 line 54 (SV1) @
+  170: #4 line 54 (0[]) FOREACH
+  171: #4 line 55 () __FORITER__
+  172: #4 line 55 (0) JmpIfFalse: +41
+  213: #4 line 54 () __FORPOP__
+  214: #4 line 63 () SV0: _name
+  215: #4 line 63 (SV0) @
+  216: #4 line 63 ("") SV2: _posargs
+  217: #4 line 63 ("", SV2) @
+  218: #4 line 63 ("", "obj=list") Addr:34
+  219: #4 line 63 ("", "obj=list", Addr:34) EXECUTE
+   34: #4 line 20 ("", "obj=list") Function: argparse::parse_posargs (2 vars)
+   35: #4 line 23 () {
+   36: #4 line 23 (Mark) SV1: _posargs
+   37: #4 line 23 (Mark, SV1) @
+   38: #4 line 23 (Mark, "obj=list") "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
+   39: #4 line 23 (Mark, "obj=list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$") 1
+   40: #4 line 23 (Mark, "obj=list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$", 1) REGEXP
+   41: #4 line 23 (Mark, 4["obj=list", "obj", "=", "list"], 4[2[0, 8], 2[0, 3], 2[3, 4], 2[4, 8]]) }
+   42: #4 line 23 (4["obj=list", "obj", "=", "list"], 4[2[0, 8], 2[0, 3], 2[3, 4], 2[4, 8]], 2) ARRAY_MAKE
+   43: #4 line 23 (2[4["obj=list", "obj", "=", "list"], 4[2[0, 8], 2[0, 3], 2[3, 4], 2[4, 8]]]) 0
+   44: #4 line 23 (2[4["obj=list", "obj", "=", "list"], 4[2[0, 8], 2[0, 3], 2[3, 4], 2[4, 8]]], 0) ARRAY_GETITEM
+   45: #4 line 24 (4["obj=list", "obj", "=", "list"]) SV2: _tok
+   46: #4 line 24 (4["obj=list", "obj", "=", "list"], SV2) !
+   47: #4 line 25 () SV2: _tok
+   48: #4 line 25 (SV2) @
+   49: #4 line 25 (4["obj=list", "obj", "=", "list"]) JmpIfFalse: +53
+   50: #4 line 26 () LV7: argparse::posargs_map
+   51: #4 line 26 (LV7) @
+   52: #4 line 26 (1{"": 0[]}) SV0: _mode
+   53: #4 line 26 (1{"": 0[]}, SV0) @
+   54: #4 line 26 (1{"": 0[]}, "") ARRAY_GETITEM
+   55: #4 line 26 (0[]) NOT
+   56: #4 line 26 (1) JmpIfFalse: +13
+   57: #4 line 27 () {
+   58: #4 line 27 (Mark) }
+   59: #4 line 27 (0) ARRAY_MAKE
+   60: #4 line 27 (0[]) DUP
+   61: #4 line 28 (0[], 0[]) LV7: argparse::posargs_map
+   62: #4 line 28 (0[], 0[], LV7) @
+   63: #4 line 28 (0[], 0[], 1{"": 0[]}) SV0: _mode
+   64: #4 line 28 (0[], 0[], 1{"": 0[]}, SV0) @
+   65: #4 line 28 (0[], 0[], 1{"": 0[]}, "") ARRAY_SETITEM
+   66: #4 line 28 (0[], 1{"": 0[]}) LV7: argparse::posargs_map
+   67: #4 line 28 (0[], 1{"": 0[]}, LV7) !
+   68: #4 line 28 (0[]) POP
+   69: #4 line 30 () LV7: argparse::posargs_map
+   70: #4 line 30 (LV7) @
+   71: #4 line 30 (1{"": 0[]}) SV0: _mode
+   72: #4 line 30 (1{"": 0[]}, SV0) @
+   73: #4 line 30 (1{"": 0[]}, "") OVER
+   74: #4 line 30 (1{"": 0[]}, "", 1{"": 0[]}) OVER
+   75: #4 line 30 (1{"": 0[]}, "", 1{"": 0[]}, "") ARRAY_GETITEM
+   76: #4 line 31 (1{"": 0[]}, "", 0[]) {
+   77: #4 line 31 (1{"": 0[]}, "", 0[], Mark) SV2: _tok
+   78: #4 line 31 (1{"": 0[]}, "", 0[], Mark, SV2) @
+   79: #4 line 31 (1{"": 0[]}, "", 0[], Mark, 4["obj=list", "obj", "=", "list"]) 1
+   80: #4 line 31 (1{"": 0[]}, "", 0[], Mark, 4["obj=list", "obj", "=", "list"], 1) ARRAY_GETITEM
+   81: #4 line 31 (1{"": 0[]}, "", 0[], Mark, "obj") TOLOWER
+   82: #4 line 31 (1{"": 0[]}, "", 0[], Mark, "obj") SV2: _tok
+   83: #4 line 31 (1{"": 0[]}, "", 0[], Mark, "obj", SV2) @
+   84: #4 line 31 (1{"": 0[]}, "", 0[], Mark, "obj", 4["obj=list", "obj", "=", "list"]) 2
+   85: #4 line 31 (1{"": 0[]}, "", 0[], Mark, "obj", 4["obj=list", "obj", "=", "list"], 2) ARRAY_GETITEM
+   86: #4 line 31 (1{"": 0[]}, "", 0[], Mark, "obj", "=") }
+   87: #4 line 31 (1{"": 0[]}, "", 0[], "obj", "=", 2) ARRAY_MAKE
+   88: #4 line 31 (1{"": 0[]}, "", 0[], 2["obj", "="]) SWAP
+   89: #4 line 31 (1{"": 0[]}, "", 2["obj", "="], 0[]) ARRAY_APPENDITEM
+   90: #4 line 31 (1{"": 0[]}, "", 1[2["obj", "="]]) ROT
+   91: #4 line 31 ("", 1[2["obj", "="]], 1{"": 0[]}) ROT
+   92: #4 line 31 (1[2["obj", "="]], 1{"": 0[]}, "") ARRAY_SETITEM
+   93: #4 line 31 (1{"": 1[2["obj", "="]]}) LV7: argparse::posargs_map
+   94: #4 line 31 (1{"": 1[2["obj", "="]]}, LV7) !
+   95: #4 line 32 () SV2: _tok
+   96: #4 line 32 (SV2) @
+   97: #4 line 32 (4["obj=list", "obj", "=", "list"]) 3
+   98: #4 line 32 (4["obj=list", "obj", "=", "list"], 3) ARRAY_GETITEM
+   99: #4 line 32 ("list") SV1: _posargs
+  100: #4 line 32 ("list", SV1) !
+  101: #4 line 25 () JMP: +14
+  115: #4 line 38 () JMP: -80
+   35: #4 line 23 () {
+   36: #4 line 23 (Mark) SV1: _posargs
+   37: #4 line 23 (Mark, SV1) @
+   38: #4 line 23 (Mark, "list") "^([a-z0-9_]*)([^a-z0-9_])(.*)$"
+   39: #4 line 23 (Mark, "list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$") 1
+   40: #4 line 23 (Mark, "list", "^([a-z0-9_]*)([^a-z0-9_])(.*)$", 1) REGEXP
+   41: #4 line 23 (Mark, 0[], 0[]) }
+   42: #4 line 23 (0[], 0[], 2) ARRAY_MAKE
+   43: #4 line 23 (2[0[], 0[]]) 0
+   44: #4 line 23 (2[0[], 0[]], 0) ARRAY_GETITEM
+   45: #4 line 24 (0[]) SV2: _tok
+   46: #4 line 24 (0[], SV2) !
+   47: #4 line 25 () SV2: _tok
+   48: #4 line 25 (SV2) @
+   49: #4 line 25 (0[]) JmpIfFalse: +53
+  102: #4 line 34 () SV1: _posargs
+  103: #4 line 34 (SV1) @
+  104: #4 line 34 ("list") TOLOWER
+  105: #4 line 34 ("list") DUP
+  106: #4 line 35 ("list", "list") LV8: argparse::remainder_map
+  107: #4 line 35 ("list", "list", LV8) @
+  108: #4 line 35 ("list", "list", 1{"": "remainder"}) SV0: _mode
+  109: #4 line 35 ("list", "list", 1{"": "remainder"}, SV0) @
+  110: #4 line 35 ("list", "list", 1{"": "remainder"}, "") ARRAY_SETITEM
+  111: #4 line 35 ("list", 1{"": "list"}) LV8: argparse::remainder_map
+  112: #4 line 35 ("list", 1{"": "list"}, LV8) !
+  113: #4 line 35 ("list") POP
+  114: #4 line 36 () JMP: +2
+  116: #4 line 39 () 0
+  117: #4 line 40 (0) EXIT
+  220: #4 line 63 (0) POP
+  221: #4 line 64 () 0
+  222: #4 line 65 (0) EXIT
+ 2168: #4 line 514 (0) POP
+ 2169: #4 line 515 () SV0: _arg
+ 2170: #4 line 515 (SV0) @
+ 2171: #4 line 515 ("") Addr:464
+ 2172: #4 line 515 ("", Addr:464) EXECUTE
+  464: #4 line 124 ("") Function: argparse::parse (1 vars)
+  465: #4 line 127 () {
+  466: #4 line 127 (Mark) }
+  467: #4 line 127 (0) 2
+  468: #4 line 127 (0, 2) /
+  469: #4 line 127 (0) ARRAY_MAKE_DICT
+  470: #4 line 127 (0{}) SV4: _opts
+  471: #4 line 127 (0{}, SV4) !
+  472: #4 line 128 () 0
+  473: #4 line 128 (0) SV5: _mode_given
+  474: #4 line 128 (0, SV5) !
+  475: #4 line 130 () SV0: _line
+  476: #4 line 130 (SV0) @
+  477: #4 line 130 ("") "#"
+  478: #4 line 130 ("", "#") STRINGPFX
+  479: #4 line 131 (0) JmpIfFalse: +208
+  687: #4 line 189 () SV5: _mode_given
+  688: #4 line 189 (SV5) @
+  689: #4 line 189 (0) 1
+  690: #4 line 189 (0, 1) >
+  691: #4 line 189 (0) JmpIfFalse: +13
+  704: #4 line 194 () LV7: argparse::posargs_map
+  705: #4 line 194 (LV7) @
+  706: #4 line 194 (1{"": 1[2["obj", "="]]}) LV4: argparse::current_mode
+  707: #4 line 194 (1{"": 1[2["obj", "="]]}, LV4) @
+  708: #4 line 194 (1{"": 1[2["obj", "="]]}, "") ARRAY_GETITEM
+  709: #4 line 194 (1[2["obj", "="]]) FOREACH
+  710: #4 line 195 () __FORITER__
+  711: #4 line 195 (0, 2["obj", "="], 1) JmpIfFalse: +38
+  712: #4 line 195 (0, 2["obj", "="]) SV9: _posarg
+  713: #4 line 195 (0, 2["obj", "="], SV9) !
+  714: #4 line 195 (0) POP
+  715: #4 line 196 () {
+  716: #4 line 196 (Mark) SV0: _line
+  717: #4 line 196 (Mark, SV0) @
+  718: #4 line 196 (Mark, "") SV9: _posarg
+  719: #4 line 196 (Mark, "", SV9) @
+  720: #4 line 196 (Mark, "", 2["obj", "="]) 1
+  721: #4 line 196 (Mark, "", 2["obj", "="], 1) ARRAY_GETITEM
+  722: #4 line 196 (Mark, "", "=") SPLIT
+  723: #4 line 196 (Mark, "", "") }
+  724: #4 line 196 ("", "", 2) ARRAY_MAKE
+  725: #4 line 196 (2["", ""]) SV1: _parts
+  726: #4 line 196 (2["", ""], SV1) !
+  727: #4 line 197 () SV1: _parts
+  728: #4 line 197 (SV1) @
+  729: #4 line 197 (2["", ""]) 0
+  730: #4 line 197 (2["", ""], 0) ARRAY_GETITEM
+  731: #4 line 197 ("") DUP
+  732: #4 line 197 ("", "") SV4: _opts
+  733: #4 line 197 ("", "", SV4) @
+  734: #4 line 197 ("", "", 0{}) SV9: _posarg
+  735: #4 line 197 ("", "", 0{}, SV9) @
+  736: #4 line 197 ("", "", 0{}, 2["obj", "="]) 0
+  737: #4 line 197 ("", "", 0{}, 2["obj", "="], 0) ARRAY_GETITEM
+  738: #4 line 197 ("", "", 0{}, "obj") ARRAY_SETITEM
+  739: #4 line 197 ("", 1{"obj": ""}) SV4: _opts
+  740: #4 line 197 ("", 1{"obj": ""}, SV4) !
+  741: #4 line 197 ("") POP
+  742: #4 line 198 () SV1: _parts
+  743: #4 line 198 (SV1) @
+  744: #4 line 198 (2["", ""]) 1
+  745: #4 line 198 (2["", ""], 1) ARRAY_GETITEM
+  746: #4 line 198 ("") SV0: _line
+  747: #4 line 198 ("", SV0) !
+  748: #4 line 199 () JMP: -38
+  710: #4 line 195 () __FORITER__
+  711: #4 line 195 (0) JmpIfFalse: +38
+  749: #4 line 194 () __FORPOP__
+  750: #4 line 200 () SV0: _line
+  751: #4 line 200 (SV0) @
+  752: #4 line 200 ("") DUP
+  753: #4 line 201 ("", "") SV4: _opts
+  754: #4 line 201 ("", "", SV4) @
+  755: #4 line 201 ("", "", 1{"obj": ""}) LV8: argparse::remainder_map
+  756: #4 line 201 ("", "", 1{"obj": ""}, LV8) @
+  757: #4 line 201 ("", "", 1{"obj": ""}, 1{"": "list"}) LV4: argparse::current_mode
+  758: #4 line 201 ("", "", 1{"obj": ""}, 1{"": "list"}, LV4) @
+  759: #4 line 201 ("", "", 1{"obj": ""}, 1{"": "list"}, "") ARRAY_GETITEM
+  760: #4 line 201 ("", "", 1{"obj": ""}, "list") ARRAY_SETITEM
+  761: #4 line 201 ("", 2{"list": "", "obj": ""}) SV4: _opts
+  762: #4 line 201 ("", 2{"list": "", "obj": ""}, SV4) !
+  763: #4 line 201 ("") POP
+  764: #4 line 202 () LV4: argparse::current_mode
+  765: #4 line 202 (LV4) @
+  766: #4 line 202 ("") DUP
+  767: #4 line 202 ("", "") SV4: _opts
+  768: #4 line 202 ("", "", SV4) @
+  769: #4 line 202 ("", "", 2{"list": "", "obj": ""}) "mode"
+  770: #4 line 202 ("", "", 2{"list": "", "obj": ""}, "mode") ARRAY_SETITEM
+  771: #4 line 202 ("", 3{"list": "", "mode": "", "obj": ""}) SV4: _opts
+  772: #4 line 202 ("", 3{"list": "", "mode": "", "obj": ""}, SV4) !
+  773: #4 line 202 ("") POP
+  774: #4 line 203 () SV4: _opts
+  775: #4 line 203 (SV4) @
+  776: #4 line 204 (3{"list": "", "mode": "", "obj": ""}) EXIT
+ 2173: #4 line 515 (3{"list": "", "mode": "", "obj": ""}) SV1: _opts
+ 2174: #4 line 515 (3{"list": "", "mode": "", "obj": ""}, SV1) !
+ 2175: #4 line 516 () SV1: _opts
+ 2176: #4 line 516 (SV1) @
+ 2177: #4 line 516 (3{"list": "", "mode": "", "obj": ""}) NOT
+ 2178: #4 line 516 (0) JmpIfFalse: +3
+ 2181: #4 line 517 () SV1: _opts
+ 2182: #4 line 517 (SV1) @
+ 2183: #4 line 517 (3{"list": "", "mode": "", "obj": ""}) "obj"
+ 2184: #4 line 517 (3{"list": "", "mode": "", "obj": ""}, "obj") ARRAY_GETITEM
+ 2185: #4 line 517 ("") NOT
+ 2186: #4 line 518 (1) DUP
+ 2187: #4 line 518 (1, 1) NOT
+ 2188: #4 line 518 (1, 0) JmpIfFalse: +7
+ 2195: #4 line 518 (1) JmpIfFalse: +6
+ 2196: #4 line 519 () Addr:334
+ 2197: #4 line 519 (Addr:334) EXECUTE
+  334: #4 line 100 () Function: argparse::show_usage (0 vars)
+  335: #4 line 103 () TRIG
+  336: #4 line 103 (#3) NAME
+  337: #4 line 103 ("test") ";"
+  338: #4 line 103 ("test", ";") SPLIT
+  339: #4 line 103 ("test", "") POP
+  340: #4 line 103 ("test") STRIPLEAD
+  341: #4 line 103 ("test") STRIPTAIL
+  342: #4 line 103 ("test") SV0: _cmd
+  343: #4 line 103 ("test", SV0) !
+  344: #4 line 104 () "Usage:"
+  345: #4 line 104 ("Usage:") LV0: me
+  346: #4 line 104 ("Usage:", LV0) @
+  347: #4 line 104 ("Usage:", #5) SWAP
+  348: #4 line 104 (#5, "Usage:") NOTIFY
 NOTIFY: Usage:
-  349: line 105 () LV5: argparse::modes_list
-  350: line 105 (LV5) @
-  351: line 105 (1[""]) FOREACH
-  352: line 106 () __FORITER__
-  353: line 106 (0, "", 1) JmpIfFalse: +108
-  354: line 106 (0, "") SV1: _mode
-  355: line 106 (0, "", SV1) !
-  356: line 106 (0) POP
-  357: line 107 () {
-  358: line 107 (Mark) }
-  359: line 107 (0) ARRAY_MAKE
-  360: line 107 (0[]) LV6: argparse::flags_map
-  361: line 107 (0[], LV6) @
-  362: line 107 (0[], 1{"": 0[]}) SV1: _mode
-  363: line 107 (0[], 1{"": 0[]}, SV1) @
-  364: line 107 (0[], 1{"": 0[]}, "") ARRAY_GETITEM
-  365: line 107 (0[], 0[]) FOREACH
-  366: line 108 (0[]) __FORITER__
-  367: line 108 (0[], 0) JmpIfFalse: +16
-  383: line 107 (0[]) __FORPOP__
-  384: line 110 (0[]) SV2: _flags
-  385: line 110 (0[], SV2) !
-  386: line 111 () {
-  387: line 111 (Mark) }
-  388: line 111 (0) ARRAY_MAKE
-  389: line 111 (0[]) LV7: argparse::posargs_map
-  390: line 111 (0[], LV7) @
-  391: line 111 (0[], 1{"": 1[2["obj", "="]]}) SV1: _mode
-  392: line 111 (0[], 1{"": 1[2["obj", "="]]}, SV1) @
-  393: line 111 (0[], 1{"": 1[2["obj", "="]]}, "") ARRAY_GETITEM
-  394: line 111 (0[], 1[2["obj", "="]]) FOREACH
-  395: line 112 (0[]) __FORITER__
-  396: line 112 (0[], 0, 2["obj", "="], 1) JmpIfFalse: +21
-  397: line 112 (0[], 0, 2["obj", "="]) SV5: _posarg
-  398: line 112 (0[], 0, 2["obj", "="], SV5) !
-  399: line 112 (0[], 0) POP
-  400: line 113 (0[]) {
-  401: line 113 (0[], Mark) SV5: _posarg
-  402: line 113 (0[], Mark, SV5) @
-  403: line 113 (0[], Mark, 2["obj", "="]) 0
-  404: line 113 (0[], Mark, 2["obj", "="], 0) ARRAY_GETITEM
-  405: line 113 (0[], Mark, "obj") TOUPPER
-  406: line 113 (0[], Mark, "OBJ") SV5: _posarg
-  407: line 113 (0[], Mark, "OBJ", SV5) @
-  408: line 113 (0[], Mark, "OBJ", 2["obj", "="]) 1
-  409: line 113 (0[], Mark, "OBJ", 2["obj", "="], 1) ARRAY_GETITEM
-  410: line 113 (0[], Mark, "OBJ", "=") }
-  411: line 113 (0[], "OBJ", "=", 2) ARRAY_MAKE
-  412: line 113 (0[], 2["OBJ", "="]) ""
-  413: line 113 (0[], 2["OBJ", "="], "") ARRAY_JOIN
-  414: line 114 (0[], "OBJ=") SWAP
-  415: line 114 ("OBJ=", 0[]) ARRAY_APPENDITEM
-  416: line 115 (1["OBJ="]) JMP: -21
-  395: line 112 (1["OBJ="]) __FORITER__
-  396: line 112 (1["OBJ="], 0) JmpIfFalse: +21
-  417: line 111 (1["OBJ="]) __FORPOP__
-  418: line 115 (1["OBJ="]) SV4: _posargs
-  419: line 115 (1["OBJ="], SV4) !
-  420: line 116 () LV8: argparse::remainder_map
-  421: line 116 (LV8) @
-  422: line 116 (1{"": "list"}) SV1: _mode
-  423: line 116 (1{"": "list"}, SV1) @
-  424: line 116 (1{"": "list"}, "") ARRAY_GETITEM
-  425: line 116 ("list") TOUPPER
-  426: line 117 ("LIST") SV4: _posargs
-  427: line 117 ("LIST", SV4) @
-  428: line 117 ("LIST", 1["OBJ="]) ""
-  429: line 117 ("LIST", 1["OBJ="], "") ARRAY_JOIN
-  430: line 117 ("LIST", "OBJ=") SV2: _flags
-  431: line 117 ("LIST", "OBJ=", SV2) @
-  432: line 117 ("LIST", "OBJ=", 0[]) JmpIfFalse: +3
-  435: line 117 ("LIST", "OBJ=") ""
-  436: line 118 ("LIST", "OBJ=", "") SV2: _flags
-  437: line 118 ("LIST", "OBJ=", "", SV2) @
-  438: line 118 ("LIST", "OBJ=", "", 0[]) " "
-  439: line 118 ("LIST", "OBJ=", "", 0[], " ") ARRAY_JOIN
-  440: line 118 ("LIST", "OBJ=", "", "") SV1: _mode
-  441: line 118 ("LIST", "OBJ=", "", "", SV1) @
-  442: line 118 ("LIST", "OBJ=", "", "", "") SV1: _mode
-  443: line 118 ("LIST", "OBJ=", "", "", "", SV1) @
-  444: line 118 ("LIST", "OBJ=", "", "", "", "") JmpIfFalse: +3
-  447: line 118 ("LIST", "OBJ=", "", "", "") ""
-  448: line 119 ("LIST", "OBJ=", "", "", "", "") SV0: _cmd
-  449: line 119 ("LIST", "OBJ=", "", "", "", "", SV0) @
-  450: line 119 ("LIST", "OBJ=", "", "", "", "", "test") "%s %s%s %s%s%s%s"
-  451: line 119 ("LIST", "OBJ=", "", "", "", "", "test", "%s %s%s %s%s%s%s") FMTSTRING
-  452: line 119 ("test  OBJ=LIST") SV6: _line
-  453: line 119 ("test  OBJ=LIST", SV6) !
-  454: line 120 () SV6: _line
-  455: line 120 (SV6) @
-  456: line 120 ("test  OBJ=LIST") LV0: me
-  457: line 120 ("test  OBJ=LIST", LV0) @
-  458: line 120 ("test  OBJ=LIST", #5) SWAP
-  459: line 120 (#5, "test  OBJ=LIST") NOTIFY
+  349: #4 line 105 () LV5: argparse::modes_list
+  350: #4 line 105 (LV5) @
+  351: #4 line 105 (1[""]) FOREACH
+  352: #4 line 106 () __FORITER__
+  353: #4 line 106 (0, "", 1) JmpIfFalse: +108
+  354: #4 line 106 (0, "") SV1: _mode
+  355: #4 line 106 (0, "", SV1) !
+  356: #4 line 106 (0) POP
+  357: #4 line 107 () {
+  358: #4 line 107 (Mark) }
+  359: #4 line 107 (0) ARRAY_MAKE
+  360: #4 line 107 (0[]) LV6: argparse::flags_map
+  361: #4 line 107 (0[], LV6) @
+  362: #4 line 107 (0[], 1{"": 0[]}) SV1: _mode
+  363: #4 line 107 (0[], 1{"": 0[]}, SV1) @
+  364: #4 line 107 (0[], 1{"": 0[]}, "") ARRAY_GETITEM
+  365: #4 line 107 (0[], 0[]) FOREACH
+  366: #4 line 108 (0[]) __FORITER__
+  367: #4 line 108 (0[], 0) JmpIfFalse: +16
+  383: #4 line 107 (0[]) __FORPOP__
+  384: #4 line 110 (0[]) SV2: _flags
+  385: #4 line 110 (0[], SV2) !
+  386: #4 line 111 () {
+  387: #4 line 111 (Mark) }
+  388: #4 line 111 (0) ARRAY_MAKE
+  389: #4 line 111 (0[]) LV7: argparse::posargs_map
+  390: #4 line 111 (0[], LV7) @
+  391: #4 line 111 (0[], 1{"": 1[2["obj", "="]]}) SV1: _mode
+  392: #4 line 111 (0[], 1{"": 1[2["obj", "="]]}, SV1) @
+  393: #4 line 111 (0[], 1{"": 1[2["obj", "="]]}, "") ARRAY_GETITEM
+  394: #4 line 111 (0[], 1[2["obj", "="]]) FOREACH
+  395: #4 line 112 (0[]) __FORITER__
+  396: #4 line 112 (0[], 0, 2["obj", "="], 1) JmpIfFalse: +21
+  397: #4 line 112 (0[], 0, 2["obj", "="]) SV5: _posarg
+  398: #4 line 112 (0[], 0, 2["obj", "="], SV5) !
+  399: #4 line 112 (0[], 0) POP
+  400: #4 line 113 (0[]) {
+  401: #4 line 113 (0[], Mark) SV5: _posarg
+  402: #4 line 113 (0[], Mark, SV5) @
+  403: #4 line 113 (0[], Mark, 2["obj", "="]) 0
+  404: #4 line 113 (0[], Mark, 2["obj", "="], 0) ARRAY_GETITEM
+  405: #4 line 113 (0[], Mark, "obj") TOUPPER
+  406: #4 line 113 (0[], Mark, "OBJ") SV5: _posarg
+  407: #4 line 113 (0[], Mark, "OBJ", SV5) @
+  408: #4 line 113 (0[], Mark, "OBJ", 2["obj", "="]) 1
+  409: #4 line 113 (0[], Mark, "OBJ", 2["obj", "="], 1) ARRAY_GETITEM
+  410: #4 line 113 (0[], Mark, "OBJ", "=") }
+  411: #4 line 113 (0[], "OBJ", "=", 2) ARRAY_MAKE
+  412: #4 line 113 (0[], 2["OBJ", "="]) ""
+  413: #4 line 113 (0[], 2["OBJ", "="], "") ARRAY_JOIN
+  414: #4 line 114 (0[], "OBJ=") SWAP
+  415: #4 line 114 ("OBJ=", 0[]) ARRAY_APPENDITEM
+  416: #4 line 115 (1["OBJ="]) JMP: -21
+  395: #4 line 112 (1["OBJ="]) __FORITER__
+  396: #4 line 112 (1["OBJ="], 0) JmpIfFalse: +21
+  417: #4 line 111 (1["OBJ="]) __FORPOP__
+  418: #4 line 115 (1["OBJ="]) SV4: _posargs
+  419: #4 line 115 (1["OBJ="], SV4) !
+  420: #4 line 116 () LV8: argparse::remainder_map
+  421: #4 line 116 (LV8) @
+  422: #4 line 116 (1{"": "list"}) SV1: _mode
+  423: #4 line 116 (1{"": "list"}, SV1) @
+  424: #4 line 116 (1{"": "list"}, "") ARRAY_GETITEM
+  425: #4 line 116 ("list") TOUPPER
+  426: #4 line 117 ("LIST") SV4: _posargs
+  427: #4 line 117 ("LIST", SV4) @
+  428: #4 line 117 ("LIST", 1["OBJ="]) ""
+  429: #4 line 117 ("LIST", 1["OBJ="], "") ARRAY_JOIN
+  430: #4 line 117 ("LIST", "OBJ=") SV2: _flags
+  431: #4 line 117 ("LIST", "OBJ=", SV2) @
+  432: #4 line 117 ("LIST", "OBJ=", 0[]) JmpIfFalse: +3
+  435: #4 line 117 ("LIST", "OBJ=") ""
+  436: #4 line 118 ("LIST", "OBJ=", "") SV2: _flags
+  437: #4 line 118 ("LIST", "OBJ=", "", SV2) @
+  438: #4 line 118 ("LIST", "OBJ=", "", 0[]) " "
+  439: #4 line 118 ("LIST", "OBJ=", "", 0[], " ") ARRAY_JOIN
+  440: #4 line 118 ("LIST", "OBJ=", "", "") SV1: _mode
+  441: #4 line 118 ("LIST", "OBJ=", "", "", SV1) @
+  442: #4 line 118 ("LIST", "OBJ=", "", "", "") SV1: _mode
+  443: #4 line 118 ("LIST", "OBJ=", "", "", "", SV1) @
+  444: #4 line 118 ("LIST", "OBJ=", "", "", "", "") JmpIfFalse: +3
+  447: #4 line 118 ("LIST", "OBJ=", "", "", "") ""
+  448: #4 line 119 ("LIST", "OBJ=", "", "", "", "") SV0: _cmd
+  449: #4 line 119 ("LIST", "OBJ=", "", "", "", "", SV0) @
+  450: #4 line 119 ("LIST", "OBJ=", "", "", "", "", "test") "%s %s%s %s%s%s%s"
+  451: #4 line 119 ("LIST", "OBJ=", "", "", "", "", "test", "%s %s%s %s%s%s%s") FMTSTRING
+  452: #4 line 119 ("test  OBJ=LIST") SV6: _line
+  453: #4 line 119 ("test  OBJ=LIST", SV6) !
+  454: #4 line 120 () SV6: _line
+  455: #4 line 120 (SV6) @
+  456: #4 line 120 ("test  OBJ=LIST") LV0: me
+  457: #4 line 120 ("test  OBJ=LIST", LV0) @
+  458: #4 line 120 ("test  OBJ=LIST", #5) SWAP
+  459: #4 line 120 (#5, "test  OBJ=LIST") NOTIFY
 NOTIFY: test  OBJ=LIST
-  460: line 121 () JMP: -108
-  352: line 106 () __FORITER__
-  353: line 106 (0) JmpIfFalse: +108
-  461: line 105 () __FORPOP__
-  462: line 122 () 0
-  463: line 123 (0) EXIT
- 2198: line 519 (0) POP
- 2199: line 520 () 0
- 2200: line 520 (0) EXIT
- 2340: line 549 (0) EXIT
- 2392: line 559 (0) EXIT
+  460: #4 line 121 () JMP: -108
+  352: #4 line 106 () __FORITER__
+  353: #4 line 106 (0) JmpIfFalse: +108
+  461: #4 line 105 () __FORPOP__
+  462: #4 line 122 () 0
+  463: #4 line 123 (0) EXIT
+ 2198: #4 line 519 (0) POP
+ 2199: #4 line 520 () 0
+ 2200: #4 line 520 (0) EXIT
+ 2340: #4 line 549 (0) EXIT
+ 2392: #4 line 559 (0) EXIT
 Execution completed in 518 steps.
 

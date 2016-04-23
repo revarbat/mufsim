@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: 0
     2: ERROR_NUM
@@ -16,40 +16,40 @@
    12: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") 0
-    2: line 2 ("", 0) ERROR_NUM
-    3: line 2 ("", 0, 5) --
-    4: line 2 ("", 0, 4) 1
-    5: line 2 ("", 0, 4, 1) FOR
-    6: line 3 ("") __FORITER__
-    7: line 3 ("", 0, 1) JmpIfFalse: +4
-    8: line 3 ("", 0) ERROR_STR
-    9: line 3 ("", "Division by zero attempted.") POP
-   10: line 4 ("") JMP: -4
-    6: line 3 ("") __FORITER__
-    7: line 3 ("", 1, 1) JmpIfFalse: +4
-    8: line 3 ("", 1) ERROR_STR
-    9: line 3 ("", "Result was not a number.") POP
-   10: line 4 ("") JMP: -4
-    6: line 3 ("") __FORITER__
-    7: line 3 ("", 2, 1) JmpIfFalse: +4
-    8: line 3 ("", 2) ERROR_STR
-    9: line 3 ("", "Result was imaginary.") POP
-   10: line 4 ("") JMP: -4
-    6: line 3 ("") __FORITER__
-    7: line 3 ("", 3, 1) JmpIfFalse: +4
-    8: line 3 ("", 3) ERROR_STR
-    9: line 3 ("", "Floating-point inputs were infinite or out of range.") POP
-   10: line 4 ("") JMP: -4
-    6: line 3 ("") __FORITER__
-    7: line 3 ("", 4, 1) JmpIfFalse: +4
-    8: line 3 ("", 4) ERROR_STR
-    9: line 3 ("", "Calculation resulted in an integer overflow.") POP
-   10: line 4 ("") JMP: -4
-    6: line 3 ("") __FORITER__
-    7: line 3 ("", 0) JmpIfFalse: +4
-   11: line 2 ("") __FORPOP__
-   12: line 5 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") 0
+    2: #4 line 2 ("", 0) ERROR_NUM
+    3: #4 line 2 ("", 0, 5) --
+    4: #4 line 2 ("", 0, 4) 1
+    5: #4 line 2 ("", 0, 4, 1) FOR
+    6: #4 line 3 ("") __FORITER__
+    7: #4 line 3 ("", 0, 1) JmpIfFalse: +4
+    8: #4 line 3 ("", 0) ERROR_STR
+    9: #4 line 3 ("", "Division by zero attempted.") POP
+   10: #4 line 4 ("") JMP: -4
+    6: #4 line 3 ("") __FORITER__
+    7: #4 line 3 ("", 1, 1) JmpIfFalse: +4
+    8: #4 line 3 ("", 1) ERROR_STR
+    9: #4 line 3 ("", "Result was not a number.") POP
+   10: #4 line 4 ("") JMP: -4
+    6: #4 line 3 ("") __FORITER__
+    7: #4 line 3 ("", 2, 1) JmpIfFalse: +4
+    8: #4 line 3 ("", 2) ERROR_STR
+    9: #4 line 3 ("", "Result was imaginary.") POP
+   10: #4 line 4 ("") JMP: -4
+    6: #4 line 3 ("") __FORITER__
+    7: #4 line 3 ("", 3, 1) JmpIfFalse: +4
+    8: #4 line 3 ("", 3) ERROR_STR
+    9: #4 line 3 ("", "Floating-point inputs were infinite or out of range.") POP
+   10: #4 line 4 ("") JMP: -4
+    6: #4 line 3 ("") __FORITER__
+    7: #4 line 3 ("", 4, 1) JmpIfFalse: +4
+    8: #4 line 3 ("", 4) ERROR_STR
+    9: #4 line 3 ("", "Calculation resulted in an integer overflow.") POP
+   10: #4 line 4 ("") JMP: -4
+    6: #4 line 3 ("") __FORITER__
+    7: #4 line 3 ("", 0) JmpIfFalse: +4
+   11: #4 line 2 ("") __FORPOP__
+   12: #4 line 5 ("") EXIT
 Execution completed in 35 steps.
 

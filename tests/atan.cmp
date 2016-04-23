@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: 1.0
     2: ATAN
@@ -29,31 +29,31 @@
    25: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") 1.0
-    2: line 2 ("", 1.0) ATAN
-    3: line 2 ("", 0.785398163397) POP
-    4: line 3 ("") 1.0
-    5: line 3 ("", 1.0) -1.0
-    6: line 3 ("", 1.0, -1.0) *
-    7: line 3 ("", -1.0) ATAN
-    8: line 3 ("", -0.785398163397) POP
-    9: line 4 ("") 0.5
-   10: line 4 ("", 0.5) ATAN
-   11: line 4 ("", 0.463647609001) POP
-   12: line 5 ("") 0.5
-   13: line 5 ("", 0.5) -1.0
-   14: line 5 ("", 0.5, -1.0) *
-   15: line 5 ("", -0.5) ATAN
-   16: line 5 ("", -0.463647609001) POP
-   17: line 6 ("") 0.0
-   18: line 6 ("", 0.0) ATAN
-   19: line 6 ("", 0.0) POP
-   20: line 7 ("") 0.0
-   21: line 7 ("", 0.0) -1.0
-   22: line 7 ("", 0.0, -1.0) *
-   23: line 7 ("", -0.0) ATAN
-   24: line 7 ("", -0.0) POP
-   25: line 8 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") 1.0
+    2: #4 line 2 ("", 1.0) ATAN
+    3: #4 line 2 ("", 0.785398163397) POP
+    4: #4 line 3 ("") 1.0
+    5: #4 line 3 ("", 1.0) -1.0
+    6: #4 line 3 ("", 1.0, -1.0) *
+    7: #4 line 3 ("", -1.0) ATAN
+    8: #4 line 3 ("", -0.785398163397) POP
+    9: #4 line 4 ("") 0.5
+   10: #4 line 4 ("", 0.5) ATAN
+   11: #4 line 4 ("", 0.463647609001) POP
+   12: #4 line 5 ("") 0.5
+   13: #4 line 5 ("", 0.5) -1.0
+   14: #4 line 5 ("", 0.5, -1.0) *
+   15: #4 line 5 ("", -0.5) ATAN
+   16: #4 line 5 ("", -0.463647609001) POP
+   17: #4 line 6 ("") 0.0
+   18: #4 line 6 ("", 0.0) ATAN
+   19: #4 line 6 ("", 0.0) POP
+   20: #4 line 7 ("") 0.0
+   21: #4 line 7 ("", 0.0) -1.0
+   22: #4 line 7 ("", 0.0, -1.0) *
+   23: #4 line 7 ("", -0.0) ATAN
+   24: #4 line 7 ("", -0.0) POP
+   25: #4 line 8 ("") EXIT
 Execution completed in 26 steps.
 

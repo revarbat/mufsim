@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "foo"
     2: "foo"
@@ -37,39 +37,39 @@
    33: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "foo"
-    2: line 2 ("", "foo") "foo"
-    3: line 2 ("", "foo", "foo") STRINGCMP
-    4: line 2 ("", 0) POP
-    5: line 3 ("") "foo"
-    6: line 3 ("", "foo") "bar"
-    7: line 3 ("", "foo", "bar") STRINGCMP
-    8: line 3 ("", 1) POP
-    9: line 4 ("") "bar"
-   10: line 4 ("", "bar") "foo"
-   11: line 4 ("", "bar", "foo") STRINGCMP
-   12: line 4 ("", -1) POP
-   13: line 5 ("") "bar"
-   14: line 5 ("", "bar") "bar"
-   15: line 5 ("", "bar", "bar") STRINGCMP
-   16: line 5 ("", 0) POP
-   17: line 6 ("") "foo"
-   18: line 6 ("", "foo") "Foo"
-   19: line 6 ("", "foo", "Foo") STRINGCMP
-   20: line 6 ("", 0) POP
-   21: line 7 ("") "foo"
-   22: line 7 ("", "foo") "Bar"
-   23: line 7 ("", "foo", "Bar") STRINGCMP
-   24: line 7 ("", 1) POP
-   25: line 8 ("") "bar"
-   26: line 8 ("", "bar") "Foo"
-   27: line 8 ("", "bar", "Foo") STRINGCMP
-   28: line 8 ("", -1) POP
-   29: line 9 ("") "bar"
-   30: line 9 ("", "bar") "Bar"
-   31: line 9 ("", "bar", "Bar") STRINGCMP
-   32: line 9 ("", 0) POP
-   33: line 10 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "foo"
+    2: #4 line 2 ("", "foo") "foo"
+    3: #4 line 2 ("", "foo", "foo") STRINGCMP
+    4: #4 line 2 ("", 0) POP
+    5: #4 line 3 ("") "foo"
+    6: #4 line 3 ("", "foo") "bar"
+    7: #4 line 3 ("", "foo", "bar") STRINGCMP
+    8: #4 line 3 ("", 1) POP
+    9: #4 line 4 ("") "bar"
+   10: #4 line 4 ("", "bar") "foo"
+   11: #4 line 4 ("", "bar", "foo") STRINGCMP
+   12: #4 line 4 ("", -1) POP
+   13: #4 line 5 ("") "bar"
+   14: #4 line 5 ("", "bar") "bar"
+   15: #4 line 5 ("", "bar", "bar") STRINGCMP
+   16: #4 line 5 ("", 0) POP
+   17: #4 line 6 ("") "foo"
+   18: #4 line 6 ("", "foo") "Foo"
+   19: #4 line 6 ("", "foo", "Foo") STRINGCMP
+   20: #4 line 6 ("", 0) POP
+   21: #4 line 7 ("") "foo"
+   22: #4 line 7 ("", "foo") "Bar"
+   23: #4 line 7 ("", "foo", "Bar") STRINGCMP
+   24: #4 line 7 ("", 1) POP
+   25: #4 line 8 ("") "bar"
+   26: #4 line 8 ("", "bar") "Foo"
+   27: #4 line 8 ("", "bar", "Foo") STRINGCMP
+   28: #4 line 8 ("", -1) POP
+   29: #4 line 9 ("") "bar"
+   30: #4 line 9 ("", "bar") "Bar"
+   31: #4 line 9 ("", "bar", "Bar") STRINGCMP
+   32: #4 line 9 ("", 0) POP
+   33: #4 line 10 ("") EXIT
 Execution completed in 34 steps.
 

@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: {
     2: }
@@ -42,44 +42,44 @@
    38: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") {
-    2: line 2 ("", Mark) }
-    3: line 2 ("", 0) ARRAY_MAKE
-    4: line 2 ("", 0[]) ARRAY_FIRST
-    5: line 2 ("", 0, 0) POP
-    6: line 2 ("", 0) POP
-    7: line 3 ("") {
-    8: line 3 ("", Mark) 5
-    9: line 3 ("", Mark, 5) 4
-   10: line 3 ("", Mark, 5, 4) 3
-   11: line 3 ("", Mark, 5, 4, 3) }
-   12: line 3 ("", 5, 4, 3, 3) ARRAY_MAKE
-   13: line 3 ("", 3[5, 4, 3]) ARRAY_FIRST
-   14: line 3 ("", 0, 1) POP
-   15: line 3 ("", 0) POP
-   16: line 4 ("") {
-   17: line 4 ("", Mark) }
-   18: line 4 ("", 0) 2
-   19: line 4 ("", 0, 2) /
-   20: line 4 ("", 0) ARRAY_MAKE_DICT
-   21: line 4 ("", 0{}) ARRAY_FIRST
-   22: line 4 ("", 0, 0) POP
-   23: line 4 ("", 0) POP
-   24: line 5 ("") {
-   25: line 5 ("", Mark) "c"
-   26: line 5 ("", Mark, "c") 5
-   27: line 5 ("", Mark, "c", 5) "b"
-   28: line 5 ("", Mark, "c", 5, "b") 4
-   29: line 5 ("", Mark, "c", 5, "b", 4) "a"
-   30: line 5 ("", Mark, "c", 5, "b", 4, "a") 3
-   31: line 5 ("", Mark, "c", 5, "b", 4, "a", 3) }
-   32: line 5 ("", "c", 5, "b", 4, "a", 3, 6) 2
-   33: line 5 ("", "c", 5, "b", 4, "a", 3, 6, 2) /
-   34: line 5 ("", "c", 5, "b", 4, "a", 3, 3) ARRAY_MAKE_DICT
-   35: line 5 ("", 3{"a": 3, "b": 4, "c": 5}) ARRAY_FIRST
-   36: line 5 ("", "a", 1) POP
-   37: line 5 ("", "a") POP
-   38: line 6 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") {
+    2: #4 line 2 ("", Mark) }
+    3: #4 line 2 ("", 0) ARRAY_MAKE
+    4: #4 line 2 ("", 0[]) ARRAY_FIRST
+    5: #4 line 2 ("", 0, 0) POP
+    6: #4 line 2 ("", 0) POP
+    7: #4 line 3 ("") {
+    8: #4 line 3 ("", Mark) 5
+    9: #4 line 3 ("", Mark, 5) 4
+   10: #4 line 3 ("", Mark, 5, 4) 3
+   11: #4 line 3 ("", Mark, 5, 4, 3) }
+   12: #4 line 3 ("", 5, 4, 3, 3) ARRAY_MAKE
+   13: #4 line 3 ("", 3[5, 4, 3]) ARRAY_FIRST
+   14: #4 line 3 ("", 0, 1) POP
+   15: #4 line 3 ("", 0) POP
+   16: #4 line 4 ("") {
+   17: #4 line 4 ("", Mark) }
+   18: #4 line 4 ("", 0) 2
+   19: #4 line 4 ("", 0, 2) /
+   20: #4 line 4 ("", 0) ARRAY_MAKE_DICT
+   21: #4 line 4 ("", 0{}) ARRAY_FIRST
+   22: #4 line 4 ("", 0, 0) POP
+   23: #4 line 4 ("", 0) POP
+   24: #4 line 5 ("") {
+   25: #4 line 5 ("", Mark) "c"
+   26: #4 line 5 ("", Mark, "c") 5
+   27: #4 line 5 ("", Mark, "c", 5) "b"
+   28: #4 line 5 ("", Mark, "c", 5, "b") 4
+   29: #4 line 5 ("", Mark, "c", 5, "b", 4) "a"
+   30: #4 line 5 ("", Mark, "c", 5, "b", 4, "a") 3
+   31: #4 line 5 ("", Mark, "c", 5, "b", 4, "a", 3) }
+   32: #4 line 5 ("", "c", 5, "b", 4, "a", 3, 6) 2
+   33: #4 line 5 ("", "c", 5, "b", 4, "a", 3, 6, 2) /
+   34: #4 line 5 ("", "c", 5, "b", 4, "a", 3, 3) ARRAY_MAKE_DICT
+   35: #4 line 5 ("", 3{"a": 3, "b": 4, "c": 5}) ARRAY_FIRST
+   36: #4 line 5 ("", "a", 1) POP
+   37: #4 line 5 ("", "a") POP
+   38: #4 line 6 ("") EXIT
 Execution completed in 39 steps.
 

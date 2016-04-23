@@ -1,10 +1,10 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 SETPROP "_lib-version" on #4 = "3.14"
 GETPROP "_lib-version" on #4 = "3.14"
 GETPROP "_lib-version" on #4 = "3.14"
 GETPROP "_lib-version" on #4 = "3.14"
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "Pass"
     2: "Pass"
@@ -12,10 +12,10 @@ GETPROP "_lib-version" on #4 = "3.14"
     4: EXIT
 
 #### Executing Tokens #################################
-    0: line 2 ("") Function: main (0 vars)
-    1: line 4 ("") "Pass"
-    2: line 9 ("", "Pass") "Pass"
-    3: line 16 ("", "Pass", "Pass") "Pass"
-    4: line 18 ("", "Pass", "Pass", "Pass") EXIT
+    0: #4 line 2 ("") Function: main (0 vars)
+    1: #4 line 4 ("") "Pass"
+    2: #4 line 9 ("", "Pass") "Pass"
+    3: #4 line 16 ("", "Pass", "Pass") "Pass"
+    4: #4 line 18 ("", "Pass", "Pass", "Pass") EXIT
 Execution completed in 5 steps.
 

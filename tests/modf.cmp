@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: 3.14159
     2: MODF
@@ -25,27 +25,27 @@
    21: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") 3.14159
-    2: line 2 ("", 3.14159) MODF
-    3: line 2 ("", 3.0, 0.14159) POP
-    4: line 2 ("", 3.0) POP
-    5: line 3 ("") 3.0
-    6: line 3 ("", 3.0) MODF
-    7: line 3 ("", 3.0, 0.0) POP
-    8: line 3 ("", 3.0) POP
-    9: line 4 ("") 0.0
-   10: line 4 ("", 0.0) MODF
-   11: line 4 ("", 0.0, 0.0) POP
-   12: line 4 ("", 0.0) POP
-   13: line 5 ("") -3.0
-   14: line 5 ("", -3.0) MODF
-   15: line 5 ("", -3.0, 0.0) POP
-   16: line 5 ("", -3.0) POP
-   17: line 6 ("") -3.14159
-   18: line 6 ("", -3.14159) MODF
-   19: line 6 ("", -3.0, -0.14159) POP
-   20: line 6 ("", -3.0) POP
-   21: line 7 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") 3.14159
+    2: #4 line 2 ("", 3.14159) MODF
+    3: #4 line 2 ("", 3.0, 0.14159) POP
+    4: #4 line 2 ("", 3.0) POP
+    5: #4 line 3 ("") 3.0
+    6: #4 line 3 ("", 3.0) MODF
+    7: #4 line 3 ("", 3.0, 0.0) POP
+    8: #4 line 3 ("", 3.0) POP
+    9: #4 line 4 ("") 0.0
+   10: #4 line 4 ("", 0.0) MODF
+   11: #4 line 4 ("", 0.0, 0.0) POP
+   12: #4 line 4 ("", 0.0) POP
+   13: #4 line 5 ("") -3.0
+   14: #4 line 5 ("", -3.0) MODF
+   15: #4 line 5 ("", -3.0, 0.0) POP
+   16: #4 line 5 ("", -3.0) POP
+   17: #4 line 6 ("") -3.14159
+   18: #4 line 6 ("", -3.14159) MODF
+   19: #4 line 6 ("", -3.0, -0.14159) POP
+   20: #4 line 6 ("", -3.0) POP
+   21: #4 line 7 ("") EXIT
 Execution completed in 22 steps.
 

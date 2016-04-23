@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "foo"
     2: 42
@@ -11,13 +11,13 @@
     7: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "foo"
-    2: line 2 ("", "foo") 42
-    3: line 2 ("", "foo", 42) #5
-    4: line 2 ("", "foo", 42, #5) #5
-    5: line 3 ("", "foo", 42, #5, #5) "%D %d %i %s"
-    6: line 3 ("", "foo", 42, #5, #5, "%D %d %i %s") FMTSTRING
-    7: line 4 ("", "John_Doe #5 42 foo") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "foo"
+    2: #4 line 2 ("", "foo") 42
+    3: #4 line 2 ("", "foo", 42) #5
+    4: #4 line 2 ("", "foo", 42, #5) #5
+    5: #4 line 3 ("", "foo", 42, #5, #5) "%D %d %i %s"
+    6: #4 line 3 ("", "foo", 42, #5, #5, "%D %d %i %s") FMTSTRING
+    7: #4 line 4 ("", "John_Doe #5 42 foo") EXIT
 Execution completed in 8 steps.
 

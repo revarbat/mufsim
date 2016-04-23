@@ -5,9 +5,11 @@ $cleardefs
 $def
 $define
 $echo
+$ifcancall
 $ifdef
 $iflib  
 $iflibver
+$ifncancall
 $ifndef  
 $ifnlib
 $ifnlibver
@@ -63,6 +65,7 @@ array_delrange
 array_excludeval
 array_explode
 array_extract
+array_filter_flags
 array_filter_prop
 array_findval
 array_first
@@ -107,7 +110,9 @@ bitor
 bitshift
 bitxor
 break
+call
 caller
+cancall?
 catch
 ceil
 clear

@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: #5
     2: "test"
@@ -8,16 +8,16 @@
     4: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") #5
-    2: line 2 ("", #5) "test"
-    3: line 3 ("", #5, "test") ARRAY_GET_PROPLIST
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") #5
+    2: #4 line 2 ("", #5) "test"
+    3: #4 line 3 ("", #5, "test") ARRAY_GET_PROPLIST
 GETPROP "test#" on #5 = 5
 GETPROP "test#/1" on #5 = "This is line one."
 GETPROP "test#/2" on #5 = "This is line two."
 GETPROP "test#/3" on #5 = "This is line three."
 GETPROP "test#/4" on #5 = "This is line four."
 GETPROP "test#/5" on #5 = "This is line five."
-    4: line 4 ("", 5["This is line one.", "This is line two.", "This is line three.", "This is line four.", "This is line five."]) EXIT
+    4: #4 line 4 ("", 5["This is line one.", "This is line two.", "This is line three.", "This is line four.", "This is line five."]) EXIT
 Execution completed in 5 steps.
 

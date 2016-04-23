@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "3.14"
     2: STRTOF
@@ -26,28 +26,28 @@
    22: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "3.14"
-    2: line 2 ("", "3.14") STRTOF
-    3: line 2 ("", 3.14) POP
-    4: line 3 ("") "3.14e99"
-    5: line 3 ("", "3.14e99") STRTOF
-    6: line 3 ("", 3.14e+99) POP
-    7: line 4 ("") "3.14e-99"
-    8: line 4 ("", "3.14e-99") STRTOF
-    9: line 4 ("", 3.14e-99) POP
-   10: line 5 ("") "-3.14e-99"
-   11: line 5 ("", "-3.14e-99") STRTOF
-   12: line 5 ("", -3.14e-99) POP
-   13: line 6 ("") "-3.14e99"
-   14: line 6 ("", "-3.14e99") STRTOF
-   15: line 6 ("", -3.14e+99) POP
-   16: line 7 ("") "3"
-   17: line 7 ("", "3") STRTOF
-   18: line 7 ("", 3.0) POP
-   19: line 8 ("") "0."
-   20: line 8 ("", "0.") STRTOF
-   21: line 8 ("", 0.0) POP
-   22: line 9 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "3.14"
+    2: #4 line 2 ("", "3.14") STRTOF
+    3: #4 line 2 ("", 3.14) POP
+    4: #4 line 3 ("") "3.14e99"
+    5: #4 line 3 ("", "3.14e99") STRTOF
+    6: #4 line 3 ("", 3.14e+99) POP
+    7: #4 line 4 ("") "3.14e-99"
+    8: #4 line 4 ("", "3.14e-99") STRTOF
+    9: #4 line 4 ("", 3.14e-99) POP
+   10: #4 line 5 ("") "-3.14e-99"
+   11: #4 line 5 ("", "-3.14e-99") STRTOF
+   12: #4 line 5 ("", -3.14e-99) POP
+   13: #4 line 6 ("") "-3.14e99"
+   14: #4 line 6 ("", "-3.14e99") STRTOF
+   15: #4 line 6 ("", -3.14e+99) POP
+   16: #4 line 7 ("") "3"
+   17: #4 line 7 ("", "3") STRTOF
+   18: #4 line 7 ("", 3.0) POP
+   19: #4 line 8 ("") "0."
+   20: #4 line 8 ("", "0.") STRTOF
+   21: #4 line 8 ("", 0.0) POP
+   22: #4 line 9 ("") EXIT
 Execution completed in 23 steps.
 

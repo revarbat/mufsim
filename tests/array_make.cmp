@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "a"
     2: "b"
@@ -10,12 +10,12 @@
     6: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "a"
-    2: line 2 ("", "a") "b"
-    3: line 2 ("", "a", "b") "c"
-    4: line 2 ("", "a", "b", "c") 3
-    5: line 3 ("", "a", "b", "c", 3) ARRAY_MAKE
-    6: line 4 ("", 3["a", "b", "c"]) EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "a"
+    2: #4 line 2 ("", "a") "b"
+    3: #4 line 2 ("", "a", "b") "c"
+    4: #4 line 2 ("", "a", "b", "c") 3
+    5: #4 line 3 ("", "a", "b", "c", 3) ARRAY_MAKE
+    6: #4 line 4 ("", 3["a", "b", "c"]) EXIT
 Execution completed in 7 steps.
 

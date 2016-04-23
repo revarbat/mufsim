@@ -14,17 +14,17 @@ Positional argument   | What it is.
 ----------------------|-----------------------------------------------
 infile                | Input MUF sourcecode filename.
 
-Optional argument        | What it does.
--------------------------|-----------------------------------------------
--h, --help               | Show help message and exit.
--m, --muv                | Use muv to compile from MUV sources.
--u, --uncompile          | Show compiled MUF tokens.
--r, --run                | Run compiled MUF tokens.
--t, --trace              | Show stacktrace for each instrution.
--d, --debug              | Run MUF program in interactive debugger.
--c STR, --command STR    | Specify string to push onto the stack for run.
--e TXT, --textentry TXT  | Text line to feed to READs. (multiple allowed)
--f FILE, --textfile FILE | File of text lines to feed to READs.
+Optional argument                 | What it does.
+----------------------------------|-----------------------------------------------
+-h, --help                        | Show help message and exit.
+-u, --uncompile                   | Show compiled MUF tokens.
+-r, --run                         | Run compiled MUF tokens.
+-t, --trace                       | Show stacktrace for each instrution.
+-d, --debug                       | Run MUF program in interactive debugger.
+-c STR, --command STR             | Specify string to push onto the stack for run.
+-e TXT, --textentry TXT           | Text line to feed to READs. (multiple allowed)
+-f FILE, --textfile FILE          | File of text lines to feed to READs.
+-p NAME FILE, --program NAME FILE | Create extra prog from FILE, reg'ed as $NAME.
 
 
 ## Interactive Debugger
@@ -123,4 +123,30 @@ database related primitives.  This database is as follows:
     Thing: My Thing(#7)
         Location: Main Room(#2R)
 
+
+## Adding libraries
+You can add extra library program objects to the DB, by using the
+`-p` command-line argument.  For example, if you have the following
+MUF files:
+
+lib-foo.muf:
+
+    $version 1.000
+    $lib-version 1.000
+    : foo[ s -- ]
+        me @ s @ "foo" strcat notify
+    ;
+    public foo
+    $libdef foo
+
+And cmd-test.muf:
+
+    $include $lib/foo
+    : main[ arg -- ]
+        "Blah" foo
+    ;
+
+You can run them like this:
+
+    mufsim -r -p lib/foo lib-foo.muf cmd-test.muf
 

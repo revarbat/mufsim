@@ -1,15 +1,15 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: inf
     2: POP
     3: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") inf
-    2: line 2 ("", inf) POP
-    3: line 3 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") inf
+    2: #4 line 2 ("", inf) POP
+    3: #4 line 3 ("") EXIT
 Execution completed in 4 steps.
 

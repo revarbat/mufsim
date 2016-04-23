@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: {
     2: "a"
@@ -26,28 +26,28 @@
    22: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") {
-    2: line 2 ("", Mark) "a"
-    3: line 2 ("", Mark, "a") {
-    4: line 2 ("", Mark, "a", Mark) "x"
-    5: line 2 ("", Mark, "a", Mark, "x") 3
-    6: line 2 ("", Mark, "a", Mark, "x", 3) "y"
-    7: line 2 ("", Mark, "a", Mark, "x", 3, "y") 8
-    8: line 2 ("", Mark, "a", Mark, "x", 3, "y", 8) }
-    9: line 2 ("", Mark, "a", "x", 3, "y", 8, 4) 2
-   10: line 2 ("", Mark, "a", "x", 3, "y", 8, 4, 2) /
-   11: line 2 ("", Mark, "a", "x", 3, "y", 8, 2) ARRAY_MAKE_DICT
-   12: line 2 ("", Mark, "a", 2{"x": 3, "y": 8}) }
-   13: line 2 ("", "a", 2{"x": 3, "y": 8}, 2) 2
-   14: line 2 ("", "a", 2{"x": 3, "y": 8}, 2, 2) /
-   15: line 2 ("", "a", 2{"x": 3, "y": 8}, 1) ARRAY_MAKE_DICT
-   16: line 3 ("", 1{"a": 2{"x": 3, "y": 8}}) {
-   17: line 3 ("", 1{"a": 2{"x": 3, "y": 8}}, Mark) "a"
-   18: line 3 ("", 1{"a": 2{"x": 3, "y": 8}}, Mark, "a") "x"
-   19: line 3 ("", 1{"a": 2{"x": 3, "y": 8}}, Mark, "a", "x") }
-   20: line 3 ("", 1{"a": 2{"x": 3, "y": 8}}, "a", "x", 2) ARRAY_MAKE
-   21: line 4 ("", 1{"a": 2{"x": 3, "y": 8}}, 2["a", "x"]) ARRAY_NESTED_DEL
-   22: line 5 ("", 1{"a": 1{"y": 8}}) EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") {
+    2: #4 line 2 ("", Mark) "a"
+    3: #4 line 2 ("", Mark, "a") {
+    4: #4 line 2 ("", Mark, "a", Mark) "x"
+    5: #4 line 2 ("", Mark, "a", Mark, "x") 3
+    6: #4 line 2 ("", Mark, "a", Mark, "x", 3) "y"
+    7: #4 line 2 ("", Mark, "a", Mark, "x", 3, "y") 8
+    8: #4 line 2 ("", Mark, "a", Mark, "x", 3, "y", 8) }
+    9: #4 line 2 ("", Mark, "a", "x", 3, "y", 8, 4) 2
+   10: #4 line 2 ("", Mark, "a", "x", 3, "y", 8, 4, 2) /
+   11: #4 line 2 ("", Mark, "a", "x", 3, "y", 8, 2) ARRAY_MAKE_DICT
+   12: #4 line 2 ("", Mark, "a", 2{"x": 3, "y": 8}) }
+   13: #4 line 2 ("", "a", 2{"x": 3, "y": 8}, 2) 2
+   14: #4 line 2 ("", "a", 2{"x": 3, "y": 8}, 2, 2) /
+   15: #4 line 2 ("", "a", 2{"x": 3, "y": 8}, 1) ARRAY_MAKE_DICT
+   16: #4 line 3 ("", 1{"a": 2{"x": 3, "y": 8}}) {
+   17: #4 line 3 ("", 1{"a": 2{"x": 3, "y": 8}}, Mark) "a"
+   18: #4 line 3 ("", 1{"a": 2{"x": 3, "y": 8}}, Mark, "a") "x"
+   19: #4 line 3 ("", 1{"a": 2{"x": 3, "y": 8}}, Mark, "a", "x") }
+   20: #4 line 3 ("", 1{"a": 2{"x": 3, "y": 8}}, "a", "x", 2) ARRAY_MAKE
+   21: #4 line 4 ("", 1{"a": 2{"x": 3, "y": 8}}, 2["a", "x"]) ARRAY_NESTED_DEL
+   22: #4 line 5 ("", 1{"a": 1{"y": 8}}) EXIT
 Execution completed in 23 steps.
 

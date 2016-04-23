@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "*jane_doe"
     2: MATCH
@@ -39,41 +39,41 @@
    35: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "*jane_doe"
-    2: line 2 ("", "*jane_doe") MATCH
-    3: line 2 ("", #6) SV0: jane
-    4: line 2 ("", #6, SV0) !
-    5: line 3 ("") LV0: me
-    6: line 3 ("", LV0) @
-    7: line 3 ("", #5) PENNIES
-    8: line 3 ("", 0) POP
-    9: line 4 ("") LV0: me
-   10: line 4 ("", LV0) @
-   11: line 4 ("", #5) 88
-   12: line 4 ("", #5, 88) ADDPENNIES
-   13: line 5 ("") LV0: me
-   14: line 5 ("", LV0) @
-   15: line 5 ("", #5) PENNIES
-   16: line 5 ("", 88) POP
-   17: line 6 ("") SV0: jane
-   18: line 6 ("", SV0) @
-   19: line 6 ("", #6) PENNIES
-   20: line 6 ("", 0) POP
-   21: line 7 ("") LV0: me
-   22: line 7 ("", LV0) @
-   23: line 7 ("", #5) SV0: jane
-   24: line 7 ("", #5, SV0) @
-   25: line 7 ("", #5, #6) 44
-   26: line 7 ("", #5, #6, 44) MOVEPENNIES
-   27: line 8 ("") LV0: me
-   28: line 8 ("", LV0) @
-   29: line 8 ("", #5) PENNIES
-   30: line 8 ("", 44) POP
-   31: line 9 ("") SV0: jane
-   32: line 9 ("", SV0) @
-   33: line 9 ("", #6) PENNIES
-   34: line 9 ("", 44) POP
-   35: line 10 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "*jane_doe"
+    2: #4 line 2 ("", "*jane_doe") MATCH
+    3: #4 line 2 ("", #6) SV0: jane
+    4: #4 line 2 ("", #6, SV0) !
+    5: #4 line 3 ("") LV0: me
+    6: #4 line 3 ("", LV0) @
+    7: #4 line 3 ("", #5) PENNIES
+    8: #4 line 3 ("", 0) POP
+    9: #4 line 4 ("") LV0: me
+   10: #4 line 4 ("", LV0) @
+   11: #4 line 4 ("", #5) 88
+   12: #4 line 4 ("", #5, 88) ADDPENNIES
+   13: #4 line 5 ("") LV0: me
+   14: #4 line 5 ("", LV0) @
+   15: #4 line 5 ("", #5) PENNIES
+   16: #4 line 5 ("", 88) POP
+   17: #4 line 6 ("") SV0: jane
+   18: #4 line 6 ("", SV0) @
+   19: #4 line 6 ("", #6) PENNIES
+   20: #4 line 6 ("", 0) POP
+   21: #4 line 7 ("") LV0: me
+   22: #4 line 7 ("", LV0) @
+   23: #4 line 7 ("", #5) SV0: jane
+   24: #4 line 7 ("", #5, SV0) @
+   25: #4 line 7 ("", #5, #6) 44
+   26: #4 line 7 ("", #5, #6, 44) MOVEPENNIES
+   27: #4 line 8 ("") LV0: me
+   28: #4 line 8 ("", LV0) @
+   29: #4 line 8 ("", #5) PENNIES
+   30: #4 line 8 ("", 44) POP
+   31: #4 line 9 ("") SV0: jane
+   32: #4 line 9 ("", SV0) @
+   33: #4 line 9 ("", #6) PENNIES
+   34: #4 line 9 ("", 44) POP
+   35: #4 line 10 ("") EXIT
 Execution completed in 36 steps.
 

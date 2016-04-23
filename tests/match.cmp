@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "me"
     2: MATCH
@@ -35,37 +35,37 @@
    31: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "me"
-    2: line 2 ("", "me") MATCH
-    3: line 2 ("", #5) POP
-    4: line 3 ("") "here"
-    5: line 3 ("", "here") MATCH
-    6: line 3 ("", #2) POP
-    7: line 4 ("") "home"
-    8: line 4 ("", "home") MATCH
-    9: line 4 ("", #-3) POP
-   10: line 5 ("") "*wizard"
-   11: line 5 ("", "*wizard") MATCH
-   12: line 5 ("", #1) POP
-   13: line 6 ("") "#5"
-   14: line 6 ("", "#5") MATCH
-   15: line 6 ("", #5) POP
-   16: line 7 ("") "test"
-   17: line 7 ("", "test") MATCH
-   18: line 7 ("", #3) POP
-   19: line 8 ("") "jane"
-   20: line 8 ("", "jane") MATCH
-   21: line 8 ("", #6) POP
-   22: line 9 ("") "john"
-   23: line 9 ("", "john") MATCH
-   24: line 9 ("", #5) POP
-   25: line 10 ("") "j"
-   26: line 10 ("", "j") MATCH
-   27: line 10 ("", #-2) POP
-   28: line 11 ("") "xyzzy"
-   29: line 11 ("", "xyzzy") MATCH
-   30: line 11 ("", #-1) POP
-   31: line 12 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "me"
+    2: #4 line 2 ("", "me") MATCH
+    3: #4 line 2 ("", #5) POP
+    4: #4 line 3 ("") "here"
+    5: #4 line 3 ("", "here") MATCH
+    6: #4 line 3 ("", #2) POP
+    7: #4 line 4 ("") "home"
+    8: #4 line 4 ("", "home") MATCH
+    9: #4 line 4 ("", #-3) POP
+   10: #4 line 5 ("") "*wizard"
+   11: #4 line 5 ("", "*wizard") MATCH
+   12: #4 line 5 ("", #1) POP
+   13: #4 line 6 ("") "#5"
+   14: #4 line 6 ("", "#5") MATCH
+   15: #4 line 6 ("", #5) POP
+   16: #4 line 7 ("") "test"
+   17: #4 line 7 ("", "test") MATCH
+   18: #4 line 7 ("", #3) POP
+   19: #4 line 8 ("") "jane"
+   20: #4 line 8 ("", "jane") MATCH
+   21: #4 line 8 ("", #6) POP
+   22: #4 line 9 ("") "john"
+   23: #4 line 9 ("", "john") MATCH
+   24: #4 line 9 ("", #5) POP
+   25: #4 line 10 ("") "j"
+   26: #4 line 10 ("", "j") MATCH
+   27: #4 line 10 ("", #-2) POP
+   28: #4 line 11 ("") "xyzzy"
+   29: #4 line 11 ("", "xyzzy") MATCH
+   30: #4 line 11 ("", #-1) POP
+   31: #4 line 12 ("") EXIT
 Execution completed in 32 steps.
 

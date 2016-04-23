@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: #0
     2: "sex"
@@ -15,19 +15,19 @@
    11: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") #0
-    2: line 2 ("", #0) "sex"
-    3: line 2 ("", #0, "sex") "male"
-    4: line 2 ("", #0, "sex", "male") 0
-    5: line 2 ("", #0, "sex", "male", 0) ADDPROP
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") #0
+    2: #4 line 2 ("", #0) "sex"
+    3: #4 line 2 ("", #0, "sex") "male"
+    4: #4 line 2 ("", #0, "sex", "male") 0
+    5: #4 line 2 ("", #0, "sex", "male", 0) ADDPROP
 SETPROP "sex" on #0 = "male"
-    6: line 3 ("") #0
-    7: line 3 ("", #0) "val"
-    8: line 3 ("", #0, "val") ""
-    9: line 3 ("", #0, "val", "") 88
-   10: line 3 ("", #0, "val", "", 88) ADDPROP
+    6: #4 line 3 ("") #0
+    7: #4 line 3 ("", #0) "val"
+    8: #4 line 3 ("", #0, "val") ""
+    9: #4 line 3 ("", #0, "val", "") 88
+   10: #4 line 3 ("", #0, "val", "", 88) ADDPROP
 SETPROP "val" on #0 = 88
-   11: line 4 ("") EXIT
+   11: #4 line 4 ("") EXIT
 Execution completed in 12 steps.
 

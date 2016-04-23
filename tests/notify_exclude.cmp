@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: LV0: me
     2: @
@@ -15,18 +15,18 @@
    11: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") LV0: me
-    2: line 2 ("", LV0) @
-    3: line 2 ("", #5) LOCATION
-    4: line 3 ("", #2) LV0: me
-    5: line 3 ("", #2, LV0) @
-    6: line 3 ("", #2, #5) "*jane_doe"
-    7: line 3 ("", #2, #5, "*jane_doe") MATCH
-    8: line 3 ("", #2, #5, #6) 2
-    9: line 4 ("", #2, #5, #6, 2) "Foo."
-   10: line 4 ("", #2, #5, #6, 2, "Foo.") NOTIFY_EXCLUDE
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") LV0: me
+    2: #4 line 2 ("", LV0) @
+    3: #4 line 2 ("", #5) LOCATION
+    4: #4 line 3 ("", #2) LV0: me
+    5: #4 line 3 ("", #2, LV0) @
+    6: #4 line 3 ("", #2, #5) "*jane_doe"
+    7: #4 line 3 ("", #2, #5, "*jane_doe") MATCH
+    8: #4 line 3 ("", #2, #5, #6) 2
+    9: #4 line 4 ("", #2, #5, #6, 2) "Foo."
+   10: #4 line 4 ("", #2, #5, #6, 2, "Foo.") NOTIFY_EXCLUDE
 NOTIFY TO ALL IN Main Room(#2) EXCEPT [Jane_Doe(#6), John_Doe(#5)]: Foo.
-   11: line 5 ("") EXIT
+   11: #4 line 5 ("") EXIT
 Execution completed in 12 steps.
 

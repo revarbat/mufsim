@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it."
     2: SV0: msg
@@ -45,170 +45,170 @@
    41: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it."
-    2: line 2 ("", "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") SV0: msg
-    3: line 2 ("", "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.", SV0) !
-    4: line 3 ("") "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it."
-    5: line 3 ("", "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") SV1: msg2
-    6: line 3 ("", "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.", SV1) !
-    7: line 4 ("") {
-    8: line 4 ("", Mark) "male"
-    9: line 4 ("", Mark, "male") "female"
-   10: line 4 ("", Mark, "male", "female") "herm"
-   11: line 4 ("", Mark, "male", "female", "herm") "hermaphrodite"
-   12: line 4 ("", Mark, "male", "female", "herm", "hermaphrodite") "none"
-   13: line 4 ("", Mark, "male", "female", "herm", "hermaphrodite", "none") }
-   14: line 4 ("", "male", "female", "herm", "hermaphrodite", "none", 5) ARRAY_MAKE
-   15: line 5 ("", 5["male", "female", "herm", "hermaphrodite", "none"]) FOREACH
-   16: line 5 ("") __FORITER__
-   17: line 5 ("", 0, "male", 1) JmpIfFalse: +23
-   18: line 5 ("", 0, "male") SWAP
-   19: line 5 ("", "male", 0) POP
-   20: line 6 ("", "male") LV0: me
-   21: line 6 ("", "male", LV0) @
-   22: line 6 ("", "male", #5) "sex"
-   23: line 6 ("", "male", #5, "sex") ROT
-   24: line 6 ("", #5, "sex", "male") SETPROP
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it."
+    2: #4 line 2 ("", "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") SV0: msg
+    3: #4 line 2 ("", "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.", SV0) !
+    4: #4 line 3 ("") "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it."
+    5: #4 line 3 ("", "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") SV1: msg2
+    6: #4 line 3 ("", "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.", SV1) !
+    7: #4 line 4 ("") {
+    8: #4 line 4 ("", Mark) "male"
+    9: #4 line 4 ("", Mark, "male") "female"
+   10: #4 line 4 ("", Mark, "male", "female") "herm"
+   11: #4 line 4 ("", Mark, "male", "female", "herm") "hermaphrodite"
+   12: #4 line 4 ("", Mark, "male", "female", "herm", "hermaphrodite") "none"
+   13: #4 line 4 ("", Mark, "male", "female", "herm", "hermaphrodite", "none") }
+   14: #4 line 4 ("", "male", "female", "herm", "hermaphrodite", "none", 5) ARRAY_MAKE
+   15: #4 line 5 ("", 5["male", "female", "herm", "hermaphrodite", "none"]) FOREACH
+   16: #4 line 5 ("") __FORITER__
+   17: #4 line 5 ("", 0, "male", 1) JmpIfFalse: +23
+   18: #4 line 5 ("", 0, "male") SWAP
+   19: #4 line 5 ("", "male", 0) POP
+   20: #4 line 6 ("", "male") LV0: me
+   21: #4 line 6 ("", "male", LV0) @
+   22: #4 line 6 ("", "male", #5) "sex"
+   23: #4 line 6 ("", "male", #5, "sex") ROT
+   24: #4 line 6 ("", #5, "sex", "male") SETPROP
 SETPROP "sex" on #5 = "male"
-   25: line 7 ("") LV0: me
-   26: line 7 ("", LV0) @
-   27: line 7 ("", #5) DUP
-   28: line 7 ("", #5, #5) SV0: msg
-   29: line 7 ("", #5, #5, SV0) @
-   30: line 7 ("", #5, #5, "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") PRONOUN_SUB
+   25: #4 line 7 ("") LV0: me
+   26: #4 line 7 ("", LV0) @
+   27: #4 line 7 ("", #5) DUP
+   28: #4 line 7 ("", #5, #5) SV0: msg
+   29: #4 line 7 ("", #5, #5, SV0) @
+   30: #4 line 7 ("", #5, #5, "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") PRONOUN_SUB
 GETPROP "sex" on #5 = "male"
-   31: line 7 ("", #5, "John_Doe is in his happy place by himself and it suits him, as it is his, and he earned it.") NOTIFY
+   31: #4 line 7 ("", #5, "John_Doe is in his happy place by himself and it suits him, as it is his, and he earned it.") NOTIFY
 NOTIFY: John_Doe is in his happy place by himself and it suits him, as it is his, and he earned it.
-   32: line 8 ("") LV0: me
-   33: line 8 ("", LV0) @
-   34: line 8 ("", #5) DUP
-   35: line 8 ("", #5, #5) SV1: msg2
-   36: line 8 ("", #5, #5, SV1) @
-   37: line 8 ("", #5, #5, "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") PRONOUN_SUB
+   32: #4 line 8 ("") LV0: me
+   33: #4 line 8 ("", LV0) @
+   34: #4 line 8 ("", #5) DUP
+   35: #4 line 8 ("", #5, #5) SV1: msg2
+   36: #4 line 8 ("", #5, #5, SV1) @
+   37: #4 line 8 ("", #5, #5, "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") PRONOUN_SUB
 GETPROP "sex" on #5 = "male"
-   38: line 8 ("", #5, "John_Doe is in His happy place by Himself and it suits Him, as it is His, and He earned it.") NOTIFY
+   38: #4 line 8 ("", #5, "John_Doe is in His happy place by Himself and it suits Him, as it is His, and He earned it.") NOTIFY
 NOTIFY: John_Doe is in His happy place by Himself and it suits Him, as it is His, and He earned it.
-   39: line 9 ("") JMP: -23
-   16: line 5 ("") __FORITER__
-   17: line 5 ("", 1, "female", 1) JmpIfFalse: +23
-   18: line 5 ("", 1, "female") SWAP
-   19: line 5 ("", "female", 1) POP
-   20: line 6 ("", "female") LV0: me
-   21: line 6 ("", "female", LV0) @
-   22: line 6 ("", "female", #5) "sex"
-   23: line 6 ("", "female", #5, "sex") ROT
-   24: line 6 ("", #5, "sex", "female") SETPROP
+   39: #4 line 9 ("") JMP: -23
+   16: #4 line 5 ("") __FORITER__
+   17: #4 line 5 ("", 1, "female", 1) JmpIfFalse: +23
+   18: #4 line 5 ("", 1, "female") SWAP
+   19: #4 line 5 ("", "female", 1) POP
+   20: #4 line 6 ("", "female") LV0: me
+   21: #4 line 6 ("", "female", LV0) @
+   22: #4 line 6 ("", "female", #5) "sex"
+   23: #4 line 6 ("", "female", #5, "sex") ROT
+   24: #4 line 6 ("", #5, "sex", "female") SETPROP
 SETPROP "sex" on #5 = "female"
-   25: line 7 ("") LV0: me
-   26: line 7 ("", LV0) @
-   27: line 7 ("", #5) DUP
-   28: line 7 ("", #5, #5) SV0: msg
-   29: line 7 ("", #5, #5, SV0) @
-   30: line 7 ("", #5, #5, "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") PRONOUN_SUB
+   25: #4 line 7 ("") LV0: me
+   26: #4 line 7 ("", LV0) @
+   27: #4 line 7 ("", #5) DUP
+   28: #4 line 7 ("", #5, #5) SV0: msg
+   29: #4 line 7 ("", #5, #5, SV0) @
+   30: #4 line 7 ("", #5, #5, "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") PRONOUN_SUB
 GETPROP "sex" on #5 = "female"
-   31: line 7 ("", #5, "John_Doe is in her happy place by herself and it suits her, as it is hers, and she earned it.") NOTIFY
+   31: #4 line 7 ("", #5, "John_Doe is in her happy place by herself and it suits her, as it is hers, and she earned it.") NOTIFY
 NOTIFY: John_Doe is in her happy place by herself and it suits her, as it is hers, and she earned it.
-   32: line 8 ("") LV0: me
-   33: line 8 ("", LV0) @
-   34: line 8 ("", #5) DUP
-   35: line 8 ("", #5, #5) SV1: msg2
-   36: line 8 ("", #5, #5, SV1) @
-   37: line 8 ("", #5, #5, "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") PRONOUN_SUB
+   32: #4 line 8 ("") LV0: me
+   33: #4 line 8 ("", LV0) @
+   34: #4 line 8 ("", #5) DUP
+   35: #4 line 8 ("", #5, #5) SV1: msg2
+   36: #4 line 8 ("", #5, #5, SV1) @
+   37: #4 line 8 ("", #5, #5, "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") PRONOUN_SUB
 GETPROP "sex" on #5 = "female"
-   38: line 8 ("", #5, "John_Doe is in Her happy place by Herself and it suits Her, as it is Hers, and She earned it.") NOTIFY
+   38: #4 line 8 ("", #5, "John_Doe is in Her happy place by Herself and it suits Her, as it is Hers, and She earned it.") NOTIFY
 NOTIFY: John_Doe is in Her happy place by Herself and it suits Her, as it is Hers, and She earned it.
-   39: line 9 ("") JMP: -23
-   16: line 5 ("") __FORITER__
-   17: line 5 ("", 2, "herm", 1) JmpIfFalse: +23
-   18: line 5 ("", 2, "herm") SWAP
-   19: line 5 ("", "herm", 2) POP
-   20: line 6 ("", "herm") LV0: me
-   21: line 6 ("", "herm", LV0) @
-   22: line 6 ("", "herm", #5) "sex"
-   23: line 6 ("", "herm", #5, "sex") ROT
-   24: line 6 ("", #5, "sex", "herm") SETPROP
+   39: #4 line 9 ("") JMP: -23
+   16: #4 line 5 ("") __FORITER__
+   17: #4 line 5 ("", 2, "herm", 1) JmpIfFalse: +23
+   18: #4 line 5 ("", 2, "herm") SWAP
+   19: #4 line 5 ("", "herm", 2) POP
+   20: #4 line 6 ("", "herm") LV0: me
+   21: #4 line 6 ("", "herm", LV0) @
+   22: #4 line 6 ("", "herm", #5) "sex"
+   23: #4 line 6 ("", "herm", #5, "sex") ROT
+   24: #4 line 6 ("", #5, "sex", "herm") SETPROP
 SETPROP "sex" on #5 = "herm"
-   25: line 7 ("") LV0: me
-   26: line 7 ("", LV0) @
-   27: line 7 ("", #5) DUP
-   28: line 7 ("", #5, #5) SV0: msg
-   29: line 7 ("", #5, #5, SV0) @
-   30: line 7 ("", #5, #5, "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") PRONOUN_SUB
+   25: #4 line 7 ("") LV0: me
+   26: #4 line 7 ("", LV0) @
+   27: #4 line 7 ("", #5) DUP
+   28: #4 line 7 ("", #5, #5) SV0: msg
+   29: #4 line 7 ("", #5, #5, SV0) @
+   30: #4 line 7 ("", #5, #5, "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") PRONOUN_SUB
 GETPROP "sex" on #5 = "herm"
-   31: line 7 ("", #5, "John_Doe is in hir happy place by hirself and it suits hir, as it is hirs, and shi earned it.") NOTIFY
+   31: #4 line 7 ("", #5, "John_Doe is in hir happy place by hirself and it suits hir, as it is hirs, and shi earned it.") NOTIFY
 NOTIFY: John_Doe is in hir happy place by hirself and it suits hir, as it is hirs, and shi earned it.
-   32: line 8 ("") LV0: me
-   33: line 8 ("", LV0) @
-   34: line 8 ("", #5) DUP
-   35: line 8 ("", #5, #5) SV1: msg2
-   36: line 8 ("", #5, #5, SV1) @
-   37: line 8 ("", #5, #5, "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") PRONOUN_SUB
+   32: #4 line 8 ("") LV0: me
+   33: #4 line 8 ("", LV0) @
+   34: #4 line 8 ("", #5) DUP
+   35: #4 line 8 ("", #5, #5) SV1: msg2
+   36: #4 line 8 ("", #5, #5, SV1) @
+   37: #4 line 8 ("", #5, #5, "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") PRONOUN_SUB
 GETPROP "sex" on #5 = "herm"
-   38: line 8 ("", #5, "John_Doe is in Hir happy place by Hirself and it suits Hir, as it is Hirs, and Shi earned it.") NOTIFY
+   38: #4 line 8 ("", #5, "John_Doe is in Hir happy place by Hirself and it suits Hir, as it is Hirs, and Shi earned it.") NOTIFY
 NOTIFY: John_Doe is in Hir happy place by Hirself and it suits Hir, as it is Hirs, and Shi earned it.
-   39: line 9 ("") JMP: -23
-   16: line 5 ("") __FORITER__
-   17: line 5 ("", 3, "hermaphrodite", 1) JmpIfFalse: +23
-   18: line 5 ("", 3, "hermaphrodite") SWAP
-   19: line 5 ("", "hermaphrodite", 3) POP
-   20: line 6 ("", "hermaphrodite") LV0: me
-   21: line 6 ("", "hermaphrodite", LV0) @
-   22: line 6 ("", "hermaphrodite", #5) "sex"
-   23: line 6 ("", "hermaphrodite", #5, "sex") ROT
-   24: line 6 ("", #5, "sex", "hermaphrodite") SETPROP
+   39: #4 line 9 ("") JMP: -23
+   16: #4 line 5 ("") __FORITER__
+   17: #4 line 5 ("", 3, "hermaphrodite", 1) JmpIfFalse: +23
+   18: #4 line 5 ("", 3, "hermaphrodite") SWAP
+   19: #4 line 5 ("", "hermaphrodite", 3) POP
+   20: #4 line 6 ("", "hermaphrodite") LV0: me
+   21: #4 line 6 ("", "hermaphrodite", LV0) @
+   22: #4 line 6 ("", "hermaphrodite", #5) "sex"
+   23: #4 line 6 ("", "hermaphrodite", #5, "sex") ROT
+   24: #4 line 6 ("", #5, "sex", "hermaphrodite") SETPROP
 SETPROP "sex" on #5 = "hermaphrodite"
-   25: line 7 ("") LV0: me
-   26: line 7 ("", LV0) @
-   27: line 7 ("", #5) DUP
-   28: line 7 ("", #5, #5) SV0: msg
-   29: line 7 ("", #5, #5, SV0) @
-   30: line 7 ("", #5, #5, "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") PRONOUN_SUB
+   25: #4 line 7 ("") LV0: me
+   26: #4 line 7 ("", LV0) @
+   27: #4 line 7 ("", #5) DUP
+   28: #4 line 7 ("", #5, #5) SV0: msg
+   29: #4 line 7 ("", #5, #5, SV0) @
+   30: #4 line 7 ("", #5, #5, "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") PRONOUN_SUB
 GETPROP "sex" on #5 = "hermaphrodite"
-   31: line 7 ("", #5, "John_Doe is in hir happy place by hirself and it suits hir, as it is hirs, and shi earned it.") NOTIFY
+   31: #4 line 7 ("", #5, "John_Doe is in hir happy place by hirself and it suits hir, as it is hirs, and shi earned it.") NOTIFY
 NOTIFY: John_Doe is in hir happy place by hirself and it suits hir, as it is hirs, and shi earned it.
-   32: line 8 ("") LV0: me
-   33: line 8 ("", LV0) @
-   34: line 8 ("", #5) DUP
-   35: line 8 ("", #5, #5) SV1: msg2
-   36: line 8 ("", #5, #5, SV1) @
-   37: line 8 ("", #5, #5, "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") PRONOUN_SUB
+   32: #4 line 8 ("") LV0: me
+   33: #4 line 8 ("", LV0) @
+   34: #4 line 8 ("", #5) DUP
+   35: #4 line 8 ("", #5, #5) SV1: msg2
+   36: #4 line 8 ("", #5, #5, SV1) @
+   37: #4 line 8 ("", #5, #5, "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") PRONOUN_SUB
 GETPROP "sex" on #5 = "hermaphrodite"
-   38: line 8 ("", #5, "John_Doe is in Hir happy place by Hirself and it suits Hir, as it is Hirs, and Shi earned it.") NOTIFY
+   38: #4 line 8 ("", #5, "John_Doe is in Hir happy place by Hirself and it suits Hir, as it is Hirs, and Shi earned it.") NOTIFY
 NOTIFY: John_Doe is in Hir happy place by Hirself and it suits Hir, as it is Hirs, and Shi earned it.
-   39: line 9 ("") JMP: -23
-   16: line 5 ("") __FORITER__
-   17: line 5 ("", 4, "none", 1) JmpIfFalse: +23
-   18: line 5 ("", 4, "none") SWAP
-   19: line 5 ("", "none", 4) POP
-   20: line 6 ("", "none") LV0: me
-   21: line 6 ("", "none", LV0) @
-   22: line 6 ("", "none", #5) "sex"
-   23: line 6 ("", "none", #5, "sex") ROT
-   24: line 6 ("", #5, "sex", "none") SETPROP
+   39: #4 line 9 ("") JMP: -23
+   16: #4 line 5 ("") __FORITER__
+   17: #4 line 5 ("", 4, "none", 1) JmpIfFalse: +23
+   18: #4 line 5 ("", 4, "none") SWAP
+   19: #4 line 5 ("", "none", 4) POP
+   20: #4 line 6 ("", "none") LV0: me
+   21: #4 line 6 ("", "none", LV0) @
+   22: #4 line 6 ("", "none", #5) "sex"
+   23: #4 line 6 ("", "none", #5, "sex") ROT
+   24: #4 line 6 ("", #5, "sex", "none") SETPROP
 SETPROP "sex" on #5 = "none"
-   25: line 7 ("") LV0: me
-   26: line 7 ("", LV0) @
-   27: line 7 ("", #5) DUP
-   28: line 7 ("", #5, #5) SV0: msg
-   29: line 7 ("", #5, #5, SV0) @
-   30: line 7 ("", #5, #5, "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") PRONOUN_SUB
+   25: #4 line 7 ("") LV0: me
+   26: #4 line 7 ("", LV0) @
+   27: #4 line 7 ("", #5) DUP
+   28: #4 line 7 ("", #5, #5) SV0: msg
+   29: #4 line 7 ("", #5, #5, SV0) @
+   30: #4 line 7 ("", #5, #5, "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") PRONOUN_SUB
 GETPROP "sex" on #5 = "none"
-   31: line 7 ("", #5, "John_Doe is in its happy place by itself and it suits it, as it is its, and it earned it.") NOTIFY
+   31: #4 line 7 ("", #5, "John_Doe is in its happy place by itself and it suits it, as it is its, and it earned it.") NOTIFY
 NOTIFY: John_Doe is in its happy place by itself and it suits it, as it is its, and it earned it.
-   32: line 8 ("") LV0: me
-   33: line 8 ("", LV0) @
-   34: line 8 ("", #5) DUP
-   35: line 8 ("", #5, #5) SV1: msg2
-   36: line 8 ("", #5, #5, SV1) @
-   37: line 8 ("", #5, #5, "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") PRONOUN_SUB
+   32: #4 line 8 ("") LV0: me
+   33: #4 line 8 ("", LV0) @
+   34: #4 line 8 ("", #5) DUP
+   35: #4 line 8 ("", #5, #5) SV1: msg2
+   36: #4 line 8 ("", #5, #5, SV1) @
+   37: #4 line 8 ("", #5, #5, "%N is in %P happy place by %R and it suits %O, as it is %A, and %S earned it.") PRONOUN_SUB
 GETPROP "sex" on #5 = "none"
-   38: line 8 ("", #5, "John_Doe is in Its happy place by Itself and it suits It, as it is Its, and It earned it.") NOTIFY
+   38: #4 line 8 ("", #5, "John_Doe is in Its happy place by Itself and it suits It, as it is Its, and It earned it.") NOTIFY
 NOTIFY: John_Doe is in Its happy place by Itself and it suits It, as it is Its, and It earned it.
-   39: line 9 ("") JMP: -23
-   16: line 5 ("") __FORITER__
-   17: line 5 ("", 0) JmpIfFalse: +23
-   40: line 5 ("") __FORPOP__
-   41: line 10 ("") EXIT
+   39: #4 line 9 ("") JMP: -23
+   16: #4 line 5 ("") __FORITER__
+   17: #4 line 5 ("", 0) JmpIfFalse: +23
+   40: #4 line 5 ("") __FORPOP__
+   41: #4 line 10 ("") EXIT
 Execution completed in 140 steps.
 

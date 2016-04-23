@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: 13
     2: ITOC
@@ -17,19 +17,19 @@
    13: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") 13
-    2: line 2 ("", 13) ITOC
-    3: line 2 ("", "\r") POP
-    4: line 3 ("") 27
-    5: line 3 ("", 27) ITOC
-    6: line 3 ("", "\[") POP
-    7: line 4 ("") 65
-    8: line 4 ("", 65) ITOC
-    9: line 4 ("", "A") POP
-   10: line 5 ("") 97
-   11: line 5 ("", 97) ITOC
-   12: line 5 ("", "a") POP
-   13: line 6 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") 13
+    2: #4 line 2 ("", 13) ITOC
+    3: #4 line 2 ("", "\r") POP
+    4: #4 line 3 ("") 27
+    5: #4 line 3 ("", 27) ITOC
+    6: #4 line 3 ("", "\[") POP
+    7: #4 line 4 ("") 65
+    8: #4 line 4 ("", 65) ITOC
+    9: #4 line 4 ("", "A") POP
+   10: #4 line 5 ("") 97
+   11: #4 line 5 ("", 97) ITOC
+   12: #4 line 5 ("", "a") POP
+   13: #4 line 6 ("") EXIT
 Execution completed in 14 steps.
 

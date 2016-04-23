@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m"
     2: SV0: a
@@ -44,46 +44,46 @@
    40: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m"
-    2: line 2 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") SV0: a
-    3: line 2 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", SV0) !
-    4: line 3 ("") SV0: a
-    5: line 3 ("", SV0) @
-    6: line 3 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 0
-    7: line 3 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 0) ANSI_STRCUT
-    8: line 3 ("", "", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") POP
-    9: line 3 ("", "") POP
-   10: line 4 ("") SV0: a
-   11: line 4 ("", SV0) @
-   12: line 4 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 1
-   13: line 4 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 1) ANSI_STRCUT
-   14: line 4 ("", "\[[1mB", "old\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") POP
-   15: line 4 ("", "\[[1mB") POP
-   16: line 5 ("") SV0: a
-   17: line 5 ("", SV0) @
-   18: line 5 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 4
-   19: line 5 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 4) ANSI_STRCUT
-   20: line 5 ("", "\[[1mBold", "\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") POP
-   21: line 5 ("", "\[[1mBold") POP
-   22: line 6 ("") SV0: a
-   23: line 6 ("", SV0) @
-   24: line 6 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 5
-   25: line 6 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 5) ANSI_STRCUT
-   26: line 6 ("", "\[[1mBold\[[0m ", "\[[2mDim\[[0m \[[31m\[[43mColor\[[0m") POP
-   27: line 6 ("", "\[[1mBold\[[0m ") POP
-   28: line 7 ("") SV0: a
-   29: line 7 ("", SV0) @
-   30: line 7 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 9
-   31: line 7 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 9) ANSI_STRCUT
-   32: line 7 ("", "\[[1mBold\[[0m \[[2mDim\[[0m ", "\[[31m\[[43mColor\[[0m") POP
-   33: line 7 ("", "\[[1mBold\[[0m \[[2mDim\[[0m ") POP
-   34: line 8 ("") SV0: a
-   35: line 8 ("", SV0) @
-   36: line 8 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 10
-   37: line 8 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 10) ANSI_STRCUT
-   38: line 8 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mC", "olor\[[0m") POP
-   39: line 8 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mC") POP
-   40: line 9 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m"
+    2: #4 line 2 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") SV0: a
+    3: #4 line 2 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", SV0) !
+    4: #4 line 3 ("") SV0: a
+    5: #4 line 3 ("", SV0) @
+    6: #4 line 3 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 0
+    7: #4 line 3 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 0) ANSI_STRCUT
+    8: #4 line 3 ("", "", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") POP
+    9: #4 line 3 ("", "") POP
+   10: #4 line 4 ("") SV0: a
+   11: #4 line 4 ("", SV0) @
+   12: #4 line 4 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 1
+   13: #4 line 4 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 1) ANSI_STRCUT
+   14: #4 line 4 ("", "\[[1mB", "old\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") POP
+   15: #4 line 4 ("", "\[[1mB") POP
+   16: #4 line 5 ("") SV0: a
+   17: #4 line 5 ("", SV0) @
+   18: #4 line 5 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 4
+   19: #4 line 5 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 4) ANSI_STRCUT
+   20: #4 line 5 ("", "\[[1mBold", "\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") POP
+   21: #4 line 5 ("", "\[[1mBold") POP
+   22: #4 line 6 ("") SV0: a
+   23: #4 line 6 ("", SV0) @
+   24: #4 line 6 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 5
+   25: #4 line 6 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 5) ANSI_STRCUT
+   26: #4 line 6 ("", "\[[1mBold\[[0m ", "\[[2mDim\[[0m \[[31m\[[43mColor\[[0m") POP
+   27: #4 line 6 ("", "\[[1mBold\[[0m ") POP
+   28: #4 line 7 ("") SV0: a
+   29: #4 line 7 ("", SV0) @
+   30: #4 line 7 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 9
+   31: #4 line 7 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 9) ANSI_STRCUT
+   32: #4 line 7 ("", "\[[1mBold\[[0m \[[2mDim\[[0m ", "\[[31m\[[43mColor\[[0m") POP
+   33: #4 line 7 ("", "\[[1mBold\[[0m \[[2mDim\[[0m ") POP
+   34: #4 line 8 ("") SV0: a
+   35: #4 line 8 ("", SV0) @
+   36: #4 line 8 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") 10
+   37: #4 line 8 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 10) ANSI_STRCUT
+   38: #4 line 8 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mC", "olor\[[0m") POP
+   39: #4 line 8 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mC") POP
+   40: #4 line 9 ("") EXIT
 Execution completed in 41 steps.
 

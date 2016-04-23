@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: #5
     2: "outlist"
@@ -15,22 +15,22 @@
    11: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") #5
-    2: line 2 ("", #5) "outlist"
-    3: line 2 ("", #5, "outlist") {
-    4: line 2 ("", #5, "outlist", Mark) "This"
-    5: line 2 ("", #5, "outlist", Mark, "This") "is"
-    6: line 2 ("", #5, "outlist", Mark, "This", "is") "a"
-    7: line 2 ("", #5, "outlist", Mark, "This", "is", "a") "test."
-    8: line 2 ("", #5, "outlist", Mark, "This", "is", "a", "test.") }
-    9: line 2 ("", #5, "outlist", "This", "is", "a", "test.", 4) ARRAY_MAKE
-   10: line 3 ("", #5, "outlist", 4["This", "is", "a", "test."]) ARRAY_PUT_PROPLIST
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") #5
+    2: #4 line 2 ("", #5) "outlist"
+    3: #4 line 2 ("", #5, "outlist") {
+    4: #4 line 2 ("", #5, "outlist", Mark) "This"
+    5: #4 line 2 ("", #5, "outlist", Mark, "This") "is"
+    6: #4 line 2 ("", #5, "outlist", Mark, "This", "is") "a"
+    7: #4 line 2 ("", #5, "outlist", Mark, "This", "is", "a") "test."
+    8: #4 line 2 ("", #5, "outlist", Mark, "This", "is", "a", "test.") }
+    9: #4 line 2 ("", #5, "outlist", "This", "is", "a", "test.", 4) ARRAY_MAKE
+   10: #4 line 3 ("", #5, "outlist", 4["This", "is", "a", "test."]) ARRAY_PUT_PROPLIST
 SETPROP "outlist#" on #5 = 4
 SETPROP "outlist#/1" on #5 = "This"
 SETPROP "outlist#/2" on #5 = "is"
 SETPROP "outlist#/3" on #5 = "a"
 SETPROP "outlist#/4" on #5 = "test."
-   11: line 4 ("") EXIT
+   11: #4 line 4 ("") EXIT
 Execution completed in 12 steps.
 

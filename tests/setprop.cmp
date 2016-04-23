@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: LV0: me
     2: @
@@ -20,25 +20,25 @@
    16: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") LV0: me
-    2: line 2 ("", LV0) @
-    3: line 2 ("", #5) "sex"
-    4: line 2 ("", #5, "sex") "female"
-    5: line 2 ("", #5, "sex", "female") SETPROP
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") LV0: me
+    2: #4 line 2 ("", LV0) @
+    3: #4 line 2 ("", #5) "sex"
+    4: #4 line 2 ("", #5, "sex") "female"
+    5: #4 line 2 ("", #5, "sex", "female") SETPROP
 SETPROP "sex" on #5 = "female"
-    6: line 3 ("") LV0: me
-    7: line 3 ("", LV0) @
-    8: line 3 ("", #5) "val"
-    9: line 3 ("", #5, "val") 42
-   10: line 3 ("", #5, "val", 42) SETPROP
+    6: #4 line 3 ("") LV0: me
+    7: #4 line 3 ("", LV0) @
+    8: #4 line 3 ("", #5) "val"
+    9: #4 line 3 ("", #5, "val") 42
+   10: #4 line 3 ("", #5, "val", 42) SETPROP
 SETPROP "val" on #5 = 42
-   11: line 4 ("") LV0: me
-   12: line 4 ("", LV0) @
-   13: line 4 ("", #5) "fval"
-   14: line 4 ("", #5, "fval") 3.14
-   15: line 4 ("", #5, "fval", 3.14) SETPROP
+   11: #4 line 4 ("") LV0: me
+   12: #4 line 4 ("", LV0) @
+   13: #4 line 4 ("", #5) "fval"
+   14: #4 line 4 ("", #5, "fval") 3.14
+   15: #4 line 4 ("", #5, "fval", 3.14) SETPROP
 SETPROP "fval" on #5 = 3.14
-   16: line 5 ("") EXIT
+   16: #4 line 5 ("") EXIT
 Execution completed in 17 steps.
 

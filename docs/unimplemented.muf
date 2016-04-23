@@ -1,13 +1,8 @@
-$ifcancall
-$ifncancall
-array_filter_flags
 array_get_ignorelist
 array_get_propvals
 array_put_propvals
 blessed?
 blessprop
-call
-cancall?
 checkargs
 checkpassword
 compile

@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: {
     2: "d"
@@ -43,83 +43,83 @@
    39: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") {
-    2: line 2 ("", Mark) "d"
-    3: line 2 ("", Mark, "d") "h"
-    4: line 2 ("", Mark, "d", "h") "G"
-    5: line 2 ("", Mark, "d", "h", "G") "B"
-    6: line 2 ("", Mark, "d", "h", "G", "B") "j"
-    7: line 2 ("", Mark, "d", "h", "G", "B", "j") "E"
-    8: line 2 ("", Mark, "d", "h", "G", "B", "j", "E") "a"
-    9: line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a") "i"
-   10: line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a", "i") "F"
-   11: line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a", "i", "F") "c"
-   12: line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a", "i", "F", "c") }
-   13: line 2 ("", "d", "h", "G", "B", "j", "E", "a", "i", "F", "c", 10) ARRAY_MAKE
-   14: line 3 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"]) SV0: arr
-   15: line 3 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], SV0) !
-   16: line 4 ("") {
-   17: line 5 ("", Mark) 0
-   18: line 6 ("", Mark, 0) 1
-   19: line 7 ("", Mark, 0, 1) 2
-   20: line 8 ("", Mark, 0, 1, 2) 1
-   21: line 8 ("", Mark, 0, 1, 2, 1) 2
-   22: line 8 ("", Mark, 0, 1, 2, 1, 2) BITOR
-   23: line 9 ("", Mark, 0, 1, 2, 3) }
-   24: line 9 ("", 0, 1, 2, 3, 4) ARRAY_MAKE
-   25: line 9 ("", 4[0, 1, 2, 3]) FOREACH
-   26: line 9 ("") __FORITER__
-   27: line 9 ("", 0, 0, 1) JmpIfFalse: +11
-   28: line 9 ("", 0, 0) SV1: mode
-   29: line 9 ("", 0, 0, SV1) !
-   30: line 9 ("", 0) POP
-   31: line 10 ("") SV0: arr
-   32: line 10 ("", SV0) @
-   33: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"]) SV1: mode
-   34: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], SV1) @
-   35: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], 0) ARRAY_SORT
-   36: line 10 ("", 10["B", "E", "F", "G", "a", "c", "d", "h", "i", "j"]) POP
-   37: line 11 ("") JMP: -11
-   26: line 9 ("") __FORITER__
-   27: line 9 ("", 1, 1, 1) JmpIfFalse: +11
-   28: line 9 ("", 1, 1) SV1: mode
-   29: line 9 ("", 1, 1, SV1) !
-   30: line 9 ("", 1) POP
-   31: line 10 ("") SV0: arr
-   32: line 10 ("", SV0) @
-   33: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"]) SV1: mode
-   34: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], SV1) @
-   35: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], 1) ARRAY_SORT
-   36: line 10 ("", 10["a", "B", "c", "d", "E", "F", "G", "h", "i", "j"]) POP
-   37: line 11 ("") JMP: -11
-   26: line 9 ("") __FORITER__
-   27: line 9 ("", 2, 2, 1) JmpIfFalse: +11
-   28: line 9 ("", 2, 2) SV1: mode
-   29: line 9 ("", 2, 2, SV1) !
-   30: line 9 ("", 2) POP
-   31: line 10 ("") SV0: arr
-   32: line 10 ("", SV0) @
-   33: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"]) SV1: mode
-   34: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], SV1) @
-   35: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], 2) ARRAY_SORT
-   36: line 10 ("", 10["j", "i", "h", "d", "c", "a", "G", "F", "E", "B"]) POP
-   37: line 11 ("") JMP: -11
-   26: line 9 ("") __FORITER__
-   27: line 9 ("", 3, 3, 1) JmpIfFalse: +11
-   28: line 9 ("", 3, 3) SV1: mode
-   29: line 9 ("", 3, 3, SV1) !
-   30: line 9 ("", 3) POP
-   31: line 10 ("") SV0: arr
-   32: line 10 ("", SV0) @
-   33: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"]) SV1: mode
-   34: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], SV1) @
-   35: line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], 3) ARRAY_SORT
-   36: line 10 ("", 10["j", "i", "h", "G", "F", "E", "d", "c", "B", "a"]) POP
-   37: line 11 ("") JMP: -11
-   26: line 9 ("") __FORITER__
-   27: line 9 ("", 0) JmpIfFalse: +11
-   38: line 9 ("") __FORPOP__
-   39: line 12 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") {
+    2: #4 line 2 ("", Mark) "d"
+    3: #4 line 2 ("", Mark, "d") "h"
+    4: #4 line 2 ("", Mark, "d", "h") "G"
+    5: #4 line 2 ("", Mark, "d", "h", "G") "B"
+    6: #4 line 2 ("", Mark, "d", "h", "G", "B") "j"
+    7: #4 line 2 ("", Mark, "d", "h", "G", "B", "j") "E"
+    8: #4 line 2 ("", Mark, "d", "h", "G", "B", "j", "E") "a"
+    9: #4 line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a") "i"
+   10: #4 line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a", "i") "F"
+   11: #4 line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a", "i", "F") "c"
+   12: #4 line 2 ("", Mark, "d", "h", "G", "B", "j", "E", "a", "i", "F", "c") }
+   13: #4 line 2 ("", "d", "h", "G", "B", "j", "E", "a", "i", "F", "c", 10) ARRAY_MAKE
+   14: #4 line 3 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"]) SV0: arr
+   15: #4 line 3 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], SV0) !
+   16: #4 line 4 ("") {
+   17: #4 line 5 ("", Mark) 0
+   18: #4 line 6 ("", Mark, 0) 1
+   19: #4 line 7 ("", Mark, 0, 1) 2
+   20: #4 line 8 ("", Mark, 0, 1, 2) 1
+   21: #4 line 8 ("", Mark, 0, 1, 2, 1) 2
+   22: #4 line 8 ("", Mark, 0, 1, 2, 1, 2) BITOR
+   23: #4 line 9 ("", Mark, 0, 1, 2, 3) }
+   24: #4 line 9 ("", 0, 1, 2, 3, 4) ARRAY_MAKE
+   25: #4 line 9 ("", 4[0, 1, 2, 3]) FOREACH
+   26: #4 line 9 ("") __FORITER__
+   27: #4 line 9 ("", 0, 0, 1) JmpIfFalse: +11
+   28: #4 line 9 ("", 0, 0) SV1: mode
+   29: #4 line 9 ("", 0, 0, SV1) !
+   30: #4 line 9 ("", 0) POP
+   31: #4 line 10 ("") SV0: arr
+   32: #4 line 10 ("", SV0) @
+   33: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"]) SV1: mode
+   34: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], SV1) @
+   35: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], 0) ARRAY_SORT
+   36: #4 line 10 ("", 10["B", "E", "F", "G", "a", "c", "d", "h", "i", "j"]) POP
+   37: #4 line 11 ("") JMP: -11
+   26: #4 line 9 ("") __FORITER__
+   27: #4 line 9 ("", 1, 1, 1) JmpIfFalse: +11
+   28: #4 line 9 ("", 1, 1) SV1: mode
+   29: #4 line 9 ("", 1, 1, SV1) !
+   30: #4 line 9 ("", 1) POP
+   31: #4 line 10 ("") SV0: arr
+   32: #4 line 10 ("", SV0) @
+   33: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"]) SV1: mode
+   34: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], SV1) @
+   35: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], 1) ARRAY_SORT
+   36: #4 line 10 ("", 10["a", "B", "c", "d", "E", "F", "G", "h", "i", "j"]) POP
+   37: #4 line 11 ("") JMP: -11
+   26: #4 line 9 ("") __FORITER__
+   27: #4 line 9 ("", 2, 2, 1) JmpIfFalse: +11
+   28: #4 line 9 ("", 2, 2) SV1: mode
+   29: #4 line 9 ("", 2, 2, SV1) !
+   30: #4 line 9 ("", 2) POP
+   31: #4 line 10 ("") SV0: arr
+   32: #4 line 10 ("", SV0) @
+   33: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"]) SV1: mode
+   34: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], SV1) @
+   35: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], 2) ARRAY_SORT
+   36: #4 line 10 ("", 10["j", "i", "h", "d", "c", "a", "G", "F", "E", "B"]) POP
+   37: #4 line 11 ("") JMP: -11
+   26: #4 line 9 ("") __FORITER__
+   27: #4 line 9 ("", 3, 3, 1) JmpIfFalse: +11
+   28: #4 line 9 ("", 3, 3) SV1: mode
+   29: #4 line 9 ("", 3, 3, SV1) !
+   30: #4 line 9 ("", 3) POP
+   31: #4 line 10 ("") SV0: arr
+   32: #4 line 10 ("", SV0) @
+   33: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"]) SV1: mode
+   34: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], SV1) @
+   35: #4 line 10 ("", 10["d", "h", "G", "B", "j", "E", "a", "i", "F", "c"], 3) ARRAY_SORT
+   36: #4 line 10 ("", 10["j", "i", "h", "G", "F", "E", "d", "c", "B", "a"]) POP
+   37: #4 line 11 ("") JMP: -11
+   26: #4 line 9 ("") __FORITER__
+   27: #4 line 9 ("", 0) JmpIfFalse: +11
+   38: #4 line 9 ("") __FORPOP__
+   39: #4 line 12 ("") EXIT
 Execution completed in 78 steps.
 

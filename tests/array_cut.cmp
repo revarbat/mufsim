@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: {
     2: 3
@@ -56,58 +56,58 @@
    52: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") {
-    2: line 2 ("", Mark) 3
-    3: line 2 ("", Mark, 3) 4
-    4: line 2 ("", Mark, 3, 4) 5
-    5: line 2 ("", Mark, 3, 4, 5) 6
-    6: line 2 ("", Mark, 3, 4, 5, 6) 7
-    7: line 2 ("", Mark, 3, 4, 5, 6, 7) }
-    8: line 2 ("", 3, 4, 5, 6, 7, 5) ARRAY_MAKE
-    9: line 2 ("", 5[3, 4, 5, 6, 7]) SV0: lst
-   10: line 2 ("", 5[3, 4, 5, 6, 7], SV0) !
-   11: line 3 ("") {
-   12: line 3 ("", Mark) "a"
-   13: line 3 ("", Mark, "a") 3
-   14: line 3 ("", Mark, "a", 3) "b"
-   15: line 3 ("", Mark, "a", 3, "b") 8
-   16: line 3 ("", Mark, "a", 3, "b", 8) "c"
-   17: line 3 ("", Mark, "a", 3, "b", 8, "c") 4
-   18: line 3 ("", Mark, "a", 3, "b", 8, "c", 4) "d"
-   19: line 3 ("", Mark, "a", 3, "b", 8, "c", 4, "d") 9
-   20: line 3 ("", Mark, "a", 3, "b", 8, "c", 4, "d", 9) "e"
-   21: line 3 ("", Mark, "a", 3, "b", 8, "c", 4, "d", 9, "e") 7
-   22: line 3 ("", Mark, "a", 3, "b", 8, "c", 4, "d", 9, "e", 7) }
-   23: line 3 ("", "a", 3, "b", 8, "c", 4, "d", 9, "e", 7, 10) 2
-   24: line 3 ("", "a", 3, "b", 8, "c", 4, "d", 9, "e", 7, 10, 2) /
-   25: line 3 ("", "a", 3, "b", 8, "c", 4, "d", 9, "e", 7, 5) ARRAY_MAKE_DICT
-   26: line 3 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}) SV1: d
-   27: line 3 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}, SV1) !
-   28: line 4 ("") SV0: lst
-   29: line 4 ("", SV0) @
-   30: line 4 ("", 5[3, 4, 5, 6, 7]) 2
-   31: line 4 ("", 5[3, 4, 5, 6, 7], 2) ARRAY_CUT
-   32: line 4 ("", 2[3, 4], 3[5, 6, 7]) POP
-   33: line 4 ("", 2[3, 4]) POP
-   34: line 5 ("") SV0: lst
-   35: line 5 ("", SV0) @
-   36: line 5 ("", 5[3, 4, 5, 6, 7]) "foo"
-   37: line 5 ("", 5[3, 4, 5, 6, 7], "foo") ARRAY_CUT
-   38: line 5 ("", 5[3, 4, 5, 6, 7], 0[]) POP
-   39: line 5 ("", 5[3, 4, 5, 6, 7]) POP
-   40: line 6 ("") SV1: d
-   41: line 6 ("", SV1) @
-   42: line 6 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}) 2
-   43: line 6 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}, 2) ARRAY_CUT
-   44: line 6 ("", 0{}, 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}) POP
-   45: line 6 ("", 0{}) POP
-   46: line 7 ("") SV1: d
-   47: line 7 ("", SV1) @
-   48: line 7 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}) "c"
-   49: line 7 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}, "c") ARRAY_CUT
-   50: line 7 ("", 2{"a": 3, "b": 8}, 3{"c": 4, "d": 9, "e": 7}) POP
-   51: line 7 ("", 2{"a": 3, "b": 8}) POP
-   52: line 8 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") {
+    2: #4 line 2 ("", Mark) 3
+    3: #4 line 2 ("", Mark, 3) 4
+    4: #4 line 2 ("", Mark, 3, 4) 5
+    5: #4 line 2 ("", Mark, 3, 4, 5) 6
+    6: #4 line 2 ("", Mark, 3, 4, 5, 6) 7
+    7: #4 line 2 ("", Mark, 3, 4, 5, 6, 7) }
+    8: #4 line 2 ("", 3, 4, 5, 6, 7, 5) ARRAY_MAKE
+    9: #4 line 2 ("", 5[3, 4, 5, 6, 7]) SV0: lst
+   10: #4 line 2 ("", 5[3, 4, 5, 6, 7], SV0) !
+   11: #4 line 3 ("") {
+   12: #4 line 3 ("", Mark) "a"
+   13: #4 line 3 ("", Mark, "a") 3
+   14: #4 line 3 ("", Mark, "a", 3) "b"
+   15: #4 line 3 ("", Mark, "a", 3, "b") 8
+   16: #4 line 3 ("", Mark, "a", 3, "b", 8) "c"
+   17: #4 line 3 ("", Mark, "a", 3, "b", 8, "c") 4
+   18: #4 line 3 ("", Mark, "a", 3, "b", 8, "c", 4) "d"
+   19: #4 line 3 ("", Mark, "a", 3, "b", 8, "c", 4, "d") 9
+   20: #4 line 3 ("", Mark, "a", 3, "b", 8, "c", 4, "d", 9) "e"
+   21: #4 line 3 ("", Mark, "a", 3, "b", 8, "c", 4, "d", 9, "e") 7
+   22: #4 line 3 ("", Mark, "a", 3, "b", 8, "c", 4, "d", 9, "e", 7) }
+   23: #4 line 3 ("", "a", 3, "b", 8, "c", 4, "d", 9, "e", 7, 10) 2
+   24: #4 line 3 ("", "a", 3, "b", 8, "c", 4, "d", 9, "e", 7, 10, 2) /
+   25: #4 line 3 ("", "a", 3, "b", 8, "c", 4, "d", 9, "e", 7, 5) ARRAY_MAKE_DICT
+   26: #4 line 3 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}) SV1: d
+   27: #4 line 3 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}, SV1) !
+   28: #4 line 4 ("") SV0: lst
+   29: #4 line 4 ("", SV0) @
+   30: #4 line 4 ("", 5[3, 4, 5, 6, 7]) 2
+   31: #4 line 4 ("", 5[3, 4, 5, 6, 7], 2) ARRAY_CUT
+   32: #4 line 4 ("", 2[3, 4], 3[5, 6, 7]) POP
+   33: #4 line 4 ("", 2[3, 4]) POP
+   34: #4 line 5 ("") SV0: lst
+   35: #4 line 5 ("", SV0) @
+   36: #4 line 5 ("", 5[3, 4, 5, 6, 7]) "foo"
+   37: #4 line 5 ("", 5[3, 4, 5, 6, 7], "foo") ARRAY_CUT
+   38: #4 line 5 ("", 5[3, 4, 5, 6, 7], 0[]) POP
+   39: #4 line 5 ("", 5[3, 4, 5, 6, 7]) POP
+   40: #4 line 6 ("") SV1: d
+   41: #4 line 6 ("", SV1) @
+   42: #4 line 6 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}) 2
+   43: #4 line 6 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}, 2) ARRAY_CUT
+   44: #4 line 6 ("", 0{}, 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}) POP
+   45: #4 line 6 ("", 0{}) POP
+   46: #4 line 7 ("") SV1: d
+   47: #4 line 7 ("", SV1) @
+   48: #4 line 7 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}) "c"
+   49: #4 line 7 ("", 5{"a": 3, "b": 8, "c": 4, "d": 9, "e": 7}, "c") ARRAY_CUT
+   50: #4 line 7 ("", 2{"a": 3, "b": 8}, 3{"c": 4, "d": 9, "e": 7}) POP
+   51: #4 line 7 ("", 2{"a": 3, "b": 8}) POP
+   52: #4 line 8 ("") EXIT
 Execution completed in 53 steps.
 

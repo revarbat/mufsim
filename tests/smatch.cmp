@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "foo bar"
     2: "f*"
@@ -14,16 +14,16 @@
    10: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "foo bar"
-    2: line 2 ("", "foo bar") "f*"
-    3: line 2 ("", "foo bar", "f*") SMATCH
-    4: line 3 ("", 1) "foo bar"
-    5: line 3 ("", 1, "foo bar") "*b*"
-    6: line 3 ("", 1, "foo bar", "*b*") SMATCH
-    7: line 4 ("", 1, 1) "foo bar"
-    8: line 4 ("", 1, 1, "foo bar") "*c*"
-    9: line 4 ("", 1, 1, "foo bar", "*c*") SMATCH
-   10: line 5 ("", 1, 1, 0) EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "foo bar"
+    2: #4 line 2 ("", "foo bar") "f*"
+    3: #4 line 2 ("", "foo bar", "f*") SMATCH
+    4: #4 line 3 ("", 1) "foo bar"
+    5: #4 line 3 ("", 1, "foo bar") "*b*"
+    6: #4 line 3 ("", 1, "foo bar", "*b*") SMATCH
+    7: #4 line 4 ("", 1, 1) "foo bar"
+    8: #4 line 4 ("", 1, 1, "foo bar") "*c*"
+    9: #4 line 4 ("", 1, 1, "foo bar", "*c*") SMATCH
+   10: #4 line 5 ("", 1, 1, 0) EXIT
 Execution completed in 11 steps.
 

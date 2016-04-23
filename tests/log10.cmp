@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: 10000000000.0
     2: LOG10
@@ -26,28 +26,28 @@
    22: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") 10000000000.0
-    2: line 2 ("", 10000000000.0) LOG10
-    3: line 2 ("", 10.0) POP
-    4: line 3 ("") 1000.0
-    5: line 3 ("", 1000.0) LOG10
-    6: line 3 ("", 3.0) POP
-    7: line 4 ("") 1.0
-    8: line 4 ("", 1.0) LOG10
-    9: line 4 ("", 0.0) POP
-   10: line 5 ("") 1e-06
-   11: line 5 ("", 1e-06) LOG10
-   12: line 5 ("", -6.0) POP
-   13: line 6 ("") "FBOUNDS"
-   14: line 6 ("", "FBOUNDS") IS_SET?
-   15: line 6 ("", 0) POP
-   16: line 7 ("") 0.0
-   17: line 7 ("", 0.0) LOG10
-   18: line 7 ("", 0.0) POP
-   19: line 8 ("") "FBOUNDS"
-   20: line 8 ("", "FBOUNDS") IS_SET?
-   21: line 8 ("", 1) POP
-   22: line 9 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") 10000000000.0
+    2: #4 line 2 ("", 10000000000.0) LOG10
+    3: #4 line 2 ("", 10.0) POP
+    4: #4 line 3 ("") 1000.0
+    5: #4 line 3 ("", 1000.0) LOG10
+    6: #4 line 3 ("", 3.0) POP
+    7: #4 line 4 ("") 1.0
+    8: #4 line 4 ("", 1.0) LOG10
+    9: #4 line 4 ("", 0.0) POP
+   10: #4 line 5 ("") 1e-06
+   11: #4 line 5 ("", 1e-06) LOG10
+   12: #4 line 5 ("", -6.0) POP
+   13: #4 line 6 ("") "FBOUNDS"
+   14: #4 line 6 ("", "FBOUNDS") IS_SET?
+   15: #4 line 6 ("", 0) POP
+   16: #4 line 7 ("") 0.0
+   17: #4 line 7 ("", 0.0) LOG10
+   18: #4 line 7 ("", 0.0) POP
+   19: #4 line 8 ("") "FBOUNDS"
+   20: #4 line 8 ("", "FBOUNDS") IS_SET?
+   21: #4 line 8 ("", 1) POP
+   22: #4 line 9 ("") EXIT
 Execution completed in 23 steps.
 

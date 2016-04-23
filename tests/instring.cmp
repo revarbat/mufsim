@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "abcde"
     2: "bcd"
@@ -17,19 +17,19 @@
    13: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "abcde"
-    2: line 2 ("", "abcde") "bcd"
-    3: line 2 ("", "abcde", "bcd") INSTRING
-    4: line 3 ("", 2) "abcde"
-    5: line 3 ("", 2, "abcde") "bce"
-    6: line 3 ("", 2, "abcde", "bce") INSTRING
-    7: line 4 ("", 2, 0) "abcde"
-    8: line 4 ("", 2, 0, "abcde") "BCD"
-    9: line 4 ("", 2, 0, "abcde", "BCD") INSTRING
-   10: line 5 ("", 2, 0, 2) "abcde"
-   11: line 5 ("", 2, 0, 2, "abcde") "BCE"
-   12: line 5 ("", 2, 0, 2, "abcde", "BCE") INSTRING
-   13: line 6 ("", 2, 0, 2, 0) EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "abcde"
+    2: #4 line 2 ("", "abcde") "bcd"
+    3: #4 line 2 ("", "abcde", "bcd") INSTRING
+    4: #4 line 3 ("", 2) "abcde"
+    5: #4 line 3 ("", 2, "abcde") "bce"
+    6: #4 line 3 ("", 2, "abcde", "bce") INSTRING
+    7: #4 line 4 ("", 2, 0) "abcde"
+    8: #4 line 4 ("", 2, 0, "abcde") "BCD"
+    9: #4 line 4 ("", 2, 0, "abcde", "BCD") INSTRING
+   10: #4 line 5 ("", 2, 0, 2) "abcde"
+   11: #4 line 5 ("", 2, 0, 2, "abcde") "BCE"
+   12: #4 line 5 ("", 2, 0, 2, "abcde", "BCE") INSTRING
+   13: #4 line 6 ("", 2, 0, 2, 0) EXIT
 Execution completed in 14 steps.
 

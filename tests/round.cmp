@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: PI
     2: 5
@@ -17,19 +17,19 @@
    13: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") PI
-    2: line 2 ("", 3.14159265359) 5
-    3: line 2 ("", 3.14159265359, 5) ROUND
-    4: line 2 ("", 3.14159) POP
-    5: line 3 ("") PI
-    6: line 3 ("", 3.14159265359) 1
-    7: line 3 ("", 3.14159265359, 1) ROUND
-    8: line 3 ("", 3.1) POP
-    9: line 4 ("") 6.022e+23
-   10: line 4 ("", 6.022e+23) 3
-   11: line 4 ("", 6.022e+23, 3) ROUND
-   12: line 4 ("", 6.022e+23) POP
-   13: line 5 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") PI
+    2: #4 line 2 ("", 3.14159265359) 5
+    3: #4 line 2 ("", 3.14159265359, 5) ROUND
+    4: #4 line 2 ("", 3.14159) POP
+    5: #4 line 3 ("") PI
+    6: #4 line 3 ("", 3.14159265359) 1
+    7: #4 line 3 ("", 3.14159265359, 1) ROUND
+    8: #4 line 3 ("", 3.1) POP
+    9: #4 line 4 ("") 6.022e+23
+   10: #4 line 4 ("", 6.022e+23) 3
+   11: #4 line 4 ("", 6.022e+23, 3) ROUND
+   12: #4 line 4 ("", 6.022e+23) POP
+   13: #4 line 5 ("") EXIT
 Execution completed in 14 steps.
 

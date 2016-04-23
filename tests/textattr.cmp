@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "Bold"
     2: "bold"
@@ -17,19 +17,19 @@
    13: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "Bold"
-    2: line 2 ("", "Bold") "bold"
-    3: line 2 ("", "Bold", "bold") TEXTATTR
-    4: line 2 ("", "\[[1mBold\[[0m") POP
-    5: line 3 ("") "Dim"
-    6: line 3 ("", "Dim") "dim"
-    7: line 3 ("", "Dim", "dim") TEXTATTR
-    8: line 3 ("", "\[[2mDim\[[0m") POP
-    9: line 4 ("") "Foobar"
-   10: line 4 ("", "Foobar") "bold,red,bg_green"
-   11: line 4 ("", "Foobar", "bold,red,bg_green") TEXTATTR
-   12: line 4 ("", "\[[1;31;42mFoobar\[[0m") POP
-   13: line 5 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "Bold"
+    2: #4 line 2 ("", "Bold") "bold"
+    3: #4 line 2 ("", "Bold", "bold") TEXTATTR
+    4: #4 line 2 ("", "\[[1mBold\[[0m") POP
+    5: #4 line 3 ("") "Dim"
+    6: #4 line 3 ("", "Dim") "dim"
+    7: #4 line 3 ("", "Dim", "dim") TEXTATTR
+    8: #4 line 3 ("", "\[[2mDim\[[0m") POP
+    9: #4 line 4 ("") "Foobar"
+   10: #4 line 4 ("", "Foobar") "bold,red,bg_green"
+   11: #4 line 4 ("", "Foobar", "bold,red,bg_green") TEXTATTR
+   12: #4 line 4 ("", "\[[1;31;42mFoobar\[[0m") POP
+   13: #4 line 5 ("") EXIT
 Execution completed in 14 steps.
 

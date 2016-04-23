@@ -7,6 +7,7 @@ import re
 import sys
 import time
 import math
+import copy
 import random
 import argparse
 import readline
@@ -28,6 +29,8 @@ def escape_str(s):
             out += "\\["
         elif ch == "\\":
             out += "\\\\"
+        elif ch == '"':
+            out += '\\"'
         else:
             out += ch
     return '"%s"' % out
@@ -165,11 +168,20 @@ class StackLock(StackItem):
 
 
 class StackAddress(StackItem):
+    prog = -1
+
+    def __init__(self, value, prog):
+        self.prog = prog
+        super(StackAddress, self).__init__(value)
+
     def __str__(self):
         return "Addr:%d" % self.value
 
     def __cmp__(self, other):
-        return cmp(self.value, other.value)
+        return cmp(
+            (self.prog, self.value),
+            (other.prog, other.value)
+        )
 
 
 class StackGlobalVar(StackItem):
@@ -206,6 +218,8 @@ class DBObject(object):
         objects_db[self.dbref] = self
         self.moveto(location)
         self.descr = -1
+        self.sources = None
+        self.compiled = None
         if objtype == "player":
             player_names[self.name.lower()] = self.dbref
             self.descr = self.dbref * 2 + 1
@@ -250,7 +264,8 @@ class DBObject(object):
         else:
             val = self.properties[prop]
         if type(val) is str:
-            print("GETPROP \"%s\" on #%d = \"%s\"" % (prop, self.dbref, val))
+            print("GETPROP \"%s\" on #%d = %s" %
+                  (prop, self.dbref, escape_str(val)))
         else:
             print("GETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
         return val
@@ -260,8 +275,8 @@ class DBObject(object):
         self.properties[prop] = val
         if not suppress:
             if type(val) is str:
-                print("SETPROP \"%s\" on #%d = \"%s\"" %
-                      (prop, self.dbref, val))
+                print("SETPROP \"%s\" on #%d = %s" %
+                      (prop, self.dbref, escape_str(val)))
             else:
                 print("SETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
 
@@ -669,6 +684,14 @@ def smatch(pat, txt):
     return False
 
 
+def item_type_name(val):
+    if type(val) in [int, float, str, list, dict]:
+        val = str(type(val)).split("'")[1].title()
+    else:
+        val = str(type(val)).split("'")[1].split(".")[1][5:]
+    return val
+
+
 def item_repr(x):
     if type(x) is int:
         return "%d" % x
@@ -834,7 +857,31 @@ class InstFunc(Instruction):
 class InstExecute(Instruction):
     def execute(self, fr):
         addr = fr.data_pop_address()
-        fr.call_push(addr)
+        fr.call_push(addr, fr.caller_get())
+        fr.pc_advance(-1)
+
+
+@instr("call")
+class InstCall(Instruction):
+    def execute(self, fr):
+        saddr = fr.curr_addr()
+        x = fr.data_pop(StackDBRef, str)
+        if type(x) is str:
+            pub = x
+            obj = fr.data_pop_dbref()
+        else:
+            pub = None
+            obj = x
+        obj = getobj(obj)
+        if obj.objtype != "program":
+            raise MufRuntimeError("Expected program object!")
+        if pub:
+            if pub not in obj.compiled.publics:
+                raise MufRuntimeError("Unrecognized public call.")
+            addr = obj.compiled.publics[pub]
+        else:
+            addr = obj.compiled.lastfunction
+        fr.call_push(addr, saddr.prog)
         fr.pc_advance(-1)
 
 
@@ -842,6 +889,19 @@ class InstExecute(Instruction):
 class InstExit(Instruction):
     def execute(self, fr):
         fr.call_pop()
+
+
+@instr("cancall?")
+class InstCanCallP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        pub = fr.data_pop(str)
+        obj = fr.data_pop_object()
+        if obj.compiled and obj.compiled.publics:
+            if pub in obj.compiled.publics:
+                fr.data_push(1)
+                return
+        fr.data_push(0)
 
 
 @instr("try")
@@ -856,7 +916,7 @@ class InstTry(Instruction):
         cnt = fr.data_pop(int)
         stacklock = fr.data_depth() - cnt
         addr = fr.curr_addr()
-        addr = StackAddress(addr.value + self.delta)
+        addr = StackAddress(addr.value + self.delta, addr.prog)
         fr.catch_push(self.detailed, addr, stacklock)
 
     def __str__(self):
@@ -2225,11 +2285,13 @@ class InstArraySetItem(Instruction):
             elif key < 0 or key > len(arr):
                 raise MufRuntimeError("Index out of array bounds.")
             else:
+                arr = arr[:]
                 arr[key] = val
             fr.data_push(arr)
         elif type(arr) is dict:
             if type(key) is not int and type(key) is not str:
                 raise MufRuntimeError("Index must be integer or string.")
+            arr = dict(arr)
             arr[key] = val
             fr.data_push(arr)
 
@@ -2247,11 +2309,13 @@ class InstArrayInsertItem(Instruction):
             elif key < 0 or key > len(arr):
                 raise MufRuntimeError("Index out of array bounds.")
             else:
+                arr = arr[:]
                 arr.insert(key, val)
             fr.data_push(arr)
         elif type(arr) is dict:
             if type(key) is not int and type(key) is not str:
                 raise MufRuntimeError("Index must be integer or string.")
+            arr = dict(arr)
             arr[key] = val
             fr.data_push(arr)
 
@@ -2268,11 +2332,13 @@ class InstArrayDelItem(Instruction):
             elif key < 0 or key > len(arr):
                 raise MufRuntimeError("Index out of array bounds.")
             else:
+                arr = arr[:]
                 del arr[key]
             fr.data_push(arr)
         elif type(arr) is dict:
             if type(key) is not int and type(key) is not str:
                 raise MufRuntimeError("Index must be integer or string.")
+            arr = dict(arr)
             del arr[key]
             fr.data_push(arr)
 
@@ -2283,6 +2349,7 @@ class InstArrayAppendItem(Instruction):
         fr.check_underflow(2)
         arr = fr.data_pop(list)
         val = fr.data_pop()
+        arr = arr[:]
         arr.append(val)
         fr.data_push(arr)
 
@@ -2318,7 +2385,7 @@ class InstArraySetRange(Instruction):
         fr.check_underflow(3)
         items = fr.data_pop(list)
         st = fr.data_pop(int)
-        arr = fr.data_pop(list)
+        arr = fr.data_pop(list)[:]
         for i, item in enumerate(items):
             arr[st + i] = item
         fr.data_push(arr)
@@ -2330,7 +2397,7 @@ class InstArrayDelRange(Instruction):
         fr.check_underflow(3)
         end = fr.data_pop(int)
         st = fr.data_pop(int)
-        arr = fr.data_pop(list)
+        arr = fr.data_pop(list)[:]
         if end >= len(arr):
             end = len(arr) - 1
         for i in xrange(st, end + 1):
@@ -2344,7 +2411,7 @@ class InstArrayInsertRange(Instruction):
         fr.check_underflow(3)
         items = fr.data_pop(list)
         st = fr.data_pop(int)
-        arr = fr.data_pop(list)
+        arr = fr.data_pop(list)[:]
         if st < 0 or st > len(arr):
             raise MufRuntimeError("Index outside array bounds. (2)")
         for i, item in enumerate(items):
@@ -2381,6 +2448,7 @@ class InstArrayNestedSet(Instruction):
         keys = fr.data_pop(list)
         arr = fr.data_pop(list, dict)
         val = fr.data_pop()
+        arr = copy.deepcopy(arr)
         subarr = arr
         keyslen = len(keys)
         for keynum, key in enumerate(keys):
@@ -2416,6 +2484,7 @@ class InstArrayNestedDel(Instruction):
         fr.check_underflow(2)
         keys = fr.data_pop(list)
         arr = fr.data_pop(list, dict)
+        arr = copy.deepcopy(arr)
         subarr = arr
         keyslen = len(keys)
         for keynum, key in enumerate(keys):
@@ -2517,7 +2586,7 @@ class InstArrayJoin(Instruction):
             elif type(val) is StackDBRef:
                 out += "#%d" % val.value
             elif type(val) is StackAddress:
-                out += "ADDRESS: " + val.value
+                out += "Addr: " + val.value
             else:
                 out += val
         fr.data_push(out)
@@ -2611,7 +2680,7 @@ class InstArrayExcludeVal(Instruction):
 @instr("array_reverse")
 class InstArrayReverse(Instruction):
     def execute(self, fr):
-        arr = fr.data_pop(list)
+        arr = fr.data_pop(list)[:]
         arr = [x for x in reversed(arr)]
         fr.data_push(arr)
 
@@ -2621,7 +2690,7 @@ class InstArraySort(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
         flags = fr.data_pop(int)
-        arr = fr.data_pop(list)
+        arr = fr.data_pop(list)[:]
         nocase = flags & 1 != 0
         dorev = flags & 2 != 0
         doshuffle = flags & 4 != 0
@@ -3076,8 +3145,7 @@ class InstNext(Instruction):
 @instr("caller")
 class InstCaller(Instruction):
     def execute(self, fr):
-        # TODO: return actual caller
-        fr.data_push(fr.trigger)
+        fr.data_push(fr.caller_get())
 
 
 @instr("prog")
@@ -3259,9 +3327,7 @@ class InstOnline(Instruction):
 @instr("online_array")
 class InstOnlineArray(Instruction):
     def execute(self, fr):
-        out = []
-        for descr in descriptors_list:
-            out.append(StackDBRef(descriptors[descr]))
+        out = [StackDBRef(descriptors[descr]) for descr in descriptors_list]
         fr.data_push(out)
 
 
@@ -3669,37 +3735,28 @@ class InstArrayFmtStrings(Instruction):
                 return "%"
             elif ftyp == "i":
                 val = d.get(key, 0)
-                if type(val) is not int:
-                    raise MufRuntimeError("Expected integer.")
+                fr.check_type(val, [int])
                 ftyp = "d"
             elif ftyp.lower() in ["e", "f", "g"]:
                 val = d.get(key, 0.0)
-                if type(val) is not float:
-                    raise MufRuntimeError("Expected float.")
+                fr.check_type(val, [float])
             elif ftyp == "s":
                 val = d.get(key, '')
-                if type(val) is not str:
-                    raise MufRuntimeError("Expected string.")
+                fr.check_type(val, [str])
             elif ftyp == "D":
                 val = d.get(key, StackDBRef(-1))
-                if type(val) is not StackDBRef:
-                    raise MufRuntimeError("Expected dbref.")
+                fr.check_type(val, [StackDBRef])
                 val = getobj(val).name
                 ftyp = "s"
             elif ftyp == "d":
                 val = d.get(key, StackDBRef(-1))
-                if type(val) is not StackDBRef:
-                    raise MufRuntimeError("Expected dbref.")
+                fr.check_type(val, [StackDBRef])
                 ftyp = "s"
             elif ftyp == "~":
                 val = d.get(key, 0)
                 ftyp = "s"
             elif ftyp == "?":
-                val = d.get(key, 0)
-                if type(val) in [int, float, str, list, dict]:
-                    val = str(type(val)).split("'")[1].title()
-                else:
-                    val = str(type(val)).split("'")[1].split(".")[1][5:]
+                val = item_type_name(d.get(key, 0))
                 ftyp = "s"
             else:
                 return ""
@@ -4021,6 +4078,55 @@ class InstArrayFilterProp(Instruction):
                 val = getobj(obj).getprop(prop)
                 if val and smatch(pat, val):
                     found.append(obj)
+        fr.data_push(found)
+
+
+@instr("array_filter_flags")
+class InstArrayFilterFlags(Instruction):
+    type_map = {
+        'E': "exit",
+        'F': "program",
+        'G': "garbage",
+        'P': "player",
+        'R': "room",
+        'T': "thing",
+    }
+
+    def execute(self, fr):
+        fr.check_underflow(2)
+        flags = fr.data_pop(str).upper()
+        objs = fr.data_pop(list)
+        found = []
+        for obj in objs:
+            if type(obj) is not StackDBRef:
+                raise MufRuntimeError("Expected list of dbrefs.")
+            if validobj(obj):
+                obj = getobj(obj)
+                good = True
+                invert = False
+                for flg in list(flags):
+                    goodpass = True
+                    mlev = 1 if '1' in obj.flags else 0
+                    mlev += 2 if '2' in obj.flags else 0
+                    mlev += 3 if '3' in obj.flags else 0
+                    if flg == '!':
+                        invert = not invert
+                        continue
+                    elif flg in self.type_map:
+                        goodpass = self.type_map[flg] == obj.objtype
+                    elif flg in ['1', '2', '3']:
+                        goodpass = int(flg) <= mlev
+                    elif flg == 'M':
+                        goodpass = mlev >= 1
+                    elif flg == 'N':
+                        goodpass = mlev % 2 == 1
+                    else:
+                        goodpass = flg in obj.flags
+                    goodpass = not goodpass if invert else goodpass
+                    good = good and goodpass
+                    invert = False
+                if good:
+                    found.append(StackDBRef(obj.dbref))
         fr.data_push(found)
 
 
@@ -4602,23 +4708,32 @@ class InstDebugLine(Instruction):
         inst = fr.curr_inst()
         addr = fr.curr_addr()
         line = inst.line
-        print("% 5d: line %d (%s) %s" %
-              (addr.value, line, fr.get_stack_repr(999), inst))
+        print("% 5d: #%d line %d (%s) %s" %
+              (addr.value, addr.prog, line, fr.get_stack_repr(999), inst))
         sys.stdout.flush()
 
 
 class CompiledMuf(object):
-    def __init__(self, src):
-        self.srclines = src.split("\n")
+    def __init__(self, prog):
+        self.program = prog
+        self.srclines = getobj(prog).sources.split("\n")
         self.code = []
         self.functions = {}
+        self.publics = {}
         self.func_vars = {}
         self.global_vars = ["me", "loc", "trigger", "command"]
         self.lastfunction = None
 
+    def show_compiled_tokens(self):
+        for instnum, inst in enumerate(self.code):
+            inst = str(inst)
+            if instnum > 0 and inst.startswith("Function:"):
+                print("")
+            print("% 5d: %s" % (instnum, inst))
+
     def add_function(self, funcname, addr):
         if type(addr) is int:
-            addr = StackAddress(addr)
+            addr = StackAddress(addr, self.program)
         self.functions[funcname] = addr
         self.func_vars[funcname] = []
         self.lastfunction = addr
@@ -4633,6 +4748,12 @@ class CompiledMuf(object):
             return None
         return self.functions[funcname]
 
+    def publicize_function(self, funcname):
+        if funcname not in self.functions:
+            return False
+        self.publics[funcname] = self.functions[funcname]
+        return True
+
     def find_func(self, addr):
         if type(addr) is StackAddress:
             addr = addr.value
@@ -4641,13 +4762,6 @@ class CompiledMuf(object):
         if type(self.code[addr]) is not InstFunc:
             return ""
         return self.code[addr].funcname
-
-    def show_compiled_tokens(self):
-        for instnum, inst in enumerate(self.code):
-            inst = str(inst)
-            if instnum > 0 and inst.startswith("Function:"):
-                print("")
-            print("% 5d: %s" % (instnum, inst))
 
     def show_line(self, addr):
         if type(addr) is StackAddress:
@@ -4700,16 +4814,19 @@ class CompiledMuf(object):
 
 
 class MufCallFrame(object):
-    def __init__(self, addr):
+    def __init__(self, addr, caller):
+        if type(caller) is int:
+            caller = StackDBRef(caller)
         self.variables = {}
         self.loop_stack = []
         self.pc = addr
+        self.caller = caller
 
     def pc_advance(self, delta):
         self.pc.value += delta
 
     def pc_set(self, addr):
-        self.pc = StackAddress(addr.value)
+        self.pc = copy.deepcopy(addr)
 
     def loop_iter_push(self, typ, it):
         self.loop_stack.append((typ, it))
@@ -4732,14 +4849,13 @@ class MufCallFrame(object):
 class MufStackFrame(object):
     MAX_STACK = 1024
 
-    def __init__(self, compiled):
-        self.compiled = compiled
+    def __init__(self):
         self.user = StackDBRef(-1)
         self.program = StackDBRef(program_object.dbref)
         self.trigger = StackDBRef(-1)
         self.command = ""
         self.catch_stack = []
-        self.call_stack = [MufCallFrame(compiled.lastfunction)]
+        self.call_stack = []
         self.data_stack = []
         self.globalvars = {}
         self.fp_errors = 0
@@ -4747,11 +4863,17 @@ class MufStackFrame(object):
         self.trace = False
         self.cycles = 0
         self.breakpoints = []
-        self.prevaddr = -1
+        self.prevaddr = StackAddress(-1, self.program)
         self.prevline = -1
         self.nextline = -1
         self.matches = []
         self.text_entry = []
+
+    def get_compiled(self, prog=-1):
+        if prog < 0:
+            addr = self.curr_addr()
+            prog = addr.prog
+        return getobj(prog).compiled
 
     def setup(self, prog, user, trig, cmd):
         self.program = StackDBRef(prog.dbref)
@@ -4762,6 +4884,8 @@ class MufStackFrame(object):
         self.globalvar_set(1, StackDBRef(user.location))
         self.globalvar_set(2, StackDBRef(trig.dbref))
         self.globalvar_set(3, cmd)
+        comp = self.get_compiled(prog)
+        self.call_push(comp.lastfunction, trig.dbref)
 
     def set_trace(self, on_off):
         self.trace = on_off
@@ -4776,7 +4900,8 @@ class MufStackFrame(object):
         if not self.call_stack:
             return None
         addr = self.curr_addr()
-        return self.compiled.get_inst(addr)
+        comp = self.get_compiled()
+        return comp.get_inst(addr)
 
     def curr_addr(self):
         if not self.call_stack:
@@ -4819,7 +4944,7 @@ class MufStackFrame(object):
         if not addr:
             return False
         if type(addr) is not StackAddress:
-            raise MufRuntimeError("BLAH!")
+            raise MufRuntimeError("Expected an address!")
         # Clear stack down to stacklock
         while self.data_depth() > self.catch_locklevel():
             self.data_pop()
@@ -4838,6 +4963,10 @@ class MufStackFrame(object):
         self.catch_pop()
         self.pc_set(addr)
         return True
+
+    def check_type(self, val, types):
+        if types and type(val) not in types:
+            self.raise_expected_type_error(types)
 
     def raise_expected_type_error(self, types):
         expected = []
@@ -4881,8 +5010,7 @@ class MufStackFrame(object):
     def data_pop(self, *types):
         if len(self.data_stack) - self.catch_locklevel() < 1:
             raise MufRuntimeError("Stack underflow.")
-        if types and type(self.data_stack[-1]) not in types:
-            self.raise_expected_type_error(types)
+        self.check_type(self.data_stack[-1], types)
         return self.data_stack.pop()
 
     def data_pop_dbref(self):
@@ -4931,11 +5059,16 @@ class MufStackFrame(object):
     def loop_iter_top(self):
         return self.call_stack[-1].loop_iter_top()
 
-    def call_push(self, addr):
-        self.call_stack.append(MufCallFrame(StackAddress(addr.value)))
+    def call_push(self, addr, caller):
+        self.call_stack.append(
+            MufCallFrame(copy.deepcopy(addr), caller)
+        )
 
     def call_pop(self):
         self.call_stack.pop()
+
+    def caller_get(self):
+        return self.call_stack[-1].caller
 
     def funcvar_get(self, v):
         if type(v) is StackFuncVar:
@@ -4972,8 +5105,9 @@ class MufStackFrame(object):
             out += item_repr(self.data_stack[i])
         return out
 
-    def show_compiled_tokens(self):
-        self.compiled.show_compiled_tokens()
+    def show_compiled_tokens(self, prog):
+        comp = self.get_compiled(prog)
+        comp.show_compiled_tokens()
 
     def execute_code(
         self,
@@ -4988,8 +5122,9 @@ class MufStackFrame(object):
             addr = self.curr_addr()
             line = inst.line
             if self.trace:
-                print("% 5d: line %d (%s) %s" %
-                      (addr.value, line, self.get_stack_repr(999), inst))
+                print("% 5d: #%d line %d (%s) %s" % (
+                    addr.value, addr.prog, line,
+                    self.get_stack_repr(999), inst))
                 sys.stdout.flush()
             try:
                 self.cycles += 1
@@ -4998,15 +5133,16 @@ class MufStackFrame(object):
             except MufRuntimeError as e:
                 if not self.catch_stack:
                     print(
-                        "Error in line %d (%s): %s" % (line, str(inst), e),
+                        "Error in #%d line %d (%s): %s" % (
+                            addr.prog, line, str(inst), e
+                        ),
                         file=sys.stderr
                     )
                     return
                 elif self.trace:
-                    print("catch depth=%d" % len(self.catch_stack))
                     print(
-                        "Caught error in line %d (%s): %s" %
-                        (line, str(inst), e),
+                        "Caught error in #%d line %d (%s): %s" %
+                        (addr.prog, line, str(inst), e),
                         file=sys.stderr
                     )
                 self.catch_trigger(e)
@@ -5017,45 +5153,49 @@ class MufStackFrame(object):
             line = inst.line
             calllev = len(self.call_stack)
             if self.breakpoints:
-                if line in self.breakpoints and line != self.prevline:
-                    bpnum = self.breakpoints.index(line)
-                    print("Stopped at breakpoint %d." % bpnum)
-                    self.prevline = line
-                    self.prevaddr = addr.value
-                    return
+                if line != self.prevline or addr.prog != self.prevaddr.prog:
+                    bp = (addr.prog, line)
+                    if bp in self.breakpoints:
+                        bpnum = self.breakpoints.index(bp)
+                        print("Stopped at breakpoint %d." % bpnum)
+                        self.prevline = line
+                        self.prevaddr = addr
+                        return
             if isteps > 0:
-                if addr.value != self.prevaddr:
-                    self.prevaddr = addr.value
+                if addr != self.prevaddr:
+                    self.prevaddr = addr
                     isteps -= 1
                     if not isteps:
                         self.prevline = line
-                        self.prevaddr = addr.value
                         return
             if finish and calllev < startlev:
-                print("Stopped on call return at instruction %d." % addr.value)
+                print(
+                    "Stopped on call return at instruction %d in #%d." %
+                    (addr.value, addr.prog)
+                )
                 self.prevline = line
-                self.prevaddr = addr.value
+                self.prevaddr = addr
                 return
             if calllev <= startlev and lines > 0:
                 if line != self.prevline:
                     self.prevline = line
                     lines -= 1
                     if not lines:
-                        self.prevaddr = addr.value
+                        self.prevaddr = addr
                         return
             if steps > 0:
                 if line != self.prevline:
                     self.prevline = line
                     steps -= 1
                     if not steps:
-                        self.prevaddr = addr.value
+                        self.prevaddr = addr
                         return
 
     def show_call(self, addr=None):
-        comp = self.compiled
         if not addr:
             addr = self.curr_addr()
         if addr:
+            comp = self.get_compiled(addr.prog)
             line = comp.get_inst_line(addr)
             fun = comp.find_func(addr)
             print("In function '%s', Line %d:" % (fun, line))
@@ -5075,7 +5215,7 @@ class MufStackFrame(object):
         text = origline[begin:end]
         words = origline.split(' ')
 
-        comp = self.compiled
+        comp = self.get_compiled()
         if state == 0:
             # This is the first time for this text, so build a match list.
             if begin == 0:
@@ -5113,7 +5253,8 @@ class MufStackFrame(object):
             print("Usage: step [COUNT]")
         else:
             self.execute_code(steps=int(args))
-            self.compiled.show_line(self.curr_addr())
+            comp = self.get_compiled()
+            comp.show_line(self.curr_addr())
             self.nextline = -1
 
     def debug_cmd_next(self, args):
@@ -5123,31 +5264,39 @@ class MufStackFrame(object):
             print("Usage: next [COUNT]")
         else:
             self.execute_code(lines=int(args))
-            self.compiled.show_line(self.curr_addr())
+            comp = self.get_compiled()
+            comp.show_line(self.curr_addr())
             self.nextline = -1
 
     def debug_cmd_continue(self, args):
         self.execute_code()
-        self.compiled.show_line(self.curr_addr())
+        comp = self.get_compiled()
+        comp.show_line(self.curr_addr())
         self.nextline = -1
 
     def debug_cmd_finish(self, args):
         self.execute_code(finish=True)
-        self.compiled.show_line(self.curr_addr())
+        comp = self.get_compiled()
+        comp.show_line(self.curr_addr())
         self.nextline = -1
 
     def debug_cmd_break(self, args):
-        comp = self.compiled
+        # TODO: add support for breakpoints in other program objects.
+        comp = self.get_compiled()
         if comp.get_function_addr(args):
             addr = comp.get_function_addr(args)
             line = comp.get_inst_line(addr.value)
-            self.breakpoints.append(line)
+            bp = (addr.prog, line)
+            self.breakpoints.append(bp)
             print("Added breakpoint %d on line %d." %
                   (len(self.breakpoints), line))
         elif is_int(args):
-            self.breakpoints.append(int(args))
+            addr = self.curr_addr()
+            line = int(args)
+            bp = (addr.prog, line)
+            self.breakpoints.append(bp)
             print("Added breakpoint %d on line %d." %
-                  (len(self.breakpoints), int(args)))
+                  (len(self.breakpoints), line))
         else:
             print("Usage: break LINE")
             print("   or: break FUNCNAME")
@@ -5164,7 +5313,7 @@ class MufStackFrame(object):
             print("Deleted breakpoint %d." % int(args))
 
     def debug_cmd_list(self, args):
-        comp = self.compiled
+        comp = self.get_compiled()
         inst = self.curr_inst()
         if comp.get_function_addr(args):
             addr = comp.get_function_addr(args)
@@ -5204,7 +5353,7 @@ class MufStackFrame(object):
                     print(" % 5d: %s" % (i, comp.srclines[i - 1]))
 
     def debug_cmd_print(self, args):
-        comp = self.compiled
+        comp = self.get_compiled()
         addr = self.curr_addr()
         fun = comp.find_func(addr)
         if comp.get_func_var(fun, args):
@@ -5223,16 +5372,17 @@ class MufStackFrame(object):
     def debug_cmd_show_breakpoints(self):
         print("Breakpoints")
         cnt = 0
-        for i, line in enumerate(self.breakpoints):
+        for i, bp in enumerate(self.breakpoints):
+            prog, line = bp
             if line > 0:
-                print("  %d: Line %d" % (i + 1, line))
+                print("  %d: Program #%d Line %d" % (i + 1, prog, line))
                 cnt += 1
         if not cnt:
             print("  - None -")
 
     def debug_cmd_show_functions(self):
         print("Declared Functions")
-        comp = self.compiled
+        comp = self.get_compiled()
         funcs = comp.get_functions()
         if funcs:
             for func in funcs:
@@ -5242,7 +5392,7 @@ class MufStackFrame(object):
 
     def debug_cmd_show_globals(self):
         print("Global Variables")
-        comp = self.compiled
+        comp = self.get_compiled()
         gvars = comp.get_global_vars()
         if gvars:
             for vnum, vname in enumerate(gvars):
@@ -5254,7 +5404,7 @@ class MufStackFrame(object):
 
     def debug_cmd_show_vars(self):
         print("Function Variables")
-        comp = self.compiled
+        comp = self.get_compiled()
         addr = self.curr_addr()
         fun = comp.find_func(addr)
         fvars = comp.get_func_vars(fun)
@@ -5343,7 +5493,7 @@ class MufStackFrame(object):
 
     def debug_cmd_run(self, args):
         self.data_stack = [args]
-        self.call_stack = [MufCallFrame(self.start_addr)]
+        self.call_stack = [MufCallFrame(self.start_addr, self.trigger)]
         self.catch_stack = []
         self.globalvars = {}
         print("Restarting program.")
@@ -5464,7 +5614,6 @@ class MufStackFrame(object):
 
 class MufCompiler(object):
     def __init__(self):
-        self.compiled = None
         self.line = 1
         self.stmt_stack = []
         self.funcname = None
@@ -5562,10 +5711,9 @@ class MufCompiler(object):
                 return inst
         return None
 
-    def compile_r(self, src):
+    def compile_r(self, src, comp):
         global defines
         code = []
-        comp = self.compiled
         while True:
             word, line, src = self.get_word(src)
             if not word:
@@ -5599,7 +5747,7 @@ class MufCompiler(object):
                 self.funcname = funcname
                 subcode = []
                 subcode.append(InstFunc(line, funcname, len(funcvars)))
-                fcode, src = self.compile_r(src)
+                fcode, src = self.compile_r(src, comp)
                 for inst in fcode:
                     subcode.append(inst)
                 for inst in subcode:
@@ -5649,7 +5797,7 @@ class MufCompiler(object):
                 continue
             elif word == "public":
                 nam, line, src = self.get_word(src)
-                if comp.get_function_addr(nam) is None:
+                if not comp.publicize_function(nam):
                     raise MufCompileError("Unrecognized identifier: %s" % nam)
                 print("EXPOSED '%s' AS PUBLIC" % nam)
                 continue
@@ -5669,19 +5817,19 @@ class MufCompiler(object):
                 continue
             elif word == "$author":
                 val, src = self.get_to_eol(src)
-                program_object.setprop("_author", val)
+                getobj(comp.program).setprop("_author", val)
                 continue
             elif word == "$note":
                 val, src = self.get_to_eol(src)
-                program_object.setprop("_note", val)
+                getobj(comp.program).setprop("_note", val)
                 continue
             elif word == "$version":
                 val, line, src = self.get_word(src)
-                program_object.setprop("_version", val)
+                getobj(comp.program).setprop("_version", val)
                 continue
             elif word == "$lib-version":
                 val, line, src = self.get_word(src)
-                program_object.setprop("_lib-version", val)
+                getobj(comp.program).setprop("_lib-version", val)
                 continue
             elif word == "$define":
                 nam, line, src = self.get_word(src)
@@ -5703,11 +5851,10 @@ class MufCompiler(object):
             elif word == "$include":
                 targ, line, src = self.get_word(src)
                 if targ == "this":
-                    # TODO: Use real program dbref
-                    obj = program_object.dbref
+                    obj = comp.program
                 else:
-                    # TODO: Start search from program owner.
-                    obj = match_from(john_doe, targ)
+                    who = getobj(comp.program).owner
+                    obj = match_from(who, targ)
                 if not validobj(obj):
                     raise MufCompileError("Invalid object: '%s'" % targ)
                 obj = getobj(obj)
@@ -5719,28 +5866,29 @@ class MufCompiler(object):
                     val = obj.getprop(prop)
                     if val:
                         defines[prop[6:]] = val
+                continue
             elif word == "$pubdef":
                 nam, line, src = self.get_word(src)
                 val, src = self.get_to_eol(src)
                 if nam == ":":
-                    program_object.delprop("_defs")
+                    getobj(comp.program).delprop("_defs")
                 elif not val.strip():
-                    program_object.delprop("_defs/%s" % nam)
+                    getobj(comp.program).delprop("_defs/%s" % nam)
                 else:
                     if nam[0] == '/':
                         nam = nam[1:]
-                        if program_object.getprop("_defs/%s" % nam):
+                        if getobj(comp.program).getprop("_defs/%s" % nam):
                             continue
-                    program_object.setprop("_defs/%s" % nam, val)
+                    getobj(comp.program).setprop("_defs/%s" % nam, val)
                 continue
             elif word == "$libdef":
                 nam, line, src = self.get_word(src)
                 if nam[0] == '/':
                     nam = nam[1:]
-                    if program_object.getprop("_defs/%s" % nam):
+                    if getobj(comp.program).getprop("_defs/%s" % nam):
                         continue
-                val = '#%d "%s" call' % (program_object.dbref, nam)
-                program_object.setprop("_defs/%s" % nam, val)
+                val = '#%d "%s" call' % (getobj(comp.program).dbref, nam)
+                getobj(comp.program).setprop("_defs/%s" % nam, val)
                 continue
             elif word == "$cleardefs":
                 val, src = self.get_to_eol(src)
@@ -5766,11 +5914,10 @@ class MufCompiler(object):
                     obj, line, src = self.get_word(src)
                     ver, line, src = self.get_word(src)
                     if obj == "this":
-                        # TODO: Use real program dbref
-                        obj = program_object.dbref
+                        obj = comp.program
                     else:
-                        # TODO: Start search from program owner.
-                        obj = match_from(john_doe, obj)
+                        who = getobj(comp.program).owner
+                        obj = match_from(who, obj)
                     if not validobj(obj):
                         istrue = False
                     else:
@@ -5785,23 +5932,26 @@ class MufCompiler(object):
                 elif word in ["$iflib", "$ifnlib"]:
                     obj, line, src = self.get_word(src)
                     if obj == "this":
-                        # TODO: Use real program dbref
-                        obj = program_object.dbref
+                        obj = comp.program
                     else:
-                        # TODO: Start search from program owner.
-                        obj = match_from(john_doe, obj)
+                        who = getobj(comp.program).owner
+                        obj = match_from(who, obj)
                     istrue = validobj(obj) and getobj(obj).objtype == "program"
                 elif word in ["$ifcancall", "$ifncancall"]:
                     obj, line, src = self.get_word(src)
                     pub, line, src = self.get_word(src)
                     if obj == "this":
-                        # TODO: Use real program dbref
-                        obj = program_object.dbref
+                        obj = comp.program
                     else:
-                        # TODO: Start search from program owner.
-                        obj = match_from(john_doe, obj)
-                    # TODO: Check for real public declared calls.
-                    istrue = False
+                        who = getobj(comp.program).owner
+                        obj = match_from(who, obj)
+                    obj = getobj(obj)
+                    istrue = (
+                        obj.objtype == "program" and
+                        obj.compiled and
+                        obj.compiled.publics and
+                        pub in obj.compiled.publics
+                    )
                 else:
                     raise MufCompileError("Unrecognized directive: '%s'" % word)
                 if word.startswith("$ifn"):
@@ -5894,7 +6044,7 @@ class MufCompiler(object):
             elif word == "if":
                 inst = InstIf(line)
                 self.stmt_stack.append(inst)
-                subcode, src = self.compile_r(src)
+                subcode, src = self.compile_r(src, comp)
                 inst = self.stmt_stack.pop()
                 if inst.elsecode:
                     branch = InstJmp(line, len(inst.elsecode) + 1)
@@ -5931,7 +6081,7 @@ class MufCompiler(object):
             elif word == "begin":
                 inst = InstBegin(line)
                 self.stmt_stack.append(inst)
-                subcode, src = self.compile_r(src)
+                subcode, src = self.compile_r(src, comp)
                 self.stmt_stack.pop()
                 bodylen = len(subcode)
                 for instnum, inst in enumerate(subcode):
@@ -5947,7 +6097,8 @@ class MufCompiler(object):
                 inst = InstFor(line)
                 code.append(inst)
                 self.stmt_stack.append(inst)
-                subcode, src = self.compile_r("__foriter__ while " + src)
+                src = "__foriter__ while " + src
+                subcode, src = self.compile_r(src, comp)
                 self.stmt_stack.pop()
                 bodylen = len(subcode)
                 for instnum, inst in enumerate(subcode):
@@ -5964,7 +6115,8 @@ class MufCompiler(object):
                 inst = InstForeach(line)
                 code.append(inst)
                 self.stmt_stack.append(inst)
-                subcode, src = self.compile_r("__foriter__ while " + src)
+                src = "__foriter__ while " + src
+                subcode, src = self.compile_r(src, comp)
                 self.stmt_stack.pop()
                 bodylen = len(subcode)
                 for instnum, inst in enumerate(subcode):
@@ -6014,7 +6166,7 @@ class MufCompiler(object):
             elif word == "try":
                 inst = InstTry(line)
                 self.stmt_stack.append(inst)
-                subcode, src = self.compile_r(src)
+                subcode, src = self.compile_r(src, comp)
                 inst = self.stmt_stack.pop()
                 trycode = inst.trycode
                 if not trycode:
@@ -6064,14 +6216,14 @@ class MufCompiler(object):
             else:
                 raise MufCompileError("Unrecognized identifier: %s" % word)
 
-    def compile_source(self, src):
-        comp = CompiledMuf(src)
-        self.compiled = comp
+    def compile_source(self, prog):
+        comp = CompiledMuf(prog)
         self.line = 1
         self.stmt_stack = []
         self.funcname = None
+        src = getobj(prog).sources
         try:
-            code, src = self.compile_r(src)
+            code, src = self.compile_r(src, comp)
             if self.funcname:
                 raise MufCompileError("Function incomplete.")
             if self.stmt_stack:
@@ -6085,11 +6237,11 @@ class MufCompiler(object):
                     raise MufCompileError("Incomplete for loop.")
                 if type(self.stmt_stack[-1]) is InstForeach:
                     raise MufCompileError("Incomplete foreach loop.")
-            frame = None
             if code:
                 comp.code = code
-                frame = MufStackFrame(comp)
-            return frame
+                getobj(prog).compiled = comp
+                return True
+            return False
         except MufCompileError as e:
             print("Error in line %d: %s" % (self.line, e), file=sys.stderr)
             return None
@@ -6107,9 +6259,6 @@ class MufSim(object):
 
     def process_cmdline(self):
         parser = argparse.ArgumentParser(prog='mufsim')
-        parser.add_argument("-m", "--muv",
-                            help="Use muv to compile the sources.",
-                            action="store_true")
         parser.add_argument("-u", "--uncompile",
                             help="Show compiled MUF tokens.",
                             action="store_true")
@@ -6128,9 +6277,15 @@ class MufSim(object):
                             help="Specify text to enter on READs.")
         parser.add_argument("-f", "--textfile", type=str,
                             help="File to read from for READs.")
+        parser.add_argument(
+            "-p", "--program", action='append', default=[],
+            nargs=2, metavar=('REGNAME', 'FILE'), dest='progs',
+            help="Create extra program, registered as $NAME, from source FILE."
+        )
         parser.add_argument('infile',
                             help='Input MUF sourcecode filename.')
         opts = parser.parse_args()
+        opts.progs.append(['', opts.infile])
         if opts.debug:
             opts.run = True
         if opts.textfile:
@@ -6167,7 +6322,9 @@ class MufSim(object):
             return None
         return tmpfile
 
-    def run_code(self, fr):
+    def run_code(self):
+        self.readline_setup()
+        fr = MufStackFrame()
         fr.setup(program_object, john_doe, trigger_action, self.opts.command)
         fr.set_trace(self.opts.trace)
         fr.set_text_entry(self.opts.textentry)
@@ -6177,36 +6334,50 @@ class MufSim(object):
         else:
             fr.execute_code()
             self.print("Execution completed in %d steps." % fr.cycles)
+        self.readline_teardown()
 
     def main(self):
         self.process_cmdline()
-        self.readline_setup()
-        infile = self.opts.infile
-        if self.opts.muv:
-            self.print_header("Compiling MUV Code to MUF")
-            infile = self.process_muv(infile)
+        for name, filename in self.opts.progs:
+            origfile = filename
+            if filename.endswith(".muv"):
+                self.print_header("Compiling MUV Code to MUF")
+                filename = self.process_muv(filename)
+                self.print("")
+            if not filename:
+                return
+            srcs = ""
+            with open(filename, "r") as f:
+                srcs = f.read()
+            if origfile.endswith(".muv"):
+                os.unlink(filename)
+            if name:
+                progobj = DBObject(
+                    name=name,
+                    objtype="program",
+                    flags="3",
+                    owner=john_doe.dbref,
+                    location=john_doe.dbref,
+                )
+                global_env.setprop(
+                    "_reg/%s" % name, StackDBRef(progobj.dbref), suppress=True)
+                print("CREATED PROG %s, REGISTERED AS $%s\n" % (progobj, name))
+            else:
+                progobj = program_object
+            progobj.sources = srcs
+            self.print_header("Compiling MUF Program %s" % progobj)
+            success = MufCompiler().compile_source(progobj.dbref)
             self.print("")
-        if not infile:
-            return
-        srcs = ""
-        with open(infile, "r") as f:
-            srcs = f.read()
-        self.print_header("Compiling MUF Code to Tokens")
-        mufcomp = MufCompiler()
-        fr = mufcomp.compile_source(srcs)
-        self.print("")
-        if fr:
+            if not success:
+                return
             if self.opts.uncompile:
-                self.print_header("Showing Compiled Tokens")
-                fr.show_compiled_tokens()
+                self.print_header("Showing Tokens for %s" % progobj)
+                progobj.compiled.show_compiled_tokens()
                 self.print("")
-            if self.opts.run:
-                self.print_header("Executing Tokens")
-                self.run_code(fr)
-                self.print("")
-        if self.opts.muv:
-            os.unlink(infile)
-        self.readline_teardown()
+        if self.opts.run:
+            self.print_header("Executing Tokens")
+            self.run_code()
+            self.print("")
 
 
 if __name__ == "__main__":

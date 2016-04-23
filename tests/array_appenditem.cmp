@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "d"
     2: {
@@ -13,15 +13,15 @@
     9: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "d"
-    2: line 2 ("", "d") {
-    3: line 2 ("", "d", Mark) "a"
-    4: line 2 ("", "d", Mark, "a") "b"
-    5: line 2 ("", "d", Mark, "a", "b") "c"
-    6: line 2 ("", "d", Mark, "a", "b", "c") }
-    7: line 2 ("", "d", "a", "b", "c", 3) ARRAY_MAKE
-    8: line 2 ("", "d", 3["a", "b", "c"]) ARRAY_APPENDITEM
-    9: line 3 ("", 4["a", "b", "c", "d"]) EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "d"
+    2: #4 line 2 ("", "d") {
+    3: #4 line 2 ("", "d", Mark) "a"
+    4: #4 line 2 ("", "d", Mark, "a") "b"
+    5: #4 line 2 ("", "d", Mark, "a", "b") "c"
+    6: #4 line 2 ("", "d", Mark, "a", "b", "c") }
+    7: #4 line 2 ("", "d", "a", "b", "c", 3) ARRAY_MAKE
+    8: #4 line 2 ("", "d", 3["a", "b", "c"]) ARRAY_APPENDITEM
+    9: #4 line 3 ("", 4["a", "b", "c", "d"]) EXIT
 Execution completed in 10 steps.
 

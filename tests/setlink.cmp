@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: TRIG
     2: #0
@@ -11,13 +11,13 @@
     7: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") TRIG
-    2: line 2 ("", #3) #0
-    3: line 2 ("", #3, #0) SETLINK
-    4: line 3 ("") TRIG
-    5: line 3 ("", #3) GETLINKS_ARRAY
-    6: line 3 ("", 1[#0]) POP
-    7: line 4 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") TRIG
+    2: #4 line 2 ("", #3) #0
+    3: #4 line 2 ("", #3, #0) SETLINK
+    4: #4 line 3 ("") TRIG
+    5: #4 line 3 ("", #3) GETLINKS_ARRAY
+    6: #4 line 3 ("", 1[#0]) POP
+    7: #4 line 4 ("") EXIT
 Execution completed in 8 steps.
 

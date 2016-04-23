@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: "DIV_ZERO"
     2: IS_SET?
@@ -27,29 +27,29 @@
    23: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") "DIV_ZERO"
-    2: line 2 ("", "DIV_ZERO") IS_SET?
-    3: line 2 ("", 0) POP
-    4: line 3 ("") "FBOUNDS"
-    5: line 3 ("", "FBOUNDS") IS_SET?
-    6: line 3 ("", 0) POP
-    7: line 5 ("") "DIV_ZERO"
-    8: line 5 ("", "DIV_ZERO") SET_ERROR
-    9: line 6 ("") "DIV_ZERO"
-   10: line 6 ("", "DIV_ZERO") IS_SET?
-   11: line 6 ("", 1) POP
-   12: line 7 ("") "FBOUNDS"
-   13: line 7 ("", "FBOUNDS") IS_SET?
-   14: line 7 ("", 0) POP
-   15: line 9 ("") "FBOUNDS"
-   16: line 9 ("", "FBOUNDS") SET_ERROR
-   17: line 10 ("") "DIV_ZERO"
-   18: line 10 ("", "DIV_ZERO") IS_SET?
-   19: line 10 ("", 1) POP
-   20: line 11 ("") "FBOUNDS"
-   21: line 11 ("", "FBOUNDS") IS_SET?
-   22: line 11 ("", 1) POP
-   23: line 12 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "DIV_ZERO"
+    2: #4 line 2 ("", "DIV_ZERO") IS_SET?
+    3: #4 line 2 ("", 0) POP
+    4: #4 line 3 ("") "FBOUNDS"
+    5: #4 line 3 ("", "FBOUNDS") IS_SET?
+    6: #4 line 3 ("", 0) POP
+    7: #4 line 5 ("") "DIV_ZERO"
+    8: #4 line 5 ("", "DIV_ZERO") SET_ERROR
+    9: #4 line 6 ("") "DIV_ZERO"
+   10: #4 line 6 ("", "DIV_ZERO") IS_SET?
+   11: #4 line 6 ("", 1) POP
+   12: #4 line 7 ("") "FBOUNDS"
+   13: #4 line 7 ("", "FBOUNDS") IS_SET?
+   14: #4 line 7 ("", 0) POP
+   15: #4 line 9 ("") "FBOUNDS"
+   16: #4 line 9 ("", "FBOUNDS") SET_ERROR
+   17: #4 line 10 ("") "DIV_ZERO"
+   18: #4 line 10 ("", "DIV_ZERO") IS_SET?
+   19: #4 line 10 ("", 1) POP
+   20: #4 line 11 ("") "FBOUNDS"
+   21: #4 line 11 ("", "FBOUNDS") IS_SET?
+   22: #4 line 11 ("", 1) POP
+   23: #4 line 12 ("") EXIT
 Execution completed in 24 steps.
 

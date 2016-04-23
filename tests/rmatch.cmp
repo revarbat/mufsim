@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: #1
     2: "me"
@@ -25,27 +25,27 @@
    21: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") #1
-    2: line 2 ("", #1) "me"
-    3: line 2 ("", #1, "me") RMATCH
-    4: line 2 ("", #5) POP
-    5: line 3 ("") #1
-    6: line 3 ("", #1) "here"
-    7: line 3 ("", #1, "here") RMATCH
-    8: line 3 ("", #2) POP
-    9: line 4 ("") #1
-   10: line 4 ("", #1) "home"
-   11: line 4 ("", #1, "home") RMATCH
-   12: line 4 ("", #-3) POP
-   13: line 5 ("") #1
-   14: line 5 ("", #1) "test"
-   15: line 5 ("", #1, "test") RMATCH
-   16: line 5 ("", #4) POP
-   17: line 6 ("") #1
-   18: line 6 ("", #1) "John_Doe"
-   19: line 6 ("", #1, "John_Doe") RMATCH
-   20: line 6 ("", #-1) POP
-   21: line 7 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") #1
+    2: #4 line 2 ("", #1) "me"
+    3: #4 line 2 ("", #1, "me") RMATCH
+    4: #4 line 2 ("", #5) POP
+    5: #4 line 3 ("") #1
+    6: #4 line 3 ("", #1) "here"
+    7: #4 line 3 ("", #1, "here") RMATCH
+    8: #4 line 3 ("", #2) POP
+    9: #4 line 4 ("") #1
+   10: #4 line 4 ("", #1) "home"
+   11: #4 line 4 ("", #1, "home") RMATCH
+   12: #4 line 4 ("", #-3) POP
+   13: #4 line 5 ("") #1
+   14: #4 line 5 ("", #1) "test"
+   15: #4 line 5 ("", #1, "test") RMATCH
+   16: #4 line 5 ("", #4) POP
+   17: #4 line 6 ("") #1
+   18: #4 line 6 ("", #1) "John_Doe"
+   19: #4 line 6 ("", #1, "John_Doe") RMATCH
+   20: #4 line 6 ("", #-1) POP
+   21: #4 line 7 ("") EXIT
 Execution completed in 22 steps.
 

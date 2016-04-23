@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: #-1
     2: DESCR_ARRAY
@@ -16,34 +16,34 @@
    12: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") #-1
-    2: line 2 ("", #-1) DESCR_ARRAY
-    3: line 3 ("", 3[3, 11, 13]) FOREACH
-    4: line 3 ("") __FORITER__
-    5: line 3 ("", 0, 3, 1) JmpIfFalse: +6
-    6: line 3 ("", 0, 3) SWAP
-    7: line 3 ("", 3, 0) POP
-    8: line 4 ("", 3) DESCRDBREF
-    9: line 4 ("", #1) POP
-   10: line 5 ("") JMP: -6
-    4: line 3 ("") __FORITER__
-    5: line 3 ("", 1, 11, 1) JmpIfFalse: +6
-    6: line 3 ("", 1, 11) SWAP
-    7: line 3 ("", 11, 1) POP
-    8: line 4 ("", 11) DESCRDBREF
-    9: line 4 ("", #5) POP
-   10: line 5 ("") JMP: -6
-    4: line 3 ("") __FORITER__
-    5: line 3 ("", 2, 13, 1) JmpIfFalse: +6
-    6: line 3 ("", 2, 13) SWAP
-    7: line 3 ("", 13, 2) POP
-    8: line 4 ("", 13) DESCRDBREF
-    9: line 4 ("", #6) POP
-   10: line 5 ("") JMP: -6
-    4: line 3 ("") __FORITER__
-    5: line 3 ("", 0) JmpIfFalse: +6
-   11: line 3 ("") __FORPOP__
-   12: line 6 ("") EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") #-1
+    2: #4 line 2 ("", #-1) DESCR_ARRAY
+    3: #4 line 3 ("", 3[3, 11, 13]) FOREACH
+    4: #4 line 3 ("") __FORITER__
+    5: #4 line 3 ("", 0, 3, 1) JmpIfFalse: +6
+    6: #4 line 3 ("", 0, 3) SWAP
+    7: #4 line 3 ("", 3, 0) POP
+    8: #4 line 4 ("", 3) DESCRDBREF
+    9: #4 line 4 ("", #1) POP
+   10: #4 line 5 ("") JMP: -6
+    4: #4 line 3 ("") __FORITER__
+    5: #4 line 3 ("", 1, 11, 1) JmpIfFalse: +6
+    6: #4 line 3 ("", 1, 11) SWAP
+    7: #4 line 3 ("", 11, 1) POP
+    8: #4 line 4 ("", 11) DESCRDBREF
+    9: #4 line 4 ("", #5) POP
+   10: #4 line 5 ("") JMP: -6
+    4: #4 line 3 ("") __FORITER__
+    5: #4 line 3 ("", 2, 13, 1) JmpIfFalse: +6
+    6: #4 line 3 ("", 2, 13) SWAP
+    7: #4 line 3 ("", 13, 2) POP
+    8: #4 line 4 ("", 13) DESCRDBREF
+    9: #4 line 4 ("", #6) POP
+   10: #4 line 5 ("") JMP: -6
+    4: #4 line 3 ("") __FORITER__
+    5: #4 line 3 ("", 0) JmpIfFalse: +6
+   11: #4 line 3 ("") __FORPOP__
+   12: #4 line 6 ("") EXIT
 Execution completed in 29 steps.
 

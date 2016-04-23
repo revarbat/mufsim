@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: LV0: me
     2: @
@@ -12,14 +12,14 @@
     8: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") LV0: me
-    2: line 2 ("", LV0) @
-    3: line 2 ("", #5) "wizard"
-    4: line 2 ("", #5, "wizard") FLAG?
-    5: line 3 ("", 0) #1
-    6: line 3 ("", 0, #1) "wizard"
-    7: line 3 ("", 0, #1, "wizard") FLAG?
-    8: line 4 ("", 0, 1) EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") LV0: me
+    2: #4 line 2 ("", LV0) @
+    3: #4 line 2 ("", #5) "wizard"
+    4: #4 line 2 ("", #5, "wizard") FLAG?
+    5: #4 line 3 ("", 0) #1
+    6: #4 line 3 ("", 0, #1) "wizard"
+    7: #4 line 3 ("", 0, #1, "wizard") FLAG?
+    8: #4 line 4 ("", 0, 1) EXIT
 Execution completed in 9 steps.
 

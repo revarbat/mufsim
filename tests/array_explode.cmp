@@ -1,6 +1,6 @@
-#### Compiling MUF Code to Tokens #####################
+#### Compiling MUF Program cmd-test(#4) ###############
 
-#### Showing Compiled Tokens ##########################
+#### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: {
     2: "foo"
@@ -19,21 +19,21 @@
    15: EXIT
 
 #### Executing Tokens #################################
-    0: line 1 ("") Function: main (0 vars)
-    1: line 2 ("") {
-    2: line 3 ("", Mark) "foo"
-    3: line 3 ("", Mark, "foo") 9
-    4: line 4 ("", Mark, "foo", 9) "bar"
-    5: line 4 ("", Mark, "foo", 9, "bar") 8
-    6: line 5 ("", Mark, "foo", 9, "bar", 8) "baz"
-    7: line 5 ("", Mark, "foo", 9, "bar", 8, "baz") 5
-    8: line 6 ("", Mark, "foo", 9, "bar", 8, "baz", 5) "qux"
-    9: line 6 ("", Mark, "foo", 9, "bar", 8, "baz", 5, "qux") 2
-   10: line 7 ("", Mark, "foo", 9, "bar", 8, "baz", 5, "qux", 2) }
-   11: line 7 ("", "foo", 9, "bar", 8, "baz", 5, "qux", 2, 8) 2
-   12: line 7 ("", "foo", 9, "bar", 8, "baz", 5, "qux", 2, 8, 2) /
-   13: line 7 ("", "foo", 9, "bar", 8, "baz", 5, "qux", 2, 4) ARRAY_MAKE_DICT
-   14: line 8 ("", 4{"bar": 8, "baz": 5, "foo": 9, "qux": 2}) ARRAY_EXPLODE
-   15: line 9 ("", "qux", 2, "foo", 9, "baz", 5, "bar", 8, 4) EXIT
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") {
+    2: #4 line 3 ("", Mark) "foo"
+    3: #4 line 3 ("", Mark, "foo") 9
+    4: #4 line 4 ("", Mark, "foo", 9) "bar"
+    5: #4 line 4 ("", Mark, "foo", 9, "bar") 8
+    6: #4 line 5 ("", Mark, "foo", 9, "bar", 8) "baz"
+    7: #4 line 5 ("", Mark, "foo", 9, "bar", 8, "baz") 5
+    8: #4 line 6 ("", Mark, "foo", 9, "bar", 8, "baz", 5) "qux"
+    9: #4 line 6 ("", Mark, "foo", 9, "bar", 8, "baz", 5, "qux") 2
+   10: #4 line 7 ("", Mark, "foo", 9, "bar", 8, "baz", 5, "qux", 2) }
+   11: #4 line 7 ("", "foo", 9, "bar", 8, "baz", 5, "qux", 2, 8) 2
+   12: #4 line 7 ("", "foo", 9, "bar", 8, "baz", 5, "qux", 2, 8, 2) /
+   13: #4 line 7 ("", "foo", 9, "bar", 8, "baz", 5, "qux", 2, 4) ARRAY_MAKE_DICT
+   14: #4 line 8 ("", 4{"bar": 8, "baz": 5, "foo": 9, "qux": 2}) ARRAY_EXPLODE
+   15: #4 line 9 ("", "qux", 2, "foo", 9, "baz", 5, "bar", 8, 4) EXIT
 Execution completed in 16 steps.
 
