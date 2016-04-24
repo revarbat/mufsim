@@ -9,7 +9,6 @@ compile
 compiled?
 copyobj
 copyplayer
-debugger_break
 entrances_array
 event_count
 event_exists
@@ -70,8 +69,6 @@ setlockstr
 setsysparm
 sleep
 stats
-strdecrypt
-strencrypt
 supplicant
 sysparm
 sysparm_array

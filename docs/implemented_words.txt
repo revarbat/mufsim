@@ -141,6 +141,7 @@ dbtop
 debug_line
 debug_off
 debug_on
+debugger_break
 depth
 descr
 descr_array
@@ -302,6 +303,8 @@ stod
 strcat
 strcmp
 strcut
+strdecrypt
+strencrypt
 string?
 stringcmp
 stringpfx

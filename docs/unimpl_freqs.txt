@@ -19,12 +19,10 @@
      15 timesplit
      15 gui_dlog_show
      13 queue
-     11 strencrypt
      11 part_pmatch
      11 parselock
      11 newroom
      11 compile
-     10 strdecrypt
      10 array_put_propvals
       9 gui_dlog_close
       9 copyobj

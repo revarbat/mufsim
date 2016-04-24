@@ -662,10 +662,6 @@ def sortcompi(a, b):
     return sortcomp(a, b, nocase=True)
 
 
-def sortcompshuffle(a, b):
-    return 1 if random.randint(0, 7) & 0x4 == 0 else -1
-
-
 def smatch(pat, txt):
     pats = [
         ('{', '\b('),
@@ -725,6 +721,10 @@ class MufCompileError(Exception):
 
 
 class MufRuntimeError(Exception):
+    pass
+
+
+class MufDebuggerBreak(Exception):
     pass
 
 
@@ -2701,7 +2701,7 @@ class InstArraySort(Instruction):
         doshuffle = flags & 4 != 0
         if doshuffle:
             for i in xrange(7):
-                arr = sorted(arr, cmp=sortcompshuffle, reverse=dorev)
+                random.shuffle(arr)
         elif nocase:
             arr = sorted(arr, cmp=sortcompi, reverse=dorev)
         else:
@@ -4506,6 +4506,88 @@ class InstSMatch(Instruction):
         fr.data_push(1 if smatch(pat, txt) else 0)
 
 
+@instr("strencrypt")
+class InstStrEncrypt(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        key = fr.data_pop(str)
+        data = fr.data_pop(str)
+        enarr = list(range(256))
+        for i in range(ord('A'), ord('M') + 1):
+            enarr[i] += 13
+        for i in range(ord('N'), ord('Z') + 1):
+            enarr[i] -= 13
+        enarr[13] = 127
+        enarr[127] = 13
+        enarr[27] = 31
+        enarr[31] = 27
+        charcount = 97
+        seed = 0
+        for cp in list(key):
+            seed = ((ord(cp) ^ seed) + 170) % 192
+        seed2 = 0
+        for cp in list(data):
+            seed2 = ((ord(cp) ^ seed2) + 21) & 0xff
+        seed3 = seed2 = (seed2 ^ (seed ^ random.randint(0, 255))) & 0x3f
+        count = seed + 11
+        repkey = key * (len(data) / len(key) + 1)
+        repkey = repkey[:len(data)]
+        out = chr(32 + 2) + chr(32 + seed3)
+        for upt, cp in zip(list(data), list(repkey)):
+            count = ((ord(cp) ^ count) + (seed ^ seed2)) & 0xff
+            seed2 = (seed2 + 1) & 0x3f
+            result = (enarr[ord(upt)] - (32 - (charcount - 96))) + count + seed;
+            ups = enarr[(result % charcount) + (32 - (charcount - 96))]
+            count = ((ord(upt) ^ count) + seed) & 0xff
+            out += chr(ups)
+        fr.data_push(out)
+
+
+@instr("strdecrypt")
+class InstStrDecrypt(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        key = fr.data_pop(str)
+        data = fr.data_pop(str)
+        if not data:
+            fr.data_push("")
+            return
+        enarr = list(range(256))
+        for i in range(ord('A'), ord('M') + 1):
+            enarr[i] += 13
+        for i in range(ord('N'), ord('Z') + 1):
+            enarr[i] -= 13
+        enarr[13] = 127
+        enarr[127] = 13
+        enarr[27] = 31
+        enarr[31] = 27
+        charset_count = [96, 97]
+        rev = ord(data[0]) - 32
+        if rev not in [1, 2]:
+            fr.data_push("")
+            return
+        chrcnt = charset_count[rev - 1]
+        seed2 = ord(data[1]) - 32
+        data = data[2:]
+        seed = 0
+        for cp in list(key):
+            seed = ((ord(cp) ^ seed) + 170) % 192
+        count = seed + 11
+        repkey = key * (len(data) / len(key) + 1)
+        repkey = repkey[:len(data)]
+        out = ''
+        for upt, cp in zip(list(data), list(repkey)):
+            count = ((ord(cp) ^ count) + (seed ^ seed2)) & 0xff
+            seed2 = (seed2 + 1) & 0x3f
+            result = (enarr[ord(upt)] - (32 - (chrcnt - 96))) - (count + seed)
+            while result < 0:
+                result += chrcnt
+            ups = enarr[result + (32 - (chrcnt - 96))]
+            count = ((ups ^ count) + seed) & 0xff
+            out += chr(ups)
+        fr.data_push(out)
+
+
 @instr("tokensplit")
 class InstTokenSplit(Instruction):
     def execute(self, fr):
@@ -4716,6 +4798,12 @@ class InstDebugLine(Instruction):
         print("% 5d: #%d line %d (%s) %s" %
               (addr.value, addr.prog, line, fr.get_stack_repr(999), inst))
         sys.stdout.flush()
+
+
+@instr("debugger_break")
+class InstDebuggerBreak(Instruction):
+    def execute(self, fr):
+        raise MufDebuggerBreak()
 
 
 class CompiledMuf(object):
@@ -5135,6 +5223,8 @@ class MufStackFrame(object):
                 self.cycles += 1
                 inst.execute(self)
                 self.pc_advance(1)
+            except MufDebuggerBreak():
+                return
             except MufRuntimeError as e:
                 if not self.catch_stack:
                     print(
