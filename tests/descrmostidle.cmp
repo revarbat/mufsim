@@ -5,12 +5,12 @@
     1: ONLINE_ARRAY
     2: FOREACH
     3: __FORITER__
-    4: JmpIfFalse: +6
+    4: JmpIfFalse: 10
     5: SWAP
     6: POP
     7: DESCRMOSTIDLE
     8: POP
-    9: JMP: -6
+    9: JMP: 3
    10: __FORPOP__
    11: EXIT
 
@@ -19,28 +19,28 @@
     1: #4 line 2 ("") ONLINE_ARRAY
     2: #4 line 3 ("", 3[#1, #5, #6]) FOREACH
     3: #4 line 3 ("") __FORITER__
-    4: #4 line 3 ("", 0, #1, 1) JmpIfFalse: +6
+    4: #4 line 3 ("", 0, #1, 1) JmpIfFalse: 10
     5: #4 line 3 ("", 0, #1) SWAP
     6: #4 line 3 ("", #1, 0) POP
     7: #4 line 4 ("", #1) DESCRMOSTIDLE
     8: #4 line 4 ("", 238) POP
-    9: #4 line 5 ("") JMP: -6
+    9: #4 line 5 ("") JMP: 3
     3: #4 line 3 ("") __FORITER__
-    4: #4 line 3 ("", 1, #5, 1) JmpIfFalse: +6
+    4: #4 line 3 ("", 1, #5, 1) JmpIfFalse: 10
     5: #4 line 3 ("", 1, #5) SWAP
     6: #4 line 3 ("", #5, 1) POP
     7: #4 line 4 ("", #5) DESCRMOSTIDLE
     8: #4 line 4 ("", 870) POP
-    9: #4 line 5 ("") JMP: -6
+    9: #4 line 5 ("") JMP: 3
     3: #4 line 3 ("") __FORITER__
-    4: #4 line 3 ("", 2, #6, 1) JmpIfFalse: +6
+    4: #4 line 3 ("", 2, #6, 1) JmpIfFalse: 10
     5: #4 line 3 ("", 2, #6) SWAP
     6: #4 line 3 ("", #6, 2) POP
     7: #4 line 4 ("", #6) DESCRMOSTIDLE
     8: #4 line 4 ("", 1028) POP
-    9: #4 line 5 ("") JMP: -6
+    9: #4 line 5 ("") JMP: 3
     3: #4 line 3 ("") __FORITER__
-    4: #4 line 3 ("", 0) JmpIfFalse: +6
+    4: #4 line 3 ("", 0) JmpIfFalse: 10
    10: #4 line 3 ("") __FORPOP__
    11: #4 line 6 ("") EXIT
 Execution completed in 28 steps.

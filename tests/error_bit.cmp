@@ -8,11 +8,11 @@
     4: 1
     5: FOR
     6: __FORITER__
-    7: JmpIfFalse: +5
+    7: JmpIfFalse: 12
     8: ERROR_NAME
     9: ERROR_BIT
    10: POP
-   11: JMP: -5
+   11: JMP: 6
    12: __FORPOP__
    13: EXIT
 
@@ -24,37 +24,37 @@
     4: #4 line 2 ("", 0, 4) 1
     5: #4 line 2 ("", 0, 4, 1) FOR
     6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 0, 1) JmpIfFalse: +5
+    7: #4 line 3 ("", 0, 1) JmpIfFalse: 12
     8: #4 line 3 ("", 0) ERROR_NAME
     9: #4 line 3 ("", "DIV_ZERO") ERROR_BIT
    10: #4 line 3 ("", 0) POP
-   11: #4 line 4 ("") JMP: -5
+   11: #4 line 4 ("") JMP: 6
     6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 1, 1) JmpIfFalse: +5
+    7: #4 line 3 ("", 1, 1) JmpIfFalse: 12
     8: #4 line 3 ("", 1) ERROR_NAME
     9: #4 line 3 ("", "NAN") ERROR_BIT
    10: #4 line 3 ("", 1) POP
-   11: #4 line 4 ("") JMP: -5
+   11: #4 line 4 ("") JMP: 6
     6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 2, 1) JmpIfFalse: +5
+    7: #4 line 3 ("", 2, 1) JmpIfFalse: 12
     8: #4 line 3 ("", 2) ERROR_NAME
     9: #4 line 3 ("", "IMAGINARY") ERROR_BIT
    10: #4 line 3 ("", 2) POP
-   11: #4 line 4 ("") JMP: -5
+   11: #4 line 4 ("") JMP: 6
     6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 3, 1) JmpIfFalse: +5
+    7: #4 line 3 ("", 3, 1) JmpIfFalse: 12
     8: #4 line 3 ("", 3) ERROR_NAME
     9: #4 line 3 ("", "FBOUNDS") ERROR_BIT
    10: #4 line 3 ("", 3) POP
-   11: #4 line 4 ("") JMP: -5
+   11: #4 line 4 ("") JMP: 6
     6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 4, 1) JmpIfFalse: +5
+    7: #4 line 3 ("", 4, 1) JmpIfFalse: 12
     8: #4 line 3 ("", 4) ERROR_NAME
     9: #4 line 3 ("", "IBOUNDS") ERROR_BIT
    10: #4 line 3 ("", 4) POP
-   11: #4 line 4 ("") JMP: -5
+   11: #4 line 4 ("") JMP: 6
     6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 0) JmpIfFalse: +5
+    7: #4 line 3 ("", 0) JmpIfFalse: 12
    12: #4 line 2 ("") __FORPOP__
    13: #4 line 5 ("") EXIT
 Execution completed in 40 steps.

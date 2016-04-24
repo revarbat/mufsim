@@ -7,9 +7,9 @@
     3: 1
     4: FOR
     5: __FORITER__
-    6: JmpIfFalse: +3
+    6: JmpIfFalse: 9
     7: POP
-    8: JMP: -3
+    8: JMP: 5
     9: __FORPOP__
    10: EXIT
 
@@ -20,19 +20,19 @@
     3: #4 line 2 ("", 1, 3) 1
     4: #4 line 2 ("", 1, 3, 1) FOR
     5: #4 line 3 ("") __FORITER__
-    6: #4 line 3 ("", 1, 1) JmpIfFalse: +3
+    6: #4 line 3 ("", 1, 1) JmpIfFalse: 9
     7: #4 line 3 ("", 1) POP
-    8: #4 line 4 ("") JMP: -3
+    8: #4 line 4 ("") JMP: 5
     5: #4 line 3 ("") __FORITER__
-    6: #4 line 3 ("", 2, 1) JmpIfFalse: +3
+    6: #4 line 3 ("", 2, 1) JmpIfFalse: 9
     7: #4 line 3 ("", 2) POP
-    8: #4 line 4 ("") JMP: -3
+    8: #4 line 4 ("") JMP: 5
     5: #4 line 3 ("") __FORITER__
-    6: #4 line 3 ("", 3, 1) JmpIfFalse: +3
+    6: #4 line 3 ("", 3, 1) JmpIfFalse: 9
     7: #4 line 3 ("", 3) POP
-    8: #4 line 4 ("") JMP: -3
+    8: #4 line 4 ("") JMP: 5
     5: #4 line 3 ("") __FORITER__
-    6: #4 line 3 ("", 0) JmpIfFalse: +3
+    6: #4 line 3 ("", 0) JmpIfFalse: 9
     9: #4 line 2 ("") __FORPOP__
    10: #4 line 5 ("") EXIT
 Execution completed in 21 steps.

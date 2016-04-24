@@ -805,34 +805,39 @@ class InstFuncVar(Instruction):
         return "SV%d: %s" % (self.varnum, self.varname)
 
 
+@instr("jmp")
 class InstJmp(Instruction):
-    delta = 0
+    value = 0
 
     def __init__(self, line, val):
-        self.delta = val
+        self.value = val
         super(InstJmp, self).__init__(line)
 
     def execute(self, fr):
-        fr.pc_advance(self.delta - 1)
+        addr = fr.curr_addr()
+        addr = StackAddress(self.value - 1, addr.prog)
+        fr.pc_set(addr)
 
     def __str__(self):
-        return "JMP: %+d" % self.delta
+        return "JMP: %d" % self.value
 
 
 class InstJmpIfFalse(Instruction):
-    delta = 0
+    value = 0
 
     def __init__(self, line, val):
-        self.delta = val
+        self.value = val
         super(InstJmpIfFalse, self).__init__(line)
 
     def execute(self, fr):
         val = fr.data_pop()
         if not val:
-            fr.pc_advance(self.delta - 1)
+            addr = fr.curr_addr()
+            addr = StackAddress(self.value - 1, addr.prog)
+            fr.pc_set(addr)
 
     def __str__(self):
-        return "JmpIfFalse: %+d" % self.delta
+        return "JmpIfFalse: %d" % self.value
 
 
 class InstFunc(Instruction):
@@ -907,7 +912,7 @@ class InstCanCallP(Instruction):
 @instr("try")
 class InstTry(Instruction):
     def __init__(self, line):
-        self.delta = 0
+        self.value = 0
         self.trycode = []
         self.detailed = False
         super(InstTry, self).__init__(line)
@@ -916,11 +921,11 @@ class InstTry(Instruction):
         cnt = fr.data_pop(int)
         stacklock = fr.data_depth() - cnt
         addr = fr.curr_addr()
-        addr = StackAddress(addr.value + self.delta, addr.prog)
+        addr = StackAddress(self.value, addr.prog)
         fr.catch_push(self.detailed, addr, stacklock)
 
     def __str__(self):
-        return "Try: %+d" % self.delta
+        return "Try: %d" % self.value
 
 
 class InstTryPop(Instruction):
@@ -5697,7 +5702,9 @@ class MufCompiler(object):
         # Get next word.
         word, src = self.splitword(src)
         # Expand defines if needed
-        if expand and word in defines:
+        if word[0] == '\\':
+            word = word[1:]
+        elif expand and word in defines:
             src = defines[word] + " " + src
             word, line, src = self.get_word(src)
             return (word, line, src)
@@ -6173,7 +6180,7 @@ class MufCompiler(object):
                     raise MufCompileError("Incomplete Try-Catch block.")
                 inst.trycode = None
                 trycode.append(InstJmp(line, len(subcode) + 1))
-                inst.delta = len(trycode) + 1
+                inst.value = len(trycode) + 1
                 code.append(inst)
                 for prim in trycode:
                     code.append(prim)
@@ -6238,6 +6245,9 @@ class MufCompiler(object):
                 if type(self.stmt_stack[-1]) is InstForeach:
                     raise MufCompileError("Incomplete foreach loop.")
             if code:
+                for inum, inst in enumerate(code):
+                    if type(inst) in [InstTry, InstJmp, InstJmpIfFalse]:
+                        inst.value += inum
                 comp.code = code
                 getobj(prog).compiled = comp
                 return True

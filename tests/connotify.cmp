@@ -8,10 +8,10 @@
     4: 1
     5: FOR
     6: __FORITER__
-    7: JmpIfFalse: +4
+    7: JmpIfFalse: 11
     8: "Foobar"
     9: CONNOTIFY
-   10: JMP: -4
+   10: JMP: 6
    11: __FORPOP__
    12: EXIT
 
@@ -23,25 +23,25 @@
     4: #4 line 2 ("", 0, 2) 1
     5: #4 line 2 ("", 0, 2, 1) FOR
     6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 0, 1) JmpIfFalse: +4
+    7: #4 line 3 ("", 0, 1) JmpIfFalse: 11
     8: #4 line 3 ("", 0) "Foobar"
     9: #4 line 3 ("", 0, "Foobar") CONNOTIFY
 NOTIFY TO DESCR 3, USER Wizard(#1): Foobar
-   10: #4 line 4 ("") JMP: -4
+   10: #4 line 4 ("") JMP: 6
     6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 1, 1) JmpIfFalse: +4
+    7: #4 line 3 ("", 1, 1) JmpIfFalse: 11
     8: #4 line 3 ("", 1) "Foobar"
     9: #4 line 3 ("", 1, "Foobar") CONNOTIFY
 NOTIFY TO DESCR 11, USER John_Doe(#5): Foobar
-   10: #4 line 4 ("") JMP: -4
+   10: #4 line 4 ("") JMP: 6
     6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 2, 1) JmpIfFalse: +4
+    7: #4 line 3 ("", 2, 1) JmpIfFalse: 11
     8: #4 line 3 ("", 2) "Foobar"
     9: #4 line 3 ("", 2, "Foobar") CONNOTIFY
 NOTIFY TO DESCR 13, USER Jane_Doe(#6): Foobar
-   10: #4 line 4 ("") JMP: -4
+   10: #4 line 4 ("") JMP: 6
     6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 0) JmpIfFalse: +4
+    7: #4 line 3 ("", 0) JmpIfFalse: 11
    11: #4 line 2 ("") __FORPOP__
    12: #4 line 5 ("") EXIT
 Execution completed in 25 steps.

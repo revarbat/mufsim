@@ -3,37 +3,37 @@
 #### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: 0
-    2: JmpIfFalse: +2
+    2: JmpIfFalse: 4
     3: "foo"
     4: 1
-    5: JmpIfFalse: +2
+    5: JmpIfFalse: 7
     6: "bar"
     7: 0
-    8: JmpIfFalse: +3
+    8: JmpIfFalse: 11
     9: "baz"
-   10: JMP: +2
+   10: JMP: 12
    11: "qux"
    12: 1
-   13: JmpIfFalse: +3
+   13: JmpIfFalse: 16
    14: "baz2"
-   15: JMP: +2
+   15: JMP: 17
    16: "qux2"
    17: EXIT
 
 #### Executing Tokens #################################
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 0
-    2: #4 line 2 ("", 0) JmpIfFalse: +2
+    2: #4 line 2 ("", 0) JmpIfFalse: 4
     4: #4 line 3 ("") 1
-    5: #4 line 3 ("", 1) JmpIfFalse: +2
+    5: #4 line 3 ("", 1) JmpIfFalse: 7
     6: #4 line 3 ("") "bar"
     7: #4 line 4 ("", "bar") 0
-    8: #4 line 4 ("", "bar", 0) JmpIfFalse: +3
+    8: #4 line 4 ("", "bar", 0) JmpIfFalse: 11
    11: #4 line 4 ("", "bar") "qux"
    12: #4 line 5 ("", "bar", "qux") 1
-   13: #4 line 5 ("", "bar", "qux", 1) JmpIfFalse: +3
+   13: #4 line 5 ("", "bar", "qux", 1) JmpIfFalse: 16
    14: #4 line 5 ("", "bar", "qux") "baz2"
-   15: #4 line 5 ("", "bar", "qux", "baz2") JMP: +2
+   15: #4 line 5 ("", "bar", "qux", "baz2") JMP: 17
    17: #4 line 6 ("", "bar", "qux", "baz2") EXIT
 Execution completed in 14 steps.
 

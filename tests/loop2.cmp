@@ -7,7 +7,7 @@
     3: DUP
     4: 3
     5: >
-    6: JmpIfFalse: -4
+    6: JmpIfFalse: 2
     7: POP
     8: EXIT
 
@@ -18,17 +18,17 @@
     3: #4 line 5 ("", 2) DUP
     4: #4 line 5 ("", 2, 2) 3
     5: #4 line 5 ("", 2, 2, 3) >
-    6: #4 line 6 ("", 2, 0) JmpIfFalse: -4
+    6: #4 line 6 ("", 2, 0) JmpIfFalse: 2
     2: #4 line 4 ("", 2) ++
     3: #4 line 5 ("", 3) DUP
     4: #4 line 5 ("", 3, 3) 3
     5: #4 line 5 ("", 3, 3, 3) >
-    6: #4 line 6 ("", 3, 0) JmpIfFalse: -4
+    6: #4 line 6 ("", 3, 0) JmpIfFalse: 2
     2: #4 line 4 ("", 3) ++
     3: #4 line 5 ("", 4) DUP
     4: #4 line 5 ("", 4, 4) 3
     5: #4 line 5 ("", 4, 4, 3) >
-    6: #4 line 6 ("", 4, 1) JmpIfFalse: -4
+    6: #4 line 6 ("", 4, 1) JmpIfFalse: 2
     7: #4 line 7 ("", 4) POP
     8: #4 line 8 ("") EXIT
 Execution completed in 19 steps.

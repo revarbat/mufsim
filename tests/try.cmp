@@ -3,33 +3,33 @@
 #### Showing Tokens for cmd-test(#4) ##################
     0: Function: main (0 vars)
     1: 0
-    2: Try: +5
+    2: Try: 7
     3: "foo"
     4: ABORT
     5: TryPop
-    6: JMP: +2
+    6: JMP: 8
     7: POP
     8: 3
     9: 4
    10: 5
    11: 2
-   12: Try: +5
+   12: Try: 17
    13: "bar"
    14: ABORT
    15: TryPop
-   16: JMP: +2
+   16: JMP: 18
    17: POP
    18: POP
    19: 3
    20: 4
    21: 5
    22: 2
-   23: Try: +6
+   23: Try: 29
    24: POP
    25: POP
    26: POP
    27: TryPop
-   28: JMP: +2
+   28: JMP: 30
    29: POP
    30: POP
    31: EXIT
@@ -37,7 +37,7 @@
 #### Executing Tokens #################################
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 0
-    2: #4 line 2 ("", 0) Try: +5
+    2: #4 line 2 ("", 0) Try: 7
     3: #4 line 3 ("") "foo"
     4: #4 line 3 ("", "foo") ABORT
 Caught error in #4 line 3 (ABORT): foo
@@ -46,7 +46,7 @@ Caught error in #4 line 3 (ABORT): foo
     9: #4 line 6 ("", 3) 4
    10: #4 line 6 ("", 3, 4) 5
    11: #4 line 7 ("", 3, 4, 5) 2
-   12: #4 line 7 ("", 3, 4, 5, 2) Try: +5
+   12: #4 line 7 ("", 3, 4, 5, 2) Try: 17
    13: #4 line 8 ("", 3, 4, 5) "bar"
    14: #4 line 8 ("", 3, 4, 5, "bar") ABORT
 Caught error in #4 line 8 (ABORT): bar
@@ -56,7 +56,7 @@ Caught error in #4 line 8 (ABORT): bar
    20: #4 line 12 ("", 3) 4
    21: #4 line 12 ("", 3, 4) 5
    22: #4 line 13 ("", 3, 4, 5) 2
-   23: #4 line 13 ("", 3, 4, 5, 2) Try: +6
+   23: #4 line 13 ("", 3, 4, 5, 2) Try: 29
    24: #4 line 14 ("", 3, 4, 5) POP
    25: #4 line 14 ("", 3, 4) POP
    26: #4 line 14 ("", 3) POP
