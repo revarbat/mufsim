@@ -5802,11 +5802,11 @@ class MufCompiler(object):
                         raise MufCompileError("Variable already declared.")
                     comp.add_global_var(vname)
                 continue
-            elif word == "public":
+            elif word == "public" or word == "wizcall":
                 nam, line, src = self.get_word(src)
                 if not comp.publicize_function(nam):
                     raise MufCompileError("Unrecognized identifier: %s" % nam)
-                print("EXPOSED '%s' AS PUBLIC" % nam)
+                print("EXPOSED '%s' AS %s" % (nam, word.upper()))
                 continue
             elif word == "$abort":
                 val, src = self.get_to_eol(src)
