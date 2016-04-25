@@ -18,6 +18,7 @@ MAX_VARS = 54
 HISTORY_FILE = os.path.expanduser("~/.mufsim_history")
 
 primitives = {}
+literal_handlers = []
 
 
 def escape_str(s):
@@ -184,17 +185,18 @@ class DBObject(object):
             prop = prop[:-1]
         return prop
 
-    def getprop(self, prop):
+    def getprop(self, prop, suppress=False):
         prop = self.normalize_prop(prop)
         if prop not in self.properties:
             val = None
         else:
             val = self.properties[prop]
-        if type(val) is str:
-            print("GETPROP \"%s\" on #%d = %s" %
-                  (prop, self.dbref, escape_str(val)))
-        else:
-            print("GETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
+        if not suppress:
+            if type(val) is str:
+                print("GETPROP \"%s\" on #%d = %s" %
+                      (prop, self.dbref, escape_str(val)))
+            else:
+                print("GETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
         return val
 
     def setprop(self, prop, val, suppress=False):
@@ -231,7 +233,7 @@ class DBObject(object):
         print("PROPDIR? \"%s\" on #%d = %s" % (prop, self.dbref, val))
         return val
 
-    def next_prop(self, prop):
+    def next_prop(self, prop, suppress=False):
         if not prop or prop[-1] == '/':
             prop = self.normalize_prop(prop)
             if prop:
@@ -256,7 +258,8 @@ class DBObject(object):
                 if sub > prev:
                     if not out or pfx + sub < out:
                         out = pfx + sub
-        print("NEXTPROP \"%s\" on #%d = \"%s\"" % (prop, self.dbref, out))
+        if not suppress:
+            print("NEXTPROP \"%s\" on #%d = \"%s\"" % (prop, self.dbref, out))
         return out
 
     def prodir_props(self, prop):
@@ -788,6 +791,311 @@ class InstDollarUnDef(Instruction):
         return (False, src)
 
 
+@instr("$include")
+class InstDollarInclude(Instruction):
+    def compile(self, cmplr, code, src):
+        comp = cmplr.compiled
+        targ, line, src = cmplr.get_word(src)
+        if targ == "this":
+            obj = comp.program
+        else:
+            who = getobj(comp.program).owner
+            obj = match_from(who, targ)
+        cmplr.include_defs_from(obj)
+        return (False, src)
+
+
+@instr("$pubdef")
+class InstDollarPubDef(Instruction):
+    def compile(self, cmplr, code, src):
+        comp = cmplr.compiled
+        nam, line, src = cmplr.get_word(src)
+        val, src = cmplr.get_to_eol(src)
+        if nam == ":":
+            getobj(comp.program).delprop("_defs")
+        elif not val.strip():
+            getobj(comp.program).delprop("_defs/%s" % nam)
+        else:
+            if nam[0] == '\\':
+                nam = nam[1:]
+                if getobj(comp.program).getprop("_defs/%s" % nam):
+                    return (False, src)
+            getobj(comp.program).setprop("_defs/%s" % nam, val)
+        return (False, src)
+
+
+@instr("$libdef")
+class InstDollarLibDef(Instruction):
+    def compile(self, cmplr, code, src):
+        comp = cmplr.compiled
+        nam, line, src = cmplr.get_word(src)
+        if nam.startswith('\\'):
+            nam = nam[1:]
+            if getobj(comp.program).getprop("_defs/%s" % nam):
+                return (False, src)
+        prog = getobj(comp.program)
+        val = "#%d %s call" % (prog.dbref, escape_str(nam))
+        prog.setprop("_defs/%s" % nam, val)
+        return (False, src)
+
+
+@instr("$cleardefs")
+class InstDollarClearDefs(Instruction):
+    def compile(self, cmplr, code, src):
+        val, line, src = cmplr.get_word(src)
+        cmplr.defines = dict(cmplr.builtin_defines)
+        if val.strip().upper() != "ALL":
+            cmplr.include_defs_from(0, suppress=True)
+        return (False, src)
+
+
+@instr("$ifdef")
+class InstDollarIfDef(Instruction):
+    def compile(self, cmplr, code, src):
+        cond, line, src = cmplr.get_word(src, expand=False)
+        istrue = True
+        if '=' in cond:
+            nam, val = cond.split('=', 1)
+            istrue = nam in cmplr.defines and cmplr.defines[nam] == val
+        elif '>' in cond:
+            nam, val = cond.split('>', 1)
+            istrue = nam in cmplr.defines and cmplr.defines[nam] > val
+        elif '<' in cond:
+            nam, val = cond.split('<', 1)
+            istrue = nam in cmplr.defines and cmplr.defines[nam] < val
+        else:
+            istrue = cond in cmplr.defines
+        if not istrue:
+            src = cmplr.skip_directive_if_block(src)
+        return (False, src)
+
+
+@instr("$ifndef")
+class InstDollarIfNDef(Instruction):
+    def compile(self, cmplr, code, src):
+        cond, line, src = cmplr.get_word(src, expand=False)
+        istrue = True
+        if '=' in cond:
+            nam, val = cond.split('=', 1)
+            istrue = nam in cmplr.defines and cmplr.defines[nam] == val
+        elif '>' in cond:
+            nam, val = cond.split('>', 1)
+            istrue = nam in cmplr.defines and cmplr.defines[nam] > val
+        elif '<' in cond:
+            nam, val = cond.split('<', 1)
+            istrue = nam in cmplr.defines and cmplr.defines[nam] < val
+        else:
+            istrue = cond in cmplr.defines
+        if istrue:
+            src = cmplr.skip_directive_if_block(src)
+        return (False, src)
+
+
+@instr("$ifver")
+class InstDollarIfVer(Instruction):
+    def compile(self, cmplr, code, src):
+        comp = cmplr.compiled
+        obj, line, src = cmplr.get_word(src)
+        ver, line, src = cmplr.get_word(src)
+        if obj == "this":
+            obj = comp.program
+        else:
+            who = getobj(comp.program).owner
+            obj = match_from(who, obj)
+        istrue = True
+        if not validobj(obj):
+            istrue = False
+        else:
+            val = getobj(obj).getprop("_version")
+            if not val:
+                istrue = False
+            else:
+                istrue = val >= ver
+        if not istrue:
+            src = cmplr.skip_directive_if_block(src)
+        return (False, src)
+
+
+@instr("$ifnver")
+class InstDollarIfNVer(Instruction):
+    def compile(self, cmplr, code, src):
+        comp = cmplr.compiled
+        obj, line, src = cmplr.get_word(src)
+        ver, line, src = cmplr.get_word(src)
+        if obj == "this":
+            obj = comp.program
+        else:
+            who = getobj(comp.program).owner
+            obj = match_from(who, obj)
+        istrue = True
+        if not validobj(obj):
+            istrue = False
+        else:
+            val = getobj(obj).getprop("_version")
+            if not val:
+                istrue = False
+            else:
+                istrue = val >= ver
+        if istrue:
+            src = cmplr.skip_directive_if_block(src)
+        return (False, src)
+
+
+@instr("$iflibver")
+class InstDollarIfLibVer(Instruction):
+    def compile(self, cmplr, code, src):
+        comp = cmplr.compiled
+        obj, line, src = cmplr.get_word(src)
+        ver, line, src = cmplr.get_word(src)
+        if obj == "this":
+            obj = comp.program
+        else:
+            who = getobj(comp.program).owner
+            obj = match_from(who, obj)
+        istrue = True
+        if not validobj(obj):
+            istrue = False
+        else:
+            val = getobj(obj).getprop("_lib-version")
+            if not val:
+                istrue = False
+            else:
+                istrue = val >= ver
+        if not istrue:
+            src = cmplr.skip_directive_if_block(src)
+        return (False, src)
+
+
+@instr("$ifnlibver")
+class InstDollarIfNLibVer(Instruction):
+    def compile(self, cmplr, code, src):
+        comp = cmplr.compiled
+        obj, line, src = cmplr.get_word(src)
+        ver, line, src = cmplr.get_word(src)
+        if obj == "this":
+            obj = comp.program
+        else:
+            who = getobj(comp.program).owner
+            obj = match_from(who, obj)
+        istrue = True
+        if not validobj(obj):
+            istrue = False
+        else:
+            val = getobj(obj).getprop("_lib-version")
+            if not val:
+                istrue = False
+            else:
+                istrue = val >= ver
+        if istrue:
+            src = cmplr.skip_directive_if_block(src)
+        return (False, src)
+
+
+@instr("$iflib")
+class InstDollarIfLib(Instruction):
+    def compile(self, cmplr, code, src):
+        comp = cmplr.compiled
+        obj, line, src = cmplr.get_word(src)
+        if obj == "this":
+            obj = comp.program
+        else:
+            who = getobj(comp.program).owner
+            obj = match_from(who, obj)
+        istrue = validobj(obj) and getobj(obj).objtype == "program"
+        if not istrue:
+            src = cmplr.skip_directive_if_block(src)
+        return (False, src)
+
+
+@instr("$ifnlib")
+class InstDollarIfNLib(Instruction):
+    def compile(self, cmplr, code, src):
+        comp = cmplr.compiled
+        obj, line, src = cmplr.get_word(src)
+        if obj == "this":
+            obj = comp.program
+        else:
+            who = getobj(comp.program).owner
+            obj = match_from(who, obj)
+        istrue = validobj(obj) and getobj(obj).objtype == "program"
+        if istrue:
+            src = cmplr.skip_directive_if_block(src)
+        return (False, src)
+
+
+@instr("$ifcancall")
+class InstDollarIfCanCall(Instruction):
+    def compile(self, cmplr, code, src):
+        comp = cmplr.compiled
+        obj, line, src = cmplr.get_word(src)
+        pub, line, src = cmplr.get_word(src)
+        if obj == "this":
+            obj = comp.program
+        else:
+            who = getobj(comp.program).owner
+            obj = match_from(who, obj)
+        obj = getobj(obj)
+        istrue = (
+            obj.objtype == "program" and
+            obj.compiled and
+            obj.compiled.publics and
+            pub in obj.compiled.publics
+        )
+        if not istrue:
+            src = cmplr.skip_directive_if_block(src)
+        return (False, src)
+
+
+@instr("$ifncancall")
+class InstDollarIfNCanCall(Instruction):
+    def compile(self, cmplr, code, src):
+        comp = cmplr.compiled
+        obj, line, src = cmplr.get_word(src)
+        pub, line, src = cmplr.get_word(src)
+        if obj == "this":
+            obj = comp.program
+        else:
+            who = getobj(comp.program).owner
+            obj = match_from(who, obj)
+        obj = getobj(obj)
+        istrue = (
+            obj.objtype == "program" and
+            obj.compiled and
+            obj.compiled.publics and
+            pub in obj.compiled.publics
+        )
+        if istrue:
+            src = cmplr.skip_directive_if_block(src)
+        return (False, src)
+
+
+@instr("$else")
+class InstDollarElse(Instruction):
+    def compile(self, cmplr, code, src):
+        level = 0
+        while True:
+            if not src:
+                raise MufCompileError("Incomplete $else directive block.")
+            word, line, src = cmplr.get_word(src, expand=False)
+            if word.startswith("$if"):
+                cond, line, src = cmplr.get_word(src, expand=False)
+                level += 1
+            elif word == "$endif":
+                if not level:
+                    break
+                level -= 1
+            elif word == "$else":
+                if not level:
+                    raise MufCompileError("Multiple $else clauses.")
+        return (False, src)
+
+
+@instr("$endif")
+class InstDollarEndif(Instruction):
+    def compile(self, cmplr, code, src):
+        return (False, src)
+
+
 class InstPushItem(Instruction):
     value = 0
 
@@ -838,7 +1146,7 @@ class InstFuncVar(Instruction):
 class InstJmp(Instruction):
     value = 0
 
-    def __init__(self, line, val):
+    def __init__(self, line, val=0):
         self.value = val
         super(InstJmp, self).__init__(line)
 
@@ -874,7 +1182,7 @@ class InstFunc(Instruction):
     funcname = "Unknown"
     varcount = 0
 
-    def __init__(self, line, funcname, varcount):
+    def __init__(self, line, funcname=None, varcount=0):
         self.funcname = funcname
         self.varcount = varcount
         super(InstFunc, self).__init__(line)
@@ -884,8 +1192,82 @@ class InstFunc(Instruction):
         for i in reversed(range(self.varcount)):
             fr.funcvar_set(i, fr.data_pop())
 
+    def get_header_vars(self, cmplr, src):
+        funcvars = []
+        while True:
+            v, line, src = cmplr.get_word(src)
+            if v == ']':
+                break
+            if v == '--':
+                if ']' not in src:
+                    raise MufCompileError("Function header incomplete.")
+                src = src.split(']', 1)[1]
+                src = cmplr.lstrip(src)
+                break
+            if v in funcvars:
+                raise MufCompileError("Variable already declared.")
+            funcvars.append(v)
+            if not src:
+                raise MufCompileError("Function header incomplete.")
+        return (funcvars, src)
+
+    def compile(self, cmplr, code, src):
+        if cmplr.funcname:
+            raise MufCompileError(
+                "Function definition incomplete: %s" % cmplr.funcname)
+        funcname, line, src = cmplr.get_word(src)
+        comp = cmplr.compiled
+        funcvars = []
+        if funcname[-1] == '[':
+            funcname = funcname[:-1]
+            funcvars, src = self.get_header_vars(cmplr, src)
+        if comp.get_function_addr(funcname) is not None:
+            raise MufCompileError("Function already declared: %s" % funcname)
+        comp.add_function(funcname, len(code))
+        for v in funcvars:
+            comp.add_func_var(funcname, v)
+        cmplr.funcname = funcname
+        code.append(InstFunc(line, funcname, len(funcvars)))
+        fcode, src = cmplr.compile_r(src)
+        for inst in fcode:
+            code.append(inst)
+        cmplr.stmt_stack = []
+        return (False, src)
+
     def __str__(self):
         return "Function: %s (%d vars)" % (self.funcname, self.varcount)
+
+
+@instr(";")
+class InstEndFunc(Instruction):
+    def compile(self, cmplr, code, src):
+        code.append(InstExit(self.line))
+        cmplr.funcname = None
+        cmplr.check_for_incomplete_block()
+        return (True, src)
+
+
+@instr("public")
+class InstPublic(Instruction):
+    def compile(self, cmplr, code, src):
+        nam, line, src = cmplr.get_word(src)
+        comp = cmplr.compiled
+        if not comp.publicize_function(nam):
+            raise MufCompileError("Unrecognized identifier: %s" % nam)
+        print("EXPOSED '%s' AS PUBLIC" % nam)
+        return (False, src)
+
+
+@instr("wizcall")
+class InstWizCall(Instruction):
+    def compile(self, cmplr, code, src):
+        # TODO: Check wizbit on call!
+        nam, line, src = cmplr.get_word(src)
+        comp = cmplr.compiled
+        if not comp.publicize_function(nam):
+            raise MufCompileError("Unrecognized identifier: %s" % nam)
+        print("EXPOSED '%s' AS WIZCALL" % nam)
+        return (False, src)
 
 
 @instr("execute")
@@ -3876,6 +4258,54 @@ class InstDescrMostIdle(Instruction):
         fr.data_push(max(idles))
 
 
+@instr("lvar")
+class InstLVar(Instruction):
+    def compile(self, cmplr, code, src):
+        vname, line, src = cmplr.get_word(src)
+        comp = cmplr.compiled
+        if not vname:
+            raise MufCompileError("Variable declaration incomplete.")
+        if comp.get_global_var(vname):
+            raise MufCompileError("Variable already declared.")
+        comp.add_global_var(vname)
+        return (False, src)
+
+
+@instr("var")
+class InstVar(Instruction):
+    def compile(self, cmplr, code, src):
+        vname, line, src = cmplr.get_word(src)
+        comp = cmplr.compiled
+        if not vname:
+            raise MufCompileError("Variable declaration incomplete.")
+        if cmplr.funcname:
+            # Function scoped var
+            if comp.get_func_var(cmplr.funcname, vname):
+                raise MufCompileError("Variable already declared.")
+            comp.add_func_var(cmplr.funcname, vname)
+        else:
+            # Global vars
+            if comp.get_global_var(vname):
+                raise MufCompileError("Variable already declared.")
+            comp.add_global_var(vname)
+        return (False, src)
+
+
+@instr("var!")
+class InstVarBang(Instruction):
+    def compile(self, cmplr, code, src):
+        vname, line, src = cmplr.get_word(src)
+        comp = cmplr.compiled
+        if not vname:
+            raise MufCompileError("Variable declaration incomplete.")
+        if comp.get_func_var(cmplr.funcname, vname):
+            raise MufCompileError("Variable already declared.")
+        vnum = comp.add_func_var(cmplr.funcname, vname)
+        code.append(InstFuncVar(line, vnum, vname))
+        code.append(InstBang(line))
+        return (False, src)
+
+
 @instr("variable")
 class InstVariable(Instruction):
     def execute(self, fr):
@@ -5922,6 +6352,12 @@ class MufStackFrame(object):
         self.fp_errors = 0
 
 
+# Decorator
+def literal_handler(cls):
+    literal_handlers.append(cls)
+    return cls
+
+
 class MufCompiler(object):
     builtin_defines = {
         '__version': escape_str(EMULATED_VERSION),
@@ -5995,10 +6431,11 @@ class MufCompiler(object):
 
     def __init__(self):
         self.compiled = None
-        self.defines = dict(self.builtin_defines)
         self.line = 1
         self.stmt_stack = []
         self.funcname = None
+        self.defines = dict(self.builtin_defines)
+        self.include_defs_from(0, suppress=True)
 
     def splitword(self, txt):
         txt = self.lstrip(txt)
@@ -6089,304 +6526,150 @@ class MufCompiler(object):
         src = self.lstrip(src)
         return (word, line, src)
 
+    def skip_directive_if_block(self, src):
+        level = 0
+        while True:
+            if not src:
+                raise MufCompileError("Incomplete $if directive block.")
+            word, line, src = self.get_word(src)
+            if word.startswith("$if"):
+                cond, line, src = self.get_word(src, expand=False)
+                level += 1
+            elif word == "$endif":
+                if not level:
+                    break
+                level -= 1
+            elif word == "$else":
+                if not level:
+                    break
+        return src
+
     def in_loop_inst(self):
         for inst in reversed(self.stmt_stack):
             if type(inst) in [InstBegin, InstFor, InstForeach]:
                 return inst
         return None
 
-    def compile_r(self, src):
+    def include_defs_from(self, obj, suppress=False):
+        obj = getobj(obj)
+        prop = "_defs/"
+        while prop:
+            prop = obj.next_prop(prop, suppress=suppress)
+            if not prop:
+                break
+            val = obj.getprop(prop, suppress=suppress)
+            if val:
+                defname = prop.split('/', 1)[1]
+                self.defines[defname] = val
+
+    def check_for_incomplete_block(self):
+        if self.stmt_stack:
+            if type(self.stmt_stack[-1]) is InstIf:
+                raise MufCompileError("Incomplete if-then block.")
+            if type(self.stmt_stack[-1]) is InstTry:
+                raise MufCompileError("Incomplete try-catch block.")
+            if type(self.stmt_stack[-1]) is InstBegin:
+                raise MufCompileError("Incomplete loop.")
+            if type(self.stmt_stack[-1]) is InstFor:
+                raise MufCompileError("Incomplete for loop.")
+            if type(self.stmt_stack[-1]) is InstForeach:
+                raise MufCompileError("Incomplete foreach loop.")
+
+    @literal_handler
+    def literal_integer(self, line, code, word):
+        if is_int(word):
+            code.append(InstPushItem(line, int(word)))
+            return True
+        return False
+
+    @literal_handler
+    def literal_dbref(self, line, code, word):
+        if is_dbref(word):
+            code.append(InstPushItem(line, StackDBRef(int(word[1:]))))
+            return True
+        return False
+
+    @literal_handler
+    def literal_float(self, line, code, word):
+        if is_float(word):
+            code.append(InstPushItem(line, float(word)))
+            return True
+        return False
+
+    @literal_handler
+    def literal_string(self, line, code, word):
+        if word.startswith('"'):
+            code.append(InstPushItem(line, word[1:-1]))
+            return True
+        return False
+
+    @literal_handler
+    def literal_globalvar(self, line, code, word):
         comp = self.compiled
+        if comp.get_global_var(word):
+            v = comp.get_global_var(word)
+            code.append(InstGlobalVar(line, v.value, word))
+            return True
+        return False
+
+    @literal_handler
+    def literal_funcvar(self, line, code, word):
+        comp = self.compiled
+        if comp.get_func_var(self.funcname, word):
+            v = comp.get_func_var(self.funcname, word)
+            code.append(InstFuncVar(line, v.value, word))
+            return True
+        return False
+
+    @literal_handler
+    def literal_tick(self, line, code, word):
+        comp = self.compiled
+        if word.startswith("'"):
+            word = word[1:]
+            addr = comp.get_function_addr(word)
+            if addr is None:
+                raise MufCompileError("Unrecognized identifier: %s" % word)
+            code.append(InstPushItem(line, addr))
+            return True
+        return False
+
+    @literal_handler
+    def literal_function(self, line, code, word):
+        comp = self.compiled
+        if comp.get_function_addr(word) is not None:
+            addr = comp.get_function_addr(word)
+            code.append(InstPushItem(line, addr))
+            code.append(InstExecute(line))
+            return True
+        return False
+
+    def compile_r(self, src):
         code = []
         while True:
             word, line, src = self.get_word(src)
             if not word:
                 return (code, src)
-            if word == ":":
-                # Start function definition
-                if self.funcname:
-                    raise MufCompileError("FunctionIncomplete")
-                funcname, line, src = self.get_word(src)
-                funcvars = []
-                if funcname[-1] == '[':
-                    funcname = funcname[:-1]
-                    while True:
-                        v, line, src = self.get_word(src)
-                        if v == ']':
-                            break
-                        if v == '--':
-                            src = src.split(']', 1)[1]
-                            src = self.lstrip(src)
-                            break
-                        if v in funcvars:
-                            raise MufCompileError("Variable already declared.")
-                        funcvars.append(v)
-                        if not src:
-                            raise MufCompileError("Function header incomplete.")
-                if comp.get_function_addr(funcname) is not None:
-                    raise MufCompileError("Function already declared.")
-                comp.add_function(funcname, len(code))
-                for v in funcvars:
-                    comp.add_func_var(funcname, v)
-                self.funcname = funcname
-                subcode = []
-                subcode.append(InstFunc(line, funcname, len(funcvars)))
-                fcode, src = self.compile_r(src)
-                for inst in fcode:
-                    subcode.append(inst)
-                for inst in subcode:
-                    code.append(inst)
-                self.stmt_stack = []
+            if not self.funcname:
+                if (
+                    not word.startswith('$') and
+                    word not in [":", "lvar", "var", "public", "wizcall"]
+                ):
+                    raise MufCompileError("Not in function: %s" % word)
+            foundlit = False
+            for fun in literal_handlers:
+                if fun(self, line, code, word):
+                    foundlit = True
+                    break
+            if foundlit:
                 continue
-            elif word == ";":
-                # End function define
-                if not self.funcname:
-                    raise MufCompileError("NotInFunction")
-                code.append(InstExit(line))
-                self.funcname = None
-                if self.stmt_stack:
-                    if type(self.stmt_stack[-1]) is InstIf:
-                        raise MufCompileError("Incomplete if-then block.")
-                    if type(self.stmt_stack[-1]) is InstTry:
-                        raise MufCompileError("Incomplete try-catch block.")
-                    if type(self.stmt_stack[-1]) is InstBegin:
-                        raise MufCompileError("Incomplete loop.")
-                    if type(self.stmt_stack[-1]) is InstFor:
-                        raise MufCompileError("Incomplete for loop.")
-                    if type(self.stmt_stack[-1]) is InstForeach:
-                        raise MufCompileError("Incomplete foreach loop.")
-                return (code, src)
-            elif word == "lvar":
-                vname, line, src = self.get_word(src)
-                if not vname:
-                    raise MufCompileError("Variable declaration incomplete.")
-                if comp.get_global_var(vname):
-                    raise MufCompileError("Variable already declared.")
-                comp.add_global_var(vname)
-                continue
-            elif word == "var":
-                vname, line, src = self.get_word(src)
-                if not vname:
-                    raise MufCompileError("Variable declaration incomplete.")
-                if self.funcname:
-                    # Function scoped var
-                    if comp.get_func_var(self.funcname, vname):
-                        raise MufCompileError("Variable already declared.")
-                    comp.add_func_var(self.funcname, vname)
-                else:
-                    # Global vars
-                    if comp.get_global_var(vname):
-                        raise MufCompileError("Variable already declared.")
-                    comp.add_global_var(vname)
-                continue
-            elif word == "public" or word == "wizcall":
-                nam, line, src = self.get_word(src)
-                if not comp.publicize_function(nam):
-                    raise MufCompileError("Unrecognized identifier: %s" % nam)
-                print("EXPOSED '%s' AS %s" % (nam, word.upper()))
-                continue
-            elif word == "$include":
-                targ, line, src = self.get_word(src)
-                if targ == "this":
-                    obj = comp.program
-                else:
-                    who = getobj(comp.program).owner
-                    obj = match_from(who, targ)
-                if not validobj(obj):
-                    raise MufCompileError("Invalid object: '%s'" % targ)
-                obj = getobj(obj)
-                prop = "_defs/"
-                while prop:
-                    prop = obj.next_prop(prop)
-                    if not prop:
-                        break
-                    val = obj.getprop(prop)
-                    if val:
-                        self.defines[prop[6:]] = val
-                continue
-            elif word == "$pubdef":
-                nam, line, src = self.get_word(src)
-                val, src = self.get_to_eol(src)
-                if nam == ":":
-                    getobj(comp.program).delprop("_defs")
-                elif not val.strip():
-                    getobj(comp.program).delprop("_defs/%s" % nam)
-                else:
-                    if nam[0] == '/':
-                        nam = nam[1:]
-                        if getobj(comp.program).getprop("_defs/%s" % nam):
-                            continue
-                    getobj(comp.program).setprop("_defs/%s" % nam, val)
-                continue
-            elif word == "$libdef":
-                nam, line, src = self.get_word(src)
-                if nam[0] == '/':
-                    nam = nam[1:]
-                    if getobj(comp.program).getprop("_defs/%s" % nam):
-                        continue
-                val = '#%d "%s" call' % (getobj(comp.program).dbref, nam)
-                getobj(comp.program).setprop("_defs/%s" % nam, val)
-                continue
-            elif word == "$cleardefs":
-                val, src = self.get_to_eol(src)
-                val = val.strip()
-                self.defines = dict(self.builtin_defines)
-                continue
-            elif word.startswith("$if"):
-                istrue = True
-                if word in ["$ifdef", "$ifndef"]:
-                    cond, line, src = self.get_word(src, expand=False)
-                    if '=' in cond:
-                        nam, val = cond.split('=', 1)
-                        istrue = nam in self.defines and self.defines[nam] == val
-                    elif '>' in cond:
-                        nam, val = cond.split('>', 1)
-                        istrue = nam in self.defines and self.defines[nam] > val
-                    elif '<' in cond:
-                        nam, val = cond.split('<', 1)
-                        istrue = nam in self.defines and self.defines[nam] < val
-                    else:
-                        istrue = cond in self.defines
-                elif word in ["$ifver", "$ifnver", "$iflibver", "$ifnlibver"]:
-                    obj, line, src = self.get_word(src)
-                    ver, line, src = self.get_word(src)
-                    if obj == "this":
-                        obj = comp.program
-                    else:
-                        who = getobj(comp.program).owner
-                        obj = match_from(who, obj)
-                    if not validobj(obj):
-                        istrue = False
-                    else:
-                        if word in ["$iflibver", "$ifnlibver"]:
-                            val = getobj(obj).getprop("_lib-version")
-                        else:
-                            val = getobj(obj).getprop("_version")
-                        if not val:
-                            istrue = False
-                        else:
-                            istrue = val >= ver
-                elif word in ["$iflib", "$ifnlib"]:
-                    obj, line, src = self.get_word(src)
-                    if obj == "this":
-                        obj = comp.program
-                    else:
-                        who = getobj(comp.program).owner
-                        obj = match_from(who, obj)
-                    istrue = validobj(obj) and getobj(obj).objtype == "program"
-                elif word in ["$ifcancall", "$ifncancall"]:
-                    obj, line, src = self.get_word(src)
-                    pub, line, src = self.get_word(src)
-                    if obj == "this":
-                        obj = comp.program
-                    else:
-                        who = getobj(comp.program).owner
-                        obj = match_from(who, obj)
-                    obj = getobj(obj)
-                    istrue = (
-                        obj.objtype == "program" and
-                        obj.compiled and
-                        obj.compiled.publics and
-                        pub in obj.compiled.publics
-                    )
-                else:
-                    raise MufCompileError("Unrecognized directive: '%s'" % word)
-                if word.startswith("$ifn"):
-                    istrue = not istrue
-                level = 0
-                while not istrue:
-                    if not src:
-                        raise MufCompileError(
-                            "Incomplete $if* $endif directive construct."
-                        )
-                    word, line, src = self.get_word(src)
-                    if word.startswith("$if"):
-                        cond, line, src = self.get_word(src, expand=False)
-                        level += 1
-                    elif word == "$endif":
-                        if not level:
-                            break
-                        level -= 1
-                    elif word == "$else":
-                        if not level:
-                            break
-                continue
-            elif word == "$else":
-                level = 0
-                while True:
-                    if not src:
-                        raise MufCompileError(
-                            "Incomplete $if* $else $endif directive construct."
-                        )
-                    word, line, src = self.get_word(src, expand=False)
-                    if word.startswith("$if"):
-                        cond, line, src = self.get_word(src, expand=False)
-                        level += 1
-                    elif word == "$endif":
-                        if not level:
-                            break
-                        level -= 1
-                    elif word == "$else":
-                        if not level:
-                            raise MufCompileError("Multiple $else clauses.")
-                continue
-            elif word == "$endif":
-                continue
-            if not self.funcname and not word.startswith('$'):
-                raise MufCompileError("Not in function: %s" % word)
-            if is_int(word):
-                code.append(InstPushItem(line, int(word)))
-                continue
-            elif is_dbref(word):
-                code.append(InstPushItem(line, StackDBRef(int(word[1:]))))
-                continue
-            elif is_float(word):
-                code.append(InstPushItem(line, float(word)))
-                continue
-            elif word.startswith('"'):
-                code.append(InstPushItem(line, word[1:-1]))
-                continue
-            elif comp.get_global_var(word):
-                v = comp.get_global_var(word)
-                code.append(InstGlobalVar(line, v.value, word))
-                continue
-            elif comp.get_func_var(self.funcname, word):
-                v = comp.get_func_var(self.funcname, word)
-                code.append(InstFuncVar(line, v.value, word))
-                continue
-            elif word[0] == "'":
-                word = word[1:]
-                addr = comp.get_function_addr(word)
-                if addr is None:
-                    raise MufCompileError("Unrecognized identifier: %s" % word)
-                code.append(InstPushItem(line, addr))
-                continue
-            elif comp.get_function_addr(word) is not None:
-                addr = comp.get_function_addr(word)
-                code.append(InstPushItem(line, addr))
-                code.append(InstExecute(line))
-                continue
-            elif word == "var!":
-                vname, line, src = self.get_word(src)
-                if not vname:
-                    raise MufCompileError("Variable declaration incomplete.")
-                if not self.funcname:
-                    raise MufCompileError("Not in function.")
-                if comp.get_func_var(self.funcname, vname):
-                    raise MufCompileError("Variable already declared.")
-                vnum = comp.add_func_var(self.funcname, vname)
-                code.append(InstFuncVar(line, vnum, vname))
-                code.append(InstBang(line))
-                continue
+            if word in primitives:
+                instcls = primitives[word]
+                inst = instcls(line)
+                doret, src = inst.compile(self, code, src)
+                if doret:
+                    return (code, src)
             else:
-                if word in primitives:
-                    instcls = primitives[word]
-                    inst = instcls(line)
-                    doret, src = inst.compile(self, code, src)
-                    if doret:
-                        return (code, src)
-                else:
-                    raise MufCompileError("Unrecognized identifier: %s" % word)
+                raise MufCompileError("Unrecognized identifier: %s" % word)
 
     def compile_source(self, prog):
         comp = CompiledMuf(prog)
@@ -6395,22 +6678,13 @@ class MufCompiler(object):
         self.stmt_stack = []
         self.funcname = None
         self.defines = dict(self.builtin_defines)
+        self.include_defs_from(0, suppress=True)
         src = getobj(prog).sources
         try:
             code, src = self.compile_r(src)
             if self.funcname:
                 raise MufCompileError("Function incomplete.")
-            if self.stmt_stack:
-                if type(self.stmt_stack[-1]) is InstIf:
-                    raise MufCompileError("Incomplete if-then block.")
-                if type(self.stmt_stack[-1]) is InstTry:
-                    raise MufCompileError("Incomplete try-catch block.")
-                if type(self.stmt_stack[-1]) is InstBegin:
-                    raise MufCompileError("Incomplete loop.")
-                if type(self.stmt_stack[-1]) is InstFor:
-                    raise MufCompileError("Incomplete for loop.")
-                if type(self.stmt_stack[-1]) is InstForeach:
-                    raise MufCompileError("Incomplete foreach loop.")
+            self.check_for_incomplete_block()
             if code:
                 for inum, inst in enumerate(code):
                     if type(inst) in [InstTry, InstJmp, InstJmpIfFalse]:
@@ -6516,7 +6790,8 @@ class MufSim(object):
             et = time.time()
             self.print("Execution completed in %d steps." % fr.cycles)
             if self.opts.timing:
-                self.print("%g secs elapsed.  %g instructions/sec" % (et-st, fr.cycles/(et-st)))
+                self.print("%g secs elapsed.  %g instructions/sec" %
+                           (et-st, fr.cycles/(et-st)))
         self.readline_teardown()
 
     def main(self):
