@@ -2602,7 +2602,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
   170: #4 line 54 (0[]) FOREACH
   171: #4 line 55 () __FORITER__
   172: #4 line 55 (0) JmpIfFalse: 213
-  213: #4 line 54 () __FORPOP__
+  213: #4 line 62 () __FORPOP__
   214: #4 line 63 () SV0: _name
   215: #4 line 63 (SV0) @
   216: #4 line 63 ("") SV2: _posargs
@@ -2676,7 +2676,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
    98: #4 line 32 (4["obj=list", "obj", "=", "list"], 3) ARRAY_GETITEM
    99: #4 line 32 ("list") SV1: _posargs
   100: #4 line 32 ("list", SV1) !
-  101: #4 line 25 () JMP: 115
+  101: #4 line 33 () JMP: 115
   115: #4 line 38 () JMP: 35
    35: #4 line 23 () {
    36: #4 line 23 (Mark) SV1: _posargs
@@ -2784,7 +2784,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
   748: #4 line 199 () JMP: 710
   710: #4 line 195 () __FORITER__
   711: #4 line 195 (0) JmpIfFalse: 749
-  749: #4 line 194 () __FORPOP__
+  749: #4 line 199 () __FORPOP__
   750: #4 line 200 () SV0: _line
   751: #4 line 200 (SV0) @
   752: #4 line 200 ("") DUP
@@ -2864,7 +2864,7 @@ NOTIFY: Usage:
   365: #4 line 107 (0[], 0[]) FOREACH
   366: #4 line 108 (0[]) __FORITER__
   367: #4 line 108 (0[], 0) JmpIfFalse: 383
-  383: #4 line 107 (0[]) __FORPOP__
+  383: #4 line 110 (0[]) __FORPOP__
   384: #4 line 110 (0[]) SV2: _flags
   385: #4 line 110 (0[], SV2) !
   386: #4 line 111 () {
@@ -2900,7 +2900,7 @@ NOTIFY: Usage:
   416: #4 line 115 (1["OBJ="]) JMP: 395
   395: #4 line 112 (1["OBJ="]) __FORITER__
   396: #4 line 112 (1["OBJ="], 0) JmpIfFalse: 417
-  417: #4 line 111 (1["OBJ="]) __FORPOP__
+  417: #4 line 115 (1["OBJ="]) __FORPOP__
   418: #4 line 115 (1["OBJ="]) SV4: _posargs
   419: #4 line 115 (1["OBJ="], SV4) !
   420: #4 line 116 () LV8: argparse::remainder_map
@@ -2943,7 +2943,7 @@ NOTIFY: test  OBJ=LIST
   460: #4 line 121 () JMP: 352
   352: #4 line 106 () __FORITER__
   353: #4 line 106 (0) JmpIfFalse: 461
-  461: #4 line 105 () __FORPOP__
+  461: #4 line 121 () __FORPOP__
   462: #4 line 122 () 0
   463: #4 line 123 (0) EXIT
  2198: #4 line 519 (0) POP

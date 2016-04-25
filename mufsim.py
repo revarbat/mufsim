@@ -36,76 +36,6 @@ def escape_str(s):
     return '"%s"' % out
 
 
-builtin_defines = {
-    '__version': escape_str(EMULATED_VERSION),
-    '__muckname': escape_str("MufSim"),
-    '__fuzzball__': '1',
-    'max_variable_count': str(MAX_VARS),
-
-    '}array': '} array_make',
-    '}list': '} array_make',
-    '}dict': '} 2 / array_make_dict',
-    '}join': '} array_make "" array_join',
-    '}cat': '} array_make "" array_join',
-    '}tell': '} array_make me @ 1 array_make array_notify',
-    '[]': 'array_getitem',
-    '[..]': 'array_getrange',
-    '->[]': 'array_setitem',
-    '[]<-': 'array_appenditem',
-    'array_interpret': '"" array_join',
-    'array_union': '2 array_nunion',
-    'array_diff': '2 array_ndiff',
-    'array_intersect': '2 array_nintersect',
-
-    'desc': '"_/de" getpropstr',
-    'idesc': '"_/ide" getpropstr',
-    'succ': '"_/sc" getpropstr',
-    'osucc': '"_/osc" getpropstr',
-    'fail': '"_/fl" getpropstr',
-    'ofail': '"_/ofl" getpropstr',
-    'drop': '"_/dr" getpropstr',
-    'odrop': '"_/odr" getpropstr',
-    'oecho': '"_/oecho" getpropstr',
-    'pecho': '"_/pecho" getpropstr',
-
-    'setdesc': '"_/de" swap setprop',
-    'setidesc': '"_/ide" swap setprop',
-    'setsucc': '"_/sc" swap setprop',
-    'setosucc': '"_/osc" swap setprop',
-    'setfail': '"_/fl" swap setprop',
-    'setofail': '"_/ofl" swap setprop',
-    'setdrop': '"_/dr" swap setprop',
-    'setodrop': '"_/odr" swap setprop',
-    'setoecho': '"_/oecho" swap setprop',
-    'setpecho': '"_/pecho" swap setprop',
-
-    'truename': 'name',
-    'version': '__version',
-    'strip': 'striplead striptail',
-    'event_wait': '0 array_make event_waitfor',
-
-    'preempt': 'pr_mode setmode',
-    'background': 'bg_mode setmode',
-    'foreground': 'fg_mode setmode',
-
-    'pr_mode': '0',
-    'fg_mode': '1',
-    'bg_mode': '2',
-
-    'reg_icase': '1',
-    'reg_all': '2',
-    'reg_extended': '4',
-
-    'sorttype_case_ascend': '0',
-    'sorttype_nocase_ascend': '1',
-    'sorttype_case_descend': '2',
-    'sorttype_nocase_descend': '3',
-
-    'sorttype_caseinsens': '1',
-    'sorttype_descending': '2',
-    'sorttype_shuffle': '4',
-}
-
 fp_errors = [
     ("DIV_ZERO", "Division by zero attempted."),
     ("NAN", "Result was not a number."),
@@ -116,9 +46,6 @@ fp_errors = [
 fp_error_bits = [(1 << k) for k, v in enumerate(fp_errors)]
 fp_error_names = [v[0] for v in fp_errors]
 fp_error_descrs = [v[1] for v in fp_errors]
-
-# This is a deliberate deep copy.
-defines = dict(builtin_defines)
 
 player_names = {}
 
@@ -724,7 +651,7 @@ class MufRuntimeError(Exception):
     pass
 
 
-class MufDebuggerBreak(Exception):
+class MufBreakExecution(Exception):
     pass
 
 
@@ -746,6 +673,12 @@ class Instruction(object):
     def execute(self, fr):
         pass
 
+    def compile(self, cmplr, code, src):
+        cls = type(self)
+        inst = cls(self.line)
+        code.append(inst)
+        return (False, src)
+
     def __str__(self):
         if self.prim_name:
             return self.prim_name.upper().strip()
@@ -757,6 +690,102 @@ class Instruction(object):
 
     def __repr__(self):
         return str(self)
+
+
+@instr("$abort")
+class InstDollarAbort(Instruction):
+    def compile(self, cmplr, code, src):
+        val, src = cmplr.get_to_eol(src)
+        raise MufCompileError(val)
+
+
+@instr("$echo")
+class InstDollarEcho(Instruction):
+    def compile(self, cmplr, code, src):
+        val, src = cmplr.get_to_eol(src)
+        print("$ECHO: %s" % val)
+        return (False, src)
+
+
+@instr("$pragma")
+class InstDollarPragma(Instruction):
+    def compile(self, cmplr, code, src):
+        val, src = cmplr.get_to_eol(src)
+        return (False, src)
+
+
+@instr("$language")
+class InstDollarLanguage(Instruction):
+    def compile(self, cmplr, code, src):
+        val, src = cmplr.get_to_eol(src)
+        if val.strip().lower() == '"muv"':
+            raise MufCompileError("MUV needs -m flag to compile.")
+        return (False, src)
+
+
+@instr("$author")
+class InstDollarAuthor(Instruction):
+    def compile(self, cmplr, code, src):
+        val, src = cmplr.get_to_eol(src)
+        comp = cmplr.compiled
+        getobj(comp.program).setprop("_author", val)
+        return (False, src)
+
+
+@instr("$note")
+class InstDollarNote(Instruction):
+    def compile(self, cmplr, code, src):
+        val, src = cmplr.get_to_eol(src)
+        comp = cmplr.compiled
+        getobj(comp.program).setprop("_note", val)
+        return (False, src)
+
+
+@instr("$version")
+class InstDollarVersion(Instruction):
+    def compile(self, cmplr, code, src):
+        val, line, src = cmplr.get_word(src)
+        comp = cmplr.compiled
+        getobj(comp.program).setprop("_version", val)
+        return (False, src)
+
+
+@instr("$lib-version")
+class InstDollarLibVersion(Instruction):
+    def compile(self, cmplr, code, src):
+        val, line, src = cmplr.get_word(src)
+        comp = cmplr.compiled
+        getobj(comp.program).setprop("_lib-version", val)
+        return (False, src)
+
+
+@instr("$def")
+class InstDollarDef(Instruction):
+    def compile(self, cmplr, code, src):
+        nam, line, src = cmplr.get_word(src)
+        val, src = cmplr.get_to_eol(src)
+        cmplr.defines[nam] = val
+        return (False, src)
+
+
+@instr("$define")
+class InstDollarDefine(Instruction):
+    def compile(self, cmplr, code, src):
+        nam, line, src = cmplr.get_word(src)
+        if "$enddef" not in src:
+            raise MufCompileError("Incomplete $define for %s" % nam)
+        val, src = src.split("$enddef", 1)
+        cmplr.defines[nam] = val
+        return (False, src)
+
+
+@instr("$undef")
+class InstDollarUnDef(Instruction):
+    def compile(self, cmplr, code, src):
+        nam, line, src = cmplr.get_word(src)
+        if nam in cmplr.defines:
+            del cmplr.defines[nam]
+        return (False, src)
 
 
 class InstPushItem(Instruction):
@@ -840,6 +869,7 @@ class InstJmpIfFalse(Instruction):
         return "JmpIfFalse: %d" % self.value
 
 
+@instr(":")
 class InstFunc(Instruction):
     funcname = "Unknown"
     varcount = 0
@@ -924,6 +954,24 @@ class InstTry(Instruction):
         addr = StackAddress(self.value, addr.prog)
         fr.catch_push(self.detailed, addr, stacklock)
 
+    def compile(self, cmplr, code, src):
+        inst = InstTry(self.line)
+        cmplr.stmt_stack.append(inst)
+        subcode, src = cmplr.compile_r(src)
+        inst = cmplr.stmt_stack.pop()
+        trycode = inst.trycode
+        if not trycode:
+            raise MufCompileError("Incomplete try-catch block.")
+        inst.trycode = None
+        trycode.append(InstJmp(self.line, len(subcode) + 1))
+        inst.value = len(trycode) + 1
+        code.append(inst)
+        for prim in trycode:
+            code.append(prim)
+        for prim in subcode:
+            code.append(prim)
+        return (False, src)
+
     def __str__(self):
         return "Try: %d" % self.value
 
@@ -931,6 +979,47 @@ class InstTry(Instruction):
 class InstTryPop(Instruction):
     def execute(self, fr):
         fr.catch_pop()
+
+
+@instr("catch")
+class InstCatch(Instruction):
+    def compile(self, cmplr, code, src):
+        if not cmplr.stmt_stack:
+            raise MufCompileError("Must be inside try block. (catch)")
+        inst = cmplr.stmt_stack[-1]
+        if type(inst) is not InstTry:
+            raise MufCompileError("Must be inside try block. (catch)")
+        code.append(InstTryPop(self.line))
+        inst.trycode = code[:]
+        inst.detailed = False
+        del code[:]
+        return (False, src)
+
+
+@instr("catch_detailed")
+class InstCatchDetailed(Instruction):
+    def compile(self, cmplr, code, src):
+        if not cmplr.stmt_stack:
+            raise MufCompileError("Must be inside try block. (catch_detailed)")
+        inst = cmplr.stmt_stack[-1]
+        if type(inst) is not InstTry:
+            raise MufCompileError("Must be inside try block. (catch_detailed)")
+        code.append(InstTryPop(self.line))
+        inst.trycode = code[:]
+        inst.detailed = True
+        del code[:]
+        return (False, src)
+
+
+@instr("endcatch")
+class InstEndCatch(Instruction):
+    def compile(self, cmplr, code, src):
+        if not cmplr.stmt_stack:
+            raise MufCompileError("Must be inside try block. (endcatch)")
+        inst = cmplr.stmt_stack[-1]
+        if type(inst) is not InstTry:
+            raise MufCompileError("Must be inside try block. (endcatch)")
+        return (True, src)
 
 
 @instr("abort")
@@ -942,18 +1031,62 @@ class InstAbort(Instruction):
 
 @instr("if")
 class InstIf(Instruction):
-    def __init__(self, line):
-        self.ifcode = []
-        self.elsecode = []
-        super(InstIf, self).__init__(line)
+    def compile(self, cmplr, code, src):
+        inst = InstIf(self.line)
+        cmplr.stmt_stack.append(inst)
+        subcode, src = cmplr.compile_r(src)
+        cmplr.stmt_stack.pop()
+        bodylen = len(subcode)
+        brinst = InstJmpIfFalse(self.line, len(subcode)+1)
+        code.append(brinst)
+        for instnum, inst in enumerate(subcode):
+            if type(inst) is InstElse:
+                inst = InstJmp(inst.line, bodylen - instnum)
+                brinst.value = instnum + 2
+            code.append(inst)
+        return (False, src)
 
-    def execute(self, fr):
-        pass
+
+@instr("else")
+class InstElse(Instruction):
+    def compile(self, cmplr, code, src):
+        if not cmplr.stmt_stack:
+            raise MufCompileError("ELSE must be inside if block.")
+        inst = cmplr.stmt_stack[-1]
+        if type(inst) is not InstIf:
+            raise MufCompileError("ELSE must be inside if block.")
+        code.append(InstElse(self.line))
+        return (False, src)
+
+
+@instr("then")
+class InstThen(Instruction):
+    def compile(self, cmplr, code, src):
+        if not cmplr.stmt_stack:
+            raise MufCompileError("THEN must end an if block.")
+        inst = cmplr.stmt_stack[-1]
+        if type(inst) is not InstIf:
+            raise MufCompileError("THEN must end an if block.")
+        return (True, src)
 
 
 @instr("begin")
 class InstBegin(Instruction):
-    pass
+    def compile(self, cmplr, code, src):
+        inst = InstBegin(self.line)
+        cmplr.stmt_stack.append(inst)
+        subcode, src = cmplr.compile_r(src)
+        cmplr.stmt_stack.pop()
+        bodylen = len(subcode)
+        for instnum, inst in enumerate(subcode):
+            if type(inst) is InstWhile:
+                inst = InstJmpIfFalse(inst.line, bodylen - instnum)
+            elif type(inst) is InstBreak:
+                inst = InstJmp(inst.line, bodylen - instnum)
+            elif type(inst) is InstContinue:
+                inst = InstJmp(inst.line, -instnum)
+            code.append(inst)
+        return (False, src)
 
 
 @instr("for")
@@ -965,6 +1098,25 @@ class InstFor(Instruction):
         start = fr.data_pop(int)
         fr.loop_iter_push("for", iter(xrange(start, end + inc, inc)))
 
+    def compile(self, cmplr, code, src):
+        inst = InstFor(self.line)
+        code.append(inst)
+        cmplr.stmt_stack.append(inst)
+        src = "__foriter__ while " + src
+        subcode, src = cmplr.compile_r(src)
+        cmplr.stmt_stack.pop()
+        bodylen = len(subcode)
+        for instnum, inst in enumerate(subcode):
+            if type(inst) is InstWhile:
+                inst = InstJmpIfFalse(inst.line, bodylen - instnum)
+            elif type(inst) is InstBreak:
+                inst = InstJmp(inst.line, bodylen - instnum)
+            elif type(inst) is InstContinue:
+                inst = InstJmp(inst.line, -instnum)
+            code.append(inst)
+        code.append(InstForPop(inst.line))
+        return (False, src)
+
 
 @instr("foreach")
 class InstForeach(Instruction):
@@ -973,6 +1125,25 @@ class InstForeach(Instruction):
         if type(arr) is list:
             arr = {k: v for k, v in enumerate(arr)}
         fr.loop_iter_push("foreach", arr.iteritems())
+
+    def compile(self, cmplr, code, src):
+        inst = InstForeach(self.line)
+        code.append(inst)
+        cmplr.stmt_stack.append(inst)
+        src = "__foriter__ while " + src
+        subcode, src = cmplr.compile_r(src)
+        cmplr.stmt_stack.pop()
+        bodylen = len(subcode)
+        for instnum, inst in enumerate(subcode):
+            if type(inst) is InstWhile:
+                inst = InstJmpIfFalse(inst.line, bodylen - instnum)
+            elif type(inst) is InstBreak:
+                inst = InstJmp(inst.line, bodylen - instnum)
+            elif type(inst) is InstContinue:
+                inst = InstJmp(inst.line, -instnum)
+            code.append(inst)
+        code.append(InstForPop(inst.line))
+        return (False, src)
 
 
 @instr("__foriter__")
@@ -1003,17 +1174,56 @@ class InstForPop(Instruction):
 
 @instr("while")
 class InstWhile(Instruction):
-    pass
+    def compile(self, cmplr, code, src):
+        loopinst = cmplr.in_loop_inst()
+        if not loopinst:
+            raise MufCompileError("WHILE must be inside loop.")
+        code.append(InstWhile(self.line))
+        return (False, src)
 
 
 @instr("break")
 class InstBreak(Instruction):
-    pass
+    def compile(self, cmplr, code, src):
+        loopinst = cmplr.in_loop_inst()
+        if not loopinst:
+            raise MufCompileError("BREAK must be inside loop.")
+        code.append(InstBreak(self.line))
+        return (False, src)
 
 
 @instr("continue")
 class InstContinue(Instruction):
-    pass
+    def compile(self, cmplr, code, src):
+        loopinst = cmplr.in_loop_inst()
+        if not loopinst:
+            raise MufCompileError("CONTINUE must be inside loop.")
+        code.append(InstContinue(self.line))
+        return (False, src)
+
+
+@instr("repeat")
+class InstRepeat(Instruction):
+    def compile(self, cmplr, code, src):
+        loopinst = cmplr.in_loop_inst()
+        if not loopinst:
+            raise MufCompileError("REPEAT must end a loop.")
+        if type(cmplr.stmt_stack[-1]) is InstIf:
+            raise MufCompileError("REPEAT must end a loop.")
+        code.append(InstJmp(self.line, -len(code)))
+        return (True, src)
+
+
+@instr("until")
+class InstUntil(Instruction):
+    def compile(self, cmplr, code, src):
+        loopinst = cmplr.in_loop_inst()
+        if not loopinst:
+            raise MufCompileError("UNTIL must end a loop.")
+        if type(cmplr.stmt_stack[-1]) is InstIf:
+            raise MufCompileError("UNTIL must end a loop.")
+        code.append(InstJmpIfFalse(self.line, -len(code)))
+        return (True, src)
 
 
 @instr("!")
@@ -2758,7 +2968,7 @@ class InstArrayLast(Instruction):
             fr.data_push(0)
             fr.data_push(0)
         elif type(arr) is list:
-            fr.data_push(len(arr)-1)
+            fr.data_push(len(arr) - 1)
             fr.data_push(1)
         else:
             keys = sorted(arr.keys(), cmp=sortcomp, reverse=True)
@@ -4536,7 +4746,7 @@ class InstStrEncrypt(Instruction):
         for upt, cp in zip(list(data), list(repkey)):
             count = ((ord(cp) ^ count) + (seed ^ seed2)) & 0xff
             seed2 = (seed2 + 1) & 0x3f
-            result = (enarr[ord(upt)] - (32 - (charcount - 96))) + count + seed;
+            result = (enarr[ord(upt)] - (32 - (charcount - 96))) + count + seed
             ups = enarr[(result % charcount) + (32 - (charcount - 96))]
             count = ((ord(upt) ^ count) + seed) & 0xff
             out += chr(ups)
@@ -4803,7 +5013,7 @@ class InstDebugLine(Instruction):
 @instr("debugger_break")
 class InstDebuggerBreak(Instruction):
     def execute(self, fr):
-        raise MufDebuggerBreak()
+        raise MufBreakExecution()
 
 
 class CompiledMuf(object):
@@ -4883,9 +5093,11 @@ class CompiledMuf(object):
         return varcount
 
     def get_func_var(self, funcname, varname):
-        if varname in self.func_vars[funcname]:
-            return StackFuncVar(self.func_vars[funcname].index(varname))
-        return None
+        if funcname not in self.func_vars:
+            return None
+        if varname not in self.func_vars[funcname]:
+            return None
+        return StackFuncVar(self.func_vars[funcname].index(varname))
 
     def get_func_vars(self, funcname):
         if funcname not in self.func_vars:
@@ -4956,6 +5168,9 @@ class MufStackFrame(object):
         self.trace = False
         self.cycles = 0
         self.breakpoints = []
+        self.break_after_steps = -1
+        self.break_after_lines = -1
+        self.break_on_finish = False
         self.prevaddr = StackAddress(-1, self.program)
         self.prevline = -1
         self.nextline = -1
@@ -5202,14 +5417,50 @@ class MufStackFrame(object):
         comp = self.get_compiled(prog)
         comp.show_compiled_tokens()
 
-    def execute_code(
-        self,
-        isteps=-1,
-        steps=-1,
-        lines=-1,
-        finish=False,
-    ):
-        startlev = len(self.call_stack)
+    def check_breakpoints(self):
+        if not self.call_stack:
+            raise MufBreakExecution()
+        inst = self.curr_inst()
+        addr = self.curr_addr()
+        line = inst.line
+        calllev = len(self.call_stack)
+        if self.breakpoints:
+            if line != self.prevline or addr.prog != self.prevaddr.prog:
+                bp = (addr.prog, line)
+                if bp in self.breakpoints:
+                    bpnum = self.breakpoints.index(bp)
+                    print("Stopped at breakpoint %d." % bpnum)
+                    self.prevline = line
+                    self.prevaddr = addr
+                    raise MufBreakExecution()
+        if self.break_on_finish and calllev < self.prev_call_level:
+            print(
+                "Stopped on call return at instruction %d in #%d." %
+                (addr.value, addr.prog)
+            )
+            self.prevline = line
+            self.prevaddr = addr
+            self.break_on_finish = False
+            raise MufBreakExecution()
+        if calllev <= self.prev_call_level and self.break_after_lines > 0:
+            if line != self.prevline:
+                self.prevline = line
+                self.break_after_lines -= 1
+                if not self.break_after_lines:
+                    self.prevaddr = addr
+                    self.break_after_lines = -1
+                    raise MufBreakExecution()
+        if self.break_after_steps > 0:
+            if line != self.prevline:
+                self.prevline = line
+                self.break_after_steps -= 1
+                if not self.break_after_steps:
+                    self.prevaddr = addr
+                    self.break_after_steps = -1
+                    raise MufBreakExecution()
+
+    def execute_code(self):
+        self.prev_call_level = len(self.call_stack)
         while self.call_stack:
             inst = self.curr_inst()
             addr = self.curr_addr()
@@ -5223,7 +5474,8 @@ class MufStackFrame(object):
                 self.cycles += 1
                 inst.execute(self)
                 self.pc_advance(1)
-            except MufDebuggerBreak():
+                self.check_breakpoints()
+            except MufBreakExecution as e:
                 return
             except MufRuntimeError as e:
                 if not self.catch_stack:
@@ -5241,50 +5493,10 @@ class MufStackFrame(object):
                         file=sys.stderr
                     )
                 self.catch_trigger(e)
-            if not self.call_stack:
-                return
-            inst = self.curr_inst()
-            addr = self.curr_addr()
-            line = inst.line
-            calllev = len(self.call_stack)
-            if self.breakpoints:
-                if line != self.prevline or addr.prog != self.prevaddr.prog:
-                    bp = (addr.prog, line)
-                    if bp in self.breakpoints:
-                        bpnum = self.breakpoints.index(bp)
-                        print("Stopped at breakpoint %d." % bpnum)
-                        self.prevline = line
-                        self.prevaddr = addr
-                        return
-            if isteps > 0:
-                if addr != self.prevaddr:
-                    self.prevaddr = addr
-                    isteps -= 1
-                    if not isteps:
-                        self.prevline = line
-                        return
-            if finish and calllev < startlev:
-                print(
-                    "Stopped on call return at instruction %d in #%d." %
-                    (addr.value, addr.prog)
-                )
-                self.prevline = line
-                self.prevaddr = addr
-                return
-            if calllev <= startlev and lines > 0:
-                if line != self.prevline:
-                    self.prevline = line
-                    lines -= 1
-                    if not lines:
-                        self.prevaddr = addr
-                        return
-            if steps > 0:
-                if line != self.prevline:
-                    self.prevline = line
-                    steps -= 1
-                    if not steps:
-                        self.prevaddr = addr
-                        return
+                try:
+                    self.check_breakpoints()
+                except MufBreakExecution as e:
+                    return
 
     def show_call(self, addr=None):
         if not addr:
@@ -5347,7 +5559,8 @@ class MufStackFrame(object):
         if not is_int(args):
             print("Usage: step [COUNT]")
         else:
-            self.execute_code(steps=int(args))
+            self.break_after_steps = int(args)
+            self.execute_code()
             comp = self.get_compiled()
             comp.show_line(self.curr_addr())
             self.nextline = -1
@@ -5358,7 +5571,8 @@ class MufStackFrame(object):
         if not is_int(args):
             print("Usage: next [COUNT]")
         else:
-            self.execute_code(lines=int(args))
+            self.break_after_lines = int(args)
+            self.execute_code()
             comp = self.get_compiled()
             comp.show_line(self.curr_addr())
             self.nextline = -1
@@ -5370,7 +5584,8 @@ class MufStackFrame(object):
         self.nextline = -1
 
     def debug_cmd_finish(self, args):
-        self.execute_code(finish=True)
+        self.break_on_finish = True
+        self.execute_code()
         comp = self.get_compiled()
         comp.show_line(self.curr_addr())
         self.nextline = -1
@@ -5456,7 +5671,7 @@ class MufStackFrame(object):
             val = self.funcvar_get(v)
         elif comp.get_global_var(args):
             v = comp.get_global_var(args)
-            val = self.globalvar_get(vnum)
+            val = self.globalvar_get(v)
         else:
             print("Variable not found: %s" % args)
             val = None
@@ -5708,7 +5923,79 @@ class MufStackFrame(object):
 
 
 class MufCompiler(object):
+    builtin_defines = {
+        '__version': escape_str(EMULATED_VERSION),
+        '__muckname': escape_str("MufSim"),
+        '__fuzzball__': '1',
+        'max_variable_count': str(MAX_VARS),
+
+        '}array': '} array_make',
+        '}list': '} array_make',
+        '}dict': '} 2 / array_make_dict',
+        '}join': '} array_make "" array_join',
+        '}cat': '} array_make "" array_join',
+        '}tell': '} array_make me @ 1 array_make array_notify',
+        '[]': 'array_getitem',
+        '[..]': 'array_getrange',
+        '->[]': 'array_setitem',
+        '[]<-': 'array_appenditem',
+        'array_interpret': '"" array_join',
+        'array_union': '2 array_nunion',
+        'array_diff': '2 array_ndiff',
+        'array_intersect': '2 array_nintersect',
+
+        'desc': '"_/de" getpropstr',
+        'idesc': '"_/ide" getpropstr',
+        'succ': '"_/sc" getpropstr',
+        'osucc': '"_/osc" getpropstr',
+        'fail': '"_/fl" getpropstr',
+        'ofail': '"_/ofl" getpropstr',
+        'drop': '"_/dr" getpropstr',
+        'odrop': '"_/odr" getpropstr',
+        'oecho': '"_/oecho" getpropstr',
+        'pecho': '"_/pecho" getpropstr',
+
+        'setdesc': '"_/de" swap setprop',
+        'setidesc': '"_/ide" swap setprop',
+        'setsucc': '"_/sc" swap setprop',
+        'setosucc': '"_/osc" swap setprop',
+        'setfail': '"_/fl" swap setprop',
+        'setofail': '"_/ofl" swap setprop',
+        'setdrop': '"_/dr" swap setprop',
+        'setodrop': '"_/odr" swap setprop',
+        'setoecho': '"_/oecho" swap setprop',
+        'setpecho': '"_/pecho" swap setprop',
+
+        'truename': 'name',
+        'version': '__version',
+        'strip': 'striplead striptail',
+        'event_wait': '0 array_make event_waitfor',
+
+        'preempt': 'pr_mode setmode',
+        'background': 'bg_mode setmode',
+        'foreground': 'fg_mode setmode',
+
+        'pr_mode': '0',
+        'fg_mode': '1',
+        'bg_mode': '2',
+
+        'reg_icase': '1',
+        'reg_all': '2',
+        'reg_extended': '4',
+
+        'sorttype_case_ascend': '0',
+        'sorttype_nocase_ascend': '1',
+        'sorttype_case_descend': '2',
+        'sorttype_nocase_descend': '3',
+
+        'sorttype_caseinsens': '1',
+        'sorttype_descending': '2',
+        'sorttype_shuffle': '4',
+    }
+
     def __init__(self):
+        self.compiled = None
+        self.defines = dict(self.builtin_defines)
         self.line = 1
         self.stmt_stack = []
         self.funcname = None
@@ -5794,8 +6081,8 @@ class MufCompiler(object):
         # Expand defines if needed
         if word[0] == '\\':
             word = word[1:]
-        elif expand and word in defines:
-            src = defines[word] + " " + src
+        elif expand and word in self.defines:
+            src = self.defines[word] + " " + src
             word, line, src = self.get_word(src)
             return (word, line, src)
         # Return raw word.
@@ -5808,8 +6095,8 @@ class MufCompiler(object):
                 return inst
         return None
 
-    def compile_r(self, src, comp):
-        global defines
+    def compile_r(self, src):
+        comp = self.compiled
         code = []
         while True:
             word, line, src = self.get_word(src)
@@ -5844,7 +6131,7 @@ class MufCompiler(object):
                 self.funcname = funcname
                 subcode = []
                 subcode.append(InstFunc(line, funcname, len(funcvars)))
-                fcode, src = self.compile_r(src, comp)
+                fcode, src = self.compile_r(src)
                 for inst in fcode:
                     subcode.append(inst)
                 for inst in subcode:
@@ -5898,53 +6185,6 @@ class MufCompiler(object):
                     raise MufCompileError("Unrecognized identifier: %s" % nam)
                 print("EXPOSED '%s' AS %s" % (nam, word.upper()))
                 continue
-            elif word == "$abort":
-                val, src = self.get_to_eol(src)
-                raise MufCompileError(val)
-            elif word == "$echo":
-                val, src = self.get_to_eol(src)
-                print("$ECHO: %s" % val)
-            elif word == "$language":
-                val, src = self.get_to_eol(src)
-                if val.strip().lower() == '"muv"':
-                    raise MufCompileError("MUV needs -m flag to compile.")
-                continue
-            elif word == "$pragma":
-                val, src = self.get_to_eol(src)
-                continue
-            elif word == "$author":
-                val, src = self.get_to_eol(src)
-                getobj(comp.program).setprop("_author", val)
-                continue
-            elif word == "$note":
-                val, src = self.get_to_eol(src)
-                getobj(comp.program).setprop("_note", val)
-                continue
-            elif word == "$version":
-                val, line, src = self.get_word(src)
-                getobj(comp.program).setprop("_version", val)
-                continue
-            elif word == "$lib-version":
-                val, line, src = self.get_word(src)
-                getobj(comp.program).setprop("_lib-version", val)
-                continue
-            elif word == "$define":
-                nam, line, src = self.get_word(src)
-                if "$enddef" not in src:
-                    raise MufCompileError("Incomplete $define for %s" % nam)
-                val, src = src.split("$enddef", 1)
-                defines[nam] = val
-                continue
-            elif word == "$def":
-                nam, line, src = self.get_word(src)
-                val, src = self.get_to_eol(src)
-                defines[nam] = val
-                continue
-            elif word == "$undef":
-                nam, line, src = self.get_word(src)
-                if nam in defines:
-                    del defines[nam]
-                continue
             elif word == "$include":
                 targ, line, src = self.get_word(src)
                 if targ == "this":
@@ -5962,7 +6202,7 @@ class MufCompiler(object):
                         break
                     val = obj.getprop(prop)
                     if val:
-                        defines[prop[6:]] = val
+                        self.defines[prop[6:]] = val
                 continue
             elif word == "$pubdef":
                 nam, line, src = self.get_word(src)
@@ -5990,7 +6230,7 @@ class MufCompiler(object):
             elif word == "$cleardefs":
                 val, src = self.get_to_eol(src)
                 val = val.strip()
-                defines = dict(builtin_defines)
+                self.defines = dict(self.builtin_defines)
                 continue
             elif word.startswith("$if"):
                 istrue = True
@@ -5998,15 +6238,15 @@ class MufCompiler(object):
                     cond, line, src = self.get_word(src, expand=False)
                     if '=' in cond:
                         nam, val = cond.split('=', 1)
-                        istrue = nam in defines and defines[nam] == val
+                        istrue = nam in self.defines and self.defines[nam] == val
                     elif '>' in cond:
                         nam, val = cond.split('>', 1)
-                        istrue = nam in defines and defines[nam] > val
+                        istrue = nam in self.defines and self.defines[nam] > val
                     elif '<' in cond:
                         nam, val = cond.split('<', 1)
-                        istrue = nam in defines and defines[nam] < val
+                        istrue = nam in self.defines and self.defines[nam] < val
                     else:
-                        istrue = cond in defines
+                        istrue = cond in self.defines
                 elif word in ["$ifver", "$ifnver", "$iflibver", "$ifnlibver"]:
                     obj, line, src = self.get_word(src)
                     ver, line, src = self.get_word(src)
@@ -6092,7 +6332,7 @@ class MufCompiler(object):
                 continue
             elif word == "$endif":
                 continue
-            if not self.funcname:
+            if not self.funcname and not word.startswith('$'):
                 raise MufCompileError("Not in function: %s" % word)
             if is_int(word):
                 code.append(InstPushItem(line, int(word)))
@@ -6103,7 +6343,7 @@ class MufCompiler(object):
             elif is_float(word):
                 code.append(InstPushItem(line, float(word)))
                 continue
-            elif word[0] == '"':
+            elif word.startswith('"'):
                 code.append(InstPushItem(line, word[1:-1]))
                 continue
             elif comp.get_global_var(word):
@@ -6138,189 +6378,26 @@ class MufCompiler(object):
                 code.append(InstFuncVar(line, vnum, vname))
                 code.append(InstBang(line))
                 continue
-            elif word == "if":
-                inst = InstIf(line)
-                self.stmt_stack.append(inst)
-                subcode, src = self.compile_r(src, comp)
-                inst = self.stmt_stack.pop()
-                if inst.elsecode:
-                    branch = InstJmp(line, len(inst.elsecode) + 1)
-                    inst.ifcode.append(branch)
-                branch = InstJmpIfFalse(line, len(inst.ifcode) + 1)
-                code.append(branch)
-                for prim in inst.ifcode:
-                    code.append(prim)
-                for prim in inst.elsecode:
-                    code.append(prim)
-                continue
-            elif word == "else":
-                if not self.stmt_stack:
-                    raise MufCompileError("Must be inside if-then block.")
-                if type(self.stmt_stack[-1]) is not InstIf:
-                    raise MufCompileError("Must be inside if-then block.")
-                if self.stmt_stack[-1].ifcode:
-                    raise MufCompileError(
-                        "Only one else allowed per if-then block.")
-                self.stmt_stack[-1].ifcode = code
-                code = []
-                continue
-            elif word == "then":
-                if not self.stmt_stack:
-                    raise MufCompileError("MustBeInsideIf")
-                if type(self.stmt_stack[-1]) is not InstIf:
-                    raise MufCompileError("MustBeInsideIf")
-                stmt = self.stmt_stack[-1]
-                if stmt.ifcode:
-                    stmt.elsecode = code
-                else:
-                    stmt.ifcode = code
-                return ([], src)
-            elif word == "begin":
-                inst = InstBegin(line)
-                self.stmt_stack.append(inst)
-                subcode, src = self.compile_r(src, comp)
-                self.stmt_stack.pop()
-                bodylen = len(subcode)
-                for instnum, inst in enumerate(subcode):
-                    if type(inst) is InstWhile:
-                        inst = InstJmpIfFalse(inst.line, bodylen - instnum)
-                    elif type(inst) is InstBreak:
-                        inst = InstJmp(inst.line, bodylen - instnum)
-                    elif type(inst) is InstContinue:
-                        inst = InstJmp(inst.line, -instnum)
-                    code.append(inst)
-                continue
-            elif word == "for":
-                inst = InstFor(line)
-                code.append(inst)
-                self.stmt_stack.append(inst)
-                src = "__foriter__ while " + src
-                subcode, src = self.compile_r(src, comp)
-                self.stmt_stack.pop()
-                bodylen = len(subcode)
-                for instnum, inst in enumerate(subcode):
-                    if type(inst) is InstWhile:
-                        inst = InstJmpIfFalse(inst.line, bodylen - instnum)
-                    elif type(inst) is InstBreak:
-                        inst = InstJmp(inst.line, bodylen - instnum)
-                    elif type(inst) is InstContinue:
-                        inst = InstJmp(inst.line, -instnum)
-                    code.append(inst)
-                code.append(InstForPop(line))
-                continue
-            elif word == "foreach":
-                inst = InstForeach(line)
-                code.append(inst)
-                self.stmt_stack.append(inst)
-                src = "__foriter__ while " + src
-                subcode, src = self.compile_r(src, comp)
-                self.stmt_stack.pop()
-                bodylen = len(subcode)
-                for instnum, inst in enumerate(subcode):
-                    if type(inst) is InstWhile:
-                        inst = InstJmpIfFalse(inst.line, bodylen - instnum)
-                    elif type(inst) is InstBreak:
-                        inst = InstJmp(inst.line, bodylen - instnum)
-                    elif type(inst) is InstContinue:
-                        inst = InstJmp(inst.line, -instnum)
-                    code.append(inst)
-                code.append(InstForPop(line))
-                continue
-            elif word == "while":
-                loopinst = self.in_loop_inst()
-                if not loopinst:
-                    raise MufCompileError("MustBeInsideLoop (while)")
-                code.append(InstWhile(line))
-                continue
-            elif word == "break":
-                loopinst = self.in_loop_inst()
-                if not loopinst:
-                    raise MufCompileError("MustBeInsideLoop (break)")
-                code.append(InstBreak(line))
-                continue
-            elif word == "continue":
-                loopinst = self.in_loop_inst()
-                if not loopinst:
-                    raise MufCompileError("MustBeInsideLoop (continue)")
-                code.append(InstContinue(line))
-                continue
-            elif word == "repeat":
-                loopinst = self.in_loop_inst()
-                if not loopinst:
-                    raise MufCompileError("MustBeInsideLoop (repeat)")
-                if type(self.stmt_stack[-1]) is InstIf:
-                    raise MufCompileError("MustBeInsideLoop (repeat 2)")
-                code.append(InstJmp(line, -len(code)))
-                return (code, src)
-            elif word == "until":
-                loopinst = self.in_loop_inst()
-                if not loopinst:
-                    raise MufCompileError("MustBeInsideLoop (until)")
-                if type(self.stmt_stack[-1]) is InstIf:
-                    raise MufCompileError("MustBeInsideLoop (until 2)")
-                code.append(InstJmpIfFalse(line, -len(code)))
-                return (code, src)
-            elif word == "try":
-                inst = InstTry(line)
-                self.stmt_stack.append(inst)
-                subcode, src = self.compile_r(src, comp)
-                inst = self.stmt_stack.pop()
-                trycode = inst.trycode
-                if not trycode:
-                    raise MufCompileError("Incomplete Try-Catch block.")
-                inst.trycode = None
-                trycode.append(InstJmp(line, len(subcode) + 1))
-                inst.value = len(trycode) + 1
-                code.append(inst)
-                for prim in trycode:
-                    code.append(prim)
-                for prim in subcode:
-                    code.append(prim)
-                continue
-            elif word == "catch":
-                if not self.stmt_stack:
-                    raise MufCompileError("MustBeInsideTryBlock (catch)")
-                inst = self.stmt_stack[-1]
-                if type(inst) is not InstTry:
-                    raise MufCompileError("MustBeInsideTryBlock (catch)")
-                code.append(InstTryPop(line))
-                inst.trycode = code
-                inst.detailed = False
-                code = []
-                continue
-            elif word == "catch_detailed":
-                if not self.stmt_stack:
-                    raise MufCompileError("MustBeInsideTryBlock (catch)")
-                inst = self.stmt_stack[-1]
-                if type(inst) is not InstTry:
-                    raise MufCompileError("MustBeInsideTryBlock (catch)")
-                code.append(InstTryPop(line))
-                inst.trycode = code
-                inst.detailed = True
-                code = []
-                continue
-            elif word == "endcatch":
-                if not self.stmt_stack:
-                    raise MufCompileError("MustBeInsideTryBlock (endcatch)")
-                inst = self.stmt_stack[-1]
-                if type(inst) is not InstTry:
-                    raise MufCompileError("MustBeInsideTryBlock (endcatch)")
-                return (code, src)
-            elif word in primitives:
-                instcls = primitives[word]
-                inst = instcls(line)
-                code.append(inst)
             else:
-                raise MufCompileError("Unrecognized identifier: %s" % word)
+                if word in primitives:
+                    instcls = primitives[word]
+                    inst = instcls(line)
+                    doret, src = inst.compile(self, code, src)
+                    if doret:
+                        return (code, src)
+                else:
+                    raise MufCompileError("Unrecognized identifier: %s" % word)
 
     def compile_source(self, prog):
         comp = CompiledMuf(prog)
+        self.compiled = comp
         self.line = 1
         self.stmt_stack = []
         self.funcname = None
+        self.defines = dict(self.builtin_defines)
         src = getobj(prog).sources
         try:
-            code, src = self.compile_r(src, comp)
+            code, src = self.compile_r(src)
             if self.funcname:
                 raise MufCompileError("Function incomplete.")
             if self.stmt_stack:
@@ -6354,7 +6431,7 @@ class MufSim(object):
 
     def print_header(self, header):
         out = '#### %s ' % header
-        out += '#' * (55-len(out))
+        out += '#' * (55 - len(out))
         self.print(out)
 
     def process_cmdline(self):
@@ -6364,6 +6441,9 @@ class MufSim(object):
                             action="store_true")
         parser.add_argument("-r", "--run",
                             help="Run compiled MUF tokens.",
+                            action="store_true")
+        parser.add_argument("--timing",
+                            help="Show run execution timing.",
                             action="store_true")
         parser.add_argument("-t", "--trace",
                             help="Show stacktrace for each instrution.",
@@ -6382,8 +6462,7 @@ class MufSim(object):
             nargs=2, metavar=('REGNAME', 'FILE'), dest='progs',
             help="Create extra program, registered as $NAME, from source FILE."
         )
-        parser.add_argument('infile',
-                            help='Input MUF sourcecode filename.')
+        parser.add_argument('infile', help='Input MUF sourcecode filename.')
         opts = parser.parse_args()
         opts.progs.append(['', opts.infile])
         if opts.debug:
@@ -6432,8 +6511,12 @@ class MufSim(object):
         if self.opts.debug:
             fr.debug_code()
         else:
+            st = time.time()
             fr.execute_code()
+            et = time.time()
             self.print("Execution completed in %d steps." % fr.cycles)
+            if self.opts.timing:
+                self.print("%g secs elapsed.  %g instructions/sec" % (et-st, fr.cycles/(et-st)))
         self.readline_teardown()
 
     def main(self):

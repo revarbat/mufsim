@@ -33,7 +33,7 @@
     8: #4 line 4 ("") JMP: 5
     5: #4 line 3 ("") __FORITER__
     6: #4 line 3 ("", 0) JmpIfFalse: 9
-    9: #4 line 2 ("") __FORPOP__
+    9: #4 line 4 ("") __FORPOP__
    10: #4 line 5 ("") EXIT
 Execution completed in 21 steps.
 
