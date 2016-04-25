@@ -7,8 +7,9 @@ if [[ $# -gt 0 ]]; then
     esac
 fi
 for f in *.muf *.muv ; do
-    outfile=$(basename $f .muf).out
-    cmpfile=$(basename $f .muf).cmp
+    base=$(basename $(basename $f .muv) .muf)
+    outfile=$base.out
+    cmpfile=$base.cmp
     if [ "$refresh_only" -eq 0 -o ! -e "$cmpfile" ]; then
         echo $f
         ../mufsim $f -u -r -t 2>&1 | sed 's/.\[?1034h//g' >$outfile
