@@ -3050,9 +3050,8 @@ class InstArrayNestedSet(Instruction):
         keyslen = len(keys)
         for keynum, key in enumerate(keys):
             if type(subarr) is list:
-                if type(key) is not int:
-                    raise MufRuntimeError("List array expects integer index.")
-                elif key < 0 or key > len(subarr):
+                fr.check_type(key, [int])
+                if key < 0 or key > len(subarr):
                     raise MufRuntimeError("Index out of list array bounds.")
                 if keynum < keyslen - 1:
                     if key == len(subarr):
@@ -3061,9 +3060,7 @@ class InstArrayNestedSet(Instruction):
                 else:
                     subarr[key] = val
             elif type(subarr) is dict:
-                if type(key) is not int and type(key) is not str:
-                    raise MufRuntimeError(
-                        "Dictionary array index must be integer or string.")
+                fr.check_type(key, [int, str])
                 if keynum < keyslen - 1:
                     if key not in subarr:
                         subarr[key] = {}
@@ -3086,9 +3083,8 @@ class InstArrayNestedDel(Instruction):
         keyslen = len(keys)
         for keynum, key in enumerate(keys):
             if type(subarr) is list:
-                if type(key) is not int:
-                    raise MufRuntimeError("List array expects integer index.")
-                elif key < 0 or key > len(subarr):
+                fr.check_type(key, [int])
+                if key < 0 or key > len(subarr):
                     raise MufRuntimeError("Index out of list array bounds.")
                 if keynum < keyslen - 1:
                     if key == len(subarr):
@@ -3097,9 +3093,7 @@ class InstArrayNestedDel(Instruction):
                 else:
                     del subarr[key]
             elif type(subarr) is dict:
-                if type(key) is not int and type(key) is not str:
-                    raise MufRuntimeError(
-                        "Dictionary array index must be integer or string.")
+                fr.check_type(key, [int, str])
                 if keynum < keyslen - 1:
                     if key not in subarr:
                         subarr[key] = {}
@@ -4322,6 +4316,14 @@ class InstLocalVar(Instruction):
 
 @instr("fmtstring")
 class InstFmtString(Instruction):
+    def handle_fieldsubs(self, fmt, fr):
+        while '*' in fmt:
+            pre, post = fmt.split('*', 1)
+            x = fr.data_pop(int)
+            fmt = pre + str(x) + post
+        fmt = fmt.replace('|', '^')
+        return fmt
+
     def execute(self, fr):
         def subfunc(matchobj):
             fmt = matchobj.group(1)
@@ -4345,19 +4347,11 @@ class InstFmtString(Instruction):
                 val = item_repr(fr.data_pop())
                 ftyp = "s"
             elif ftyp == "?":
-                val = fr.data_pop()
-                if type(val) in [int, float, str, list, dict]:
-                    val = str(type(val)).split("'")[1].title()
-                else:
-                    val = str(type(val)).split("'")[1].split(".")[1][5:]
+                val = item_type_name(fr.data_pop())
                 ftyp = "s"
             else:
                 return ""
-            while '*' in fmt:
-                pre, post = fmt.split('*', 1)
-                x = fr.data_pop(int)
-                fmt = pre + str(x) + post
-            fmt = fmt.replace('|', '^')
+            fmt = self.handle_fieldsubs(fmt, fr)
             fmt = fmt + ftyp
             return fmt % val
 
@@ -4385,20 +4379,16 @@ class InstArrayFmtStrings(Instruction):
             elif ftyp.lower() in ["e", "f", "g"]:
                 val = d.get(key, 0.0)
                 fr.check_type(val, [float])
+            elif ftyp == "D" or ftyp == "d":
+                val = d.get(key, StackDBRef(-1))
+                fr.check_type(val, [StackDBRef])
+                val = val if ftyp == "d" else getobj(val).name
+                ftyp = "s"
             elif ftyp == "s":
                 val = d.get(key, '')
                 fr.check_type(val, [str])
-            elif ftyp == "D":
-                val = d.get(key, StackDBRef(-1))
-                fr.check_type(val, [StackDBRef])
-                val = getobj(val).name
-                ftyp = "s"
-            elif ftyp == "d":
-                val = d.get(key, StackDBRef(-1))
-                fr.check_type(val, [StackDBRef])
-                ftyp = "s"
             elif ftyp == "~":
-                val = d.get(key, 0)
+                val = d.get(key, '')
                 ftyp = "s"
             elif ftyp == "?":
                 val = item_type_name(d.get(key, 0))
@@ -4413,8 +4403,7 @@ class InstArrayFmtStrings(Instruction):
         arr = fr.data_pop(list)
         outarr = []
         for d in arr:
-            if type(d) is not dict:
-                raise MufRuntimeError("Expected list of dictionaries.")
+            fr.check_type(d, [dict])
             out = re.sub(
                 r'(%[| 0+-]*[0-9]*(\.[0-9]*)?)\[([^]]+)\]([idDefgEFGsl%?~])',
                 subfunc, fmt
@@ -4743,8 +4732,7 @@ class InstArrayFilterFlags(Instruction):
         objs = fr.data_pop(list)
         found = []
         for obj in objs:
-            if type(obj) is not StackDBRef:
-                raise MufRuntimeError("Expected list of dbrefs.")
+            fr.check_type(obj, [StackDBRef])
             if validobj(obj):
                 obj = getobj(obj)
                 good = True
@@ -5707,29 +5695,33 @@ class MufStackFrame(object):
             self.raise_expected_type_error(types)
 
     def raise_expected_type_error(self, types):
+        types = list(types)
+        type_names = [
+            ("number", [int, float]),
+            ("integer", [int]),
+            ("float", [float]),
+            ("string", [str]),
+            ("array", [list, dict]),
+            ("list array", [list]),
+            ("dictionary array", [dict]),
+            ("dbref", [StackDBRef]),
+            ("address", [StackAddress]),
+            ("lock", [StackLock]),
+            ("variable", [StackGlobalVar, StackFuncVar]),
+            ("variable", [StackGlobalVar]),
+            ("variable", [StackFuncVar]),
+        ]
         expected = []
-        if int in types and float in types:
-            expected.append("number")
-        elif int in types:
-            expected.append("integer")
-        elif float in types:
-            expected.append("float")
-        if str in types:
-            expected.append("string")
-        if list in types and dict in types:
-            expected.append("array")
-        elif list in types:
-            expected.append("list array")
-        elif dict in types:
-            expected.append("dictionary array")
-        if StackDBRef in types:
-            expected.append("dbref")
-        if StackAddress in types:
-            expected.append("address")
-        if StackLock in types:
-            expected.append("lock")
-        if StackGlobalVar in types or StackFuncVar in types:
-            expected.append("variable")
+        for name, extypes in type_names:
+            found = True
+            for extype in extypes:
+                if extype not in types:
+                    found = False
+                    break
+            if found:
+                for extype in extypes:
+                    types.remove(extype)
+                expected.append(name)
         expected = " or ".join(expected)
         raise MufRuntimeError("Expected %s argument." % expected)
 
@@ -5847,47 +5839,62 @@ class MufStackFrame(object):
         comp = self.get_compiled(prog)
         comp.show_compiled_tokens()
 
-    def check_breakpoints(self):
-        if not self.call_stack:
-            raise MufBreakExecution()
-        inst = self.curr_inst()
-        addr = self.curr_addr()
-        line = inst.line
-        calllev = len(self.call_stack)
-        if self.breakpoints:
-            if line != self.prevline or addr.prog != self.prevaddr.prog:
-                bp = (addr.prog, line)
-                if bp in self.breakpoints:
-                    bpnum = self.breakpoints.index(bp)
-                    print("Stopped at breakpoint %d." % bpnum)
-                    self.prevline = line
-                    self.prevaddr = addr
-                    raise MufBreakExecution()
-        if self.break_on_finish and calllev < self.prev_call_level:
-            print(
-                "Stopped on call return at instruction %d in #%d." %
-                (addr.value, addr.prog)
-            )
-            self.prevline = line
-            self.prevaddr = addr
-            self.break_on_finish = False
-            raise MufBreakExecution()
-        if calllev <= self.prev_call_level and self.break_after_lines > 0:
-            if line != self.prevline:
-                self.prevline = line
-                self.break_after_lines -= 1
-                if not self.break_after_lines:
-                    self.prevaddr = addr
-                    self.break_after_lines = -1
-                    raise MufBreakExecution()
+    def check_break_on_finish(self):
+        if self.break_on_finish:
+            if len(self.call_stack) < self.prev_call_level:
+                inst = self.curr_inst()
+                addr = self.curr_addr()
+                print(
+                    "Stopped on call return at instruction %d in #%d." %
+                    (addr.value, addr.prog)
+                )
+                self.prevline = inst.line
+                self.prevaddr = addr
+                self.break_on_finish = False
+                raise MufBreakExecution()
+
+    def check_break_after_steps(self):
         if self.break_after_steps > 0:
-            if line != self.prevline:
-                self.prevline = line
+            inst = self.curr_inst()
+            addr = self.curr_addr()
+            if inst.line != self.prevline:
+                self.prevline = inst.line
                 self.break_after_steps -= 1
                 if not self.break_after_steps:
                     self.prevaddr = addr
                     self.break_after_steps = -1
                     raise MufBreakExecution()
+
+    def check_break_after_lines(self):
+        if self.break_after_lines > 0:
+            if len(self.call_stack) <= self.prev_call_level:
+                inst = self.curr_inst()
+                addr = self.curr_addr()
+                if inst.line != self.prevline:
+                    self.prevline = inst.line
+                    self.break_after_lines -= 1
+                    if not self.break_after_lines:
+                        self.prevaddr = addr
+                        self.break_after_lines = -1
+                        raise MufBreakExecution()
+
+    def check_breakpoints(self):
+        if not self.call_stack:
+            raise MufBreakExecution()
+        if self.breakpoints:
+            inst = self.curr_inst()
+            addr = self.curr_addr()
+            if inst.line != self.prevline or addr.prog != self.prevaddr.prog:
+                bp = (addr.prog, inst.line)
+                if bp in self.breakpoints:
+                    bpnum = self.breakpoints.index(bp)
+                    print("Stopped at breakpoint %d." % bpnum)
+                    self.prevline = inst.line
+                    self.prevaddr = addr
+                    raise MufBreakExecution()
+        self.check_break_on_finish()
+        self.check_break_after_steps()
+        self.check_break_after_lines()
 
     def execute_code(self):
         self.prev_call_level = len(self.call_stack)
@@ -6075,16 +6082,8 @@ class MufStackFrame(object):
             print("Usage: list [LINE[,LINE]]")
             print("   or: list FUNCNAME")
         else:
-            start = int(start)
-            if start < 1:
-                start = 1
-            if start > len(comp.srclines):
-                start = len(comp.srclines)
-            end = int(end)
-            if end < 1:
-                end = 1
-            if end > len(comp.srclines):
-                end = len(comp.srclines)
+            start = max(1, min(int(start), len(comp.srclines)))
+            end = max(1, min(int(end), len(comp.srclines)))
             self.nextline = end + 1
             for i in range(start, end + 1):
                 if i == inst.line:
