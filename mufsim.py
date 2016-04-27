@@ -20,6 +20,14 @@ HISTORY_FILE = os.path.expanduser("~/.mufsim_history")
 primitives = {}
 literal_handlers = []
 
+player_names = {}
+objects_db = {}
+db_top = 0
+recycled_list = []
+descriptors_list = []
+descriptors = {}
+execution_mode = 1
+
 
 def escape_str(s):
     out = ''
@@ -35,27 +43,6 @@ def escape_str(s):
         else:
             out += ch
     return '"%s"' % out
-
-
-fp_errors = [
-    ("DIV_ZERO", "Division by zero attempted."),
-    ("NAN", "Result was not a number."),
-    ("IMAGINARY", "Result was imaginary."),
-    ("FBOUNDS", "Floating-point inputs were infinite or out of range."),
-    ("IBOUNDS", "Calculation resulted in an integer overflow."),
-]
-fp_error_bits = [(1 << k) for k, v in enumerate(fp_errors)]
-fp_error_names = [v[0] for v in fp_errors]
-fp_error_descrs = [v[1] for v in fp_errors]
-
-player_names = {}
-
-objects_db = {}
-db_top = 0
-recycled_list = []
-descriptors_list = []
-descriptors = {}
-execution_mode = 1
 
 
 class StackItem(object):
@@ -440,6 +427,28 @@ def match_from(remote, pat):
     if obj == -1:
         obj = match_contents(getobj(remote).location, pat)
     return obj
+
+
+# Notional build system to make custom databases easier to create.
+# Doesn't actually do anything yet.
+build_commands = [
+    "@dig Main Room=#0=mainroom",
+    "@action test=$mainroom=testaction",
+    "@program cmd-test=cmd/test",
+    "@set $cmd/test=3",
+    "@link $testaction=$cmd/test",
+    "@pcreate John_Doe=password",
+    "@set *John_Doe=3",
+    "@chown $cmd/test=John_Doe",
+    "@link *John_Doe=$mainroom",
+    "@teleport *John_Doe=$mainroom",
+    "@pcreate Jane_Doe=password",
+    "@link *Jane_Doe=$mainroom",
+    "@teleport *Jane_Doe=$mainroom",
+    "@create My Thing=100=thingy",
+    "connect John_Doe password"
+    "connect Jane_Doe password"
+]
 
 
 global_env = DBObject(
@@ -2357,7 +2366,7 @@ class InstClearError(Instruction):
     def execute(self, fr):
         x = fr.data_pop(int, str)
         if type(x) is int:
-            x = fp_error_names[x]
+            x = fr.fp_error_names[x]
         fr.clear_error(x)
 
 
@@ -2372,8 +2381,8 @@ class InstErrorBit(Instruction):
     def execute(self, fr):
         errname = fr.data_pop(str)
         errnum = -1
-        if errname in fp_error_names:
-            errnum = fp_error_names.index(errname)
+        if errname in fr.fp_error_names:
+            errnum = fr.fp_error_names.index(errname)
         fr.data_push(errnum)
 
 
@@ -2382,7 +2391,7 @@ class InstErrorName(Instruction):
     def execute(self, fr):
         errnum = fr.data_pop(int)
         try:
-            fr.data_push(fp_error_names[errnum])
+            fr.data_push(fr.fp_error_names[errnum])
         except:
             fr.data_push("")
 
@@ -2390,7 +2399,7 @@ class InstErrorName(Instruction):
 @instr("error_num")
 class InstErrorNum(Instruction):
     def execute(self, fr):
-        fr.data_push(len(fp_error_names))
+        fr.data_push(len(fr.fp_error_names))
 
 
 @instr("error_str")
@@ -2398,13 +2407,13 @@ class InstErrorStr(Instruction):
     def execute(self, fr):
         x = fr.data_pop(int, str)
         if type(x) is str:
-            if x in fp_error_names:
-                x = fp_error_names.index(x)
+            if x in fr.fp_error_names:
+                x = fr.fp_error_names.index(x)
             else:
                 x = -1
         if x >= 0:
             try:
-                x = fp_error_descrs[x]
+                x = fr.fp_error_descrs[x]
             except:
                 x = ""
         else:
@@ -2417,7 +2426,7 @@ class InstIsSetP(Instruction):
     def execute(self, fr):
         x = fr.data_pop(int, str)
         if type(x) is int:
-            x = fp_error_names[x]
+            x = fr.fp_error_names[x]
         fr.data_push(1 if fr.has_error(x) else 0)
 
 
@@ -2426,7 +2435,7 @@ class InstSetError(Instruction):
     def execute(self, fr):
         x = fr.data_pop(int, str)
         if type(x) is int:
-            x = fp_error_names[x]
+            x = fr.fp_error_names[x]
         fr.set_error(x)
 
 
@@ -5420,11 +5429,7 @@ class InstDebugOff(Instruction):
 @instr("debug_line")
 class InstDebugLine(Instruction):
     def execute(self, fr):
-        inst = fr.curr_inst()
-        addr = fr.curr_addr()
-        line = inst.line
-        print("% 5d: #%d line %d (%s) %s" %
-              (addr.value, addr.prog, line, fr.get_stack_repr(999), inst))
+        print(fr.get_trace_line())
         sys.stdout.flush()
 
 
@@ -5445,12 +5450,16 @@ class CompiledMuf(object):
         self.global_vars = ["me", "loc", "trigger", "command"]
         self.lastfunction = None
 
-    def show_compiled_tokens(self):
-        for instnum, inst in enumerate(self.code):
-            inst = str(inst)
-            if instnum > 0 and inst.startswith("Function:"):
-                print("")
-            print("% 5d: %s" % (instnum, inst))
+    def get_tokens_info(self):
+        return [
+            {
+                "prog": self.program,
+                "addr": i,
+                "line": inst.line,
+                "repr": str(inst)
+            }
+            for i, inst in enumerate(self.code)
+        ]
 
     def add_function(self, funcname, addr):
         if type(addr) is int:
@@ -5483,17 +5492,6 @@ class CompiledMuf(object):
         if type(self.code[addr]) is not InstFunc:
             return ""
         return self.code[addr].funcname
-
-    def show_line(self, addr):
-        if type(addr) is StackAddress:
-            addr = addr.value
-        inst = self.code[addr]
-        if (
-            addr > 0 and addr < len(self.code) and
-            self.code[addr - 1].line == inst.line
-        ):
-            print("Instruction %d: %s" % (addr, inst))
-        print(">% 5d: %s" % (inst.line, self.srclines[inst.line - 1]))
 
     def get_inst(self, addr):
         if type(addr) is StackAddress:
@@ -5532,823 +5530,8 @@ class CompiledMuf(object):
             return StackGlobalVar(self.global_vars.index(varname))
         return None
 
-    def get_global_vars(self, funcname):
+    def get_global_vars(self):
         return self.global_vars
-
-
-class MufCallFrame(object):
-    def __init__(self, addr, caller):
-        if type(caller) is int:
-            caller = StackDBRef(caller)
-        self.variables = {}
-        self.loop_stack = []
-        self.pc = addr
-        self.caller = caller
-
-    def pc_advance(self, delta):
-        self.pc.value += delta
-
-    def pc_set(self, addr):
-        self.pc = copy.deepcopy(addr)
-
-    def loop_iter_push(self, typ, it):
-        self.loop_stack.append((typ, it))
-
-    def loop_iter_pop(self):
-        return self.loop_stack.pop()
-
-    def loop_iter_top(self):
-        return self.loop_stack[-1]
-
-    def variable_get(self, varnum):
-        if varnum in self.variables:
-            return self.variables[varnum]
-        return 0
-
-    def variable_set(self, varnum, val):
-        self.variables[varnum] = val
-
-
-class MufStackFrame(object):
-    MAX_STACK = 1024
-
-    def __init__(self):
-        self.user = StackDBRef(-1)
-        self.program = StackDBRef(program_object.dbref)
-        self.trigger = StackDBRef(-1)
-        self.command = ""
-        self.catch_stack = []
-        self.call_stack = []
-        self.data_stack = []
-        self.globalvars = {}
-        self.fp_errors = 0
-        self.read_wants_blanks = False
-        self.trace = False
-        self.cycles = 0
-        self.breakpoints = []
-        self.break_after_steps = -1
-        self.break_after_lines = -1
-        self.break_on_finish = False
-        self.prevaddr = StackAddress(-1, self.program)
-        self.prevline = -1
-        self.nextline = -1
-        self.matches = []
-        self.text_entry = []
-
-    def get_compiled(self, prog=-1):
-        if prog < 0:
-            addr = self.curr_addr()
-            prog = addr.prog
-        return getobj(prog).compiled
-
-    def setup(self, prog, user, trig, cmd):
-        self.program = StackDBRef(prog.dbref)
-        self.trigger = StackDBRef(trig.dbref)
-        self.user = StackDBRef(user.dbref)
-        self.command = cmd
-        self.globalvar_set(0, StackDBRef(user.dbref))
-        self.globalvar_set(1, StackDBRef(user.location))
-        self.globalvar_set(2, StackDBRef(trig.dbref))
-        self.globalvar_set(3, cmd)
-        comp = self.get_compiled(prog)
-        self.call_push(comp.lastfunction, trig.dbref)
-
-    def set_trace(self, on_off):
-        self.trace = on_off
-
-    def set_text_entry(self, text):
-        if type(text) is list:
-            self.text_entry = text
-        else:
-            self.text_entry = text.split('\n')
-
-    def curr_inst(self):
-        if not self.call_stack:
-            return None
-        addr = self.curr_addr()
-        comp = self.get_compiled()
-        return comp.get_inst(addr)
-
-    def curr_addr(self):
-        if not self.call_stack:
-            return None
-        return self.call_stack[-1].pc
-
-    def pc_advance(self, delta):
-        if self.call_stack:
-            return self.call_stack[-1].pc_advance(delta)
-        return None
-
-    def pc_set(self, addr):
-        if type(addr) is not StackAddress:
-            raise MufRuntimeError("Expected an address!")
-        return self.call_stack[-1].pc_set(addr)
-
-    def catch_push(self, detailed, addr, lockdepth):
-        self.catch_stack.append((detailed, addr, lockdepth))
-
-    def catch_pop(self):
-        return self.catch_stack.pop()
-
-    def catch_is_detailed(self):
-        if not self.catch_stack:
-            return False
-        return self.catch_stack[-1][0]
-
-    def catch_addr(self):
-        if not self.catch_stack:
-            return None
-        return self.catch_stack[-1][1]
-
-    def catch_locklevel(self):
-        if not self.catch_stack:
-            return 0
-        return self.catch_stack[-1][2]
-
-    def catch_trigger(self, e):
-        addr = self.catch_addr()
-        if not addr:
-            return False
-        if type(addr) is not StackAddress:
-            raise MufRuntimeError("Expected an address!")
-        # Clear stack down to stacklock
-        while self.data_depth() > self.catch_locklevel():
-            self.data_pop()
-        if self.catch_is_detailed():
-            # Push detailed exception info.
-            inst = self.curr_inst()
-            self.data_push({
-                "error": str(e),
-                "instr": inst.prim_name.upper(),
-                "line": inst.line,
-                "program": self.program,
-            })
-        else:
-            # Push error message.
-            self.data_push(str(e))
-        self.catch_pop()
-        self.pc_set(addr)
-        return True
-
-    def check_type(self, val, types):
-        if types and type(val) not in types:
-            self.raise_expected_type_error(types)
-
-    def raise_expected_type_error(self, types):
-        types = list(types)
-        type_names = [
-            ("number", [int, float]),
-            ("integer", [int]),
-            ("float", [float]),
-            ("string", [str]),
-            ("array", [list, dict]),
-            ("list array", [list]),
-            ("dictionary array", [dict]),
-            ("dbref", [StackDBRef]),
-            ("address", [StackAddress]),
-            ("lock", [StackLock]),
-            ("variable", [StackGlobalVar, StackFuncVar]),
-            ("variable", [StackGlobalVar]),
-            ("variable", [StackFuncVar]),
-        ]
-        expected = []
-        for name, extypes in type_names:
-            found = True
-            for extype in extypes:
-                if extype not in types:
-                    found = False
-                    break
-            if found:
-                for extype in extypes:
-                    types.remove(extype)
-                expected.append(name)
-        expected = " or ".join(expected)
-        raise MufRuntimeError("Expected %s argument." % expected)
-
-    def check_underflow(self, cnt):
-        if self.data_depth() < cnt:
-            raise MufRuntimeError("Stack underflow.")
-
-    def data_depth(self):
-        return len(self.data_stack)
-
-    def data_push(self, x):
-        self.data_stack.append(x)
-        if len(self.data_stack) > self.MAX_STACK:
-            raise MufRuntimeError("Stack overflow.")
-
-    def data_pop(self, *types):
-        if len(self.data_stack) - self.catch_locklevel() < 1:
-            raise MufRuntimeError("Stack underflow.")
-        self.check_type(self.data_stack[-1], types)
-        return self.data_stack.pop()
-
-    def data_pop_dbref(self):
-        return self.data_pop(StackDBRef)
-
-    def data_pop_object(self):
-        return getobj(self.data_pop(StackDBRef))
-
-    def data_pop_address(self):
-        return self.data_pop(StackAddress)
-
-    def data_pop_lock(self):
-        return self.data_pop(StackLock)
-
-    def data_pick(self, n):
-        if len(self.data_stack) < n:
-            raise MufRuntimeError("Stack underflow.")
-        return self.data_stack[-n]
-
-    def data_pull(self, n):
-        if len(self.data_stack) - self.catch_locklevel() < n:
-            raise MufRuntimeError("Stack underflow.")
-        a = self.data_stack[-n]
-        del self.data_stack[-n]
-        return a
-
-    def data_put(self, n, val):
-        if len(self.data_stack) - self.catch_locklevel() < n:
-            raise MufRuntimeError("Stack underflow.")
-        self.data_stack[-n] = val
-
-    def data_insert(self, n, val):
-        if len(self.data_stack) - self.catch_locklevel() < n:
-            raise MufRuntimeError("StackUnderflow")
-        if n < 1:
-            self.data_stack.append(val)
-        else:
-            self.data_stack.insert(1 - n, val)
-
-    def loop_iter_push(self, typ, it):
-        return self.call_stack[-1].loop_iter_push(typ, it)
-
-    def loop_iter_pop(self):
-        return self.call_stack[-1].loop_iter_pop()
-
-    def loop_iter_top(self):
-        return self.call_stack[-1].loop_iter_top()
-
-    def call_push(self, addr, caller):
-        self.call_stack.append(
-            MufCallFrame(copy.deepcopy(addr), caller)
-        )
-
-    def call_pop(self):
-        self.call_stack.pop()
-
-    def caller_get(self):
-        return self.call_stack[-1].caller
-
-    def funcvar_get(self, v):
-        if type(v) is StackFuncVar:
-            v = v.value
-        return self.call_stack[-1].variable_get(v)
-
-    def funcvar_set(self, v, val):
-        if type(v) is StackFuncVar:
-            v = v.value
-        return self.call_stack[-1].variable_set(v, val)
-
-    def globalvar_get(self, v):
-        if type(v) is StackGlobalVar:
-            v = v.value
-        if v in self.globalvars:
-            return self.globalvars[v]
-        return 0
-
-    def globalvar_set(self, v, val):
-        if type(v) is StackGlobalVar:
-            v = v.value
-        self.globalvars[v] = val
-
-    def get_stack_repr(self, maxcnt):
-        out = ''
-        depth = self.data_depth()
-        if maxcnt > depth:
-            maxcnt = depth
-        else:
-            out += '...'
-        for i in xrange(-depth, 0):
-            if out:
-                out += ', '
-            out += item_repr(self.data_stack[i])
-        return out
-
-    def show_compiled_tokens(self, prog):
-        comp = self.get_compiled(prog)
-        comp.show_compiled_tokens()
-
-    def check_break_on_finish(self):
-        if self.break_on_finish:
-            if len(self.call_stack) < self.prev_call_level:
-                inst = self.curr_inst()
-                addr = self.curr_addr()
-                print(
-                    "Stopped on call return at instruction %d in #%d." %
-                    (addr.value, addr.prog)
-                )
-                self.prevline = inst.line
-                self.prevaddr = addr
-                self.break_on_finish = False
-                raise MufBreakExecution()
-
-    def check_break_after_steps(self):
-        if self.break_after_steps > 0:
-            inst = self.curr_inst()
-            addr = self.curr_addr()
-            if inst.line != self.prevline:
-                self.prevline = inst.line
-                self.break_after_steps -= 1
-                if not self.break_after_steps:
-                    self.prevaddr = addr
-                    self.break_after_steps = -1
-                    raise MufBreakExecution()
-
-    def check_break_after_lines(self):
-        if self.break_after_lines > 0:
-            if len(self.call_stack) <= self.prev_call_level:
-                inst = self.curr_inst()
-                addr = self.curr_addr()
-                if inst.line != self.prevline:
-                    self.prevline = inst.line
-                    self.break_after_lines -= 1
-                    if not self.break_after_lines:
-                        self.prevaddr = addr
-                        self.break_after_lines = -1
-                        raise MufBreakExecution()
-
-    def check_breakpoints(self):
-        if not self.call_stack:
-            raise MufBreakExecution()
-        if self.breakpoints:
-            inst = self.curr_inst()
-            addr = self.curr_addr()
-            if inst.line != self.prevline or addr.prog != self.prevaddr.prog:
-                bp = (addr.prog, inst.line)
-                if bp in self.breakpoints:
-                    bpnum = self.breakpoints.index(bp)
-                    print("Stopped at breakpoint %d." % bpnum)
-                    self.prevline = inst.line
-                    self.prevaddr = addr
-                    raise MufBreakExecution()
-        self.check_break_on_finish()
-        self.check_break_after_steps()
-        self.check_break_after_lines()
-
-    def execute_code(self):
-        self.prev_call_level = len(self.call_stack)
-        while self.call_stack:
-            inst = self.curr_inst()
-            addr = self.curr_addr()
-            line = inst.line
-            if self.trace:
-                print("% 5d: #%d line %d (%s) %s" % (
-                    addr.value, addr.prog, line,
-                    self.get_stack_repr(999), inst))
-                sys.stdout.flush()
-            try:
-                self.cycles += 1
-                inst.execute(self)
-                self.pc_advance(1)
-                self.check_breakpoints()
-            except MufBreakExecution as e:
-                return
-            except MufRuntimeError as e:
-                if not self.catch_stack:
-                    print(
-                        "Error in #%d line %d (%s): %s" % (
-                            addr.prog, line, str(inst), e
-                        ),
-                        file=sys.stderr
-                    )
-                    return
-                elif self.trace:
-                    print(
-                        "Caught error in #%d line %d (%s): %s" %
-                        (addr.prog, line, str(inst), e),
-                        file=sys.stderr
-                    )
-                self.catch_trigger(e)
-                try:
-                    self.check_breakpoints()
-                except MufBreakExecution as e:
-                    return
-
-    def show_call(self, addr=None):
-        if not addr:
-            addr = self.curr_addr()
-        if addr:
-            comp = self.get_compiled(addr.prog)
-            line = comp.get_inst_line(addr)
-            fun = comp.find_func(addr)
-            print("In function '%s', Line %d:" % (fun, line))
-            print("%s" % comp.srclines[line - 1])
-
-    def complete(self, text, state):
-        cmds = [
-            'list ', 'quit', 'run', 'show ', 'next', 'step', 'break ',
-            'continue', 'finish', 'stack', 'trace', 'notrace', 'delete ',
-            'print ', 'pop', 'push ', 'rot', 'dup', 'swap', 'help'
-        ]
-        response = None
-
-        origline = readline.get_line_buffer()
-        begin = readline.get_begidx()
-        end = readline.get_endidx()
-        text = origline[begin:end]
-        words = origline.split(' ')
-
-        comp = self.get_compiled()
-        if state == 0:
-            # This is the first time for this text, so build a match list.
-            if begin == 0:
-                self.matches = [s for s in cmds if s and s.startswith(text)]
-            elif words[0] in ['l', 'list', 'b', 'break']:
-                self.matches = [
-                    x for x in comp.get_functions() if x.startswith(text)
-                ]
-            elif words[0] == 'show':
-                showcmds = ['breakpoints', 'functions', 'globals', 'vars']
-                self.matches = [x for x in showcmds if x.startswith(text)]
-            elif words[0] in ['p', 'print']:
-                addr = self.curr_addr()
-                fun = comp.find_func(addr)
-                fvars = comp.get_func_vars(fun)
-                gvars = comp.get_global_vars()
-                self.matches = [
-                    x for x in (fvars + gvars) if x.startswith(text)
-                ]
-            else:
-                self.matches = cmds[:]
-
-        # Return the state'th item from the match list,
-        # if we have that many.
-        try:
-            response = self.matches[state]
-        except IndexError:
-            response = None
-        return response
-
-    def debug_cmd_step(self, args):
-        if not args:
-            args = "1"
-        if not is_int(args):
-            print("Usage: step [COUNT]")
-        else:
-            self.break_after_steps = int(args)
-            self.execute_code()
-            comp = self.get_compiled()
-            comp.show_line(self.curr_addr())
-            self.nextline = -1
-
-    def debug_cmd_next(self, args):
-        if not args:
-            args = "1"
-        if not is_int(args):
-            print("Usage: next [COUNT]")
-        else:
-            self.break_after_lines = int(args)
-            self.execute_code()
-            comp = self.get_compiled()
-            comp.show_line(self.curr_addr())
-            self.nextline = -1
-
-    def debug_cmd_continue(self, args):
-        self.execute_code()
-        comp = self.get_compiled()
-        comp.show_line(self.curr_addr())
-        self.nextline = -1
-
-    def debug_cmd_finish(self, args):
-        self.break_on_finish = True
-        self.execute_code()
-        comp = self.get_compiled()
-        comp.show_line(self.curr_addr())
-        self.nextline = -1
-
-    def debug_cmd_break(self, args):
-        # TODO: add support for breakpoints in other program objects.
-        comp = self.get_compiled()
-        if comp.get_function_addr(args):
-            addr = comp.get_function_addr(args)
-            line = comp.get_inst_line(addr.value)
-            bp = (addr.prog, line)
-            self.breakpoints.append(bp)
-            print("Added breakpoint %d on line %d." %
-                  (len(self.breakpoints), line))
-        elif is_int(args):
-            addr = self.curr_addr()
-            line = int(args)
-            bp = (addr.prog, line)
-            self.breakpoints.append(bp)
-            print("Added breakpoint %d on line %d." %
-                  (len(self.breakpoints), line))
-        else:
-            print("Usage: break LINE")
-            print("   or: break FUNCNAME")
-
-    def debug_cmd_delete(self, args):
-        if (
-            not is_int(args) or
-            int(args) < 0 or
-            int(args) >= len(self.breakpoints)
-        ):
-            print("Usage: delete BREAKPOINTNUM")
-        else:
-            self.breakpoints[int(args)] = -1
-            print("Deleted breakpoint %d." % int(args))
-
-    def debug_cmd_list(self, args):
-        comp = self.get_compiled()
-        inst = self.curr_inst()
-        if comp.get_function_addr(args):
-            addr = comp.get_function_addr(args)
-            start = comp.get_inst_line(addr)
-            end = start + 10
-        elif ',' in args:
-            start, end = args.split(',', 1)
-            start = start.strip()
-            end = end.strip()
-        elif args:
-            start = end = args
-        elif self.nextline < 0:
-            start = str(inst.line - 5)
-            end = str(inst.line + 5)
-        else:
-            start = self.nextline
-            end = self.nextline + 10
-        if not is_int(start) or not is_int(end):
-            print("Usage: list [LINE[,LINE]]")
-            print("   or: list FUNCNAME")
-        else:
-            start = max(1, min(int(start), len(comp.srclines)))
-            end = max(1, min(int(end), len(comp.srclines)))
-            self.nextline = end + 1
-            for i in range(start, end + 1):
-                if i == inst.line:
-                    print(">% 5d: %s" % (i, comp.srclines[i - 1]))
-                else:
-                    print(" % 5d: %s" % (i, comp.srclines[i - 1]))
-
-    def debug_cmd_print(self, args):
-        comp = self.get_compiled()
-        addr = self.curr_addr()
-        fun = comp.find_func(addr)
-        if comp.get_func_var(fun, args):
-            v = comp.get_func_var(fun, args)
-            val = self.funcvar_get(v)
-        elif comp.get_global_var(args):
-            v = comp.get_global_var(args)
-            val = self.globalvar_get(v)
-        else:
-            print("Variable not found: %s" % args)
-            val = None
-        if val is not None:
-            val = item_repr(val)
-            print("%s = %s" % (args, val))
-
-    def debug_cmd_show_breakpoints(self):
-        print("Breakpoints")
-        cnt = 0
-        for i, bp in enumerate(self.breakpoints):
-            prog, line = bp
-            if line > 0:
-                print("  %d: Program #%d Line %d" % (i + 1, prog, line))
-                cnt += 1
-        if not cnt:
-            print("  - None -")
-
-    def debug_cmd_show_functions(self):
-        print("Declared Functions")
-        comp = self.get_compiled()
-        funcs = comp.get_functions()
-        if funcs:
-            for func in funcs:
-                print("  %s" % func)
-        else:
-            print("  - None -")
-
-    def debug_cmd_show_globals(self):
-        print("Global Variables")
-        comp = self.get_compiled()
-        gvars = comp.get_global_vars()
-        if gvars:
-            for vnum, vname in enumerate(gvars):
-                val = self.globalvar_get(vnum)
-                val = item_repr(val)
-                print("  LV%-3d %s = %s" % (vnum, vname, val))
-        else:
-            print("  - None -")
-
-    def debug_cmd_show_vars(self):
-        print("Function Variables")
-        comp = self.get_compiled()
-        addr = self.curr_addr()
-        fun = comp.find_func(addr)
-        fvars = comp.get_func_vars(fun)
-        if fvars:
-            for vnum, vname in enumerate(fvars):
-                val = self.funcvar_get(vnum)
-                val = item_repr(val)
-                print("  SV%-3d %s = %s" % (vnum, vname, val))
-        else:
-            print("  - None -")
-
-    def debug_cmd_show(self, args):
-        if args == "breakpoints":
-            self.debug_cmd_show_breakpoints()
-        elif args == "functions":
-            self.debug_cmd_show_functions()
-        elif args == "globals":
-            self.debug_cmd_show_globals()
-        elif args == "vars":
-            self.debug_cmd_show_vars()
-
-    def debug_cmd_stack(self, args):
-        if not args:
-            args = "999999"
-        if not is_int(args):
-            print("Usage: stack [DEPTH]")
-        else:
-            depth = self.data_depth()
-            args = int(args)
-            if args > depth:
-                args = depth
-            for i in xrange(args):
-                val = self.data_pick(i + 1)
-                val = item_repr(val)
-                print("Stack %d: %s" % (depth - i, val))
-            if not depth:
-                print("- Empty Stack -")
-
-    def debug_cmd_trace(self, args):
-        self.trace = True
-        print("Turning on Trace mode.")
-
-    def debug_cmd_notrace(self, args):
-        self.trace = False
-        print("Turning off Trace mode.")
-
-    def debug_cmd_pop(self, args):
-        self.data_pop()
-        print("Stack item POPed.")
-
-    def debug_cmd_dup(self, args):
-        a = self.data_pick(1)
-        self.data_push(a)
-        print("Stack item DUPed.")
-
-    def debug_cmd_swap(self, args):
-        a = self.data_pop()
-        b = self.data_pop()
-        self.data_push(a)
-        self.data_push(b)
-        print("Stack items SWAPed.")
-
-    def debug_cmd_rot(self, args):
-        a = self.data_pop()
-        b = self.data_pop()
-        c = self.data_pop()
-        self.data_push(b)
-        self.data_push(a)
-        self.data_push(c)
-        print("Stack items ROTed.")
-
-    def debug_cmd_push(self, args):
-        if is_int(args):
-            self.data_push(int(args))
-        elif is_float(args):
-            self.data_push(float(args))
-        elif args[0] == '#' and is_int(args[1:]):
-            self.data_push(StackDBRef(int(args[1:])))
-        elif args[0] == '"' and args[-1] == '"':
-            self.data_push(args[1:-1])
-        print("Stack item pushed.")
-
-    def debug_cmd_where(self, args):
-        for callfr in self.call_stack:
-            self.show_call(callfr.pc)
-
-    def debug_cmd_run(self, args):
-        self.data_stack = [args]
-        self.call_stack = [MufCallFrame(self.start_addr, self.trigger)]
-        self.catch_stack = []
-        self.globalvars = {}
-        print("Restarting program.")
-        self.debug_cmd_list("")
-
-    def debug_cmd_help(self, args):
-        print("help               Show this message.")
-        print("where              Display the call stack.")
-        print("stack [DEPTH]      Show top N data stack items.")
-        print("list               List next few source code lines.")
-        print("list LINE          List source code LINE.")
-        print("list START,END     List source code from START to END.")
-        print("list FUNC          List source code at start of FUNC.")
-        print("break LINE         Set breakpoint at given line.")
-        print("break FUNC         Set breakpoint at start of FUNC.")
-        print("delete BREAKNUM    Delete a breakpoint.")
-        print("show breakpoints   Show current breakpoints.")
-        print("show functions     List all declared functions.")
-        print("show globals       List all global vars.")
-        print("show vars          List all vars in the current func.")
-        print("step [COUNT]       Step 1 or COUNT lines, enters calls.")
-        print("next [COUNT]       Step 1 or COUNT lines, skips calls.")
-        print("finish             Finish the current function.")
-        print("cont               Continue until next breakpoint.")
-        print("pop                Pop top data stack item.")
-        print("dup                Duplicate top data stack item.")
-        print("swap               Swap top two data stack items.")
-        print("rot                Rot top three data stack items.")
-        print("push VALUE         Push VALUE onto top of data stack.")
-        print("print VARIABLE     Print the value of the variable.")
-        print("trace              Turn on tracing of each instr.")
-        print("notrace            Turn off tracing if each instr.")
-        print("run COMMANDARG     Re-run program, with COMMANDARG.")
-        print("quit               Exits the debugger.")
-
-    def debug_code(self):
-        prevcmd = ""
-        self.nextline = -1
-        readline.set_completer(self.complete)
-        while True:
-            if prevcmd:
-                cmd = raw_input("DEBUG>")
-                if not cmd:
-                    cmd = prevcmd
-            else:
-                cmd = "list"
-            prevcmd = cmd
-            args = ""
-            if " " in cmd:
-                cmd, args = cmd.split(" ", 1)
-                cmd = cmd.strip()
-                args = args.strip()
-            if cmd == "q" or cmd == "quit":
-                print("Exiting.")
-                return
-            commands = {
-                "break": self.debug_cmd_break,
-                "c": self.debug_cmd_continue,
-                "cont": self.debug_cmd_continue,
-                "delete": self.debug_cmd_delete,
-                "dup": self.debug_cmd_dup,
-                "f": self.debug_cmd_finish,
-                "finish": self.debug_cmd_finish,
-                "help": self.debug_cmd_help,
-                "l": self.debug_cmd_list,
-                "list": self.debug_cmd_list,
-                "n": self.debug_cmd_next,
-                "next": self.debug_cmd_next,
-                "notrace": self.debug_cmd_notrace,
-                "pop": self.debug_cmd_pop,
-                "p": self.debug_cmd_print,
-                "print": self.debug_cmd_print,
-                "push": self.debug_cmd_push,
-                "rot": self.debug_cmd_rot,
-                "run": self.debug_cmd_run,
-                "show": self.debug_cmd_show,
-                "stack": self.debug_cmd_stack,
-                "s": self.debug_cmd_step,
-                "step": self.debug_cmd_step,
-                "swap": self.debug_cmd_swap,
-                "t": self.debug_cmd_trace,
-                "trace": self.debug_cmd_trace,
-                "w": self.debug_cmd_where,
-                "where": self.debug_cmd_where,
-            }
-            if cmd in commands:
-                commands[cmd](args)
-            else:
-                self.debug_cmd_help(args)
-            if not self.call_stack:
-                break
-            sys.stdout.flush()
-
-    def has_errors(self):
-        return self.fp_errors != 0
-
-    def has_error(self, errname):
-        errname = errname.upper()
-        errnum = fp_error_names.index(errname)
-        errbit = fp_error_bits[errnum]
-        return (self.fp_errors & errbit) != 0
-
-    def set_error(self, errname):
-        errname = errname.upper()
-        errnum = fp_error_names.index(errname)
-        errbit = fp_error_bits[errnum]
-        self.fp_errors |= errbit
-
-    def clear_error(self, errname):
-        errname = errname.upper()
-        errnum = fp_error_names.index(errname)
-        errbit = fp_error_bits[errnum]
-        self.fp_errors &= ~errbit
-
-    def clear_errors(self):
-        self.fp_errors = 0
 
 
 # Decorator
@@ -6697,6 +5880,982 @@ class MufCompiler(object):
             return None
 
 
+class MufCallFrame(object):
+    def __init__(self, addr, caller):
+        if type(caller) is int:
+            caller = StackDBRef(caller)
+        self.variables = {}
+        self.loop_stack = []
+        self.pc = addr
+        self.caller = caller
+
+    def pc_advance(self, delta):
+        self.pc.value += delta
+
+    def pc_set(self, addr):
+        self.pc = copy.deepcopy(addr)
+
+    def loop_iter_push(self, typ, it):
+        self.loop_stack.append((typ, it))
+
+    def loop_iter_pop(self):
+        return self.loop_stack.pop()
+
+    def loop_iter_top(self):
+        return self.loop_stack[-1]
+
+    def variable_get(self, varnum):
+        if varnum in self.variables:
+            return self.variables[varnum]
+        return 0
+
+    def variable_set(self, varnum, val):
+        self.variables[varnum] = val
+
+
+class MufStackFrame(object):
+    MAX_STACK = 1024
+    FP_ERRORS_LIST = [
+        ("DIV_ZERO", "Division by zero attempted."),
+        ("NAN", "Result was not a number."),
+        ("IMAGINARY", "Result was imaginary."),
+        ("FBOUNDS", "Floating-point inputs were infinite or out of range."),
+        ("IBOUNDS", "Calculation resulted in an integer overflow."),
+    ]
+
+    def __init__(self):
+        self.user = StackDBRef(-1)
+        self.program = StackDBRef(program_object.dbref)
+        self.trigger = StackDBRef(-1)
+        self.command = ""
+        self.catch_stack = []
+        self.call_stack = []
+        self.data_stack = []
+        self.globalvars = {}
+        self.fp_errors = 0
+        self.read_wants_blanks = False
+        self.trace = False
+        self.cycles = 0
+        self.breakpoints = []
+        self.break_after_steps = -1
+        self.break_after_lines = -1
+        self.break_on_finish = False
+        self.prevaddr = StackAddress(-1, self.program)
+        self.prevline = -1
+        self.nextline = -1
+        self.text_entry = []
+        self.fp_error_names = [v[0] for v in self.FP_ERRORS_LIST]
+        self.fp_error_descrs = [v[1] for v in self.FP_ERRORS_LIST]
+        self.fp_error_bits = [
+            (1 << k) for k, v in enumerate(self.FP_ERRORS_LIST)
+        ]
+
+    def setup(self, prog, user, trig, cmd):
+        # Reset program state.
+        self.catch_stack = []
+        self.call_stack = []
+        self.data_stack = []
+        self.globalvars = {}
+        self.fp_errors = 0
+        self.read_wants_blanks = False
+        self.cycles = 0
+        # Set call info
+        self.user = StackDBRef(user.dbref)
+        self.trigger = StackDBRef(trig.dbref)
+        self.command = cmd
+        self.program = StackDBRef(prog.dbref)
+        # Set globals
+        self.globalvar_set(0, StackDBRef(user.dbref))
+        self.globalvar_set(1, StackDBRef(user.location))
+        self.globalvar_set(2, StackDBRef(trig.dbref))
+        self.globalvar_set(3, cmd)
+        # Setup call and data stacks
+        comp = self.get_compiled(prog)
+        self.call_push(comp.lastfunction, trig.dbref)
+        self.data_push(cmd)
+
+    def get_compiled(self, prog=-1):
+        if prog < 0:
+            addr = self.curr_addr()
+            prog = addr.prog
+        return getobj(prog).compiled
+
+    def set_trace(self, on_off):
+        self.trace = on_off
+
+    def set_text_entry(self, text):
+        if type(text) is list:
+            self.text_entry = text
+        else:
+            self.text_entry = text.split('\n')
+
+    def curr_inst(self):
+        if not self.call_stack:
+            return None
+        addr = self.curr_addr()
+        comp = self.get_compiled()
+        return comp.get_inst(addr)
+
+    def curr_addr(self):
+        if not self.call_stack:
+            return None
+        return self.call_stack[-1].pc
+
+    def pc_advance(self, delta):
+        if self.call_stack:
+            return self.call_stack[-1].pc_advance(delta)
+        return None
+
+    def pc_set(self, addr):
+        if type(addr) is not StackAddress:
+            raise MufRuntimeError("Expected an address!")
+        return self.call_stack[-1].pc_set(addr)
+
+    def catch_push(self, detailed, addr, lockdepth):
+        self.catch_stack.append((detailed, addr, lockdepth))
+
+    def catch_pop(self):
+        return self.catch_stack.pop()
+
+    def catch_is_detailed(self):
+        if not self.catch_stack:
+            return False
+        return self.catch_stack[-1][0]
+
+    def catch_addr(self):
+        if not self.catch_stack:
+            return None
+        return self.catch_stack[-1][1]
+
+    def catch_locklevel(self):
+        if not self.catch_stack:
+            return 0
+        return self.catch_stack[-1][2]
+
+    def catch_trigger(self, e):
+        addr = self.catch_addr()
+        if not addr:
+            return False
+        if type(addr) is not StackAddress:
+            raise MufRuntimeError("Expected an address!")
+        # Clear stack down to stacklock
+        while self.data_depth() > self.catch_locklevel():
+            self.data_pop()
+        if self.catch_is_detailed():
+            # Push detailed exception info.
+            inst = self.curr_inst()
+            self.data_push({
+                "error": str(e),
+                "instr": inst.prim_name.upper(),
+                "line": inst.line,
+                "program": self.program,
+            })
+        else:
+            # Push error message.
+            self.data_push(str(e))
+        self.catch_pop()
+        self.pc_set(addr)
+        return True
+
+    def check_type(self, val, types):
+        if types and type(val) not in types:
+            self.raise_expected_type_error(types)
+
+    def raise_expected_type_error(self, types):
+        types = list(types)
+        type_names = [
+            ("number", [int, float]),
+            ("integer", [int]),
+            ("float", [float]),
+            ("string", [str]),
+            ("array", [list, dict]),
+            ("list array", [list]),
+            ("dictionary array", [dict]),
+            ("dbref", [StackDBRef]),
+            ("address", [StackAddress]),
+            ("lock", [StackLock]),
+            ("variable", [StackGlobalVar, StackFuncVar]),
+            ("variable", [StackGlobalVar]),
+            ("variable", [StackFuncVar]),
+        ]
+        expected = []
+        for name, extypes in type_names:
+            found = True
+            for extype in extypes:
+                if extype not in types:
+                    found = False
+                    break
+            if found:
+                for extype in extypes:
+                    types.remove(extype)
+                expected.append(name)
+        expected = " or ".join(expected)
+        raise MufRuntimeError("Expected %s argument." % expected)
+
+    def check_underflow(self, cnt):
+        if self.data_depth() < cnt:
+            raise MufRuntimeError("Stack underflow.")
+
+    def data_depth(self):
+        return len(self.data_stack)
+
+    def data_push(self, x):
+        self.data_stack.append(x)
+        if len(self.data_stack) > self.MAX_STACK:
+            raise MufRuntimeError("Stack overflow.")
+
+    def data_pop(self, *types):
+        if len(self.data_stack) - self.catch_locklevel() < 1:
+            raise MufRuntimeError("Stack underflow.")
+        self.check_type(self.data_stack[-1], types)
+        return self.data_stack.pop()
+
+    def data_pop_dbref(self):
+        return self.data_pop(StackDBRef)
+
+    def data_pop_object(self):
+        return getobj(self.data_pop(StackDBRef))
+
+    def data_pop_address(self):
+        return self.data_pop(StackAddress)
+
+    def data_pop_lock(self):
+        return self.data_pop(StackLock)
+
+    def data_pick(self, n):
+        if len(self.data_stack) < n:
+            raise MufRuntimeError("Stack underflow.")
+        return self.data_stack[-n]
+
+    def data_pull(self, n):
+        if len(self.data_stack) - self.catch_locklevel() < n:
+            raise MufRuntimeError("Stack underflow.")
+        a = self.data_stack[-n]
+        del self.data_stack[-n]
+        return a
+
+    def data_put(self, n, val):
+        if len(self.data_stack) - self.catch_locklevel() < n:
+            raise MufRuntimeError("Stack underflow.")
+        self.data_stack[-n] = val
+
+    def data_insert(self, n, val):
+        if len(self.data_stack) - self.catch_locklevel() < n:
+            raise MufRuntimeError("StackUnderflow")
+        if n < 1:
+            self.data_stack.append(val)
+        else:
+            self.data_stack.insert(1 - n, val)
+
+    def loop_iter_push(self, typ, it):
+        return self.call_stack[-1].loop_iter_push(typ, it)
+
+    def loop_iter_pop(self):
+        return self.call_stack[-1].loop_iter_pop()
+
+    def loop_iter_top(self):
+        return self.call_stack[-1].loop_iter_top()
+
+    def call_push(self, addr, caller):
+        self.call_stack.append(
+            MufCallFrame(copy.deepcopy(addr), caller)
+        )
+
+    def call_pop(self):
+        self.call_stack.pop()
+
+    def caller_get(self):
+        return self.call_stack[-1].caller
+
+    def funcvar_get(self, v):
+        if type(v) is StackFuncVar:
+            v = v.value
+        return self.call_stack[-1].variable_get(v)
+
+    def funcvar_set(self, v, val):
+        if type(v) is StackFuncVar:
+            v = v.value
+        return self.call_stack[-1].variable_set(v, val)
+
+    def globalvar_get(self, v):
+        if type(v) is StackGlobalVar:
+            v = v.value
+        if v in self.globalvars:
+            return self.globalvars[v]
+        return 0
+
+    def globalvar_set(self, v, val):
+        if type(v) is StackGlobalVar:
+            v = v.value
+        self.globalvars[v] = val
+
+    def has_errors(self):
+        return self.fp_errors != 0
+
+    def has_error(self, errname):
+        errname = errname.upper()
+        errnum = self.fp_error_names.index(errname)
+        errbit = self.fp_error_bits[errnum]
+        return (self.fp_errors & errbit) != 0
+
+    def set_error(self, errname):
+        errname = errname.upper()
+        errnum = self.fp_error_names.index(errname)
+        errbit = self.fp_error_bits[errnum]
+        self.fp_errors |= errbit
+
+    def clear_error(self, errname):
+        errname = errname.upper()
+        errnum = self.fp_error_names.index(errname)
+        errbit = self.fp_error_bits[errnum]
+        self.fp_errors &= ~errbit
+
+    def clear_errors(self):
+        self.fp_errors = 0
+
+    def check_break_on_finish(self):
+        if self.break_on_finish:
+            if len(self.call_stack) < self.prev_call_level:
+                inst = self.curr_inst()
+                addr = self.curr_addr()
+                print(
+                    "Stopped on call return at instruction %d in #%d." %
+                    (addr.value, addr.prog)
+                )
+                self.prevline = inst.line
+                self.prevaddr = addr
+                self.break_on_finish = False
+                raise MufBreakExecution()
+
+    def check_break_after_steps(self):
+        if self.break_after_steps > 0:
+            inst = self.curr_inst()
+            addr = self.curr_addr()
+            if inst.line != self.prevline:
+                self.prevline = inst.line
+                self.break_after_steps -= 1
+                if not self.break_after_steps:
+                    self.prevaddr = addr
+                    self.break_after_steps = -1
+                    raise MufBreakExecution()
+
+    def check_break_after_lines(self):
+        if self.break_after_lines > 0:
+            if len(self.call_stack) <= self.prev_call_level:
+                inst = self.curr_inst()
+                addr = self.curr_addr()
+                if inst.line != self.prevline:
+                    self.prevline = inst.line
+                    self.break_after_lines -= 1
+                    if not self.break_after_lines:
+                        self.prevaddr = addr
+                        self.break_after_lines = -1
+                        raise MufBreakExecution()
+
+    def check_breakpoints(self):
+        if not self.call_stack:
+            raise MufBreakExecution()
+        if self.breakpoints:
+            inst = self.curr_inst()
+            addr = self.curr_addr()
+            if inst.line != self.prevline or addr.prog != self.prevaddr.prog:
+                bp = (addr.prog, inst.line)
+                if bp in self.breakpoints:
+                    bpnum = self.breakpoints.index(bp)
+                    print("Stopped at breakpoint %d." % bpnum)
+                    self.prevline = inst.line
+                    self.prevaddr = addr
+                    raise MufBreakExecution()
+        self.check_break_on_finish()
+        self.check_break_after_steps()
+        self.check_break_after_lines()
+
+    def execute_code(self):
+        self.prev_call_level = len(self.call_stack)
+        while self.call_stack:
+            inst = self.curr_inst()
+            addr = self.curr_addr()
+            line = inst.line
+            if self.trace:
+                print(self.get_trace_line())
+                sys.stdout.flush()
+            try:
+                self.cycles += 1
+                inst.execute(self)
+                self.pc_advance(1)
+                self.check_breakpoints()
+            except MufBreakExecution as e:
+                return
+            except MufRuntimeError as e:
+                if not self.catch_stack:
+                    print(
+                        "Error in #%d line %d (%s): %s" % (
+                            addr.prog, line, str(inst), e
+                        ),
+                        file=sys.stderr
+                    )
+                    return
+                elif self.trace:
+                    print(
+                        "Caught error in #%d line %d (%s): %s" %
+                        (addr.prog, line, str(inst), e),
+                        file=sys.stderr
+                    )
+                self.catch_trigger(e)
+                try:
+                    self.check_breakpoints()
+                except MufBreakExecution as e:
+                    return
+
+    ###############################################################
+    def get_programs(self):
+        return [
+            StackDBRef(obj.dbref)
+            for obj in objects_db
+            if obj.objtype == "program" and obj.compiled
+        ]
+
+    def program_tokens(self, prog):
+        comp = self.get_compiled(prog)
+        return comp.get_tokens_info()
+
+    def program_source_lines(self, prog):
+        comp = self.get_compiled(prog)
+        return comp.srclines
+
+    def program_source_line(self, prog, line):
+        comp = self.get_compiled(prog)
+        return comp.srclines[line - 1]
+
+    def get_addr_source_line(self, addr):
+        comp = self.get_compiled(addr.prog)
+        inst = comp.get_inst(addr)
+        return comp.srclines[inst.line - 1]
+
+    def program_functions(self, prog):
+        comp = self.get_compiled(prog)
+        return comp.get_functions()
+
+    def program_function_addr(self, prog, fun):
+        comp = self.get_compiled(prog)
+        return comp.get_function_addr(fun)
+
+    def get_function_addr(self, fun):
+        comp = self.get_compiled()
+        return comp.get_function_addr(fun)
+
+    def get_inst(self, addr):
+        comp = self.get_compiled(addr.prog)
+        return comp.get_inst(addr)
+
+    def get_inst_line(self, addr):
+        comp = self.get_compiled(addr.prog)
+        inst = comp.get_inst(addr)
+        return inst.line
+
+    def get_breakpoints(self):
+        return self.breakpoints
+
+    def add_breakpoint(self, prog, line):
+        bp = (prog, line)
+        self.breakpoints.append(bp)
+        return len(self.breakpoints)
+
+    def del_breakpoint(self, bpnum):
+        self.breakpoints[bpnum] = (None, None)
+
+    def set_break_steps(self, steps):
+        self.break_after_steps = steps
+
+    def set_break_lines(self, lines):
+        self.break_after_lines = lines
+
+    def set_break_on_finish(self):
+        self.break_on_finish = True
+
+    def get_data_stack(self):
+        return self.data_stack
+
+    def program_find_func(self, addr):
+        comp = self.get_compiled(addr.prog)
+        return comp.find_func(addr)
+
+    def program_func_vars(self, prog, fun):
+        comp = self.get_compiled(prog)
+        return comp.get_func_vars(fun)
+
+    def program_global_vars(self, prog):
+        comp = self.get_compiled(prog)
+        return comp.get_global_vars()
+
+    def program_func_var(self, prog, fun, vname):
+        comp = self.get_compiled(prog)
+        return comp.get_func_var(fun, vname)
+
+    def program_global_var(self, prog, vname):
+        comp = self.get_compiled(prog)
+        return comp.get_global_var(vname)
+
+    def get_call_stack(self):
+        out = []
+        for lev, callfr in enumerate(self.call_stack):
+            addr = callfr.pc
+            inst = self.get_inst(addr)
+            out.append(
+                {
+                    'level': lev,
+                    'func': self.program_find_func(addr),
+                    'prog': StackDBRef(addr.prog),
+                    'line': inst.line,
+                    'addr': addr.value,
+                    'inst': str(inst),
+                    'src': self.get_addr_source_line(addr),
+                }
+            )
+        return out
+
+    def _get_stack_repr(self, maxcnt):
+        out = ''
+        depth = self.data_depth()
+        if maxcnt > depth:
+            maxcnt = depth
+        else:
+            out += '...'
+        for i in xrange(-depth, 0):
+            if out:
+                out += ', '
+            out += item_repr(self.data_stack[i])
+        return out
+
+    def get_trace_line(self):
+        inst = self.curr_inst()
+        addr = self.curr_addr()
+        line = inst.line
+        return(
+            "% 5d: #%d line %d (%s) %s" % (
+                addr.value, addr.prog, line,
+                self._get_stack_repr(20), inst
+            )
+        )
+
+
+class ConsoleMufDebugger(object):
+    def __init__(self, fr):
+        self.fr = fr
+        self.matches = []
+
+    def complete(self, text, state):
+        cmds = [
+            'list ', 'quit', 'run', 'show ', 'next', 'step', 'break ',
+            'continue', 'finish', 'stack', 'trace', 'notrace', 'delete ',
+            'print ', 'pop', 'push ', 'rot', 'dup', 'swap', 'help'
+        ]
+        response = None
+        origline = readline.get_line_buffer()
+        begin = readline.get_begidx()
+        end = readline.get_endidx()
+        text = origline[begin:end]
+        words = origline.split(' ')
+        if state == 0:
+            addr = self.fr.curr_addr()
+            # This is the first time for this text, so build a match list.
+            if begin == 0:
+                self.matches = [s for s in cmds if s and s.startswith(text)]
+            elif words[0] in ['l', 'list', 'b', 'break']:
+                self.matches = [
+                    x
+                    for x in self.fr.program_functions(addr.prog)
+                    if x.startswith(text)
+                ]
+            elif words[0] == 'show':
+                showcmds = ['breakpoints', 'functions', 'globals', 'vars']
+                self.matches = [x for x in showcmds if x.startswith(text)]
+            elif words[0] in ['p', 'print']:
+                fun = self.fr.program_find_func(addr)
+                fvars = self.fr.program_func_vars(addr.prog, fun)
+                gvars = self.fr.program_global_vars(addr.prog)
+                self.matches = [
+                    x for x in (fvars + gvars) if x.startswith(text)
+                ]
+            else:
+                self.matches = cmds[:]
+        # Return the state'th item from the match list,
+        # if we have that many.
+        try:
+            response = self.matches[state]
+        except IndexError:
+            response = None
+        return response
+
+    def show_compiled_tokens(self, prog):
+        alltokens = self.fr.program_tokens(prog)
+        for inum, tokeninfo in enumerate(alltokens):
+            rep = tokeninfo['repr']
+            if inum > 0 and rep.startswith("Function:"):
+                print("")
+            print("% 5d: %s" % (inum, rep))
+
+    def show_addr_line(self, addr):
+        if not addr:
+            return
+        inst = self.fr.get_inst(addr)
+        src = self.fr.program_source_line(addr.prog, inst.line)
+        curraddr = self.fr.curr_addr()
+        mark = ' '
+        if addr == curraddr:
+            mark = '>'
+        print("%s% 5d: %s" % (mark, inst.line, src))
+
+    def debug_cmd_step(self, args):
+        if not args:
+            args = "1"
+        if not is_int(args):
+            print("Usage: step [COUNT]")
+            return
+        self.fr.set_break_steps(int(args))
+        self.fr.execute_code()
+        self.show_addr_line(self.fr.curr_addr())
+        self.fr.nextline = -1
+
+    def debug_cmd_next(self, args):
+        if not args:
+            args = "1"
+        if not is_int(args):
+            print("Usage: next [COUNT]")
+            return
+        self.fr.set_break_lines(int(args))
+        self.fr.execute_code()
+        self.show_addr_line(self.fr.curr_addr())
+        self.fr.nextline = -1
+
+    def debug_cmd_continue(self, args):
+        self.fr.execute_code()
+        self.show_addr_line(self.fr.curr_addr())
+        self.fr.nextline = -1
+
+    def debug_cmd_finish(self, args):
+        self.fr.set_break_on_finish()
+        self.fr.execute_code()
+        self.show_addr_line(self.fr.curr_addr())
+        self.fr.nextline = -1
+
+    def debug_cmd_break(self, args):
+        addr = self.fr.curr_addr()
+        prog = addr.prog
+        if ' ' in args:
+            prg, args = args.split(' ', 1)
+            prg = prg.strip()
+            args = args.strip()
+            obj = match_dbref(prg)
+            if obj == -1:
+                obj = match_registered(getobj(0), prg)
+            obj = getobj(obj)
+            if not validobj(obj) or getobj(obj).objtype != "program":
+                print("Invalid program!")
+                return
+            prog = obj
+        addr = self.fr.program_function_addr(prog, args)
+        if addr:
+            line = self.fr.get_inst_line(addr)
+            bpnum = self.fr.add_breakpoint(prog, line)
+            print("Added breakpoint %d at #%d line %d." % (bpnum, prog, line))
+        elif is_int(args):
+            line = int(args)
+            bpnum = self.fr.add_breakpoint(prog, line)
+            print("Added breakpoint %d at #%d line %d." % (bpnum, prog, line))
+        else:
+            print("Usage: break [PROG] LINE")
+            print("   or: break [PROG] FUNCNAME")
+
+    def debug_cmd_delete(self, args):
+        bps = self.fr.get_breakpoints()
+        if not is_int(args) or int(args) - 1 not in range(len(bps)):
+            print("Usage: delete BREAKPOINTNUM")
+        else:
+            self.fr.del_breakpoint(int(args) - 1)
+            print("Deleted breakpoint %d." % int(args))
+
+    def debug_cmd_list(self, args):
+        inst = self.fr.curr_inst()
+        addr = self.fr.curr_addr()
+        prog = addr.prog
+        if self.fr.program_function_addr(prog, args):
+            addr = self.fr.program_function_addr(prog, args)
+            start = self.fr.get_inst_line(addr)
+            end = start + 10
+        elif ',' in args:
+            start, end = args.split(',', 1)
+            start = start.strip()
+            end = end.strip()
+        elif args:
+            start = end = args
+        elif self.fr.nextline < 0:
+            start = str(inst.line - 5)
+            end = str(inst.line + 5)
+        else:
+            start = self.fr.nextline
+            end = self.fr.nextline + 10
+        if not is_int(start) or not is_int(end):
+            print("Usage: list [LINE[,LINE]]")
+            print("   or: list FUNCNAME")
+        else:
+            srcs = self.fr.program_source_lines(prog)
+            start = max(1, min(int(start), len(srcs)))
+            end = max(1, min(int(end), len(srcs)))
+            self.fr.nextline = end + 1
+            for i in range(start, end + 1):
+                src = srcs[i - 1]
+                if i == inst.line:
+                    print(">% 5d: %s" % (i, src))
+                else:
+                    print(" % 5d: %s" % (i, src))
+
+    def debug_cmd_print(self, args):
+        addr = self.fr.curr_addr()
+        fun = self.fr.program_find_func(addr)
+        if self.fr.program_func_var(addr.prog, fun, args):
+            v = self.fr.program_func_var(addr.prog, fun, args)
+            val = self.fr.funcvar_get(v)
+        elif self.fr.program_global_var(addr.prog, args):
+            v = self.fr.program_global_var(addr.prog, args)
+            val = self.fr.globalvar_get(v)
+        else:
+            print("Variable not found: %s" % args)
+            val = None
+        if val is not None:
+            val = item_repr(val)
+            print("%s = %s" % (args, val))
+
+    def debug_cmd_show_breakpoints(self):
+        print("Breakpoints")
+        cnt = 0
+        bps = self.fr.get_breakpoints()
+        for i, bp in enumerate(bps):
+            prog, line = bp
+            if prog and line:
+                print("  %d: Program #%d Line %d" % (i + 1, prog, line))
+                cnt += 1
+        if not cnt:
+            print("  - None -")
+
+    def debug_cmd_show_functions(self):
+        print("Declared Functions")
+        addr = self.fr.curr_addr()
+        funcs = self.fr.program_functions(addr.prog)
+        if funcs:
+            for func in funcs:
+                print("  %s" % func)
+        else:
+            print("  - None -")
+
+    def debug_cmd_show_globals(self):
+        print("Global Variables")
+        addr = self.fr.curr_addr()
+        gvars = self.fr.program_global_vars(addr.prog)
+        if gvars:
+            for vnum, vname in enumerate(gvars):
+                val = self.fr.globalvar_get(vnum)
+                val = item_repr(val)
+                print("  LV%-3d %s = %s" % (vnum, vname, val))
+        else:
+            print("  - None -")
+
+    def debug_cmd_show_vars(self):
+        print("Function Variables")
+        addr = self.fr.curr_addr()
+        fun = self.fr.program_find_func(addr)
+        fvars = self.fr.program_func_vars(addr.prog, fun)
+        if fvars:
+            for vnum, vname in enumerate(fvars):
+                val = self.fr.funcvar_get(vnum)
+                val = item_repr(val)
+                print("  SV%-3d %s = %s" % (vnum, vname, val))
+        else:
+            print("  - None -")
+
+    def debug_cmd_show(self, args):
+        if args == "breakpoints":
+            self.debug_cmd_show_breakpoints()
+        elif args == "functions":
+            self.debug_cmd_show_functions()
+        elif args == "globals":
+            self.debug_cmd_show_globals()
+        elif args == "vars":
+            self.debug_cmd_show_vars()
+        else:
+            print("Usage: show breakpoints")
+            print("   or: show functions")
+            print("   or: show globals")
+            print("   or: show vars")
+
+    def debug_cmd_stack(self, args):
+        if not args:
+            args = "999999"
+        if not is_int(args):
+            print("Usage: stack [DEPTH]")
+        else:
+            depth = self.fr.data_depth()
+            args = int(args)
+            if args > depth:
+                args = depth
+            for i in xrange(args):
+                val = self.fr.data_pick(i + 1)
+                val = item_repr(val)
+                print("Stack %d: %s" % (depth - i, val))
+            if not depth:
+                print("- Empty Stack -")
+
+    def debug_cmd_trace(self, args):
+        self.fr.set_trace(True)
+        print("Turning on Trace mode.")
+
+    def debug_cmd_notrace(self, args):
+        self.fr.set_trace(False)
+        print("Turning off Trace mode.")
+
+    def debug_cmd_pop(self, args):
+        self.fr.data_pop()
+        print("Stack item POPed.")
+
+    def debug_cmd_dup(self, args):
+        a = self.fr.data_pick(1)
+        self.fr.data_push(a)
+        print("Stack item DUPed.")
+
+    def debug_cmd_swap(self, args):
+        a = self.fr.data_pop()
+        b = self.fr.data_pop()
+        self.fr.data_push(a)
+        self.fr.data_push(b)
+        print("Stack items SWAPed.")
+
+    def debug_cmd_rot(self, args):
+        a = self.fr.data_pop()
+        b = self.fr.data_pop()
+        c = self.fr.data_pop()
+        self.fr.data_push(b)
+        self.fr.data_push(a)
+        self.fr.data_push(c)
+        print("Stack items ROTed.")
+
+    def debug_cmd_push(self, args):
+        if is_int(args):
+            self.fr.data_push(int(args))
+        elif is_float(args):
+            self.fr.data_push(float(args))
+        elif args[0] == '#' and is_int(args[1:]):
+            self.fr.data_push(StackDBRef(int(args[1:])))
+        elif args[0] == '"' and args[-1] == '"':
+            self.fr.data_push(args[1:-1])
+        print("Stack item pushed.")
+
+    def debug_cmd_where(self, args):
+        fmt = "{level:-3d}: In prog {prog}, func '{func}', line {line}: {inst}"
+        fmt += "\n    {src}"
+        for callinfo in self.fr.get_call_stack():
+            print(fmt.format(**callinfo))
+
+    def debug_cmd_run(self, args):
+        self.fr.setup(
+            self.program.value,
+            self.user.value,
+            self.trigger.value,
+            self.command
+        )
+        print("Restarting program.")
+        self.debug_cmd_list("")
+
+    def debug_cmd_help(self, args):
+        print("help               Show this message.")
+        print("where              Display the call stack.")
+        print("stack [DEPTH]      Show top N data stack items.")
+        print("list               List next few source code lines.")
+        print("list LINE          List source code LINE.")
+        print("list START,END     List source code from START to END.")
+        print("list FUNC          List source code at start of FUNC.")
+        print("break LINE         Set breakpoint at given line.")
+        print("break FUNC         Set breakpoint at start of FUNC.")
+        print("delete BREAKNUM    Delete a breakpoint.")
+        print("show breakpoints   Show current breakpoints.")
+        print("show functions     List all declared functions.")
+        print("show globals       List all global vars.")
+        print("show vars          List all vars in the current func.")
+        print("step [COUNT]       Step 1 or COUNT lines, enters calls.")
+        print("next [COUNT]       Step 1 or COUNT lines, skips calls.")
+        print("finish             Finish the current function.")
+        print("cont               Continue until next breakpoint.")
+        print("pop                Pop top data stack item.")
+        print("dup                Duplicate top data stack item.")
+        print("swap               Swap top two data stack items.")
+        print("rot                Rot top three data stack items.")
+        print("push VALUE         Push VALUE onto top of data stack.")
+        print("print VARIABLE     Print the value of the variable.")
+        print("trace              Turn on tracing of each instr.")
+        print("notrace            Turn off tracing if each instr.")
+        print("run COMMANDARG     Re-run program, with COMMANDARG.")
+        print("quit               Exits the debugger.")
+
+    def debug_code(self):
+        prevcmd = ""
+        self.fr.nextline = -1
+        readline.set_completer(self.complete)
+        readline.set_completer_delims(" ")
+        readline.parse_and_bind("tab: complete")
+        while True:
+            if prevcmd:
+                cmd = raw_input("DEBUG>")
+                if not cmd:
+                    cmd = prevcmd
+            else:
+                cmd = "list"
+            prevcmd = cmd
+            args = ""
+            if " " in cmd:
+                cmd, args = cmd.split(" ", 1)
+                cmd = cmd.strip()
+                args = args.strip()
+            if cmd == "q" or cmd == "quit":
+                print("Exiting.")
+                return
+            commands = {
+                "break": self.debug_cmd_break,
+                "c": self.debug_cmd_continue,
+                "cont": self.debug_cmd_continue,
+                "delete": self.debug_cmd_delete,
+                "dup": self.debug_cmd_dup,
+                "f": self.debug_cmd_finish,
+                "finish": self.debug_cmd_finish,
+                "help": self.debug_cmd_help,
+                "l": self.debug_cmd_list,
+                "list": self.debug_cmd_list,
+                "n": self.debug_cmd_next,
+                "next": self.debug_cmd_next,
+                "notrace": self.debug_cmd_notrace,
+                "pop": self.debug_cmd_pop,
+                "p": self.debug_cmd_print,
+                "print": self.debug_cmd_print,
+                "push": self.debug_cmd_push,
+                "rot": self.debug_cmd_rot,
+                "run": self.debug_cmd_run,
+                "show": self.debug_cmd_show,
+                "stack": self.debug_cmd_stack,
+                "s": self.debug_cmd_step,
+                "step": self.debug_cmd_step,
+                "swap": self.debug_cmd_swap,
+                "t": self.debug_cmd_trace,
+                "trace": self.debug_cmd_trace,
+                "w": self.debug_cmd_where,
+                "where": self.debug_cmd_where,
+            }
+            if cmd in commands:
+                commands[cmd](args)
+            else:
+                self.debug_cmd_help(args)
+            if not self.fr.call_stack:
+                break
+            sys.stdout.flush()
+
+
 class MufSim(object):
     def print(self, *args):
         print(*args)
@@ -6753,8 +6912,6 @@ class MufSim(object):
         except:
             pass
         readline.set_history_length(1000)
-        readline.parse_and_bind('tab: complete')
-        readline.set_completer_delims(" ")
 
     def readline_teardown(self):
         try:
@@ -6780,9 +6937,9 @@ class MufSim(object):
         fr.setup(program_object, john_doe, trigger_action, self.opts.command)
         fr.set_trace(self.opts.trace)
         fr.set_text_entry(self.opts.textentry)
-        fr.data_push(self.opts.command)
         if self.opts.debug:
-            fr.debug_code()
+            dbg = ConsoleMufDebugger(fr)
+            dbg.debug_code()
         else:
             st = time.time()
             fr.execute_code()
@@ -6792,6 +6949,17 @@ class MufSim(object):
                 self.print("%g secs elapsed.  %g instructions/sec" %
                            (et-st, fr.cycles/(et-st)))
         self.readline_teardown()
+
+    def show_compiled_tokens(self, prog):
+        prog = getobj(prog)
+        if not prog.compiled:
+            return
+        alltokens = prog.compiled.get_tokens_info()
+        for inum, tokeninfo in enumerate(alltokens):
+            rep = tokeninfo['repr']
+            if inum > 0 and rep.startswith("Function:"):
+                print("")
+            print("% 5d: %s" % (inum, rep))
 
     def main(self):
         self.process_cmdline()
@@ -6829,7 +6997,7 @@ class MufSim(object):
                 return
             if self.opts.uncompile:
                 self.print_header("Showing Tokens for %s" % progobj)
-                progobj.compiled.show_compiled_tokens()
+                self.show_compiled_tokens(progobj)
                 self.print("")
         if self.opts.run:
             self.print_header("Executing Tokens")
