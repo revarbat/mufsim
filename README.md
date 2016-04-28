@@ -71,7 +71,6 @@ database related primitives.  This database is as follows:
         Owner: Wizard(#1PWM3)
         Properties:
             _defs/.tell: "me @ swap notify"
-            _reg/cmd/test: #4
 
     Player: Wizard(#1PWM3)
         Location: Global Environment Room(#0R)

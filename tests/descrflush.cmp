@@ -12,9 +12,7 @@
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") -1
     2: #4 line 2 ("", -1) DESCRFLUSH
-DESCRFLUSH 3, Wizard(#1)
-DESCRFLUSH 11, John_Doe(#5)
-DESCRFLUSH 13, Jane_Doe(#6)
+DESCRFLUSH ALL DESCRS.
     3: #4 line 3 ("") DESCR
     4: #4 line 3 ("", 11) DESCRFLUSH
 DESCRFLUSH 11, John_Doe(#5)
