@@ -1,5 +1,6 @@
 import mufsim.gamedb as db
 import mufsim.stackitems as si
+from mufsim.logger import log
 from mufsim.errors import MufCompileError, MufRuntimeError
 from mufsim.insts.stack import InstFuncVar, InstBang
 from mufsim.insts.base import Instruction, instr
@@ -117,7 +118,7 @@ class InstPublic(Instruction):
         comp = cmplr.compiled
         if not comp.publicize_function(nam):
             raise MufCompileError("Unrecognized identifier: %s" % nam)
-        print("EXPOSED '%s' AS PUBLIC" % nam)
+        log("EXPOSED '%s' AS PUBLIC" % nam)
         return (False, src)
 
 
@@ -129,7 +130,7 @@ class InstWizCall(Instruction):
         comp = cmplr.compiled
         if not comp.publicize_function(nam):
             raise MufCompileError("Unrecognized identifier: %s" % nam)
-        print("EXPOSED '%s' AS WIZCALL" % nam)
+        log("EXPOSED '%s' AS WIZCALL" % nam)
         return (False, src)
 
 

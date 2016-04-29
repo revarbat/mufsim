@@ -1,6 +1,7 @@
 import mufsim.gamedb as db
 import mufsim.stackitems as si
 import mufsim.connections as conn
+from mufsim.logger import log
 # from mufsim.errors import MufRuntimeError
 from mufsim.insts.base import Instruction, instr
 
@@ -94,7 +95,7 @@ class InstConBoot(Instruction):
         if descr >= 0:
             who = conn.descr_user(descr)
             conn.disconnect(descr)
-            print("BOOTED DESCRIPTOR %d: %s" % (descr, db.getobj(who)))
+            log("BOOTED DESCRIPTOR %d: %s" % (descr, db.getobj(who)))
 
 
 @instr("connotify")
@@ -106,7 +107,7 @@ class InstConNotify(Instruction):
         descr = conn.descr_from_con(con)
         if descr >= 0:
             who = conn.descr_user(descr)
-            print("NOTIFY TO DESCR %d, USER %s: %s" %
+            log("NOTIFY TO DESCR %d, USER %s: %s" %
                   (descr, db.getobj(who), msg))
 
 

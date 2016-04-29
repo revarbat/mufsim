@@ -3,6 +3,7 @@ import re
 import mufsim.utils as util
 import mufsim.stackitems as si
 import mufsim.connections as conn
+from mufsim.logger import log
 
 
 player_names = {}
@@ -84,10 +85,10 @@ class DBObject(object):
             val = self.properties[prop]
         if not suppress:
             if type(val) is str:
-                print("GETPROP \"%s\" on #%d = %s" %
+                log("GETPROP \"%s\" on #%d = %s" %
                       (prop, self.dbref, util.escape_str(val)))
             else:
-                print("GETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
+                log("GETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
         return val
 
     def setprop(self, prop, val, suppress=False):
@@ -95,14 +96,14 @@ class DBObject(object):
         self.properties[prop] = val
         if not suppress:
             if type(val) is str:
-                print("SETPROP \"%s\" on #%d = %s" %
+                log("SETPROP \"%s\" on #%d = %s" %
                       (prop, self.dbref, util.escape_str(val)))
             else:
-                print("SETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
+                log("SETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
 
     def delprop(self, prop):
         prop = self.normalize_prop(prop)
-        print("DELPROP \"%s\" on #%d" % (prop, self.dbref))
+        log("DELPROP \"%s\" on #%d" % (prop, self.dbref))
         if prop in self.properties:
             del self.properties[prop]
         prop += '/'
@@ -110,7 +111,7 @@ class DBObject(object):
             prp = self.normalize_prop(prp)
             if prp.startswith(prop):
                 del self.properties[prp]
-                print("DELPROP \"%s\" on #%d" % (prp, self.dbref))
+                log("DELPROP \"%s\" on #%d" % (prp, self.dbref))
 
     def is_propdir(self, prop):
         prop = self.normalize_prop(prop)
@@ -121,7 +122,7 @@ class DBObject(object):
             if prp.startswith(prop):
                 val = True
                 break
-        print("PROPDIR? \"%s\" on #%d = %s" % (prop, self.dbref, val))
+        log("PROPDIR? \"%s\" on #%d = %s" % (prop, self.dbref, val))
         return val
 
     def next_prop(self, prop, suppress=False):
@@ -150,7 +151,7 @@ class DBObject(object):
                     if not out or pfx + sub < out:
                         out = pfx + sub
         if not suppress:
-            print("NEXTPROP \"%s\" on #%d = \"%s\"" % (prop, self.dbref, out))
+            log("NEXTPROP \"%s\" on #%d = \"%s\"" % (prop, self.dbref, out))
         return out
 
     def prodir_props(self, prop):
@@ -166,7 +167,7 @@ class DBObject(object):
                 if sub not in out:
                     out.append(sub)
         out.sort()
-        print("PROPDIRPROPS \"%s\" on #%d = %s" % (prop, self.dbref, out))
+        log("PROPDIRPROPS \"%s\" on #%d = %s" % (prop, self.dbref, out))
         return out
 
     def __repr__(self):

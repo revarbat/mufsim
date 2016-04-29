@@ -1,10 +1,9 @@
-from __future__ import print_function
-
 import sys
 import copy
 
 import mufsim.stackitems as si
 import mufsim.gamedb as db
+from mufsim.logger import log
 from mufsim.errors import MufRuntimeError, MufBreakExecution
 from mufsim.callframe import MufCallFrame
 
@@ -315,7 +314,7 @@ class MufStackFrame(object):
             if len(self.call_stack) < self.prev_call_level:
                 inst = self.curr_inst()
                 addr = self.curr_addr()
-                print(
+                log(
                     "Stopped on call return at instruction %d in #%d." %
                     (addr.value, addr.prog)
                 )
@@ -359,7 +358,7 @@ class MufStackFrame(object):
                 bp = (addr.prog, inst.line)
                 if bp in self.breakpoints:
                     bpnum = self.breakpoints.index(bp)
-                    print("Stopped at breakpoint %d." % bpnum)
+                    log("Stopped at breakpoint %d." % bpnum)
                     self.prevline = inst.line
                     self.prevaddr = addr
                     raise MufBreakExecution()
@@ -374,7 +373,7 @@ class MufStackFrame(object):
             addr = self.curr_addr()
             line = inst.line
             if self.trace:
-                print(self.get_trace_line())
+                log(self.get_trace_line())
                 sys.stdout.flush()
             try:
                 self.cycles += 1
@@ -385,18 +384,17 @@ class MufStackFrame(object):
                 return
             except MufRuntimeError as e:
                 if not self.catch_stack:
-                    print(
+                    log(
                         "Error in #%d line %d (%s): %s" % (
                             addr.prog, line, str(inst), e
-                        ),
-                        file=sys.stderr
+                        )
                     )
                     return
                 elif self.trace:
-                    print(
-                        "Caught error in #%d line %d (%s): %s" %
-                        (addr.prog, line, str(inst), e),
-                        file=sys.stderr
+                    log(
+                        "Caught error in #%d line %d (%s): %s" % (
+                            addr.prog, line, str(inst), e
+                        )
                     )
                 self.catch_trigger(e)
                 try:
@@ -463,8 +461,8 @@ class MufStackFrame(object):
     def set_break_lines(self, lines):
         self.break_after_lines = lines
 
-    def set_break_on_finish(self):
-        self.break_on_finish = True
+    def set_break_on_finish(self, val=True):
+        self.break_on_finish = val
 
     def get_data_stack(self):
         return self.data_stack

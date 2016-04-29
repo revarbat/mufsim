@@ -1,5 +1,6 @@
 import mufsim.gamedb as db
 import mufsim.stackitems as si
+from mufsim.logger import log
 from mufsim.errors import MufRuntimeError
 from mufsim.insts.base import Instruction, instr
 
@@ -227,7 +228,7 @@ class InstForce(Instruction):
         fr.check_underflow(2)
         cmd = fr.data_pop(str)
         obj = fr.data_pop_object()
-        print("FORCE %s(#%d) TO DO: %s" % (obj.name, obj.dbref, cmd))
+        log("FORCE %s(#%d) TO DO: %s" % (obj.name, obj.dbref, cmd))
         # TODO: Real forcing!  (pipe dream)
         # obj.force(cmd)
 
@@ -270,7 +271,6 @@ class InstNext(Instruction):
         else:
             arr = db.getobj(loc).contents
         if obj.dbref not in arr:
-            print("arr=%s" % arr)
             raise MufRuntimeError("DB inconsistent!")
         idx = arr.index(obj.dbref)
         if idx == len(arr) - 1:

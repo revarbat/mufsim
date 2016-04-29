@@ -1,6 +1,7 @@
 import mufsim.gamedb as db
 import mufsim.stackitems as si
 import mufsim.connections as conn
+from mufsim.logger import log
 from mufsim.errors import MufRuntimeError
 from mufsim.insts.base import Instruction, instr
 
@@ -60,7 +61,7 @@ class InstDescrSetUser(Instruction):
         if conn.reconnect(descr, who.dbref):
             was = db.getobj(was)
             # TODO: actually check password?
-            print("RECONNECTED DESCRIPTOR %d FROM %s TO %s USING PW '%s'" %
+            log("RECONNECTED DESCRIPTOR %d FROM %s TO %s USING PW '%s'" %
                   (descr, was, who, pw))
 
 
@@ -70,7 +71,7 @@ class InstDescrBoot(Instruction):
         descr = fr.data_pop(int)
         who = conn.descr_user(descr)
         if conn.disconnect(descr):
-            print("BOOTED DESCRIPTOR %d: %s" % (descr, db.getobj(who)))
+            log("BOOTED DESCRIPTOR %d: %s" % (descr, db.getobj(who)))
 
 
 @instr("descrnotify")
@@ -81,7 +82,7 @@ class InstDescrNotify(Instruction):
         descr = fr.data_pop(int)
         who = conn.descr_user(descr)
         if conn.is_descr_online(descr):
-            print("NOTIFY TO DESCR %d, %s: %s" %
+            log("NOTIFY TO DESCR %d, %s: %s" %
                   (descr, db.getobj(who), msg))
 
 
@@ -91,11 +92,11 @@ class InstDescrFlush(Instruction):
         descr = fr.data_pop(int)
         if descr == -1:
             conn.flush_all_descrs()
-            print("DESCRFLUSH ALL DESCRS.")
+            log("DESCRFLUSH ALL DESCRS.")
         elif conn.is_descr_online(descr):
             conn.descr_flush(descr)
             who = conn.descr_user(descr)
-            print("DESCRFLUSH %d, %s" % (descr, db.getobj(who)))
+            log("DESCRFLUSH %d, %s" % (descr, db.getobj(who)))
 
 
 @instr("descr")

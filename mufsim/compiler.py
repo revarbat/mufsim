@@ -1,10 +1,9 @@
-from __future__ import print_function
-
 import sys
 
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 import mufsim.utils as util
+from mufsim.logger import log
 from mufsim.compiled import CompiledMuf
 from mufsim.errors import MufCompileError
 
@@ -384,7 +383,7 @@ class MufCompiler(object):
                 return True
             return False
         except MufCompileError as e:
-            print("Error in line %d: %s" % (self.line, e), file=sys.stderr)
+            log("Error in line %d: %s" % (self.line, e), file=sys.stderr)
             return None
 
 

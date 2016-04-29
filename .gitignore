@@ -1,5 +1,6 @@
 *.pyc
 *.pyo
-tests/*.out
 *.swp
+tests/*.out
+build/
 .ropeproject

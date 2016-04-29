@@ -1,5 +1,6 @@
 import sys
 
+from mufsim.logger import log
 from mufsim.errors import MufBreakExecution
 from mufsim.insts.base import Instruction, instr
 
@@ -19,7 +20,7 @@ class InstDebugOff(Instruction):
 @instr("debug_line")
 class InstDebugLine(Instruction):
     def execute(self, fr):
-        print(fr.get_trace_line())
+        log(fr.get_trace_line())
         sys.stdout.flush()
 
 

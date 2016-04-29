@@ -1,5 +1,6 @@
 import mufsim.utils as util
 import mufsim.gamedb as db
+from mufsim.logger import log
 from mufsim.errors import MufCompileError
 from mufsim.insts.base import Instruction, instr
 
@@ -15,7 +16,7 @@ class InstDollarAbort(Instruction):
 class InstDollarEcho(Instruction):
     def compile(self, cmplr, code, src):
         val, src = cmplr.get_to_eol(src)
-        print("$ECHO: %s" % val)
+        log("$ECHO: %s" % val)
         return (False, src)
 
 

@@ -1,0 +1,6 @@
+[console_scripts]
+mufsim = mufconsole.mufconsole:main
+
+[gui_scripts]
+mufsimgui = mufgui.mufgui:main
+

@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 from mufsim.insts.flow import InstFunc

@@ -1,6 +1,7 @@
 import time
 import mufsim.stackitems as si
 import mufsim.gamedb as db
+from mufsim.logger import log
 from mufsim.errors import MufRuntimeError
 from mufsim.insts.base import Instruction, instr
 
@@ -21,7 +22,7 @@ class InstRead(Instruction):
                 txt = raw_input("READ>")
             if txt or fr.read_wants_blanks:
                 break
-            print("Blank line ignored.")
+            log("Blank line ignored.")
         if txt == "@Q":
             while fr.call_stack:
                 fr.call_pop()
@@ -43,9 +44,9 @@ class InstTRead(Instruction):
                 txt = raw_input("TIMED READ (@T to force timeout) >")
             if txt or fr.read_wants_blanks:
                 break
-            print("Blank line ignored.")
+            log("Blank line ignored.")
         if txt == "@T":
-            print("Faking time-out.")
+            log("Faking time-out.")
             fr.data_push("")
             fr.data_push(1)
         elif txt == "@Q":
@@ -71,7 +72,7 @@ class InstUserLog(Instruction):
         )
         with open("userlog.log", "a") as f:
             f.write(msg)
-        print("USERLOG: %s" % msg)
+        log("USERLOG: %s" % msg)
 
 
 @instr("notify")
@@ -82,9 +83,9 @@ class InstNotify(Instruction):
         who = fr.data_pop_object()
         me = fr.globalvar_get(0)
         if who.dbref == me.value:
-            print("NOTIFY: %s" % msg)
+            log("NOTIFY: %s" % msg)
         else:
-            print("NOTIFY TO %s: %s" % (who, msg))
+            log("NOTIFY TO %s: %s" % (who, msg))
 
 
 @instr("array_notify")
@@ -100,7 +101,7 @@ class InstArrayNotify(Instruction):
             if type(msg) is not str:
                 raise MufRuntimeError("Expected list array of strings. (1)")
             targs = [db.getobj(o) for o in targs]
-            print("NOTIFY TO %s: %s" % (targs, msg))
+            log("NOTIFY TO %s: %s" % (targs, msg))
 
 
 @instr("notify_except")
@@ -112,9 +113,9 @@ class InstNotifyExcept(Instruction):
         where = fr.data_pop_object()
         if db.validobj(who):
             who = db.getobj(who)
-            print("NOTIFY TO ALL IN %s EXCEPT %s: %s" % (where, who, msg))
+            log("NOTIFY TO ALL IN %s EXCEPT %s: %s" % (where, who, msg))
         else:
-            print("NOTIFY TO ALL IN %s: %s" % (where, msg))
+            log("NOTIFY TO ALL IN %s: %s" % (where, msg))
 
 
 @instr("notify_exclude")
@@ -131,9 +132,9 @@ class InstNotifyExclude(Instruction):
         where = fr.data_pop_object()
         excls = [db.getobj(o) for o in excl if db.validobj(o)]
         if excls:
-            print("NOTIFY TO ALL IN %s EXCEPT %s: %s" % (where, excls, msg))
+            log("NOTIFY TO ALL IN %s EXCEPT %s: %s" % (where, excls, msg))
         else:
-            print("NOTIFY TO ALL IN %s: %s" % (where, msg))
+            log("NOTIFY TO ALL IN %s: %s" % (where, msg))
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

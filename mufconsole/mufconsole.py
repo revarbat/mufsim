@@ -12,6 +12,7 @@ from subprocess import call
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 import mufsim.utils as util
+from mufsim.logger import log, get_log, log_updated, clear_log
 from mufsim.compiler import MufCompiler
 from mufsim.stackframe import MufStackFrame
 import mufsim.configs as confs
@@ -70,8 +71,8 @@ class ConsoleMufDebugger(object):
         for inum, tokeninfo in enumerate(alltokens):
             rep = tokeninfo['repr']
             if inum > 0 and rep.startswith("Function:"):
-                print("")
-            print("% 5d: %s" % (inum, rep))
+                log("")
+            log("% 5d: %s" % (inum, rep))
 
     def show_addr_line(self, addr):
         if not addr:
@@ -82,13 +83,13 @@ class ConsoleMufDebugger(object):
         mark = ' '
         if addr == curraddr:
             mark = '>'
-        print("%s% 5d: %s" % (mark, inst.line, src))
+        log("%s% 5d: %s" % (mark, inst.line, src))
 
     def debug_cmd_step(self, args):
         if not args:
             args = "1"
         if not util.is_int(args):
-            print("Usage: step [COUNT]")
+            log("Usage: step [COUNT]")
             return
         self.fr.set_break_steps(int(args))
         self.fr.execute_code()
@@ -99,7 +100,7 @@ class ConsoleMufDebugger(object):
         if not args:
             args = "1"
         if not util.is_int(args):
-            print("Usage: next [COUNT]")
+            log("Usage: next [COUNT]")
             return
         self.fr.set_break_lines(int(args))
         self.fr.execute_code()
@@ -129,32 +130,32 @@ class ConsoleMufDebugger(object):
                 obj = db.match_registered(db.getobj(0), prg)
             obj = db.getobj(obj)
             if not db.validobj(obj):
-                print("Invalid program!")
+                log("Invalid program!")
                 return
             if db.getobj(obj).objtype != "program":
-                print("Invalid program!")
+                log("Invalid program!")
                 return
             prog = obj
         addr = self.fr.program_function_addr(prog, args)
         if addr:
             line = self.fr.get_inst_line(addr)
             bpnum = self.fr.add_breakpoint(prog, line)
-            print("Added breakpoint %d at #%d line %d." % (bpnum, prog, line))
+            log("Added breakpoint %d at #%d line %d." % (bpnum, prog, line))
         elif util.is_int(args):
             line = int(args)
             bpnum = self.fr.add_breakpoint(prog, line)
-            print("Added breakpoint %d at #%d line %d." % (bpnum, prog, line))
+            log("Added breakpoint %d at #%d line %d." % (bpnum, prog, line))
         else:
-            print("Usage: break [PROG] LINE")
-            print("   or: break [PROG] FUNCNAME")
+            log("Usage: break [PROG] LINE")
+            log("   or: break [PROG] FUNCNAME")
 
     def debug_cmd_delete(self, args):
         bps = self.fr.get_breakpoints()
         if not util.is_int(args) or int(args) - 1 not in range(len(bps)):
-            print("Usage: delete BREAKPOINTNUM")
+            log("Usage: delete BREAKPOINTNUM")
         else:
             self.fr.del_breakpoint(int(args) - 1)
-            print("Deleted breakpoint %d." % int(args))
+            log("Deleted breakpoint %d." % int(args))
 
     def debug_cmd_list(self, args):
         inst = self.fr.curr_inst()
@@ -177,8 +178,8 @@ class ConsoleMufDebugger(object):
             start = self.fr.nextline
             end = self.fr.nextline + 10
         if not util.is_int(start) or not util.is_int(end):
-            print("Usage: list [LINE[,LINE]]")
-            print("   or: list FUNCNAME")
+            log("Usage: list [LINE[,LINE]]")
+            log("   or: list FUNCNAME")
         else:
             srcs = self.fr.program_source_lines(prog)
             start = max(1, min(int(start), len(srcs)))
@@ -187,9 +188,9 @@ class ConsoleMufDebugger(object):
             for i in range(start, end + 1):
                 src = srcs[i - 1]
                 if i == inst.line:
-                    print(">% 5d: %s" % (i, src))
+                    log(">% 5d: %s" % (i, src))
                 else:
-                    print(" % 5d: %s" % (i, src))
+                    log(" % 5d: %s" % (i, src))
 
     def debug_cmd_print(self, args):
         addr = self.fr.curr_addr()
@@ -201,48 +202,48 @@ class ConsoleMufDebugger(object):
             v = self.fr.program_global_var(addr.prog, args)
             val = self.fr.globalvar_get(v)
         else:
-            print("Variable not found: %s" % args)
+            log("Variable not found: %s" % args)
             val = None
         if val is not None:
             val = si.item_repr(val)
-            print("%s = %s" % (args, val))
+            log("%s = %s" % (args, val))
 
     def debug_cmd_show_breakpoints(self):
-        print("Breakpoints")
+        log("Breakpoints")
         cnt = 0
         bps = self.fr.get_breakpoints()
         for i, bp in enumerate(bps):
             prog, line = bp
             if prog and line:
-                print("  %d: Program #%d Line %d" % (i + 1, prog, line))
+                log("  %d: Program #%d Line %d" % (i + 1, prog, line))
                 cnt += 1
         if not cnt:
-            print("  - None -")
+            log("  - None -")
 
     def debug_cmd_show_functions(self):
-        print("Declared Functions")
+        log("Declared Functions")
         addr = self.fr.curr_addr()
         funcs = self.fr.program_functions(addr.prog)
         if funcs:
             for func in funcs:
-                print("  %s" % func)
+                log("  %s" % func)
         else:
-            print("  - None -")
+            log("  - None -")
 
     def debug_cmd_show_globals(self):
-        print("Global Variables")
+        log("Global Variables")
         addr = self.fr.curr_addr()
         gvars = self.fr.program_global_vars(addr.prog)
         if gvars:
             for vnum, vname in enumerate(gvars):
                 val = self.fr.globalvar_get(vnum)
                 val = si.item_repr(val)
-                print("  LV%-3d %s = %s" % (vnum, vname, val))
+                log("  LV%-3d %s = %s" % (vnum, vname, val))
         else:
-            print("  - None -")
+            log("  - None -")
 
     def debug_cmd_show_vars(self):
-        print("Function Variables")
+        log("Function Variables")
         addr = self.fr.curr_addr()
         fun = self.fr.program_find_func(addr)
         fvars = self.fr.program_func_vars(addr.prog, fun)
@@ -250,9 +251,9 @@ class ConsoleMufDebugger(object):
             for vnum, vname in enumerate(fvars):
                 val = self.fr.funcvar_get(vnum)
                 val = si.item_repr(val)
-                print("  SV%-3d %s = %s" % (vnum, vname, val))
+                log("  SV%-3d %s = %s" % (vnum, vname, val))
         else:
-            print("  - None -")
+            log("  - None -")
 
     def debug_cmd_show(self, args):
         if args == "breakpoints":
@@ -264,16 +265,16 @@ class ConsoleMufDebugger(object):
         elif args == "vars":
             self.debug_cmd_show_vars()
         else:
-            print("Usage: show breakpoints")
-            print("   or: show functions")
-            print("   or: show globals")
-            print("   or: show vars")
+            log("Usage: show breakpoints")
+            log("   or: show functions")
+            log("   or: show globals")
+            log("   or: show vars")
 
     def debug_cmd_stack(self, args):
         if not args:
             args = "999999"
         if not util.is_int(args):
-            print("Usage: stack [DEPTH]")
+            log("Usage: stack [DEPTH]")
         else:
             depth = self.fr.data_depth()
             args = int(args)
@@ -282,33 +283,33 @@ class ConsoleMufDebugger(object):
             for i in xrange(args):
                 val = self.fr.data_pick(i + 1)
                 val = si.item_repr(val)
-                print("Stack %d: %s" % (depth - i, val))
+                log("Stack %d: %s" % (depth - i, val))
             if not depth:
-                print("- Empty Stack -")
+                log("- Empty Stack -")
 
     def debug_cmd_trace(self, args):
         self.fr.set_trace(True)
-        print("Turning on Trace mode.")
+        log("Turning on Trace mode.")
 
     def debug_cmd_notrace(self, args):
         self.fr.set_trace(False)
-        print("Turning off Trace mode.")
+        log("Turning off Trace mode.")
 
     def debug_cmd_pop(self, args):
         self.fr.data_pop()
-        print("Stack item POPed.")
+        log("Stack item POPed.")
 
     def debug_cmd_dup(self, args):
         a = self.fr.data_pick(1)
         self.fr.data_push(a)
-        print("Stack item DUPed.")
+        log("Stack item DUPed.")
 
     def debug_cmd_swap(self, args):
         a = self.fr.data_pop()
         b = self.fr.data_pop()
         self.fr.data_push(a)
         self.fr.data_push(b)
-        print("Stack items SWAPed.")
+        log("Stack items SWAPed.")
 
     def debug_cmd_rot(self, args):
         a = self.fr.data_pop()
@@ -317,7 +318,7 @@ class ConsoleMufDebugger(object):
         self.fr.data_push(b)
         self.fr.data_push(a)
         self.fr.data_push(c)
-        print("Stack items ROTed.")
+        log("Stack items ROTed.")
 
     def debug_cmd_push(self, args):
         if util.is_int(args):
@@ -328,13 +329,13 @@ class ConsoleMufDebugger(object):
             self.fr.data_push(si.DBRef(int(args[1:])))
         elif util.is_strlit(args):
             self.fr.data_push(args[1:-1])
-        print("Stack item pushed.")
+        log("Stack item pushed.")
 
     def debug_cmd_where(self, args):
         fmt = "{level:-3d}: In prog {prog}, func '{func}', line {line}: {inst}"
         fmt += "\n    {src}"
         for callinfo in self.fr.get_call_stack():
-            print(fmt.format(**callinfo))
+            log(fmt.format(**callinfo))
 
     def debug_cmd_run(self, args):
         self.fr.setup(
@@ -343,38 +344,38 @@ class ConsoleMufDebugger(object):
             self.trigger.value,
             self.command
         )
-        print("Restarting program.")
+        log("Restarting program.")
         self.debug_cmd_list("")
 
     def debug_cmd_help(self, args):
-        print("help               Show this message.")
-        print("where              Display the call stack.")
-        print("stack [DEPTH]      Show top N data stack items.")
-        print("list               List next few source code lines.")
-        print("list LINE          List source code LINE.")
-        print("list START,END     List source code from START to END.")
-        print("list FUNC          List source code at start of FUNC.")
-        print("break LINE         Set breakpoint at given line.")
-        print("break FUNC         Set breakpoint at start of FUNC.")
-        print("delete BREAKNUM    Delete a breakpoint.")
-        print("show breakpoints   Show current breakpoints.")
-        print("show functions     List all declared functions.")
-        print("show globals       List all global vars.")
-        print("show vars          List all vars in the current func.")
-        print("step [COUNT]       Step 1 or COUNT lines, enters calls.")
-        print("next [COUNT]       Step 1 or COUNT lines, skips calls.")
-        print("finish             Finish the current function.")
-        print("cont               Continue until next breakpoint.")
-        print("pop                Pop top data stack item.")
-        print("dup                Duplicate top data stack item.")
-        print("swap               Swap top two data stack items.")
-        print("rot                Rot top three data stack items.")
-        print("push VALUE         Push VALUE onto top of data stack.")
-        print("print VARIABLE     Print the value of the variable.")
-        print("trace              Turn on tracing of each instr.")
-        print("notrace            Turn off tracing if each instr.")
-        print("run COMMANDARG     Re-run program, with COMMANDARG.")
-        print("quit               Exits the debugger.")
+        log("help               Show this message.")
+        log("where              Display the call stack.")
+        log("stack [DEPTH]      Show top N data stack items.")
+        log("list               List next few source code lines.")
+        log("list LINE          List source code LINE.")
+        log("list START,END     List source code from START to END.")
+        log("list FUNC          List source code at start of FUNC.")
+        log("break LINE         Set breakpoint at given line.")
+        log("break FUNC         Set breakpoint at start of FUNC.")
+        log("delete BREAKNUM    Delete a breakpoint.")
+        log("show breakpoints   Show current breakpoints.")
+        log("show functions     List all declared functions.")
+        log("show globals       List all global vars.")
+        log("show vars          List all vars in the current func.")
+        log("step [COUNT]       Step 1 or COUNT lines, enters calls.")
+        log("next [COUNT]       Step 1 or COUNT lines, skips calls.")
+        log("finish             Finish the current function.")
+        log("cont               Continue until next breakpoint.")
+        log("pop                Pop top data stack item.")
+        log("dup                Duplicate top data stack item.")
+        log("swap               Swap top two data stack items.")
+        log("rot                Rot top three data stack items.")
+        log("push VALUE         Push VALUE onto top of data stack.")
+        log("print VARIABLE     Print the value of the variable.")
+        log("trace              Turn on tracing of each instr.")
+        log("notrace            Turn off tracing if each instr.")
+        log("run COMMANDARG     Re-run program, with COMMANDARG.")
+        log("quit               Exits the debugger.")
 
     def debug_code(self):
         prevcmd = ""
@@ -396,7 +397,7 @@ class ConsoleMufDebugger(object):
                 cmd = cmd.strip()
                 args = args.strip()
             if cmd == "q" or cmd == "quit":
-                print("Exiting.")
+                log("Exiting.")
                 return
             commands = {
                 "break": self.debug_cmd_break,
@@ -432,13 +433,21 @@ class ConsoleMufDebugger(object):
                 commands[cmd](args)
             else:
                 self.debug_cmd_help(args)
+            if log_updated():
+                for line in get_log():
+                    print(line)
+                clear_log()
+            sys.stdout.flush()
             if not self.fr.call_stack:
                 break
-            sys.stdout.flush()
 
 
-class MufSim(object):
+class MufConsole(object):
     def print(self, *args):
+        if log_updated():
+            for line in get_log():
+                print(line)
+            clear_log()
         print(*args)
         sys.stdout.flush()
 
@@ -595,8 +604,12 @@ class MufSim(object):
             self.print("")
 
 
+def main():
+    MufConsole().main()
+
+
 if __name__ == "__main__":
-    MufSim().main()
+    main()
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap
