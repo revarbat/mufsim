@@ -128,4 +128,39 @@ def item_repr(x):
         return str(x)
 
 
+def item_repr_pretty(x, indent=""):
+    subind = indent + '  '
+    if type(x) is int:
+        return "%s%d" % (indent, x)
+    elif type(x) is float:
+        x = "%.12g" % x
+        if "e" in x or "." in x or x in ["-inf", "inf", "nan"]:
+            return "%s%s" % (indent, x)
+        else:
+            return "%s%s.0" % (indent, x)
+    elif type(x) is str:
+        return "%s%s" % (indent, util.escape_str(x))
+    elif type(x) is list or type(x) is tuple:
+        if not x:
+            return "%s[]" % indent
+        items = [
+            item_repr_pretty(v, subind)
+            for v in x
+        ]
+        return "%s[\n%s\n%s]" % (indent, ",\n".join(items), indent)
+    elif type(x) is dict:
+        if not x:
+            return "%s{}" % indent
+        items = [
+            "%s: %s" % (
+                item_repr_pretty(k, subind),
+                item_repr_pretty(x[k], subind).lstrip(),
+            )
+            for k in sorted(x.keys(), cmp=sortcomp)
+        ]
+        return "%s{\n%s\n%s}" % (indent, ",\n".join(items), indent)
+    else:
+        return '%s%s' % (indent, str(x))
+
+
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

@@ -33,6 +33,7 @@ class MufStackFrame(object):
         self.trace = False
         self.cycles = 0
         self.breakpoints = []
+        self.break_after_insts = -1
         self.break_after_steps = -1
         self.break_after_lines = -1
         self.break_on_finish = False
@@ -323,14 +324,25 @@ class MufStackFrame(object):
                 self.break_on_finish = False
                 raise MufBreakExecution()
 
+    def check_break_after_insts(self):
+        if self.break_after_insts > 0:
+            inst = self.curr_inst()
+            self.prevline = inst.line
+            self.break_after_insts -= 1
+            if not self.break_after_insts:
+                addr = self.curr_addr()
+                self.prevaddr = addr
+                self.break_after_insts = -1
+                raise MufBreakExecution()
+
     def check_break_after_steps(self):
         if self.break_after_steps > 0:
             inst = self.curr_inst()
-            addr = self.curr_addr()
             if inst.line != self.prevline:
                 self.prevline = inst.line
                 self.break_after_steps -= 1
                 if not self.break_after_steps:
+                    addr = self.curr_addr()
                     self.prevaddr = addr
                     self.break_after_steps = -1
                     raise MufBreakExecution()
@@ -363,6 +375,7 @@ class MufStackFrame(object):
                     self.prevaddr = addr
                     raise MufBreakExecution()
         self.check_break_on_finish()
+        self.check_break_after_insts()
         self.check_break_after_steps()
         self.check_break_after_lines()
 
@@ -454,6 +467,9 @@ class MufStackFrame(object):
 
     def del_breakpoint(self, bpnum):
         self.breakpoints[bpnum] = (None, None)
+
+    def set_break_insts(self, insts):
+        self.break_after_insts = insts
 
     def set_break_steps(self, steps):
         self.break_after_steps = steps

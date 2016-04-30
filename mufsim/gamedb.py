@@ -219,8 +219,8 @@ def get_env_objects(obj):
 
 def get_all_compiled_programs():
     return [
-        si.DBRef(obj.dbref)
-        for obj in objects_db
+        si.DBRef(ref)
+        for ref, obj in objects_db.iteritems()
         if obj.objtype == "program" and obj.compiled
     ]
 
