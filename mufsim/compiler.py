@@ -383,7 +383,7 @@ class MufCompiler(object):
                 return True
             return False
         except MufCompileError as e:
-            log("Error in line %d: %s" % (self.line, e), file=sys.stderr)
+            log("Error in line %d: %s" % (self.line, e))
             return None
 
 

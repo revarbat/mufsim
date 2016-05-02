@@ -2,6 +2,7 @@
 
 import os
 from subprocess import call
+import platform
 import Tkinter
 from Tkinter import *
 import tkFileDialog
@@ -14,6 +15,8 @@ import mufsim.gamedb as db
 from mufsim.logger import log, get_log, log_updated, clear_log
 from mufsim.compiler import MufCompiler
 from mufsim.stackframe import MufStackFrame
+
+mufsim_version=None
 
 """
 Menus:
@@ -285,6 +288,18 @@ class MufGui(object):
             # Some versions of the Tk framework don't have a console object
             pass
 
+        # os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
+        # os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "MufSim" to true' ''')
+        if platform.system() != 'Darwin':
+            root.lift()
+            root.call('wm', 'attributes', '.', '-topmost', True)
+            root.after_idle(root.call, 'wm', 'attributes', '.', '-topmost', False)
+        else:
+            if "MufSim.app/Contents/Resources" in os.getcwd():
+                os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "MufSim" to true' ''')
+
+        if sys.argv[1:]:
+            self.handle_open_files(*sys.argv[1:])
 
         self.update_displays()
 
@@ -297,33 +312,40 @@ class MufGui(object):
         print("Display preferences dlog.")
 
     def handle_about_dlog(self):
+        global mufsim_version
+        if platform.system() == 'Darwin' and not mufsim_version:
+            from plistlib import Plist
+            plist = Plist.fromFile(os.path.join('..', 'Info.plist'))
+            mufsim_version = plist['CFBundleShortVersionString']
         tkMessageBox.showinfo(
             "About MufSimulator",
-            "MufSimulator v0.7.2\nCopyright 2016\nRevar Desmera",
+            "MufSimulator %s\nCopyright 2016\nRevar Desmera" % mufsim_version,
             parent=self.root,
         )
 
     def handle_open_files(self, *files):
         for file in files:
-            self.load_program_from_file(file, regname=file)
+            self.load_program_from_file(file)
 
     def update_source_selectors(self):
         self.src_sel.menu.delete(0, END)
-        if self.fr:
-            addr = self.fr.call_addr(self.call_level)
-            progs = self.fr.get_programs()
-            if not progs:
-                self.current_program.set("- Load a Program -")
-            for prog in progs:
-                name = "%s(%s)" % (db.getobj(prog).name, prog)
+        progs = db.get_all_programs()
+        if not progs:
+            self.current_program.set("- Load a Program -")
+        for prog in progs:
+            name = "%s(%s)" % (db.getobj(prog).name, prog)
+            self.src_sel.menu.add_radiobutton(
+                label=name,
+                value=name,
+                variable=self.current_program,
+                command=self.handle_source_selector_change,
+            )
+            if self.fr:
+                addr = self.fr.call_addr(self.call_level)
                 if addr and prog.value == addr.prog:
                     self.current_program.set(name)
-                self.src_sel.menu.add_radiobutton(
-                    label=name,
-                    value=name,
-                    variable=self.current_program,
-                    command=self.handle_source_selector_change,
-                )
+            elif prog == progs[0]:
+                self.current_program.set(name)
         self.src_sel.menu.add_separator()
         self.src_sel.menu.add_command(
             label="Load Program...",
@@ -349,7 +371,6 @@ class MufGui(object):
                         label=fun,
                         value=fun,
                         variable=self.current_function,
-                        foreground="black",
                         command=self.handle_function_selector_change,
                     )
 
@@ -423,7 +444,13 @@ class MufGui(object):
 
     def update_sourcecode_from_program(self, prog):
         if prog != self.prev_prog:
-            srcs = self.fr.program_source_lines(prog)
+            if not db.validobj(prog):
+                return
+            self.prev_prog = prog
+            progobj = db.getobj(prog)
+            srcs = []
+            if progobj.sources:
+                srcs = progobj.sources.split("\n")
             self.srcs_disp.delete('0.0', END)
             for i, srcline in enumerate(srcs):
                 line = "%5d" % (i + 1)
@@ -432,7 +459,9 @@ class MufGui(object):
                 self.srcs_disp.insert(END, line)
             self.srcs_disp.delete('end-1c', END)
 
-            tokens = self.fr.program_tokens(prog)
+            tokens = []
+            if progobj.compiled:
+                tokens = progobj.compiled.get_tokens_info()
             self.tokn_disp.delete('0.0', END)
             for i, token in enumerate(tokens):
                 line = "%5d" % i
@@ -444,7 +473,6 @@ class MufGui(object):
                 else:
                     self.tokn_disp.insert(END, line)
             self.tokn_disp.delete('end-1c', END)
-            self.prev_prog = prog
 
     def handle_call_stack_click(self, event):
         w = event.widget
@@ -530,38 +558,46 @@ class MufGui(object):
         self.update_sourcecode_display()
 
     def update_sourcecode_display(self):
+        self.srcs_disp.tag_remove('currline', '0.0', END)
+        self.srcs_disp.tag_remove('breakpt', '0.0', END)
+        self.tokn_disp.tag_remove('currline', '0.0', END)
+        selprog = self._get_prog_from_selector()
+        addr = None
         if self.fr:
-            self.srcs_disp.tag_remove('currline', '0.0', END)
-            self.srcs_disp.tag_remove('breakpt', '0.0', END)
-            self.tokn_disp.tag_remove('currline', '0.0', END)
             addr = self.fr.call_addr(self.call_level)
             if addr:
-                inst = self.fr.get_inst(addr)
-                self.update_sourcecode_from_program(addr.prog)
+                selprog = addr.prog
+        if selprog is None:
+            selprog = db.get_registered_obj(userobj, "$cmd/test")
+        self.update_sourcecode_from_program(selprog)
+        if not self.fr:
+            return
+        for prog, line in self.fr.get_breakpoints():
+            if prog == selprog:
                 self.srcs_disp.tag_add(
-                    'currline',
-                    '%d.5' % inst.line,
-                    '%d.end+1c' % inst.line,
+                    'breakpt',
+                    '%d.0' % line,
+                    '%d.5' % line
                 )
-                self.tokn_disp.tag_add(
-                    'currline',
-                    '%d.5' % (addr.value + 1),
-                    '%d.end+1c' % (addr.value + 1),
-                )
-                self.srcs_disp.see('%d.0 - 2l' % inst.line)
-                self.srcs_disp.see('%d.0 + 3l' % inst.line)
-                self.srcs_disp.see('%d.0' % inst.line)
-                self.tokn_disp.see('%d.0 - 2l' % (addr.value + 1))
-                self.tokn_disp.see('%d.0 + 3l' % (addr.value + 1))
-                self.tokn_disp.see('%d.0' % (addr.value + 1))
-            selprog = self._get_prog_from_selector()
-            for prog, line in self.fr.get_breakpoints():
-                if prog == selprog:
-                    self.srcs_disp.tag_add(
-                        'breakpt',
-                        '%d.0' % line,
-                        '%d.5' % line
-                    )
+        if not addr:
+            return
+        inst = self.fr.get_inst(addr)
+        self.srcs_disp.tag_add(
+            'currline',
+            '%d.5' % inst.line,
+            '%d.end+1c' % inst.line,
+        )
+        self.tokn_disp.tag_add(
+            'currline',
+            '%d.5' % (addr.value + 1),
+            '%d.end+1c' % (addr.value + 1),
+        )
+        self.srcs_disp.see('%d.0 - 2l' % inst.line)
+        self.srcs_disp.see('%d.0 + 3l' % inst.line)
+        self.srcs_disp.see('%d.0' % inst.line)
+        self.tokn_disp.see('%d.0 - 2l' % (addr.value + 1))
+        self.tokn_disp.see('%d.0 + 3l' % (addr.value + 1))
+        self.tokn_disp.see('%d.0' % (addr.value + 1))
 
     def update_buttonbar(self):
         livebtns = [
@@ -666,6 +702,11 @@ class MufGui(object):
         return tmpfile
 
     def load_program_from_file(self, filename, regname=None):
+        self.cons_disp.delete('0.0', END)
+        if regname:
+            log("Loading library into $%s..." % regname)
+        else:
+            log("Loading program into $cmd/test...")
         origfile = filename
         if filename.endswith(".muv"):
             filename = self.process_muv(filename)
@@ -693,8 +734,12 @@ class MufGui(object):
             progobj.name = os.path.basename(filename)
         progobj.sources = srcs
         success = MufCompiler().compile_source(progobj.dbref)
+        self.prev_prog = -1
+        self.fr = None
+        self.update_sourcecode_from_program(progobj.dbref)
         if not success:
             log("MUF tokenization failed!")
+            self.update_displays()
             return None
         log("MUF tokenization successful.")
         log("------------------------------------------------------------")
@@ -718,12 +763,7 @@ class MufGui(object):
         )
         if not filename:
             return
-        self.prev_prog = -1
-        self.fr = None
-        self.update_displays()
-        log("Loading program into cmd-test...")
         self.load_program_from_file(filename)
-        self.update_displays()
 
     def handle_load_library(self):
         filename = tkFileDialog.askopenfilename(
@@ -751,12 +791,7 @@ class MufGui(object):
         )
         if not regname:
             return
-        self.prev_prog = -1
-        self.fr = None
-        self.update_displays()
-        log("Loading library into $%s..." % regname)
         self.load_program_from_file(filename, regname=regname)
-        self.update_displays()
 
     def destroy(self):
         self.root.destroy()

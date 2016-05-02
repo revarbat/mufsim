@@ -400,7 +400,7 @@ class MufStackFrame(object):
 
     ###############################################################
     def get_programs(self):
-        return db.get_all_compiled_programs()
+        return db.get_all_programs()
 
     def program_tokens(self, prog):
         comp = self.get_compiled(prog)

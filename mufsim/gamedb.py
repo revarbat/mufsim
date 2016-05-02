@@ -217,11 +217,11 @@ def get_env_objects(obj):
     return out
 
 
-def get_all_compiled_programs():
+def get_all_programs():
     return [
         si.DBRef(ref)
         for ref, obj in objects_db.iteritems()
-        if obj.objtype == "program" and obj.compiled
+        if obj.objtype == "program"
     ]
 
 

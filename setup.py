@@ -2,20 +2,49 @@
 
 from setuptools import setup, find_packages
 
-long_descr = """\
+VERSION="0.7.2"
+
+COPYRIGHT="Copyright 2016 by Revar Desmera"
+LONG_DESCR = """\
 An offline tokenizer, interpreter, and debugger for MUF, a stack-based
 forth-alike MUCK extension language."""
 
 APP = ['mufgui/mufgui.py']
 DATA_FILES = []
-OPTIONS = {'argv_emulation': True}
+OPTIONS = dict(
+    argv_emulation=True,
+    plist=dict(
+        CFBundleIdentifier="com.belfry.mufsimulator",
+        CFBundleGetInfoString="MufSimulator v%s, %s" % (VERSION, COPYRIGHT),
+        NSHumanReadableCopyright=COPYRIGHT,
+        NSHighResolutionCapable=True,
+        CFBundleDocumentTypes=[
+            dict(
+                CFBundleTypeName="MUF File",
+                CFBundleTypeRole="Viewer",
+                LSHandlerRank="Alternate",
+                CFBundleTypeMIMETypes=["text/x-muf", "application/x-muf"],
+                LSItemContentTypes=["org.fuzzball.muf"],
+                CFBundleTypeExtensions=["muf"],
+            ),
+            dict(
+                CFBundleTypeName="MUV File",
+                CFBundleTypeRole="Viewer",
+                LSHandlerRank="Alternate",
+                CFBundleTypeMIMETypes=["text/x-muv", "application/x-muv"],
+                LSItemContentTypes=["com.belfry.muv"],
+                CFBundleTypeExtensions=["muv"],
+            ),
+        ]
+    )
+)
 
 setup(
     app=APP,
     name='MufSim',
-    version='0.7.2',
+    version=VERSION,
     description='Muf language simulator and debugger.',
-    long_description=long_descr,
+    long_description=LONG_DESCR,
     author='Revar Desmera',
     author_email='revarbat@gmail.com',
     url='https://github.com/revarbat/mufsim',
