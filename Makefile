@@ -21,7 +21,7 @@ apps:
 	cd dist && zip -r MufSimOSX MufSim.app
 
 upload:
-	twine upload dist/*
+	twine upload dist/*.egg
 
 clean:
 	rm -rf build dist/MufSimulator* dist/MufSim.app
