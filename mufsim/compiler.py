@@ -1,5 +1,3 @@
-import sys
-
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 import mufsim.utils as util
@@ -7,22 +5,22 @@ from mufsim.logger import log
 from mufsim.compiled import CompiledMuf
 from mufsim.errors import MufCompileError
 
-import mufsim.insts.arrays
-import mufsim.insts.comparators
-import mufsim.insts.connections
-import mufsim.insts.debug
-import mufsim.insts.descriptors
-import mufsim.insts.directives
 import mufsim.insts.flow as instfl
-import mufsim.insts.fpmath
-import mufsim.insts.intmath
-import mufsim.insts.io
-import mufsim.insts.objectdb
-import mufsim.insts.predicates
-import mufsim.insts.properties
 import mufsim.insts.stack as instst
-import mufsim.insts.strings
-import mufsim.insts.timedate
+import mufsim.insts.arrays  # noqa
+import mufsim.insts.comparators  # noqa
+import mufsim.insts.connections  # noqa
+import mufsim.insts.debug  # noqa
+import mufsim.insts.descriptors  # noqa
+import mufsim.insts.directives  # noqa
+import mufsim.insts.fpmath  # noqa
+import mufsim.insts.intmath  # noqa
+import mufsim.insts.io  # noqa
+import mufsim.insts.objectdb  # noqa
+import mufsim.insts.predicates  # noqa
+import mufsim.insts.properties  # noqa
+import mufsim.insts.strings  # noqa
+import mufsim.insts.timedate  # noqa
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

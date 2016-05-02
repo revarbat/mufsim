@@ -2,9 +2,9 @@
 
 from setuptools import setup, find_packages
 
-VERSION="0.7.3"
+VERSION = "0.7.3"
 
-COPYRIGHT="Copyright 2016 by Revar Desmera"
+COPYRIGHT = "Copyright 2016 by Revar Desmera"
 LONG_DESCR = """\
 An offline tokenizer, interpreter, and debugger for MUF, a stack-based
 forth-alike MUCK extension language."""

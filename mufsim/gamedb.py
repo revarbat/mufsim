@@ -86,7 +86,7 @@ class DBObject(object):
         if not suppress:
             if type(val) is str:
                 log("GETPROP \"%s\" on #%d = %s" %
-                      (prop, self.dbref, util.escape_str(val)))
+                    (prop, self.dbref, util.escape_str(val)))
             else:
                 log("GETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
         return val
@@ -97,7 +97,7 @@ class DBObject(object):
         if not suppress:
             if type(val) is str:
                 log("SETPROP \"%s\" on #%d = %s" %
-                      (prop, self.dbref, util.escape_str(val)))
+                    (prop, self.dbref, util.escape_str(val)))
             else:
                 log("SETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
 

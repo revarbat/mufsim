@@ -9,11 +9,11 @@ args = parser.parse_args()
 
 inlines = []
 with open(args.file1, "r") as f:
-    inlines = f.readlines() 
+    inlines = f.readlines()
 
 delwords = []
 with open(args.file2, "r") as f:
-    delwords = f.readlines() 
+    delwords = f.readlines()
 
 delwords = frozenset([word.strip() for word in delwords])
 
@@ -24,3 +24,4 @@ for line in inlines:
     if key not in delwords:
         print(line.rstrip("\n"))
 
+# vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

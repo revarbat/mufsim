@@ -108,7 +108,7 @@ class InstConNotify(Instruction):
         if descr >= 0:
             who = conn.descr_user(descr)
             log("NOTIFY TO DESCR %d, USER %s: %s" %
-                  (descr, db.getobj(who), msg))
+                (descr, db.getobj(who), msg))
 
 
 @instr("condescr")

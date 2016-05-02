@@ -170,17 +170,24 @@ class MufStackFrame(object):
         return self.catch_stack[-1][2]
 
     def catch_trigger(self, e):
-        addr = self.catch_addr()
-        if not addr:
+        addr = self.curr_addr()
+        inst = self.get_inst(addr)
+        caddr = self.catch_addr()
+        if not caddr:
+            log("Error in #%d line %d (%s): %s" %
+                (addr.prog, inst.line, str(inst), e))
+            self.call_stack = []
             return False
-        if type(addr) is not si.Address:
+        if type(caddr) is not si.Address:
             raise MufRuntimeError("Expected an address!")
+        if self.trace:
+            log("Caught error in #%d line %d (%s): %s" %
+                (addr.prog, inst.line, str(inst), e))
         # Clear stack down to stacklock
         while self.data_depth() > self.catch_locklevel():
             self.data_pop()
         if self.catch_is_detailed():
             # Push detailed exception info.
-            inst = self.get_inst(addr)
             self.data_push({
                 "error": str(e),
                 "instr": inst.prim_name.upper(),
@@ -191,7 +198,7 @@ class MufStackFrame(object):
             # Push error message.
             self.data_push(str(e))
         self.catch_pop()
-        self.pc_set(addr)
+        self.pc_set(caddr)
         return True
 
     def check_type(self, val, types):
@@ -317,23 +324,24 @@ class MufStackFrame(object):
     def clear_errors(self):
         self.fp_errors = 0
 
-    def check_breakpoints(self):
-        if not self.call_stack:
-            raise MufBreakExecution()
-        if not self.break_type and not self.breakpoints:
-            return
+    def _trigger_breakpoint(self):
+        self.break_count = -1
+        self.break_type = None
+        raise MufBreakExecution()
+
+    def _check_inst_based_breakpoints(self):
         if self.break_type == self.BREAK_INST:
             if self.break_count > 0:
                 self.break_count -= 1
                 if not self.break_count:
-                    self.break_count = -1
-                    self.break_type = None
-                    raise MufBreakExecution()
+                    self._trigger_breakpoint()
         elif self.break_type == self.BREAK_FINISH:
             if len(self.call_stack) < self.prev_call_level:
-                self.break_count = -1
-                self.break_type = None
-                raise MufBreakExecution()
+                self._trigger_breakpoint()
+
+    def _check_line_based_breakpoints(self):
+        if not self.call_stack:
+            self._trigger_breakpoint()
         addr = self.curr_addr()
         line = self.get_inst_line(addr)
         currline = (addr.prog, line)
@@ -343,7 +351,7 @@ class MufStackFrame(object):
                 if currline in self.breakpoints:
                     bpnum = self.breakpoints.index(currline)
                     log("Stopped at breakpoint %d." % bpnum)
-                    raise MufBreakExecution()
+                    self._trigger_breakpoint()
             if self.break_type == self.BREAK_NEXT:
                 if len(self.call_stack) > self.prev_call_level:
                     return
@@ -352,13 +360,16 @@ class MufStackFrame(object):
                 if self.break_count > 0:
                     self.break_count -= 1
                     if not self.break_count:
-                        self.break_count = -1
-                        self.break_type = None
-                        raise MufBreakExecution()
+                        self._trigger_breakpoint()
+
+    def check_breakpoints(self):
+        if not self.break_type and not self.breakpoints:
+            return
+        self._check_inst_based_breakpoints()
+        self._check_line_based_breakpoints()
 
     def execute_code(self, level=-1):
-        if level < 0:
-            level = len(self.call_stack) + level
+        level += len(self.call_stack) if level < 0 else 0
         self.prev_call_level = level + 1
         addr = self.curr_addr()
         inst = self.get_inst(addr)
@@ -366,7 +377,6 @@ class MufStackFrame(object):
         while self.call_stack:
             addr = self.curr_addr()
             inst = self.get_inst(addr)
-            line = inst.line
             if self.trace:
                 log(self.get_trace_line())
                 sys.stdout.flush()
@@ -374,25 +384,12 @@ class MufStackFrame(object):
                 self.cycles += 1
                 inst.execute(self)
                 self.pc_advance(1)
-                self.check_breakpoints()
             except MufBreakExecution as e:
                 return
             except MufRuntimeError as e:
-                if not self.catch_stack:
-                    log(
-                        "Error in #%d line %d (%s): %s" % (
-                            addr.prog, line, str(inst), e
-                        )
-                    )
-                    self.call_stack = []
+                if not self.catch_trigger(e):
                     return
-                elif self.trace:
-                    log(
-                        "Caught error in #%d line %d (%s): %s" % (
-                            addr.prog, line, str(inst), e
-                        )
-                    )
-                self.catch_trigger(e)
+            finally:
                 try:
                     self.check_breakpoints()
                 except MufBreakExecution as e:

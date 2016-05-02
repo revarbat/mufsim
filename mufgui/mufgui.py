@@ -3,8 +3,8 @@
 import os
 from subprocess import call
 import platform
-import Tkinter
-from Tkinter import *
+import Tkinter  # noqa
+from Tkinter import *  # noqa
 import tkFileDialog
 import tkSimpleDialog
 import tkMessageBox
@@ -16,7 +16,7 @@ from mufsim.logger import log, get_log, log_updated, clear_log
 from mufsim.compiler import MufCompiler
 from mufsim.stackframe import MufStackFrame
 
-mufsim_version=None
+mufsim_version = None
 
 """
 Menus:
@@ -173,7 +173,6 @@ class MufGui(object):
         self.call_disp.tag_config(
             'currline', background="#77f", foreground="white")
 
-
         varsfr = LabelFrame(panes2, text="Variables", relief="flat")
         self.vars_disp = ListDisplay(varsfr)
         self.vars_disp.pack(side=TOP, fill=BOTH, expand=1)
@@ -277,26 +276,33 @@ class MufGui(object):
         panes3.add(tokfr, minsize=100, height=150)
         panes3.add(consfr, minsize=50, height=100)
 
-        # root.createcommand('::tk::mac::ShowPreferences', self.handle_prefs_dlog)
-        root.createcommand('tk::mac::ShowHelp', self.handle_help_dlog)
-        root.createcommand('tkAboutDialog', self.handle_about_dlog)
-        root.createcommand("::tk::mac::OpenDocument", self.handle_open_files)
-
         try:
             root.tk.call('console', 'hide')
         except tkinter.TclError:
             # Some versions of the Tk framework don't have a console object
             pass
 
-        # os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
-        # os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "MufSim" to true' ''')
-        if platform.system() != 'Darwin':
+        if platform.system() == 'Darwin':
+            # root.createcommand(
+            #     '::tk::mac::ShowPreferences', self.handle_prefs_dlog)
+            root.createcommand('tk::mac::ShowHelp', self.handle_help_dlog)
+            root.createcommand('tkAboutDialog', self.handle_about_dlog)
+            root.createcommand(
+                "::tk::mac::OpenDocument", self.handle_open_files)
+            if "MufSim.app/Contents/Resources" in os.getcwd():
+                appname = "MufSim"
+            else:
+                appname = "Python"
+            ascript = (
+                'tell app "Finder" to set frontmost of process "%s" to true' %
+                appname
+            )
+            os.system("/usr/bin/osascript -e '%s' " % ascript)
+        else:
             root.lift()
             root.call('wm', 'attributes', '.', '-topmost', True)
-            root.after_idle(root.call, 'wm', 'attributes', '.', '-topmost', False)
-        else:
-            if "MufSim.app/Contents/Resources" in os.getcwd():
-                os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "MufSim" to true' ''')
+            root.after_idle(
+                root.call, 'wm', 'attributes', '.', '-topmost', False)
 
         if sys.argv[1:]:
             self.handle_open_files(*sys.argv[1:])

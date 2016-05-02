@@ -62,7 +62,7 @@ class InstDescrSetUser(Instruction):
             was = db.getobj(was)
             # TODO: actually check password?
             log("RECONNECTED DESCRIPTOR %d FROM %s TO %s USING PW '%s'" %
-                  (descr, was, who, pw))
+                (descr, was, who, pw))
 
 
 @instr("descrboot")
@@ -83,7 +83,7 @@ class InstDescrNotify(Instruction):
         who = conn.descr_user(descr)
         if conn.is_descr_online(descr):
             log("NOTIFY TO DESCR %d, %s: %s" %
-                  (descr, db.getobj(who), msg))
+                (descr, db.getobj(who), msg))
 
 
 @instr("descrflush")

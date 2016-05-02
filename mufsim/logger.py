@@ -30,3 +30,4 @@ def log(msg):
     log_is_updated = True
     logged_lines.append(msg)
 
+# vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap
