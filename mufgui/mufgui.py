@@ -299,7 +299,7 @@ class MufGui(object):
     def handle_about_dlog(self):
         tkMessageBox.showinfo(
             "About MufSimulator",
-            "MufSimulator v0.7.1\nCopyright 2016\nRevar Desmera",
+            "MufSimulator v0.7.2\nCopyright 2016\nRevar Desmera",
             parent=self.root,
         )
 

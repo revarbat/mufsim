@@ -160,7 +160,7 @@ class ConsoleMufDebugger(object):
 
     def debug_cmd_list(self, args):
         addr = self.fr.curr_addr()
-        inst = self.fr.get_inst(addr))
+        inst = self.fr.get_inst(addr)
         prog = addr.prog
         if self.fr.program_function_addr(prog, args):
             addr = self.fr.program_function_addr(prog, args)

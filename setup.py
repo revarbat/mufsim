@@ -13,7 +13,7 @@ OPTIONS = {'argv_emulation': True}
 setup(
     app=APP,
     name='MufSim',
-    version='0.7.1',
+    version='0.7.2',
     description='Muf language simulator and debugger.',
     long_description=long_descr,
     author='Revar Desmera',

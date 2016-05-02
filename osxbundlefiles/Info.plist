@@ -5,9 +5,9 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.belfry.mufsimulator</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.7.1</string>
+	<string>0.7.2</string>
 	<key>CFBundleGetInfoString</key>
-	<string>MufSimulator v0.7.1, copyright 2016 by Revar Desmera</string>
+	<string>MufSimulator v0.7.2, copyright 2016 by Revar Desmera</string>
 	<key>CFBundleExecutable</key>
 	<string>MacOS/MufSimulator</string>
 	<key>CFBundleName</key>
