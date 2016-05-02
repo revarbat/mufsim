@@ -6,7 +6,12 @@ long_descr = """\
 An offline tokenizer, interpreter, and debugger for MUF, a stack-based
 forth-alike MUCK extension language."""
 
+APP = ['mufgui/mufgui.py']
+DATA_FILES = []
+OPTIONS = {'argv_emulation': True}
+
 setup(
+    app=APP,
     name='MufSim',
     version='0.7.1',
     description='Muf language simulator and debugger.',
@@ -46,5 +51,12 @@ setup(
     },
     install_requires=[
         'setuptools',
-    ]
+    ],
+    data_files=DATA_FILES,
+    options={
+        'py2app': OPTIONS
+    },
+    setup_requires=[
+        'py2app'
+    ],
 )

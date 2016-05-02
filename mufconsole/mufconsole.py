@@ -108,6 +108,7 @@ class ConsoleMufDebugger(object):
         self.fr.nextline = -1
 
     def debug_cmd_continue(self, args):
+        self.fr.reset_breaks()
         self.fr.execute_code()
         self.show_addr_line(self.fr.curr_addr())
         self.fr.nextline = -1
@@ -158,8 +159,8 @@ class ConsoleMufDebugger(object):
             log("Deleted breakpoint %d." % int(args))
 
     def debug_cmd_list(self, args):
-        inst = self.fr.curr_inst()
         addr = self.fr.curr_addr()
+        inst = self.fr.get_inst(addr))
         prog = addr.prog
         if self.fr.program_function_addr(prog, args):
             addr = self.fr.program_function_addr(prog, args)
@@ -338,12 +339,11 @@ class ConsoleMufDebugger(object):
             log(fmt.format(**callinfo))
 
     def debug_cmd_run(self, args):
-        self.fr.setup(
-            self.program.value,
-            self.user.value,
-            self.trigger.value,
-            self.command
-        )
+        userobj = db.get_player_obj("John_Doe")
+        progobj = db.get_registered_obj(userobj, "$cmd/test")
+        trigobj = db.get_registered_obj(userobj, "$testaction")
+        self.fr = MufStackFrame()
+        self.fr.setup(progobj, userobj, trigobj, self.opts.command)
         log("Restarting program.")
         self.debug_cmd_list("")
 

@@ -14,14 +14,16 @@ release:
 	python setup.py egg_info bdist_egg
 
 apps:
-	rm -rf dist/MufSimulator dist/MufSimulator.app dist/MufSimOSX.zip
-	pyinstaller --noconfirm MufSimulator.spec
+	rm -rf dist/MufSimulator dist/MufSimulator.app dist/MufSim.app dist/MufSimOSX.zip
+	python setup.py py2app
 	rm -rf dist/MufSimulator
-	cd dist && zip -r MufSimOSX MufSimulator.app
+	cp osxbundlefiles/Info.plist dist/MufSim.app/Contents/
+	cp osxbundlefiles/icon-windowed.icns dist/MufSim.app/Contents/Resources/
+	cd dist && zip -r MufSimOSX MufSim.app
 
 upload:
 	twine upload dist/*
 
 clean:
-	rm -rf build dist/MufSimulator*
+	rm -rf build dist/MufSimulator* dist/MufSim.app
 

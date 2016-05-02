@@ -6,6 +6,7 @@ import Tkinter
 from Tkinter import *
 import tkFileDialog
 import tkSimpleDialog
+import tkMessageBox
 from ScrolledText import ScrolledText
 
 import mufsim.stackitems as si
@@ -65,10 +66,9 @@ class ListDisplay(ReadOnlyText):
 
 class MufGui(object):
     def __init__(self):
-        # TODO: get real command
-        self.command = "me=test"
         self.fr = None
         self.current_program = None
+        self.call_level = 0
         self.prev_prog = -1
         self.setup_gui()
 
@@ -83,6 +83,7 @@ class MufGui(object):
 
         root.title("MUF Debugger")
         root.protocol("WM_DELETE_WINDOW", self.destroy)
+        root.option_add("*Menu.foreground", "black")
         root.option_add("*Panedwindow.sashWidth", "6")
         root.option_add("*Panedwindow.sashRelief", "raised")
         root.option_add("*Panedwindow.borderWidth", "1")
@@ -92,6 +93,48 @@ class MufGui(object):
         root.option_add("*Text.highlightBackground", "white")
         root.option_add("*Entry.background", "white")
         root.option_add("*Entry.highlightBackground", "gray75")
+
+        self.menubar = Menu(self.root, name="mb")
+
+        self.filemenu = Menu(self.menubar, tearoff=0)
+        self.filemenu.add_command(
+            label="Load Program...",
+            accel="Command-O",
+            command=self.handle_load_program,
+        )
+        self.filemenu.add_command(
+            label="Load Library...",
+            accel="Command-Shift-O",
+            command=self.handle_load_library,
+        )
+        self.menubar.add_cascade(label="File", menu=self.filemenu)
+
+        self.editmenu = Menu(self.menubar, tearoff=0)
+        self.editmenu.add_command(
+            label="Cut",
+            accel="Command-X",
+            command="event generate [focus] <<Cut>>"
+        )
+        self.editmenu.add_command(
+            label="Copy",
+            accel="Command-C",
+            command="event generate [focus] <<Copy>>"
+        )
+        self.editmenu.add_command(
+            label="Paste",
+            accel="Command-V",
+            command="event generate [focus] <<Paste>>"
+        )
+        self.editmenu.add_command(
+            label="Clear",
+            command="event generate [focus] <<Clear>>"
+        )
+        self.menubar.add_cascade(label="Edit", menu=self.editmenu)
+
+        self.helpmenu = Menu(self.menubar, name="help", tearoff=0)
+        self.menubar.add_cascade(label="Help", menu=self.helpmenu)
+
+        self.root['menu'] = self.menubar
 
         panes1 = PanedWindow(root)
         panes1.pack(fill=BOTH, expand=1)
@@ -118,6 +161,15 @@ class MufGui(object):
         self.call_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.call_disp.tag_config(
             'empty', foreground="gray50", font="Helvetica 12 italic")
+        self.call_disp.tag_config(
+            'gutter', background="gray75",
+            foreground="black", font="Courier 12",
+        )
+        self.call_disp.tag_bind(
+            'callfr', '<Button-1>', self.handle_call_stack_click)
+        self.call_disp.tag_config(
+            'currline', background="#77f", foreground="white")
+
 
         varsfr = LabelFrame(panes2, text="Variables", relief="flat")
         self.vars_disp = ListDisplay(varsfr)
@@ -168,7 +220,12 @@ class MufGui(object):
 
         self.srcs_disp = ListDisplay(srcfr, font="Courier 12")
         self.srcs_disp.tag_config(
+            'breakpt', background="#f77", foreground="black")
+        self.srcs_disp.tag_config(
             'gutter', background="gray75", foreground="black")
+        self.srcs_disp.tag_raise('breakpt', aboveThis='gutter')
+        self.srcs_disp.tag_bind(
+            'gutter', '<Button-1>', self.handle_sources_breakpoint_toggle)
         self.srcs_disp.tag_config(
             'currline', background="#77f", foreground="white")
 
@@ -193,14 +250,14 @@ class MufGui(object):
             btnsfr, text="Finish", command=self.handle_finish)
         self.cont_btn = Button(
             btnsfr, text="Continue", command=self.handle_continue)
-        self.rerun_btn = Button(
-            btnsfr, text="Restart", command=self.handle_rerun)
+        self.run_btn = Button(
+            btnsfr, text="Run", command=self.handle_run)
         self.stepi_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.stepl_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.nextl_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.finish_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.cont_btn.pack(side=LEFT, fill=NONE, expand=0)
-        self.rerun_btn.pack(side=LEFT, fill=NONE, expand=0)
+        self.run_btn.pack(side=LEFT, fill=NONE, expand=0)
 
         btnsfr.pack(side=BOTTOM, fill=X, expand=0)
         self.tokn_disp.pack(side=BOTTOM, fill=BOTH, expand=1)
@@ -216,12 +273,44 @@ class MufGui(object):
         panes3.add(srcfr, minsize=100, height=350)
         panes3.add(tokfr, minsize=100, height=150)
         panes3.add(consfr, minsize=50, height=100)
+
+        # root.createcommand('::tk::mac::ShowPreferences', self.handle_prefs_dlog)
+        root.createcommand('tk::mac::ShowHelp', self.handle_help_dlog)
+        root.createcommand('tkAboutDialog', self.handle_about_dlog)
+        root.createcommand("::tk::mac::OpenDocument", self.handle_open_files)
+
+        try:
+            root.tk.call('console', 'hide')
+        except tkinter.TclError:
+            # Some versions of the Tk framework don't have a console object
+            pass
+
+
         self.update_displays()
+
+    def handle_help_dlog(self):
+        # TODO: implement!
+        print("Display help dlog.")
+
+    def handle_prefs_dlog(self):
+        # TODO: implement!
+        print("Display preferences dlog.")
+
+    def handle_about_dlog(self):
+        tkMessageBox.showinfo(
+            "About MufSimulator",
+            "MufSimulator v0.7.1\nCopyright 2016\nRevar Desmera",
+            parent=self.root,
+        )
+
+    def handle_open_files(self, *files):
+        for file in files:
+            self.load_program_from_file(file, regname=file)
 
     def update_source_selectors(self):
         self.src_sel.menu.delete(0, END)
         if self.fr:
-            addr = self.fr.curr_addr()
+            addr = self.fr.call_addr(self.call_level)
             progs = self.fr.get_programs()
             if not progs:
                 self.current_program.set("- Load a Program -")
@@ -233,23 +322,20 @@ class MufGui(object):
                     label=name,
                     value=name,
                     variable=self.current_program,
-                    foreground="black",
                     command=self.handle_source_selector_change,
                 )
         self.src_sel.menu.add_separator()
         self.src_sel.menu.add_command(
             label="Load Program...",
             command=self.handle_load_program,
-            foreground="black",
         )
         self.src_sel.menu.add_command(
             label="Load Library...",
             command=self.handle_load_library,
-            foreground="black",
         )
         self.fun_sel.menu.delete(0, END)
         if self.fr:
-            addr = self.fr.curr_addr()
+            addr = self.fr.call_addr(self.call_level)
             if not addr:
                 return
             funs = self.fr.program_functions(addr.prog)
@@ -282,21 +368,30 @@ class MufGui(object):
         self.data_disp.see('0.0')
 
     def update_call_stack_display(self):
-        fmt = "{progname}({prog}), {func}, L{line}\n"
+        self.call_disp.tag_remove('currline', '0.0', END)
+        fmt = " {progname}({prog}), {func}, {line}\n"
         self.call_disp.delete('0.0', END)
         if not self.fr or not self.fr.get_call_stack():
             self.call_disp.insert('0.0', ' - NOT RUNNING - ', 'empty')
             return
         for callinfo in self.fr.get_call_stack():
             callinfo['progname'] = db.getobj(callinfo['prog']).name
+            line = "%4d" % callinfo['level']
+            self.call_disp.insert(END, line, 'gutter')
             line = fmt.format(**callinfo)
-            self.call_disp.insert(END, line)
-        self.call_disp.delete('end-1c', END)
+            self.call_disp.insert(END, line, 'callfr')
+        self.call_disp.tag_add(
+            'currline',
+            '%d.4' % (self.call_level + 1),
+            '%d.end+1c' % (self.call_level + 1),
+        )
         self.call_disp.see('0.0')
 
     def update_variables_display(self):
         self.vars_disp.delete('0.0', END)
-        addr = self.fr.curr_addr()
+        if not self.fr:
+            return
+        addr = self.fr.call_addr(self.call_level)
         if not addr:
             return
         gvars = self.fr.program_global_vars(addr.prog)
@@ -351,6 +446,12 @@ class MufGui(object):
             self.tokn_disp.delete('end-1c', END)
             self.prev_prog = prog
 
+    def handle_call_stack_click(self, event):
+        w = event.widget
+        index = w.index("@%s,%s" % (event.x, event.y))
+        level = int(index.split('.')[0]) - 1
+        self.update_displays(level=level)
+
     def handle_stack_item_dblclick(self, event):
         w = event.widget
         index = w.index("@%s,%s" % (event.x, event.y))
@@ -361,7 +462,6 @@ class MufGui(object):
             val = si.item_repr_pretty(val)
             log("pick(%d) = %s" % (item, val))
             self.update_console_display()
-            
 
     def handle_vars_gname_dblclick(self, event):
         w = event.widget
@@ -369,10 +469,9 @@ class MufGui(object):
         rng = w.tag_prevrange('gname', index + '+1c')
         if rng and self.fr:
             vname = w.get(*rng)
-            # TODO: use addr from current selected call level
-            addr = self.fr.curr_addr()
+            addr = self.fr.call_addr(self.call_level)
             vnum = self.fr.program_global_var(addr.prog, vname)
-            val = self.fr.globalvar_get(vnum)
+            val = self.fr.globalvar_get(vnum, self.call_level)
             val = si.item_repr_pretty(val)
             log("%s = %s" % (vname, val))
             self.update_console_display()
@@ -383,31 +482,31 @@ class MufGui(object):
         rng = w.tag_prevrange('fname', index + '+1c')
         if rng:
             vname = w.get(*rng)
-            # TODO: use addr from current selected call level
-            addr = self.fr.curr_addr()
+            addr = self.fr.call_addr(self.call_level)
             fun = self.fr.program_find_func(addr)
             vnum = self.fr.program_func_var(addr.prog, fun, vname)
-            # TODO: get var val from current selected call level
-            val = self.fr.funcvar_get(vnum)
+            val = self.fr.funcvar_get(vnum, self.call_level)
             val = si.item_repr_pretty(val)
             log("%s = %s" % (vname, val))
             self.update_console_display()
 
-    def handle_source_selector_change(self):
-        if not self.current_program.get().startswith('- '):
-            prog = self.current_program.get()
-            prog = prog.split('(#', 1)[1]
-            prog = prog.split(')', 1)[0]
-            prog = int(prog)
-            self.update_sourcecode_from_program(prog)
-
-    def handle_function_selector_change(self):
+    def _get_prog_from_selector(self):
         if self.current_program.get().startswith('- '):
-            return
+            return None
         prog = self.current_program.get()
         prog = prog.split('(#', 1)[1]
         prog = prog.split(')', 1)[0]
-        prog = int(prog)
+        return int(prog)
+
+    def handle_source_selector_change(self):
+        prog = self._get_prog_from_selector()
+        if prog is not None:
+            self.update_sourcecode_from_program(prog)
+
+    def handle_function_selector_change(self):
+        prog = self._get_prog_from_selector()
+        if prog is None:
+            return
         if not self.current_function.get():
             return
         fun = self.current_function.get()
@@ -416,31 +515,69 @@ class MufGui(object):
         self.update_sourcecode_from_program(prog)
         self.srcs_disp.see('%d.0' % line)
 
+    def handle_sources_breakpoint_toggle(self, event):
+        w = event.widget
+        index = w.index("@%s,%s" % (event.x, event.y))
+        line = int(index.split('.')[0])
+        prog = self._get_prog_from_selector()
+        if prog is None:
+            return
+        bpnum = self.fr.find_breakpoint(prog, line)
+        if bpnum is not None:
+            self.fr.del_breakpoint(bpnum)
+        else:
+            self.fr.add_breakpoint(prog, line)
+        self.update_sourcecode_display()
+
     def update_sourcecode_display(self):
         if self.fr:
             self.srcs_disp.tag_remove('currline', '0.0', END)
+            self.srcs_disp.tag_remove('breakpt', '0.0', END)
             self.tokn_disp.tag_remove('currline', '0.0', END)
-            addr = self.fr.curr_addr()
-            if not addr:
-                return
-            inst = self.fr.curr_inst()
-            self.update_sourcecode_from_program(addr.prog)
-            self.srcs_disp.tag_add(
-                'currline',
-                '%d.5' % inst.line,
-                '%d.end+1c' % inst.line,
-            )
-            self.tokn_disp.tag_add(
-                'currline',
-                '%d.5' % (addr.value + 1),
-                '%d.end+1c' % (addr.value + 1),
-            )
-            self.srcs_disp.see('%d.0 - 2l' % inst.line)
-            self.srcs_disp.see('%d.0 + 3l' % inst.line)
-            self.srcs_disp.see('%d.0' % inst.line)
-            self.tokn_disp.see('%d.0 - 2l' % (addr.value + 1))
-            self.tokn_disp.see('%d.0 + 3l' % (addr.value + 1))
-            self.tokn_disp.see('%d.0' % (addr.value + 1))
+            addr = self.fr.call_addr(self.call_level)
+            if addr:
+                inst = self.fr.get_inst(addr)
+                self.update_sourcecode_from_program(addr.prog)
+                self.srcs_disp.tag_add(
+                    'currline',
+                    '%d.5' % inst.line,
+                    '%d.end+1c' % inst.line,
+                )
+                self.tokn_disp.tag_add(
+                    'currline',
+                    '%d.5' % (addr.value + 1),
+                    '%d.end+1c' % (addr.value + 1),
+                )
+                self.srcs_disp.see('%d.0 - 2l' % inst.line)
+                self.srcs_disp.see('%d.0 + 3l' % inst.line)
+                self.srcs_disp.see('%d.0' % inst.line)
+                self.tokn_disp.see('%d.0 - 2l' % (addr.value + 1))
+                self.tokn_disp.see('%d.0 + 3l' % (addr.value + 1))
+                self.tokn_disp.see('%d.0' % (addr.value + 1))
+            selprog = self._get_prog_from_selector()
+            for prog, line in self.fr.get_breakpoints():
+                if prog == selprog:
+                    self.srcs_disp.tag_add(
+                        'breakpt',
+                        '%d.0' % line,
+                        '%d.5' % line
+                    )
+
+    def update_buttonbar(self):
+        livebtns = [
+            self.stepi_btn,
+            self.stepl_btn,
+            self.nextl_btn,
+            self.finish_btn,
+            self.cont_btn,
+        ]
+        livestate = "disabled"
+        if self.fr and self.fr.get_call_stack():
+            livestate = "normal"
+        for btn in livebtns:
+            btn.config(state=livestate)
+        runstate = "normal" if self.fr else "disabled"
+        self.run_btn.config(state=runstate)
 
     def update_console_display(self):
         if log_updated():
@@ -450,7 +587,11 @@ class MufGui(object):
             clear_log()
             self.cons_disp.see('end linestart')
 
-    def update_displays(self):
+    def update_displays(self, level=-1):
+        if self.fr and level < 0:
+            level = len(self.fr.get_call_stack()) + level
+        self.call_level = level
+        self.update_buttonbar()
         self.update_source_selectors()
         self.update_console_display()
         self.update_call_stack_display()
@@ -460,59 +601,53 @@ class MufGui(object):
         self.update_variables_display()
         self.update_sourcecode_display()
 
-    def reset_execution(self):
+    def reset_execution(self, command=""):
         userobj = db.get_player_obj("John_Doe")
         progobj = db.get_registered_obj(userobj, "$cmd/test")
         trigobj = db.get_registered_obj(userobj, "$testaction")
+        breakpts = []
+        if self.fr:
+            breakpts = self.fr.breakpoints
         self.fr = MufStackFrame()
-        self.fr.setup(
-            progobj,
-            userobj,
-            trigobj,
-            self.command
-        )
+        self.fr.breakpoints = breakpts
+        self.fr.setup(progobj, userobj, trigobj, command)
 
     def resume_execution(self):
-        self.fr.execute_code()
+        self.fr.execute_code(self.call_level)
+        if not self.fr.get_call_stack():
+            log("Program exited.")
         self.update_displays()
 
     def handle_step_inst(self):
         self.fr.set_break_insts(1)
-        self.fr.set_break_steps(0)
-        self.fr.set_break_lines(0)
-        self.fr.set_break_on_finish(False)
         self.resume_execution()
 
     def handle_step_line(self):
-        self.fr.set_break_insts(0)
         self.fr.set_break_steps(1)
-        self.fr.set_break_lines(0)
-        self.fr.set_break_on_finish(False)
         self.resume_execution()
 
     def handle_next_line(self):
-        self.fr.set_break_insts(0)
-        self.fr.set_break_steps(0)
         self.fr.set_break_lines(1)
-        self.fr.set_break_on_finish(False)
         self.resume_execution()
 
     def handle_finish(self):
-        self.fr.set_break_insts(0)
-        self.fr.set_break_steps(0)
-        self.fr.set_break_lines(0)
         self.fr.set_break_on_finish(True)
         self.resume_execution()
 
     def handle_continue(self):
-        self.fr.set_break_insts(0)
-        self.fr.set_break_steps(0)
-        self.fr.set_break_lines(0)
-        self.fr.set_break_on_finish(False)
+        self.fr.reset_breaks()
         self.resume_execution()
 
-    def handle_rerun(self):
-        self.reset_execution()
+    def handle_run(self):
+        command = tkSimpleDialog.askstring(
+            "Run program",
+            "What argument string should the program be run with?",
+            initialvalue="",
+            parent=self.root,
+        )
+        if command is None:
+            return
+        self.reset_execution(command)
         self.update_displays()
 
     def process_muv(self, infile):
@@ -527,7 +662,7 @@ class MufGui(object):
             return None
         log("MUV compilation successful.")
         log("------------------------------------------------------------")
-        self.update_displays()
+        self.update_console_display()
         return tmpfile
 
     def load_program_from_file(self, filename, regname=None):
@@ -545,7 +680,7 @@ class MufGui(object):
         if regname:
             globenv = db.get_registered_obj(userobj, "$globalenv")
             progobj = db.DBObject(
-                name=regname,
+                name=os.path.basename(filename),
                 objtype="program",
                 flags="3",
                 owner=userobj.dbref,
@@ -555,6 +690,7 @@ class MufGui(object):
             log("CREATED PROG %s, REGISTERED AS $%s\n" % (progobj, regname))
         else:
             progobj = db.get_registered_obj(userobj, "$cmd/test")
+            progobj.name = os.path.basename(filename)
         progobj.sources = srcs
         success = MufCompiler().compile_source(progobj.dbref)
         if not success:
@@ -562,8 +698,10 @@ class MufGui(object):
             return None
         log("MUF tokenization successful.")
         log("------------------------------------------------------------")
-        self.update_displays()
         self.reset_execution()
+        self.update_displays()
+        self.fr.call_stack = []
+        self.update_displays()
 
     def handle_load_program(self):
         filename = tkFileDialog.askopenfilename(

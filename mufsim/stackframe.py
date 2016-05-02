@@ -17,6 +17,11 @@ class MufStackFrame(object):
         ("FBOUNDS", "Floating-point inputs were infinite or out of range."),
         ("IBOUNDS", "Calculation resulted in an integer overflow."),
     ]
+    BREAK_NONE = 0
+    BREAK_INST = 1
+    BREAK_STEP = 2
+    BREAK_NEXT = 3
+    BREAK_FINISH = 4
 
     def __init__(self):
         self.user = si.DBRef(-1)
@@ -33,13 +38,10 @@ class MufStackFrame(object):
         self.trace = False
         self.cycles = 0
         self.breakpoints = []
-        self.break_after_insts = -1
-        self.break_after_steps = -1
-        self.break_after_lines = -1
-        self.break_on_finish = False
-        self.prevaddr = si.Address(-1, self.program)
-        self.prevline = -1
-        self.nextline = -1
+        self.break_type = None
+        self.break_count = -1
+        self.prev_call_level = -1
+        self.prevline = (-1, -1)
         self.text_entry = []
         self.fp_error_names = [v[0] for v in self.FP_ERRORS_LIST]
         self.fp_error_descrs = [v[1] for v in self.FP_ERRORS_LIST]
@@ -86,17 +88,22 @@ class MufStackFrame(object):
         else:
             self.text_entry = text.split('\n')
 
-    def curr_inst(self):
+    def call_addr(self, level=-1):
         if not self.call_stack:
             return None
-        addr = self.curr_addr()
-        comp = self.get_compiled()
-        return comp.get_inst(addr)
+        return self.call_stack[level].pc
 
     def curr_addr(self):
-        if not self.call_stack:
-            return None
-        return self.call_stack[-1].pc
+        return self.call_addr()
+
+    def get_inst(self, addr):
+        comp = self.get_compiled(addr.prog)
+        return comp.get_inst(addr)
+
+    def get_inst_line(self, addr):
+        comp = self.get_compiled(addr.prog)
+        inst = comp.get_inst(addr)
+        return inst.line
 
     def pc_advance(self, delta):
         if self.call_stack:
@@ -107,6 +114,39 @@ class MufStackFrame(object):
         if type(addr) is not si.Address:
             raise MufRuntimeError("Expected an address!")
         return self.call_stack[-1].pc_set(addr)
+
+    def call_push(self, addr, caller):
+        self.call_stack.append(
+            MufCallFrame(copy.deepcopy(addr), caller)
+        )
+
+    def call_pop(self):
+        self.call_stack.pop()
+
+    def caller_get(self, level=-1):
+        return self.call_stack[level].caller
+
+    def funcvar_get(self, v, level=-1):
+        if type(v) is si.FuncVar:
+            v = v.value
+        return self.call_stack[level].variable_get(v)
+
+    def funcvar_set(self, v, val, level=-1):
+        if type(v) is si.FuncVar:
+            v = v.value
+        return self.call_stack[level].variable_set(v, val)
+
+    def globalvar_get(self, v):
+        if type(v) is si.GlobalVar:
+            v = v.value
+        if v in self.globalvars:
+            return self.globalvars[v]
+        return 0
+
+    def globalvar_set(self, v, val):
+        if type(v) is si.GlobalVar:
+            v = v.value
+        self.globalvars[v] = val
 
     def catch_push(self, detailed, addr, lockdepth):
         self.catch_stack.append((detailed, addr, lockdepth))
@@ -140,7 +180,7 @@ class MufStackFrame(object):
             self.data_pop()
         if self.catch_is_detailed():
             # Push detailed exception info.
-            inst = self.curr_inst()
+            inst = self.get_inst(addr)
             self.data_push({
                 "error": str(e),
                 "instr": inst.prim_name.upper(),
@@ -253,39 +293,6 @@ class MufStackFrame(object):
     def loop_iter_top(self):
         return self.call_stack[-1].loop_iter_top()
 
-    def call_push(self, addr, caller):
-        self.call_stack.append(
-            MufCallFrame(copy.deepcopy(addr), caller)
-        )
-
-    def call_pop(self):
-        self.call_stack.pop()
-
-    def caller_get(self):
-        return self.call_stack[-1].caller
-
-    def funcvar_get(self, v):
-        if type(v) is si.FuncVar:
-            v = v.value
-        return self.call_stack[-1].variable_get(v)
-
-    def funcvar_set(self, v, val):
-        if type(v) is si.FuncVar:
-            v = v.value
-        return self.call_stack[-1].variable_set(v, val)
-
-    def globalvar_get(self, v):
-        if type(v) is si.GlobalVar:
-            v = v.value
-        if v in self.globalvars:
-            return self.globalvars[v]
-        return 0
-
-    def globalvar_set(self, v, val):
-        if type(v) is si.GlobalVar:
-            v = v.value
-        self.globalvars[v] = val
-
     def has_errors(self):
         return self.fp_errors != 0
 
@@ -310,80 +317,55 @@ class MufStackFrame(object):
     def clear_errors(self):
         self.fp_errors = 0
 
-    def check_break_on_finish(self):
-        if self.break_on_finish:
-            if len(self.call_stack) < self.prev_call_level:
-                inst = self.curr_inst()
-                addr = self.curr_addr()
-                log(
-                    "Stopped on call return at instruction %d in #%d." %
-                    (addr.value, addr.prog)
-                )
-                self.prevline = inst.line
-                self.prevaddr = addr
-                self.break_on_finish = False
-                raise MufBreakExecution()
-
-    def check_break_after_insts(self):
-        if self.break_after_insts > 0:
-            inst = self.curr_inst()
-            self.prevline = inst.line
-            self.break_after_insts -= 1
-            if not self.break_after_insts:
-                addr = self.curr_addr()
-                self.prevaddr = addr
-                self.break_after_insts = -1
-                raise MufBreakExecution()
-
-    def check_break_after_steps(self):
-        if self.break_after_steps > 0:
-            inst = self.curr_inst()
-            if inst.line != self.prevline:
-                self.prevline = inst.line
-                self.break_after_steps -= 1
-                if not self.break_after_steps:
-                    addr = self.curr_addr()
-                    self.prevaddr = addr
-                    self.break_after_steps = -1
-                    raise MufBreakExecution()
-
-    def check_break_after_lines(self):
-        if self.break_after_lines > 0:
-            if len(self.call_stack) <= self.prev_call_level:
-                inst = self.curr_inst()
-                addr = self.curr_addr()
-                if inst.line != self.prevline:
-                    self.prevline = inst.line
-                    self.break_after_lines -= 1
-                    if not self.break_after_lines:
-                        self.prevaddr = addr
-                        self.break_after_lines = -1
-                        raise MufBreakExecution()
-
     def check_breakpoints(self):
         if not self.call_stack:
             raise MufBreakExecution()
-        if self.breakpoints:
-            inst = self.curr_inst()
-            addr = self.curr_addr()
-            if inst.line != self.prevline or addr.prog != self.prevaddr.prog:
-                bp = (addr.prog, inst.line)
-                if bp in self.breakpoints:
-                    bpnum = self.breakpoints.index(bp)
-                    log("Stopped at breakpoint %d." % bpnum)
-                    self.prevline = inst.line
-                    self.prevaddr = addr
+        if not self.break_type and not self.breakpoints:
+            return
+        if self.break_type == self.BREAK_INST:
+            if self.break_count > 0:
+                self.break_count -= 1
+                if not self.break_count:
+                    self.break_count = -1
+                    self.break_type = None
                     raise MufBreakExecution()
-        self.check_break_on_finish()
-        self.check_break_after_insts()
-        self.check_break_after_steps()
-        self.check_break_after_lines()
+        elif self.break_type == self.BREAK_FINISH:
+            if len(self.call_stack) < self.prev_call_level:
+                self.break_count = -1
+                self.break_type = None
+                raise MufBreakExecution()
+        addr = self.curr_addr()
+        line = self.get_inst_line(addr)
+        currline = (addr.prog, line)
+        if currline != self.prevline:
+            # line changed.
+            if self.breakpoints:
+                if currline in self.breakpoints:
+                    bpnum = self.breakpoints.index(currline)
+                    log("Stopped at breakpoint %d." % bpnum)
+                    raise MufBreakExecution()
+            if self.break_type == self.BREAK_NEXT:
+                if len(self.call_stack) > self.prev_call_level:
+                    return
+            self.prevline = currline
+            if self.break_type in [self.BREAK_STEP, self.BREAK_NEXT]:
+                if self.break_count > 0:
+                    self.break_count -= 1
+                    if not self.break_count:
+                        self.break_count = -1
+                        self.break_type = None
+                        raise MufBreakExecution()
 
-    def execute_code(self):
-        self.prev_call_level = len(self.call_stack)
+    def execute_code(self, level=-1):
+        if level < 0:
+            level = len(self.call_stack) + level
+        self.prev_call_level = level + 1
+        addr = self.curr_addr()
+        inst = self.get_inst(addr)
+        self.prevline = (addr.prog, inst.line)
         while self.call_stack:
-            inst = self.curr_inst()
             addr = self.curr_addr()
+            inst = self.get_inst(addr)
             line = inst.line
             if self.trace:
                 log(self.get_trace_line())
@@ -402,6 +384,7 @@ class MufStackFrame(object):
                             addr.prog, line, str(inst), e
                         )
                     )
+                    self.call_stack = []
                     return
                 elif self.trace:
                     log(
@@ -448,17 +431,14 @@ class MufStackFrame(object):
         comp = self.get_compiled()
         return comp.get_function_addr(fun)
 
-    def get_inst(self, addr):
-        comp = self.get_compiled(addr.prog)
-        return comp.get_inst(addr)
-
-    def get_inst_line(self, addr):
-        comp = self.get_compiled(addr.prog)
-        inst = comp.get_inst(addr)
-        return inst.line
-
     def get_breakpoints(self):
-        return self.breakpoints
+        return [(p, l) for p, l in self.breakpoints if p is not None]
+
+    def find_breakpoint(self, prog, line):
+        bp = (prog, line)
+        if bp not in self.breakpoints:
+            return None
+        return self.breakpoints.index(bp)
 
     def add_breakpoint(self, prog, line):
         bp = (prog, line)
@@ -468,17 +448,30 @@ class MufStackFrame(object):
     def del_breakpoint(self, bpnum):
         self.breakpoints[bpnum] = (None, None)
 
+    def reset_breaks(self):
+        self.break_type = None
+        self.break_count = -1
+
     def set_break_insts(self, insts):
-        self.break_after_insts = insts
+        self.reset_breaks()
+        self.break_type = self.BREAK_INST
+        self.break_count = insts
 
     def set_break_steps(self, steps):
-        self.break_after_steps = steps
+        self.reset_breaks()
+        self.break_type = self.BREAK_STEP
+        self.break_count = steps
 
     def set_break_lines(self, lines):
-        self.break_after_lines = lines
+        self.reset_breaks()
+        self.break_type = self.BREAK_NEXT
+        self.break_count = lines
 
     def set_break_on_finish(self, val=True):
-        self.break_on_finish = val
+        if val:
+            self.reset_breaks()
+            self.break_type = self.BREAK_FINISH
+            self.break_count = val
 
     def get_data_stack(self):
         return self.data_stack
@@ -535,8 +528,8 @@ class MufStackFrame(object):
         return out
 
     def get_trace_line(self):
-        inst = self.curr_inst()
         addr = self.curr_addr()
+        inst = self.get_inst(addr)
         line = inst.line
         return(
             "% 5d: #%d line %d (%s) %s" % (

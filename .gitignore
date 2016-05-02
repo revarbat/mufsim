@@ -6,4 +6,5 @@ tests/*.out
 build/
 dist/MufSimulator
 dist/MufSimulator.app
+dist/MufSim.app
 .ropeproject

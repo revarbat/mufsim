@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>com.belfry.mufsimulator</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.7.1</string>
+	<key>CFBundleGetInfoString</key>
+	<string>MufSimulator v0.7.1, copyright 2016 by Revar Desmera</string>
+	<key>CFBundleExecutable</key>
+	<string>MacOS/MufSimulator</string>
+	<key>CFBundleName</key>
+	<string>MufSimulator</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleDisplayName</key>
+	<string>MufSimulator</string>
+	<key>CFBundleIconFile</key>
+	<string>icon-windowed.icns</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>NSHighResolutionCapable</key>
+	<string>True</string>
+	<key>LSBackgroundOnly</key>
+	<string>False</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>MUV File</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/x-muv</string>
+				<string>application/x-muv</string>
+			</array>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.belfry.muv</string>
+			</array>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>muv</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>MUF File</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/x-muf</string>
+				<string>application/x-muf</string>
+			</array>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.fuzzball.muf</string>
+			</array>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>muf</string>
+				<string>m</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
