@@ -1,5 +1,7 @@
 import re
+import copy
 
+from mufsim.errors import MufRuntimeError
 import mufsim.utils as util
 import mufsim.stackitems as si
 import mufsim.connections as conn
@@ -19,12 +21,17 @@ class InvalidObjectError(Exception):
 class DBObject(object):
     def __init__(
         self, name, objtype="thing", owner=-1,
-        props={}, flags="", location=-1
+        props={}, flags="", location=-1,
+        regname=None,
     ):
         global db_top
         global player_names
-        self.dbref = db_top
-        db_top += 1
+        global recycled_list
+        if recycled_list:
+            self.dbref = recycled_list.pop()
+        else:
+            self.dbref = db_top
+            db_top += 1
         self.objtype = objtype
         self.name = name
         self.flags = flags
@@ -36,6 +43,7 @@ class DBObject(object):
         self.exits = []
         self.links = [location] if objtype == "player" else []
         self.pennies = 0
+        self.blessed_properties = {}
         self.properties = props
         objects_db[self.dbref] = self
         self.moveto(location)
@@ -45,6 +53,8 @@ class DBObject(object):
         if objtype == "player":
             player_names[self.name.lower()] = self.dbref
             self.descr = conn.connect(self.dbref)
+        if regname:
+            register_obj(0, regname, si.DBRef(self.dbref))
 
     def moveto(self, dest):
         loc = self.location
@@ -170,6 +180,29 @@ class DBObject(object):
         log("PROPDIRPROPS \"%s\" on #%d = %s" % (prop, self.dbref, out))
         return out
 
+    def blessprop(self, prop, suppress=False):
+        prop = self.normalize_prop(prop)
+        if prop in self.properties:
+            self.blessed_properties[prop] = 1
+        if not suppress:
+            log("BLESSPROP \"%s\" on #%d" % (prop, self.dbref))
+        return
+
+    def unblessprop(self, prop, suppress=False):
+        prop = self.normalize_prop(prop)
+        if prop in self.properties:
+            del self.blessed_properties[prop]
+        if not suppress:
+            log("UNBLESSPROP \"%s\" on #%d" % (prop, self.dbref))
+        return
+
+    def is_blessed(self, prop, suppress=False):
+        prop = self.normalize_prop(prop)
+        val = prop in self.blessed_properties
+        if not suppress:
+            log("IS_BLESSED \"%s\" on #%d = %s" % (prop, self.dbref, val))
+        return val
+
     def __repr__(self):
         return "%s(#%d)" % (self.name, self.dbref)
 
@@ -250,6 +283,19 @@ def ok_player_name(s):
         ' ' not in s and
         s.strip().lower() not in player_names
     )
+
+
+def match_playername_prefix(pat):
+    global player_names
+    pat = pat.strip().lower()
+    found = -1
+    for name, dbref in player_names.iteritems():
+        if name.startswith(pat):
+            if found == -1:
+                found = dbref
+            else:
+                found = -2
+    return found
 
 
 def match_playername(pat):
@@ -361,6 +407,160 @@ def register_obj(where, name, ref):
     where.setprop("_reg/" + name, ref, suppress=True)
 
 
+def entrances_array(targ):
+    targ = getobj(normobj(targ))
+    out = []
+    for dbref, obj in objects_db.iteritems():
+        for link in obj.links:
+            if link == targ.dbref:
+                out.append(dbref)
+    return out
+
+
+def copyobj(obj):
+    global recycled_list
+    global objects_db
+    global db_top
+    obj = getobj(normobj(obj))
+    obj = copy.deepcopy(obj)
+    if recycled_list:
+        obj.dbref = recycled_list.pop()
+    else:
+        obj.dbref = db_top
+        db_top += 1
+        objects_db[obj.dbref] = obj
+    return obj
+
+
+def recycle_object(obj):
+    global recycled_list
+    obj = getobj(normobj(obj))
+    if obj.objtype == "player":
+        raise MufRuntimeError("Expected valid non-player object.")
+    if obj.dbref <= 1:
+        raise MufRuntimeError("Cannot recycle #0 or #1.")
+    obj.objtype = "garbage"
+    obj.name = "Garbage"
+    obj.flags = ""
+    obj.owner = -1
+    obj.location = -1
+    obj.contents = []
+    obj.exits = []
+    obj.links = []
+    obj.pennies = 0
+    obj.properties = {}
+    obj.descr = -1
+    obj.sources = None
+    obj.compiled = None
+    recycled_list.append(obj.dbref)
+
+
+def obect_db_statistics(who):
+    stats = dict(
+        total=0,
+        players=0,
+        rooms=0,
+        things=0,
+        exits=0,
+        programs=0,
+        garbages=0,
+    )
+    for dbref, obj in objects_db.iteritems():
+        if who == -1 or obj.owner == who:
+            stats[obj.objtype + 's'] += 1
+            stats['total'] += 1
+    return stats
+
+
+def flagsmatch(flags, obj):
+    type_map = {
+        'E': "exit",
+        'F': "program",
+        'G': "garbage",
+        'P': "player",
+        'R': "room",
+        'T': "thing",
+    }
+    obj = getobj(obj)
+    good = True
+    invert = False
+    for flg in list(flags.upper()):
+        goodpass = True
+        mlev = 1 if '1' in obj.flags else 0
+        mlev += 2 if '2' in obj.flags else 0
+        mlev += 3 if '3' in obj.flags else 0
+        if flg == '!':
+            invert = not invert
+            continue
+        elif flg in type_map:
+            goodpass = type_map[flg] == obj.objtype
+        elif flg in ['1', '2', '3']:
+            goodpass = int(flg) <= mlev
+        elif flg == 'M':
+            goodpass = mlev >= 1
+        elif flg == 'N':
+            goodpass = mlev % 2 == 1
+        else:
+            goodpass = flg in obj.flags
+        goodpass = not goodpass if invert else goodpass
+        good = good and goodpass
+        invert = False
+    return good
+
+
+def findnext(obj, own, name, flags):
+    obj = normobj(obj)
+    found = obj == -1
+    for dbref, o in objects_db.iteritems():
+        if not found:
+            if dbref == obj:
+                found = True
+            continue
+        if own != -1 and o.owner != own:
+            continue
+        if name and not util.smatch(name, o.name):
+            continue
+        if flags and not flagsmatch(flags, o):
+            continue
+        return dbref
+    return -1
+
+
+def nextentrance(targ, obj):
+    targ = getobj(normobj(targ))
+    obj = normobj(obj)
+    found = obj == -1
+    for dbref, o in objects_db.iteritems():
+        if not found:
+            if dbref == obj:
+                found = True
+            continue
+        for link in o.links:
+            if link == targ.dbref:
+                return dbref
+    return -1
+
+
+def nextowned(obj):
+    obj = getobj(normobj(obj))
+    if obj.objtype == "player":
+        for dbref, o in objects_db.iteritems():
+            if o.owner == obj.owner:
+                return o.dbref
+        return -1
+    found = False
+    for dbref, o in objects_db.iteritems():
+        if not found:
+            if dbref == obj.dbref:
+                found = True
+            continue
+        if o.objtype == "player":
+            continue
+        if o.owner == obj.owner:
+            return o.dbref
+    return -1
+
+
 # Notional build system to make custom databases easier to create.
 # Doesn't actually do anything yet.
 build_commands = [
@@ -383,98 +583,107 @@ build_commands = [
 ]
 
 
-global_env = DBObject(
-    name="Global Environment Room",
-    objtype="room",
-    owner=1,
-    props={
-        "_defs/.tell": "me @ swap notify",
-    },
-)
-register_obj(global_env, "globalenv", global_env)
+def init_object_db():
+    global player_names
+    global objects_db
+    global db_top
+    global recycled_list
+
+    player_names = {}
+    objects_db = {}
+    db_top = 0
+    recycled_list = []
+
+    DBObject(
+        name="Global Environment Room",
+        objtype="room",
+        owner=1,
+        props={
+            "_defs/.tell": "me @ swap notify",
+        },
+        regname="globalenv",
+    )
+
+    wizard_player = DBObject(
+        name="Wizard",
+        objtype="player",
+        flags="W3",
+        location=0,
+        props={
+            "sex": "male"
+        },
+    )
+
+    main_room = DBObject(
+        name="Main Room",
+        objtype="room",
+        location=0,
+        owner=wizard_player.dbref,
+        regname="mainroom",
+    )
+
+    trigger_action = DBObject(
+        name="test",
+        objtype="exit",
+        owner=wizard_player.dbref,
+        location=main_room.dbref,
+        regname="testaction",
+    )
+
+    program_object = DBObject(
+        name="cmd-test",
+        objtype="program",
+        flags="3",
+        owner=wizard_player.dbref,
+        location=wizard_player.dbref,
+        regname="cmd/test",
+    )
+    trigger_action.links.append(program_object.dbref)
+
+    DBObject(
+        name="John_Doe",
+        objtype="player",
+        flags="3",
+        location=main_room.dbref,
+        props={
+            "sex": "male",
+            "test#": 5,
+            "test#/1": "This is line one.",
+            "test#/2": "This is line two.",
+            "test#/3": "This is line three.",
+            "test#/4": "This is line four.",
+            "test#/5": "This is line five.",
+            "abc": "prop_abc",
+            "abc/def": "prop_def",
+            "abc/efg": "prop_efg",
+            "abc/efg/hij": "prop_hij",
+            "abc/efg/klm": "prop_klm",
+            "abc/nop/qrs": "prop_qrs",
+            "abc/nop/tuv": "prop_tuv",
+        },
+    )
+
+    DBObject(
+        name="Jane_Doe",
+        objtype="player",
+        flags="1",
+        location=main_room.dbref,
+        props={
+            "sex": "female"
+        },
+    )
+
+    DBObject(
+        name="My Thing",
+        objtype="thing",
+        flags="",
+        location=main_room.dbref,
+        props={},
+        regname="testthing",
+    )
 
 
-wizard_player = DBObject(
-    name="Wizard",
-    objtype="player",
-    flags="W3",
-    location=0,
-    props={
-        "sex": "male"
-    },
-)
-
-
-main_room = DBObject(
-    name="Main Room",
-    objtype="room",
-    location=0,
-    owner=wizard_player.dbref,
-)
-
-
-trigger_action = DBObject(
-    name="test",
-    objtype="exit",
-    owner=wizard_player.dbref,
-    location=main_room.dbref,
-)
-register_obj(global_env, "testaction", trigger_action)
-
-
-program_object = DBObject(
-    name="cmd-test",
-    objtype="program",
-    flags="3",
-    owner=wizard_player.dbref,
-    location=wizard_player.dbref,
-)
-register_obj(global_env, "cmd/test", program_object)
-trigger_action.links.append(program_object.dbref)
-
-
-john_doe = DBObject(
-    name="John_Doe",
-    objtype="player",
-    flags="3",
-    location=main_room.dbref,
-    props={
-        "sex": "male",
-        "test#": 5,
-        "test#/1": "This is line one.",
-        "test#/2": "This is line two.",
-        "test#/3": "This is line three.",
-        "test#/4": "This is line four.",
-        "test#/5": "This is line five.",
-        "abc": "prop_abc",
-        "abc/def": "prop_def",
-        "abc/efg": "prop_efg",
-        "abc/efg/hij": "prop_hij",
-        "abc/efg/klm": "prop_klm",
-        "abc/nop/qrs": "prop_qrs",
-        "abc/nop/tuv": "prop_tuv",
-    },
-)
-
-
-jane_doe = DBObject(
-    name="Jane_Doe",
-    objtype="player",
-    flags="1",
-    location=main_room.dbref,
-    props={
-        "sex": "female"
-    },
-)
-
-
-thing_object = DBObject(
-    name="My Thing",
-    objtype="thing",
-    flags="",
-    location=main_room.dbref,
-    props={},
-)
+init_object_db()
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

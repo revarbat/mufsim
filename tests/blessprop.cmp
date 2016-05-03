@@ -1,0 +1,62 @@
+#### Compiling MUF Program cmd-test(#4) ###############
+
+#### Showing Tokens for cmd-test(#4) ##################
+    0: Function: main (0 vars)
+    1: LV0: me
+    2: @
+    3: "abc"
+    4: BLESSED?
+    5: POP
+    6: LV0: me
+    7: @
+    8: "abc"
+    9: BLESSPROP
+   10: LV0: me
+   11: @
+   12: "abc"
+   13: BLESSED?
+   14: POP
+   15: LV0: me
+   16: @
+   17: "abc"
+   18: UNBLESSPROP
+   19: LV0: me
+   20: @
+   21: "abc"
+   22: BLESSED?
+   23: POP
+   24: EXIT
+
+#### Executing Tokens #################################
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") LV0: me
+    2: #4 line 2 ("", LV0) @
+    3: #4 line 2 ("", #5) "abc"
+    4: #4 line 2 ("", #5, "abc") BLESSED?
+IS_BLESSED "abc" on #5 = False
+    5: #4 line 2 ("", 0) POP
+    6: #4 line 3 ("") LV0: me
+    7: #4 line 3 ("", LV0) @
+    8: #4 line 3 ("", #5) "abc"
+    9: #4 line 3 ("", #5, "abc") BLESSPROP
+BLESSPROP "abc" on #5
+   10: #4 line 4 ("") LV0: me
+   11: #4 line 4 ("", LV0) @
+   12: #4 line 4 ("", #5) "abc"
+   13: #4 line 4 ("", #5, "abc") BLESSED?
+IS_BLESSED "abc" on #5 = True
+   14: #4 line 4 ("", 1) POP
+   15: #4 line 5 ("") LV0: me
+   16: #4 line 5 ("", LV0) @
+   17: #4 line 5 ("", #5) "abc"
+   18: #4 line 5 ("", #5, "abc") UNBLESSPROP
+UNBLESSPROP "abc" on #5
+   19: #4 line 6 ("") LV0: me
+   20: #4 line 6 ("", LV0) @
+   21: #4 line 6 ("", #5) "abc"
+   22: #4 line 6 ("", #5, "abc") BLESSED?
+IS_BLESSED "abc" on #5 = False
+   23: #4 line 6 ("", 0) POP
+   24: #4 line 7 ("") EXIT
+Execution completed in 25 steps.
+

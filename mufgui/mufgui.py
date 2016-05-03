@@ -644,6 +644,7 @@ class MufGui(object):
         self.update_sourcecode_display()
 
     def reset_execution(self, command=""):
+        # db.init_object_db()
         userobj = db.get_player_obj("John_Doe")
         progobj = db.get_registered_obj(userobj, "$cmd/test")
         trigobj = db.get_registered_obj(userobj, "$testaction")

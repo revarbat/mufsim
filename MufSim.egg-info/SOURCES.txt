@@ -22,7 +22,6 @@ mufsim/stackframe.py
 mufsim/stackitems.py
 mufsim/utils.py
 mufsim/insts/__init__.py
-mufsim/insts/all.py
 mufsim/insts/arrays.py
 mufsim/insts/base.py
 mufsim/insts/comparators.py

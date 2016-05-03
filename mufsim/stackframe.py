@@ -188,12 +188,14 @@ class MufStackFrame(object):
             self.data_pop()
         if self.catch_is_detailed():
             # Push detailed exception info.
-            self.data_push({
-                "error": str(e),
-                "instr": inst.prim_name.upper(),
-                "line": inst.line,
-                "program": self.program,
-            })
+            self.data_push(
+                {
+                    "error": str(e),
+                    "instr": inst.prim_name.upper(),
+                    "line": inst.line,
+                    "program": si.DBRef(addr.prog),
+                }
+            )
         else:
             # Push error message.
             self.data_push(str(e))
@@ -386,7 +388,7 @@ class MufStackFrame(object):
                 self.pc_advance(1)
             except MufBreakExecution as e:
                 return
-            except MufRuntimeError as e:
+            except (MufRuntimeError, db.InvalidObjectError) as e:
                 if not self.catch_trigger(e):
                     return
             finally:

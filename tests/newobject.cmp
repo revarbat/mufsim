@@ -1,0 +1,153 @@
+#### Compiling MUF Program cmd-test(#4) ###############
+
+#### Showing Tokens for cmd-test(#4) ##################
+    0: Function: main (0 vars)
+    1: "Spike"
+    2: "pointy"
+    3: NEWPLAYER
+    4: DUP
+    5: NAME
+    6: POP
+    7: DUP
+    8: PLAYER?
+    9: POP
+   10: "Wilma"
+   11: "tsundere"
+   12: COPYPLAYER
+   13: DUP
+   14: NAME
+   15: POP
+   16: DUP
+   17: PLAYER?
+   18: POP
+   19: POP
+   20: LV1: loc
+   21: @
+   22: "Another Room"
+   23: NEWROOM
+   24: DUP
+   25: NAME
+   26: POP
+   27: DUP
+   28: ROOM?
+   29: POP
+   30: RECYCLE
+   31: LV0: me
+   32: @
+   33: "McGuffin"
+   34: NEWOBJECT
+   35: DUP
+   36: NAME
+   37: POP
+   38: DUP
+   39: THING?
+   40: POP
+   41: DUP
+   42: COPYOBJ
+   43: SWAP
+   44: RECYCLE
+   45: DUP
+   46: NAME
+   47: POP
+   48: DUP
+   49: THING?
+   50: POP
+   51: RECYCLE
+   52: LV0: me
+   53: @
+   54: "poke"
+   55: NEWEXIT
+   56: DUP
+   57: NAME
+   58: POP
+   59: DUP
+   60: EXIT?
+   61: POP
+   62: RECYCLE
+   63: "cmd-poke"
+   64: NEWPROGRAM
+   65: DUP
+   66: NAME
+   67: POP
+   68: DUP
+   69: PROGRAM?
+   70: POP
+   71: RECYCLE
+   72: EXIT
+
+#### Executing Tokens #################################
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "Spike"
+    2: #4 line 2 ("", "Spike") "pointy"
+    3: #4 line 2 ("", "Spike", "pointy") NEWPLAYER
+    4: #4 line 3 ("", #8) DUP
+    5: #4 line 3 ("", #8, #8) NAME
+    6: #4 line 3 ("", #8, "Spike") POP
+    7: #4 line 4 ("", #8) DUP
+    8: #4 line 4 ("", #8, #8) PLAYER?
+    9: #4 line 4 ("", #8, 1) POP
+   10: #4 line 5 ("", #8) "Wilma"
+   11: #4 line 5 ("", #8, "Wilma") "tsundere"
+   12: #4 line 5 ("", #8, "Wilma", "tsundere") COPYPLAYER
+   13: #4 line 6 ("", #9) DUP
+   14: #4 line 6 ("", #9, #9) NAME
+   15: #4 line 6 ("", #9, "Wilma") POP
+   16: #4 line 7 ("", #9) DUP
+   17: #4 line 7 ("", #9, #9) PLAYER?
+   18: #4 line 7 ("", #9, 1) POP
+   19: #4 line 8 ("", #9) POP
+   20: #4 line 10 ("") LV1: loc
+   21: #4 line 10 ("", LV1) @
+   22: #4 line 10 ("", #2) "Another Room"
+   23: #4 line 10 ("", #2, "Another Room") NEWROOM
+   24: #4 line 11 ("", #10) DUP
+   25: #4 line 11 ("", #10, #10) NAME
+   26: #4 line 11 ("", #10, "Another Room") POP
+   27: #4 line 12 ("", #10) DUP
+   28: #4 line 12 ("", #10, #10) ROOM?
+   29: #4 line 12 ("", #10, 1) POP
+   30: #4 line 13 ("", #10) RECYCLE
+   31: #4 line 15 ("") LV0: me
+   32: #4 line 15 ("", LV0) @
+   33: #4 line 15 ("", #5) "McGuffin"
+   34: #4 line 15 ("", #5, "McGuffin") NEWOBJECT
+   35: #4 line 16 ("", #10) DUP
+   36: #4 line 16 ("", #10, #10) NAME
+   37: #4 line 16 ("", #10, "McGuffin") POP
+   38: #4 line 17 ("", #10) DUP
+   39: #4 line 17 ("", #10, #10) THING?
+   40: #4 line 17 ("", #10, 1) POP
+   41: #4 line 18 ("", #10) DUP
+   42: #4 line 18 ("", #10, #10) COPYOBJ
+   43: #4 line 19 ("", #10, #11) SWAP
+   44: #4 line 19 ("", #11, #10) RECYCLE
+   45: #4 line 20 ("", #11) DUP
+   46: #4 line 20 ("", #11, #11) NAME
+   47: #4 line 20 ("", #11, "McGuffin") POP
+   48: #4 line 21 ("", #11) DUP
+   49: #4 line 21 ("", #11, #11) THING?
+   50: #4 line 21 ("", #11, 1) POP
+   51: #4 line 22 ("", #11) RECYCLE
+   52: #4 line 24 ("") LV0: me
+   53: #4 line 24 ("", LV0) @
+   54: #4 line 24 ("", #5) "poke"
+   55: #4 line 24 ("", #5, "poke") NEWEXIT
+   56: #4 line 25 ("", #11) DUP
+   57: #4 line 25 ("", #11, #11) NAME
+   58: #4 line 25 ("", #11, "poke") POP
+   59: #4 line 26 ("", #11) DUP
+   60: #4 line 26 ("", #11, #11) EXIT?
+   61: #4 line 26 ("", #11, 1) POP
+   62: #4 line 27 ("", #11) RECYCLE
+   63: #4 line 29 ("") "cmd-poke"
+   64: #4 line 29 ("", "cmd-poke") NEWPROGRAM
+   65: #4 line 30 ("", #11) DUP
+   66: #4 line 30 ("", #11, #11) NAME
+   67: #4 line 30 ("", #11, "cmd-poke") POP
+   68: #4 line 31 ("", #11) DUP
+   69: #4 line 31 ("", #11, #11) PROGRAM?
+   70: #4 line 31 ("", #11, 1) POP
+   71: #4 line 32 ("", #11) RECYCLE
+   72: #4 line 33 ("") EXIT
+Execution completed in 73 steps.
+

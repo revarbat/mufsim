@@ -7,14 +7,14 @@ $define
 $echo
 $ifcancall
 $ifdef
-$iflib  
+$iflib
 $iflibver
 $ifncancall
-$ifndef  
+$ifndef
 $ifnlib
 $ifnlibver
-$ifnver  
-$ifver  
+$ifnver
+$ifver
 $include
 $language
 $lib-version
@@ -109,6 +109,8 @@ bitand
 bitor
 bitshift
 bitxor
+blessed?
+blessprop
 break
 call
 caller
@@ -131,6 +133,8 @@ contime
 continue
 controls
 conuser
+copyobj
+copyplayer
 cos
 ctoi
 date
@@ -165,6 +169,7 @@ diff3
 dist3d
 dup
 dupn
+entrances_array
 envprop
 envpropstr
 epsilon
@@ -183,6 +188,7 @@ explode
 explode_array
 ext-name-ok?
 fabs
+findnext
 firstdescr
 flag?
 float
@@ -235,8 +241,15 @@ movepennies
 moveto
 name
 name-ok?
+newexit
+newobject
+newplayer
+newprogram
+newroom
 next
 nextdescr
+nextentrance
+nextowned
 nextprop
 not
 notify
@@ -249,6 +262,7 @@ online_array
 or
 over
 owner
+part_pmatch
 pennies
 pi
 pick
@@ -267,6 +281,7 @@ put
 random
 read
 read_wants_blanks
+recycle
 reflist_add
 reflist_del
 reflist_find
@@ -299,6 +314,7 @@ smatch
 split
 sqrt
 srand
+stats
 stod
 strcat
 strcmp
@@ -331,6 +347,7 @@ tread
 trig
 truename
 try
+unblessprop
 unparseobj
 until
 userlog
@@ -339,6 +356,7 @@ var!
 variable
 version
 while
+wizcall
 xor
 xyz_to_polar
 {

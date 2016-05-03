@@ -1,0 +1,39 @@
+#### Compiling MUF Program cmd-test(#4) ###############
+
+#### Showing Tokens for cmd-test(#4) ##################
+    0: Function: main (0 vars)
+    1: #1
+    2: NEXTOWNED
+    3: DUP
+    4: NOT
+    5: JmpIfFalse: 2
+    6: POP
+    7: EXIT
+
+#### Executing Tokens #################################
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") #1
+    2: #4 line 4 ("", #1) NEXTOWNED
+    3: #4 line 5 ("", #0) DUP
+    4: #4 line 5 ("", #0, #0) NOT
+    5: #4 line 6 ("", #0, 0) JmpIfFalse: 2
+    2: #4 line 4 ("", #0) NEXTOWNED
+    3: #4 line 5 ("", #2) DUP
+    4: #4 line 5 ("", #2, #2) NOT
+    5: #4 line 6 ("", #2, 0) JmpIfFalse: 2
+    2: #4 line 4 ("", #2) NEXTOWNED
+    3: #4 line 5 ("", #3) DUP
+    4: #4 line 5 ("", #3, #3) NOT
+    5: #4 line 6 ("", #3, 0) JmpIfFalse: 2
+    2: #4 line 4 ("", #3) NEXTOWNED
+    3: #4 line 5 ("", #4) DUP
+    4: #4 line 5 ("", #4, #4) NOT
+    5: #4 line 6 ("", #4, 0) JmpIfFalse: 2
+    2: #4 line 4 ("", #4) NEXTOWNED
+    3: #4 line 5 ("", #-1) DUP
+    4: #4 line 5 ("", #-1, #-1) NOT
+    5: #4 line 6 ("", #-1, 1) JmpIfFalse: 2
+    6: #4 line 7 ("", #-1) POP
+    7: #4 line 8 ("") EXIT
+Execution completed in 24 steps.
+

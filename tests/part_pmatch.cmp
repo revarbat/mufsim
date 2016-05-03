@@ -1,0 +1,41 @@
+#### Compiling MUF Program cmd-test(#4) ###############
+
+#### Showing Tokens for cmd-test(#4) ##################
+    0: Function: main (0 vars)
+    1: "J"
+    2: PART_PMATCH
+    3: POP
+    4: "j"
+    5: PART_PMATCH
+    6: POP
+    7: "jo"
+    8: PART_PMATCH
+    9: POP
+   10: "wi"
+   11: PART_PMATCH
+   12: POP
+   13: "xyzxy"
+   14: PART_PMATCH
+   15: POP
+   16: EXIT
+
+#### Executing Tokens #################################
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "J"
+    2: #4 line 2 ("", "J") PART_PMATCH
+    3: #4 line 2 ("", #-2) POP
+    4: #4 line 3 ("") "j"
+    5: #4 line 3 ("", "j") PART_PMATCH
+    6: #4 line 3 ("", #-2) POP
+    7: #4 line 4 ("") "jo"
+    8: #4 line 4 ("", "jo") PART_PMATCH
+    9: #4 line 4 ("", #5) POP
+   10: #4 line 5 ("") "wi"
+   11: #4 line 5 ("", "wi") PART_PMATCH
+   12: #4 line 5 ("", #1) POP
+   13: #4 line 6 ("") "xyzxy"
+   14: #4 line 6 ("", "xyzxy") PART_PMATCH
+   15: #4 line 6 ("", #-1) POP
+   16: #4 line 7 ("") EXIT
+Execution completed in 17 steps.
+

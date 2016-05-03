@@ -155,6 +155,34 @@ class InstEnvPropStr(Instruction):
             fr.data_push("")
 
 
+@instr("blessprop")
+class InstBlessProp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop(str)
+        obj = fr.data_pop_object()
+        obj.blessprop(prop)
+
+
+@instr("unblessprop")
+class InstUnBlessProp(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop(str)
+        obj = fr.data_pop_object()
+        obj.unblessprop(prop)
+
+
+@instr("blessed?")
+class InstBlessedP(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop(str)
+        obj = fr.data_pop_object()
+        val = obj.is_blessed(prop)
+        fr.data_push(1 if val else 0)
+
+
 @instr("array_get_proplist")
 class InstArrayGetPropList(Instruction):
     def execute(self, fr):
@@ -310,15 +338,6 @@ class InstArrayFilterProp(Instruction):
 
 @instr("array_filter_flags")
 class InstArrayFilterFlags(Instruction):
-    type_map = {
-        'E': "exit",
-        'F': "program",
-        'G': "garbage",
-        'P': "player",
-        'R': "room",
-        'T': "thing",
-    }
-
     def execute(self, fr):
         fr.check_underflow(2)
         flags = fr.data_pop(str).upper()
@@ -328,30 +347,7 @@ class InstArrayFilterFlags(Instruction):
             fr.check_type(obj, [si.DBRef])
             if db.validobj(obj):
                 obj = db.getobj(obj)
-                good = True
-                invert = False
-                for flg in list(flags):
-                    goodpass = True
-                    mlev = 1 if '1' in obj.flags else 0
-                    mlev += 2 if '2' in obj.flags else 0
-                    mlev += 3 if '3' in obj.flags else 0
-                    if flg == '!':
-                        invert = not invert
-                        continue
-                    elif flg in self.type_map:
-                        goodpass = self.type_map[flg] == obj.objtype
-                    elif flg in ['1', '2', '3']:
-                        goodpass = int(flg) <= mlev
-                    elif flg == 'M':
-                        goodpass = mlev >= 1
-                    elif flg == 'N':
-                        goodpass = mlev % 2 == 1
-                    else:
-                        goodpass = flg in obj.flags
-                    goodpass = not goodpass if invert else goodpass
-                    good = good and goodpass
-                    invert = False
-                if good:
+                if db.flagsmatch(flags, obj):
                     found.append(si.DBRef(obj.dbref))
         fr.data_push(found)
 

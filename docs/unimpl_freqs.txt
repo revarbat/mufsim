@@ -5,27 +5,20 @@
      54 setlockstr
      50 sysparm
      47 checkargs
-     42 stats
      40 timestamps
-     31 recycle
-     29 newexit
      24 getlockstr
      17 fork
      17 array_get_propvals
      16 testlock
-     16 newobject
      16 ispid?
      16 gui_available
      15 timesplit
      15 gui_dlog_show
      13 queue
-     11 part_pmatch
      11 parselock
-     11 newroom
      11 compile
      10 array_put_propvals
       9 gui_dlog_close
-      9 copyobj
       8 gui_value_set
       7 prettylock
       6 gui_value_get
@@ -39,15 +32,10 @@
       4 checkpassword
       3 unparselock
       3 timer_start
-      2 nextowned
       2 gui_dlog_create
       2 gui_ctrl_command
       1 sysparm_array
       1 setsysparm
       1 program_setlines
-      1 newprogram
-      1 newpassword
       1 instances
       1 gui_ctrl_create
-      1 findnext
-      1 blessed?

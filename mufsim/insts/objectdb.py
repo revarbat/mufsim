@@ -52,6 +52,14 @@ class InstPMatch(Instruction):
         fr.data_push(si.DBRef(obj))
 
 
+@instr("part_pmatch")
+class InstPartPMatch(Instruction):
+    def execute(self, fr):
+        nam = fr.data_pop(str)
+        obj = db.match_playername_prefix(nam)
+        fr.data_push(si.DBRef(obj))
+
+
 @instr("name")
 class InstName(Instruction):
     def execute(self, fr):
@@ -334,6 +342,173 @@ class InstGetLinksArray(Instruction):
     def execute(self, fr):
         obj = fr.data_pop_object()
         fr.data_push([si.DBRef(x) for x in obj.links])
+
+
+@instr("entrances_array")
+class InstEntrancesArray(Instruction):
+    def execute(self, fr):
+        obj = fr.data_pop_object()
+        arr = [si.DBRef(o) for o in db.entrances_array(obj)]
+        fr.data_push(arr)
+
+
+@instr("copyobj")
+class InstCopyObj(Instruction):
+    def execute(self, fr):
+        obj = fr.data_pop_object()
+        if obj.objtype != "thing":
+            raise MufRuntimeError("Expected thing dbref.")
+        fr.data_push(si.DBRef(db.copyobj(obj).dbref))
+
+
+@instr("copyplayer")
+class InstCopyPlayer(Instruction):
+    def execute(self, fr):
+        pw = fr.data_pop(str)  # noqa
+        name = fr.data_pop(str)
+        obj = fr.data_pop_object()
+        if obj.objtype != "player":
+            raise MufRuntimeError("Expected player dbref.")
+        if db.match_playername("*" + name) >= 0:
+            raise MufRuntimeError("Player name already in use.")
+        obj = db.copyobj(obj)
+        obj.name = name
+        # TODO: set password for real
+        fr.data_push(si.DBRef(obj.dbref))
+
+
+@instr("newplayer")
+class InstNewPlayer(Instruction):
+    def execute(self, fr):
+        pw = fr.data_pop(str)  # noqa
+        name = fr.data_pop(str)
+        obj = db.DBObject(
+            name=name,
+            objtype="player",
+            flags="",
+            location=db.get_registered_obj(db.getobj(fr.user), "$mainroom"),
+            props={},
+        )
+        fr.data_push(si.DBRef(obj.dbref))
+
+
+@instr("newroom")
+class InstNewRoom(Instruction):
+    def execute(self, fr):
+        name = fr.data_pop(str)
+        parent = fr.data_pop_object()
+        if parent.objtype not in ["room", "thing"]:
+            raise MufRuntimeError("Expected room or thing dbref.")
+        obj = db.DBObject(
+            name=name,
+            objtype="room",
+            location=parent.dbref,
+            owner=db.getobj(fr.user).dbref
+        )
+        fr.data_push(si.DBRef(obj.dbref))
+
+
+@instr("newobject")
+class InstNewObject(Instruction):
+    def execute(self, fr):
+        name = fr.data_pop(str)
+        parent = fr.data_pop_object()
+        if parent.objtype not in ["room", "thing", "player"]:
+            raise MufRuntimeError("Expected room or thing or player dbref.")
+        obj = db.DBObject(
+            name=name,
+            objtype="thing",
+            location=parent.dbref,
+            owner=db.getobj(fr.user).dbref
+        )
+        fr.data_push(si.DBRef(obj.dbref))
+
+
+@instr("newexit")
+class InstNewExit(Instruction):
+    def execute(self, fr):
+        name = fr.data_pop(str)
+        parent = fr.data_pop_object()
+        if parent.objtype not in ["room", "thing", "player"]:
+            raise MufRuntimeError("Expected room or thing or player dbref.")
+        obj = db.DBObject(
+            name=name,
+            objtype="exit",
+            location=parent.dbref,
+            owner=db.getobj(fr.user).dbref
+        )
+        fr.data_push(si.DBRef(obj.dbref))
+
+
+@instr("newprogram")
+class InstNewProgram(Instruction):
+    def execute(self, fr):
+        name = fr.data_pop(str)
+        obj = db.DBObject(
+            name=name,
+            objtype="program",
+            location=db.getobj(fr.user).dbref,
+            owner=db.getobj(fr.user).dbref,
+        )
+        fr.data_push(si.DBRef(obj.dbref))
+
+
+@instr("recycle")
+class InstRecycle(Instruction):
+    def execute(self, fr):
+        obj = fr.data_pop_object()
+        if obj.objtype == "player":
+            raise MufRuntimeError("Expected non-player dbref.")
+        protect = [cl.pc.prog for cl in fr.call_stack]
+        if obj.dbref in protect:
+            raise MufRuntimeError("Cannot recycle running program.")
+        db.recycle_object(obj)
+
+
+@instr("nextowned")
+class InstNextOwned(Instruction):
+    def execute(self, fr):
+        obj = fr.data_pop_object()
+        fr.data_push(si.DBRef(db.nextowned(obj)))
+
+
+@instr("nextentrance")
+class InstNextEntrance(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        obj = fr.data_pop_dbref()
+        targ = fr.data_pop_object()
+        fr.data_push(si.DBRef(db.nextentrance(targ, obj)))
+
+
+@instr("findnext")
+class InstFindNext(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(4)
+        flags = fr.data_pop(str)
+        name = fr.data_pop(str)
+        own = fr.data_pop_dbref()
+        obj = fr.data_pop_dbref()
+        fr.data_push(si.DBRef(db.findnext(obj, own.value, name, flags)))
+
+
+@instr("stats")
+class InstStats(Instruction):
+    def execute(self, fr):
+        obj = fr.data_pop_dbref()
+        if obj.value == -1:
+            stats = db.obect_db_statistics(-1)
+        elif not db.validobj(obj) or db.getobj(obj).objtype != "player":
+            raise MufRuntimeError("Expected #-1 or player dbref.")
+        else:
+            stats = db.obect_db_statistics(obj.value)
+        fr.data_push(stats['total'])
+        fr.data_push(stats['rooms'])
+        fr.data_push(stats['exits'])
+        fr.data_push(stats['things'])
+        fr.data_push(stats['programs'])
+        fr.data_push(stats['players'])
+        fr.data_push(stats['garbages'])
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap
