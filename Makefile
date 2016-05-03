@@ -11,6 +11,7 @@ nightly:
 	python setup.py egg_info --tag-date --tag-build=DEV bdist_egg
 
 release:
+	rm -rf dist/MufSim-*.egg
 	python setup.py egg_info bdist_egg
 
 apps:
