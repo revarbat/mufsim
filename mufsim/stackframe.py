@@ -23,6 +23,11 @@ class MufStackFrame(object):
     BREAK_NEXT = 3
     BREAK_FINISH = 4
 
+    WAIT_NONE = 0
+    WAIT_READ = 1
+    WAIT_TREAD = 2
+    WAIT_EVENT = 3
+
     def __init__(self):
         self.user = si.DBRef(-1)
         self.program = si.DBRef(-1)
@@ -35,6 +40,7 @@ class MufStackFrame(object):
         self.fp_errors = 0
         self.read_wants_blanks = False
         self.execution_mode = 1
+        self.wait_state = self.WAIT_NONE
         self.trace = False
         self.cycles = 0
         self.breakpoints = []
@@ -376,6 +382,7 @@ class MufStackFrame(object):
         addr = self.curr_addr()
         inst = self.get_inst(addr)
         self.prevline = (addr.prog, inst.line)
+        self.wait_state = self.WAIT_NONE
         while self.call_stack:
             addr = self.curr_addr()
             inst = self.get_inst(addr)

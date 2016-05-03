@@ -2,7 +2,7 @@ import time
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 from mufsim.logger import log
-from mufsim.errors import MufRuntimeError
+from mufsim.errors import MufRuntimeError, MufBreakExecution
 from mufsim.insts.base import Instruction, instr
 
 
@@ -19,7 +19,8 @@ class InstRead(Instruction):
             if fr.text_entry:
                 txt = fr.text_entry.pop(0)
             else:
-                txt = raw_input("READ>")
+                fr.wait_state = fr.WAIT_READ
+                raise MufBreakExecution()
             if txt or fr.read_wants_blanks:
                 break
             log("Blank line ignored.")
@@ -41,7 +42,8 @@ class InstTRead(Instruction):
             if fr.text_entry:
                 txt = fr.text_entry.pop(0)
             else:
-                txt = raw_input("TIMED READ (@T to force timeout) >")
+                fr.wait_state = fr.WAIT_READ
+                raise MufBreakExecution()
             if txt or fr.read_wants_blanks:
                 break
             log("Blank line ignored.")

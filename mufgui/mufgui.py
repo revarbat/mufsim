@@ -655,10 +655,47 @@ class MufGui(object):
         self.fr.breakpoints = breakpts
         self.fr.setup(progobj, userobj, trigobj, command)
 
+    def handle_reads(self):
+        self.update_displays()
+        readline = tkSimpleDialog.askstring(
+            "MUF Read Requested",
+            "Enter text to satisfy the READ request.",
+            initialvalue="",
+            parent=self.root,
+        )
+        if readline is None or readline == "@Q":
+            while self.fr.call_stack:
+                self.fr.call_pop()
+            while self.fr.catch_stack:
+                self.fr.catch_pop()
+            log("Aborting program.")
+            return True
+        if not readline and not self.fr.read_wants_blanks:
+            log("Blank line ignored.")
+            return False
+        self.fr.pc_advance(1)
+        if self.fr.wait_state == self.fr.WAIT_READ:
+            self.fr.data_push(readline)
+        elif readline == "@T":
+            log("Faking time-out.")
+            self.fr.data_push("")
+            self.fr.data_push(1)
+        else:
+            self.fr.data_push(readline)
+            self.fr.data_push(0)
+        return False
+
     def resume_execution(self):
-        self.fr.execute_code(self.call_level)
-        if not self.fr.get_call_stack():
-            log("Program exited.")
+        while True:
+            self.fr.execute_code(self.call_level)
+            if not self.fr.get_call_stack():
+                log("Program exited.")
+                break
+            if self.fr.wait_state in [
+                self.fr.WAIT_READ,
+                self.fr.WAIT_TREAD
+            ] and self.handle_reads():
+                break
         self.update_displays()
 
     def handle_step_inst(self):

@@ -23,6 +23,51 @@ class ConsoleMufDebugger(object):
         self.fr = fr
         self.matches = []
 
+    def flush_log(self):
+        if log_updated():
+            for line in get_log():
+                print(line)
+            clear_log()
+        sys.stdout.flush()
+
+    def handle_reads(self):
+        self.flush_log()
+        readline = raw_input("READ>")
+        if readline is None or readline == "@Q":
+            while self.fr.call_stack:
+                self.fr.call_pop()
+            while self.fr.catch_stack:
+                self.fr.catch_pop()
+            log("Aborting program.")
+            return True
+        if not readline and not self.fr.read_wants_blanks:
+            log("Blank line ignored.")
+            return False
+        self.fr.pc_advance(1)
+        if self.fr.wait_state == self.fr.WAIT_READ:
+            self.fr.data_push(readline)
+        elif readline == "@T":
+            log("Faking time-out.")
+            self.fr.data_push("")
+            self.fr.data_push(1)
+        else:
+            self.fr.data_push(readline)
+            self.fr.data_push(0)
+        return False
+
+    def resume_execution(self):
+        while True:
+            self.fr.execute_code()
+            if not self.fr.get_call_stack():
+                log("Program exited.")
+                break
+            if self.fr.wait_state in [
+                self.fr.WAIT_READ,
+                self.fr.WAIT_TREAD
+            ] and self.handle_reads():
+                break
+        self.flush_log()
+
     def complete(self, text, state):
         cmds = [
             'list ', 'quit', 'run', 'show ', 'next', 'step', 'break ',
@@ -92,7 +137,7 @@ class ConsoleMufDebugger(object):
             log("Usage: step [COUNT]")
             return
         self.fr.set_break_steps(int(args))
-        self.fr.execute_code()
+        self.resume_execution()
         self.show_addr_line(self.fr.curr_addr())
         self.fr.nextline = -1
 
@@ -103,19 +148,19 @@ class ConsoleMufDebugger(object):
             log("Usage: next [COUNT]")
             return
         self.fr.set_break_lines(int(args))
-        self.fr.execute_code()
+        self.resume_execution()
         self.show_addr_line(self.fr.curr_addr())
         self.fr.nextline = -1
 
     def debug_cmd_continue(self, args):
         self.fr.reset_breaks()
-        self.fr.execute_code()
+        self.resume_execution()
         self.show_addr_line(self.fr.curr_addr())
         self.fr.nextline = -1
 
     def debug_cmd_finish(self, args):
         self.fr.set_break_on_finish()
-        self.fr.execute_code()
+        self.resume_execution()
         self.show_addr_line(self.fr.curr_addr())
         self.fr.nextline = -1
 
@@ -433,11 +478,7 @@ class ConsoleMufDebugger(object):
                 commands[cmd](args)
             else:
                 self.debug_cmd_help(args)
-            if log_updated():
-                for line in get_log():
-                    print(line)
-                clear_log()
-            sys.stdout.flush()
+            self.flush_log()
             if not self.fr.call_stack:
                 break
 
@@ -535,12 +576,12 @@ class MufConsole(object):
         )
         fr.set_trace(self.opts.trace)
         fr.set_text_entry(self.opts.textentry)
+        dbg = ConsoleMufDebugger(fr)
         if self.opts.debug:
-            dbg = ConsoleMufDebugger(fr)
             dbg.debug_code()
         else:
             st = time.time()
-            fr.execute_code()
+            dbg.resume_execution()
             et = time.time()
             self.print("Execution completed in %d steps." % fr.cycles)
             if self.opts.timing:
