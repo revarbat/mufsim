@@ -14,6 +14,7 @@ DATA_FILES = []
 OPTIONS = dict(
     argv_emulation=True,
     plist=dict(
+        CFBundleIconFile="MufSim.icns",
         CFBundleIdentifier="com.belfry.mufsimulator",
         CFBundleGetInfoString="MufSimulator v%s, %s" % (VERSION, COPYRIGHT),
         NSHumanReadableCopyright=COPYRIGHT,

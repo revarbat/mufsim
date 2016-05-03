@@ -39,10 +39,10 @@ class ConsoleMufDebugger(object):
             while self.fr.catch_stack:
                 self.fr.catch_pop()
             log("Aborting program.")
-            return True
+            return False
         if not readline and not self.fr.read_wants_blanks:
             log("Blank line ignored.")
-            return False
+            return True
         self.fr.pc_advance(1)
         if self.fr.wait_state == self.fr.WAIT_READ:
             self.fr.data_push(readline)
@@ -53,7 +53,7 @@ class ConsoleMufDebugger(object):
         else:
             self.fr.data_push(readline)
             self.fr.data_push(0)
-        return False
+        return True
 
     def resume_execution(self):
         while True:
@@ -62,10 +62,10 @@ class ConsoleMufDebugger(object):
                 log("Program exited.")
                 break
             if self.fr.wait_state in [
-                self.fr.WAIT_READ,
-                self.fr.WAIT_TREAD
+                self.fr.WAIT_READ, self.fr.WAIT_TREAD
             ] and self.handle_reads():
-                break
+                continue
+            break
         self.flush_log()
 
     def complete(self, text, state):

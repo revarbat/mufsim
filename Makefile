@@ -18,7 +18,11 @@ apps:
 	rm -rf dist/MufSimulator dist/MufSimulator.app dist/MufSim.app dist/MufSimOSX.zip
 	python setup.py py2app
 	rm -rf dist/MufSimulator
-	cp osxbundlefiles/icon-windowed.icns dist/MufSim.app/Contents/Resources/
+	tools/mkosxicns.sh
+	cp osxbundlefiles/MufSim.icns dist/MufSim.app/Contents/Resources/
+	mkdir -p dist/MufSim.app/Contents/Resources/muv
+	cp /usr/local/bin/muv dist/MufSim.app/Contents/Resources/muv/
+	cp -a /usr/local/share/muv/incls dist/MufSim.app/Contents/Resources/muv/incls
 	cd dist && zip -r MufSimOSX MufSim.app
 
 upload:

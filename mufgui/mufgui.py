@@ -18,21 +18,6 @@ from mufsim.stackframe import MufStackFrame
 
 mufsim_version = None
 
-"""
-Menus:
-    App:
-        Preferences
-        Quit
-    File:
-        Open File
-        Import Library
-    Edit:
-        Cut
-        Copy
-        Paste
-        Undo
-"""
-
 
 class ReadOnlyText(ScrolledText):
     def __init__(self, *args, **kwargs):
@@ -335,9 +320,12 @@ class MufGui(object):
 
     def update_source_selectors(self):
         self.src_sel.menu.delete(0, END)
+        currprog = -1
         progs = db.get_all_programs()
         if not progs:
             self.current_program.set("- Load a Program -")
+        else:
+            currprog = progs[0].value
         for prog in progs:
             name = "%s(%s)" % (db.getobj(prog).name, prog)
             self.src_sel.menu.add_radiobutton(
@@ -349,6 +337,7 @@ class MufGui(object):
             if self.fr:
                 addr = self.fr.call_addr(self.call_level)
                 if addr and prog.value == addr.prog:
+                    currprog = prog.value
                     self.current_program.set(name)
             elif prog == progs[0]:
                 self.current_program.set(name)
@@ -362,23 +351,28 @@ class MufGui(object):
             command=self.handle_load_library,
         )
         self.fun_sel.menu.delete(0, END)
+        funs = []
+        comp = db.getobj(currprog).compiled
+        currfun = ""
+        if comp:
+            funs = comp.get_functions()
+            currfun = funs[0]
         if self.fr:
             addr = self.fr.call_addr(self.call_level)
-            if not addr:
-                return
-            funs = self.fr.program_functions(addr.prog)
-            if not funs:
-                self.current_function.set("")
-            else:
+            if addr:
+                funs = self.fr.program_functions(addr.prog)
                 currfun = self.fr.program_find_func(addr)
-                self.current_function.set(currfun)
-                for fun in funs:
-                    self.fun_sel.menu.add_radiobutton(
-                        label=fun,
-                        value=fun,
-                        variable=self.current_function,
-                        command=self.handle_function_selector_change,
-                    )
+        if not funs:
+            self.current_function.set("")
+        else:
+            self.current_function.set(currfun)
+            for fun in funs:
+                self.fun_sel.menu.add_radiobutton(
+                    label=fun,
+                    value=fun,
+                    variable=self.current_function,
+                    command=self.handle_function_selector_change,
+                )
 
     def update_data_stack_display(self):
         self.data_disp.delete('0.0', END)
@@ -505,7 +499,7 @@ class MufGui(object):
             vname = w.get(*rng)
             addr = self.fr.call_addr(self.call_level)
             vnum = self.fr.program_global_var(addr.prog, vname)
-            val = self.fr.globalvar_get(vnum, self.call_level)
+            val = self.fr.globalvar_get(vnum)
             val = si.item_repr_pretty(val)
             log("%s = %s" % (vname, val))
             self.update_console_display()
@@ -548,6 +542,7 @@ class MufGui(object):
         line = self.fr.get_inst_line(addr)
         self.update_sourcecode_from_program(prog)
         self.srcs_disp.see('%d.0' % line)
+        self.tokn_disp.see('%d.0' % (addr.value + 1))
 
     def handle_sources_breakpoint_toggle(self, event):
         w = event.widget
@@ -599,10 +594,10 @@ class MufGui(object):
             '%d.end+1c' % (addr.value + 1),
         )
         self.srcs_disp.see('%d.0 - 2l' % inst.line)
-        self.srcs_disp.see('%d.0 + 3l' % inst.line)
+        self.srcs_disp.see('%d.0 + 2l' % inst.line)
         self.srcs_disp.see('%d.0' % inst.line)
-        self.tokn_disp.see('%d.0 - 2l' % (addr.value + 1))
-        self.tokn_disp.see('%d.0 + 3l' % (addr.value + 1))
+        self.tokn_disp.see('%d.0 - 1l' % (addr.value + 1))
+        self.tokn_disp.see('%d.0 + 1l' % (addr.value + 1))
         self.tokn_disp.see('%d.0' % (addr.value + 1))
 
     def update_buttonbar(self):
@@ -669,10 +664,10 @@ class MufGui(object):
             while self.fr.catch_stack:
                 self.fr.catch_pop()
             log("Aborting program.")
-            return True
+            return False
         if not readline and not self.fr.read_wants_blanks:
             log("Blank line ignored.")
-            return False
+            return True
         self.fr.pc_advance(1)
         if self.fr.wait_state == self.fr.WAIT_READ:
             self.fr.data_push(readline)
@@ -683,7 +678,7 @@ class MufGui(object):
         else:
             self.fr.data_push(readline)
             self.fr.data_push(0)
-        return False
+        return True
 
     def resume_execution(self):
         while True:
@@ -692,10 +687,10 @@ class MufGui(object):
                 log("Program exited.")
                 break
             if self.fr.wait_state in [
-                self.fr.WAIT_READ,
-                self.fr.WAIT_TREAD
+                self.fr.WAIT_READ, self.fr.WAIT_TREAD
             ] and self.handle_reads():
-                break
+                continue
+            break
         self.update_displays()
 
     def handle_step_inst(self):
@@ -736,7 +731,15 @@ class MufGui(object):
             tmpfile = tmpfile[:-1] + 'f'
         else:
             tmpfile += ".muf"
-        retcode = call(["muv", "-o", tmpfile, infile], stderr=sys.stderr)
+        if "MufSim.app/Contents/Resources" in os.getcwd():
+            muvbin = os.path.join(os.getcwd(), "muv", "muv")
+            incldir = os.path.join(os.getcwd(), "muv", "incls")
+            retcode = call(
+                [muvbin, "-I", incldir, "-o", tmpfile, infile],
+                stderr=sys.stderr
+            )
+        else:
+            retcode = call(["muv", "-o", tmpfile, infile], stderr=sys.stderr)
         if retcode != 0:
             log("MUV compilation failed!")
             return None
