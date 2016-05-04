@@ -1,8 +1,53 @@
 import mufsim.gamedb as db
 import mufsim.stackitems as si
+import mufsim.sysparms as sysparm
 from mufsim.logger import log
 from mufsim.errors import MufRuntimeError
 from mufsim.insts.base import Instruction, instr
+
+
+@instr("sysparm")
+class InstSysParm(Instruction):
+    def execute(self, fr):
+        name = fr.data_pop(str)
+        val = sysparm.get_sysparm_value(name)
+        if val is None:
+            raise MufRuntimeError("Non-existent sysparm.")
+        fr.data_push(val)
+
+
+@instr("setsysparm")
+class InstSetSysParm(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        val = fr.data_pop(str)
+        name = fr.data_pop(str)
+        typ = sysparm.get_sysparm_type(name)
+        if typ is None:
+            raise MufRuntimeError("Non-existent sysparm.")
+        if typ == "dbref":
+            val = db.match_from(db.getobj(fr.user), val)
+            if not db.validobj(val):
+                raise MufRuntimeError("I don't know what object you mean!")
+        elif typ == "integer" or typ == "timespan":
+            try:
+                val = int(val)
+            except:
+                raise MufRuntimeError("Not a valid integer!")
+        elif typ == "boolean":
+            val = 1 if val == "1" or val.lower() == "true" else 0
+        sysparm.set_sysparm_value(name, val)
+
+
+@instr("sysparm_array")
+class InstSysParmArray(Instruction):
+    def execute(self, fr):
+        pat = fr.data_pop(str)
+        out = [
+            sysparm.get_sysparm_info(name)
+            for name in sysparm.get_sysparm_names(pat)
+        ]
+        fr.data_push(out)
 
 
 @instr("dbref")

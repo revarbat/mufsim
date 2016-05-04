@@ -20,6 +20,7 @@ mufsim/gamedb.py
 mufsim/logger.py
 mufsim/stackframe.py
 mufsim/stackitems.py
+mufsim/sysparms.py
 mufsim/utils.py
 mufsim/insts/__init__.py
 mufsim/insts/arrays.py

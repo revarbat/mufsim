@@ -50,7 +50,12 @@ setup(
     author_email='revarbat@gmail.com',
     url='https://github.com/revarbat/mufsim',
     download_url='https://github.com/revarbat/mufsim/archive/master.zip',
-    packages=find_packages(exclude=['examples', 'tools', 'docs', 'tests']),
+    packages=find_packages(
+        exclude=[
+            'build', 'dist', 'docs', 'examples', 'osxbundlefiles',
+            'tests', 'tools',
+        ]
+    ),
     license='BSD 2-clause',
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -72,21 +77,11 @@ setup(
     ],
     keywords='muf debugger development',
     entry_points={
-        'console_scripts': [
-            'mufsim=mufconsole.mufconsole:main'
-        ],
-        'gui_scripts': [
-            'mufsimgui=mufgui.mufgui:main'
-        ]
+        'console_scripts': ['mufsim=mufconsole.mufconsole:main'],
+        'gui_scripts': ['mufsimgui=mufgui.mufgui:main']
     },
-    install_requires=[
-        'setuptools',
-    ],
+    install_requires=['setuptools'],
     data_files=DATA_FILES,
-    options={
-        'py2app': OPTIONS
-    },
-    setup_requires=[
-        'py2app'
-    ],
+    options={'py2app': OPTIONS},
+    setup_requires=['py2app'],
 )

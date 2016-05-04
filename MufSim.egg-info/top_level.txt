@@ -1,3 +1,3 @@
 mufconsole
-mufsim
 mufgui
+mufsim

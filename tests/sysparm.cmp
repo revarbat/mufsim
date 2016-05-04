@@ -1,0 +1,41 @@
+#### Compiling MUF Program cmd-test(#4) ###############
+
+#### Showing Tokens for cmd-test(#4) ##################
+    0: Function: main (0 vars)
+    1: "cpennies"
+    2: SYSPARM
+    3: POP
+    4: "cpennies"
+    5: "Woolongs"
+    6: SETSYSPARM
+    7: "cpennies"
+    8: SYSPARM
+    9: POP
+   10: "player_start"
+   11: SYSPARM
+   12: POP
+   13: "kewflnawekfnj"
+   14: SYSPARM
+   15: POP
+   16: EXIT
+
+#### Executing Tokens #################################
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") "cpennies"
+    2: #4 line 2 ("", "cpennies") SYSPARM
+    3: #4 line 2 ("", "Pennies") POP
+    4: #4 line 3 ("") "cpennies"
+    5: #4 line 3 ("", "cpennies") "Woolongs"
+    6: #4 line 3 ("", "cpennies", "Woolongs") SETSYSPARM
+    7: #4 line 4 ("") "cpennies"
+    8: #4 line 4 ("", "cpennies") SYSPARM
+    9: #4 line 4 ("", "Woolongs") POP
+   10: #4 line 5 ("") "player_start"
+   11: #4 line 5 ("", "player_start") SYSPARM
+   12: #4 line 5 ("", #0) POP
+   13: #4 line 6 ("") "kewflnawekfnj"
+   14: #4 line 6 ("", "kewflnawekfnj") SYSPARM
+Error in #4 line 6 (SYSPARM): Non-existent sysparm.
+Program exited.
+Execution completed in 15 steps.
+
