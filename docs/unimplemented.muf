@@ -51,11 +51,8 @@ program_setlines
 queue
 secure_sysvars
 setlockstr
-setsysparm
 sleep
 supplicant
-sysparm
-sysparm_array
 testlock
 timer_start
 timer_stop

@@ -308,6 +308,7 @@ setown
 setprop
 setpropstr
 setseed
+setsysparm
 sign
 sin
 smatch
@@ -332,6 +333,8 @@ strncmp
 strtof
 subst
 swap
+sysparm
+sysparm_array
 systime
 systime_precise
 tan

@@ -3,7 +3,6 @@
      71 pid
      59 kill
      54 setlockstr
-     50 sysparm
      47 checkargs
      40 timestamps
      24 getlockstr
@@ -34,8 +33,6 @@
       3 timer_start
       2 gui_dlog_create
       2 gui_ctrl_command
-      1 sysparm_array
-      1 setsysparm
       1 program_setlines
       1 instances
       1 gui_ctrl_create
