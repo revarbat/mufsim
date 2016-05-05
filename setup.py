@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-VERSION = "0.7.6"
+VERSION = "0.7.7"
 
 COPYRIGHT = "Copyright 2016 by Revar Desmera"
 LONG_DESCR = """\
