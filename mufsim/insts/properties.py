@@ -219,6 +219,35 @@ class InstArrayPutPropList(Instruction):
             obj.setprop("%s#/%d" % (prop, i + 1), item)
 
 
+@instr("array_get_propvals")
+class InstArrayGetPropVals(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        prop = fr.data_pop(str)
+        obj = fr.data_pop_object()
+        prop = obj.normalize_prop(prop) + '/'
+        plen = len(prop)
+        out = {}
+        vprop = obj.next_prop(prop)
+        while vprop:
+            val = obj.getprop(vprop)
+            if val is not None:
+                out[vprop[plen:]] = val
+            vprop = obj.next_prop(vprop)
+        fr.data_push(out)
+
+
+@instr("array_put_propvals")
+class InstArrayPutPropVals(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        d = fr.data_pop(dict)
+        prop = fr.data_pop(str)
+        obj = fr.data_pop_object()
+        for k, v in d.iteritems():
+            obj.setprop("%s/%s" % (prop, k), v)
+
+
 @instr("array_get_reflist")
 class InstArrayGetReflist(Instruction):
     def execute(self, fr):

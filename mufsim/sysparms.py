@@ -83,20 +83,56 @@ SysParm("string", "Misc", "muckname", 0, 4, "Name of the MUCK", "", 'MufSim')
 SysParm("string", "Player Max", "playermax_bootmesg", 0, 4, "Max. players connection error message", "", "Sorry, but there are too many players online.  Please try reconnecting in a few minutes.")
 SysParm("string", "Player Max", "playermax_warnmesg", 0, 4, "Max. players connection login warning", "", "You likely won't be able to connect right now, since too many players are online.")
 SysParm("string", "Properties", "gender_prop", 0, 4, "Property name used for pronoun substitutions", "", "sex")
-SysParm("string", "Registration","register_mesg", 0, 4, "Login registration denied message", "", "Sorry, you can get a character by e-mailing XXXX@machine.net.address with a charname and password.")
+SysParm("string", "Registration", "register_mesg", 0, 4, "Login registration denied message", "", "Sorry, you can get a character by e-mailing XXXX@machine.net.address with a charname and password.")
 SysParm("string", "SSL", "ssl_cert_file", 5, 5, "Path to SSL certificate .pem", "SSL", "data/server.pem")
 SysParm("string", "SSL", "ssl_key_file", 5, 5, "Path to SSL private key .pem", "SSL", "data/server.pem")
 SysParm("string", "SSL", "ssl_keyfile_passwd", 5, 5, "Password for SSL private key file", "SSL", "")
-SysParm("string", "SSL", "ssl_cipher_preference_list", 5, 5, "Allowed OpenSSL cipher list", "SSL",
-    "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:" +
-    "ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:" +
-    "kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:" +
-    "ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:" +
-    "ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:" +
-    "DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:" +
-    "AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:" +
-    "CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:" +
-    "!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA"
+SysParm(
+    "string", "SSL", "ssl_cipher_preference_list", 5, 5,
+    "Allowed OpenSSL cipher list", "SSL",
+    ":".join([
+        "ECDHE-RSA-AES128-GCM-SHA256",
+        "ECDHE-ECDSA-AES128-GCM-SHA256",
+        "ECDHE-RSA-AES256-GCM-SHA384",
+        "ECDHE-ECDSA-AES256-GCM-SHA384",
+        "DHE-RSA-AES128-GCM-SHA256",
+        "DHE-DSS-AES128-GCM-SHA256",
+        "kEDH+AESGCM",
+        "ECDHE-RSA-AES128-SHA256",
+        "ECDHE-ECDSA-AES128-SHA256",
+        "ECDHE-RSA-AES128-SHA",
+        "ECDHE-ECDSA-AES128-SHA",
+        "ECDHE-RSA-AES256-SHA384",
+        "ECDHE-ECDSA-AES256-SHA384",
+        "ECDHE-RSA-AES256-SHA",
+        "ECDHE-ECDSA-AES256-SHA",
+        "DHE-RSA-AES128-SHA256",
+        "DHE-RSA-AES128-SHA",
+        "DHE-DSS-AES128-SHA256",
+        "DHE-RSA-AES256-SHA256",
+        "DHE-DSS-AES256-SHA",
+        "DHE-RSA-AES256-SHA",
+        "AES128-GCM-SHA256",
+        "AES256-GCM-SHA384",
+        "AES128-SHA256",
+        "AES256-SHA256",
+        "AES128-SHA",
+        "AES256-SHA",
+        "AES",
+        "CAMELLIA",
+        "DES-CBC3-SHA",
+        "!aNULL",
+        "!eNULL",
+        "!EXPORT",
+        "!DES",
+        "!RC4",
+        "!MD5",
+        "!PSK",
+        "!aECDH",
+        "!EDH-DSS-DES-CBC3-SHA",
+        "!EDH-RSA-DES-CBC3-SHA",
+        "!KRB5-DES-CBC3-SHA",
+    ])
 )
 SysParm("string", "SSL", "ssl_min_protocol_version", 5, 5, "Min. allowed SSL protocol version for clients", "SSL", "None")
 SysParm("string", "Database", "pcreate_flags", 0, 4, "Initial flags for newly created players", "", "B")

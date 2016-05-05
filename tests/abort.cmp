@@ -11,5 +11,6 @@
     1: #4 line 2 ("") "Error message."
     2: #4 line 2 ("", "Error message.") ABORT
 Error in #4 line 2 (ABORT): Error message.
+Program exited.
 Execution completed in 3 steps.
 

@@ -21,5 +21,6 @@
     6: #4 line 2 ("", 4, 5, 6, 7, 8) 4
     7: #4 line 2 ("", 4, 5, 6, 7, 8, 4) ROTATE
     8: #4 line 3 ("", 4, 6, 7, 8, 5) EXIT
+Program exited.
 Execution completed in 9 steps.
 

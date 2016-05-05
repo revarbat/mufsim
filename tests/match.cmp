@@ -67,5 +67,6 @@
    29: #4 line 11 ("", "xyzzy") MATCH
    30: #4 line 11 ("", #-1) POP
    31: #4 line 12 ("") EXIT
+Program exited.
 Execution completed in 32 steps.
 

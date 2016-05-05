@@ -1,3 +1,5 @@
+import mufsim.utils as util
+import mufsim.gamedb as db
 import mufsim.stackitems as si
 from mufsim.errors import MufRuntimeError
 from mufsim.insts.base import Instruction, instr
@@ -284,6 +286,91 @@ class InstTrig(Instruction):
 class InstCmd(Instruction):
     def execute(self, fr):
         fr.data_push(fr.command)
+
+
+@instr("checkargs")
+class InstCheckArgs(Instruction):
+    itemtypes = {
+        'a': ([si.Address], "address"),
+        'd': ([si.DBRef], "dbref"),
+        'D': ([si.DBRef], "valid object dbref"),
+        'e': ([si.DBRef], "exit dbref"),
+        'E': ([si.DBRef], "valid exit dbref"),
+        'f': ([si.DBRef], "program dbref"),
+        'F': ([si.DBRef], "valid program dbref"),
+        'i': ([int], "integer"),
+        'l': ([si.Lock], "lock"),
+        'p': ([si.DBRef], "player dbref"),
+        'P': ([si.DBRef], "valid player dbref"),
+        'r': ([si.DBRef], "room dbref"),
+        'R': ([si.DBRef], "valid room dbref"),
+        's': ([str], "string"),
+        'S': ([str], "non-null string"),
+        't': ([si.DBRef], "thing dbref"),
+        'T': ([si.DBRef], "valid thing dbref"),
+        'v': ([si.GlobalVar, si.FuncVar], "variable"),
+        '?': ([], "any"),
+    }
+    objtypes = {
+        'D': "",
+        'P': "player",
+        'R': "room",
+        'T': "thing",
+        'E': "exit",
+        'F': "program",
+    }
+
+    def checkargs_part(self, fr, fmt, depth=1):
+        count = ""
+        pos = len(fmt) - 1
+        while pos >= 0:
+            ch = fmt[pos]
+            pos -= 1
+            if ch == " ":
+                continue
+            elif util.is_int(ch):
+                count = ch + count
+                continue
+            elif ch == "}":
+                newpos = pos
+                cnt = 1 if not count else int(count)
+                for i in range(cnt):
+                    val = fr.data_pick(depth)
+                    depth += 1
+                    fr.check_type(val, [int])
+                    for j in range(val):
+                        newpos, depth = self.checkargs_part(
+                            fr, fmt[:pos + 1], depth)
+                pos = newpos
+                count = ""
+            elif ch == "{":
+                return (pos, depth)
+            elif ch in self.itemtypes:
+                cnt = 1 if not count else int(count)
+                count = ""
+                for i in range(cnt):
+                    val = fr.data_pick(depth)
+                    depth += 1
+                    types, label = self.itemtypes[ch]
+                    fr.check_type(val, types)
+                    if ch == "S" and val == "":
+                        raise MufRuntimeError(
+                            "Expected %s at depth %d" % (label, depth))
+                    if si.DBRef in types:
+                        typ = self.objtypes[ch.upper()]
+                        if (
+                            not db.validobj(val) and
+                            ch.isupper()
+                        ) or (
+                            db.validobj(val) and typ and
+                            db.getobj(val).objtype != typ
+                        ):
+                            raise MufRuntimeError(
+                                "Expected %s at depth %d" % (label, depth))
+
+    def execute(self, fr):
+        argexp = fr.data_pop(str)
+        self.checkargs_part(fr, argexp)
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

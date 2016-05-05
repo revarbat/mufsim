@@ -27,5 +27,6 @@
     9: #4 line 2 ("", 4["foo", "bar", "baz", "qux"], "ba*") ARRAY_MATCHVAL
    10: #4 line 2 ("", 2{1: "bar", 2: "baz"}) POP
    11: #4 line 3 ("") EXIT
+Program exited.
 Execution completed in 12 steps.
 

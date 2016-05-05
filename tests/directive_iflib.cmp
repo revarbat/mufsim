@@ -17,5 +17,6 @@ GETPROP "_reg/cmd/test" on #0 = #4
     2: #4 line 10 ("", "Pass") "Pass"
     3: #4 line 13 ("", "Pass", "Pass") "Pass"
     4: #4 line 17 ("", "Pass", "Pass", "Pass") EXIT
+Program exited.
 Execution completed in 5 steps.
 

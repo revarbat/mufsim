@@ -11,5 +11,6 @@
     1: #4 line 2 ("") 42
     2: #4 line 2 ("", 42) INTOSTR
     3: #4 line 3 ("", "42") EXIT
+Program exited.
 Execution completed in 4 steps.
 

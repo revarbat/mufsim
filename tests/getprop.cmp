@@ -16,5 +16,6 @@
     4: #4 line 2 ("", #5, "sex") GETPROP
 GETPROP "sex" on #5 = "male"
     5: #4 line 3 ("", "male") EXIT
+Program exited.
 Execution completed in 6 steps.
 

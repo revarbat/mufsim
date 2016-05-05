@@ -1,3 +1,4 @@
+import mufsim.utils as util
 import mufsim.gamedb as db
 import mufsim.stackitems as si
 import mufsim.sysparms as sysparm
@@ -554,6 +555,13 @@ class InstStats(Instruction):
         fr.data_push(stats['programs'])
         fr.data_push(stats['players'])
         fr.data_push(stats['garbages'])
+
+
+@instr("objmem")
+class InstObjMem(Instruction):
+    def execute(self, fr):
+        obj = fr.data_pop_object()
+        fr.data_push(util.getsize(obj))
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

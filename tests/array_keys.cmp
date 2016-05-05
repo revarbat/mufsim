@@ -31,5 +31,6 @@
    11: #4 line 2 ("", "a", 1, "b", 2, "c", 3, 3) ARRAY_MAKE_DICT
    12: #4 line 3 ("", 3{"a": 1, "b": 2, "c": 3}) ARRAY_KEYS
    13: #4 line 4 ("", "a", "c", "b", 3) EXIT
+Program exited.
 Execution completed in 14 steps.
 

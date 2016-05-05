@@ -16,5 +16,6 @@
     4: #4 line 2 ("", #5, "foo") NOTIFY
 NOTIFY: foo
     5: #4 line 3 ("") EXIT
+Program exited.
 Execution completed in 6 steps.
 

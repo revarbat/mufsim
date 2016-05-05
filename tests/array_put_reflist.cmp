@@ -32,5 +32,6 @@
    12: #4 line 3 (#5, "refs", 3[#5, #4, #3]) ARRAY_PUT_REFLIST
 SETPROP "refs" on #5 = "#5 #4 #3"
    13: #4 line 4 () EXIT
+Program exited.
 Execution completed in 14 steps.
 

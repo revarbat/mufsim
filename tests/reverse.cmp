@@ -19,5 +19,6 @@
     5: #4 line 2 ("", 4, 5, 6, 7) 4
     6: #4 line 2 ("", 4, 5, 6, 7, 4) REVERSE
     7: #4 line 3 ("", 7, 6, 5, 4) EXIT
+Program exited.
 Execution completed in 8 steps.
 

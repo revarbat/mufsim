@@ -29,5 +29,6 @@ SETPROP "sex" on #0 = "male"
    10: #4 line 3 ("", #0, "val", "", 88) ADDPROP
 SETPROP "val" on #0 = 88
    11: #4 line 4 ("") EXIT
+Program exited.
 Execution completed in 12 steps.
 

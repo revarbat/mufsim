@@ -103,5 +103,6 @@
    47: #4 line 7 ("", 3{"a": 3, "b": 4, "c": 5}, 3{"a": 3, "b": 6, "c": 5}) ARRAY_COMPARE
    48: #4 line 7 ("", -1) POP
    49: #4 line 8 ("") EXIT
+Program exited.
 Execution completed in 50 steps.
 

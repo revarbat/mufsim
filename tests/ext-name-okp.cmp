@@ -43,5 +43,6 @@
    17: #4 line 5 ("", "Foo bar", #3) EXT-NAME-OK?
    18: #4 line 5 ("", 1) POP
    19: #4 line 6 ("") EXIT
+Program exited.
 Execution completed in 20 steps.
 

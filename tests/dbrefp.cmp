@@ -15,5 +15,6 @@
     3: #4 line 3 ("", 0) #5
     4: #4 line 3 ("", 0, #5) DBREF?
     5: #4 line 4 ("", 0, 1) EXIT
+Program exited.
 Execution completed in 6 steps.
 

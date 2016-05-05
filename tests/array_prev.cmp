@@ -123,5 +123,6 @@
    46: #4 line 20 ("", 3{"a": 3, "b": 4, "c": 5}, 0) POP
    47: #4 line 20 ("", 3{"a": 3, "b": 4, "c": 5}) POP
    48: #4 line 21 ("") EXIT
+Program exited.
 Execution completed in 71 steps.
 

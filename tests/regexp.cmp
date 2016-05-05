@@ -23,5 +23,6 @@
     7: #4 line 3 ("", 1["cat"], 1[2[0, 3]], "cat dog fog bat", "[a-z]og") 1
     8: #4 line 3 ("", 1["cat"], 1[2[0, 3]], "cat dog fog bat", "[a-z]og", 1) REGEXP
     9: #4 line 4 ("", 1["cat"], 1[2[0, 3]], 1["dog"], 1[2[4, 7]]) EXIT
+Program exited.
 Execution completed in 10 steps.
 

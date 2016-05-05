@@ -39,5 +39,6 @@ PROPDIR? "abc/efg/klm/" on #5 = False
 NEXTPROP "abc/efg/klm" on #5 = ""
    10: #4 line 3 ("", 0[]) POP
    11: #4 line 4 ("") EXIT
+Program exited.
 Execution completed in 12 steps.
 

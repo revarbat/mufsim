@@ -121,5 +121,6 @@
    27: #4 line 9 ("", 0) JmpIfFalse: 38
    38: #4 line 11 ("") __FORPOP__
    39: #4 line 12 ("") EXIT
+Program exited.
 Execution completed in 78 steps.
 

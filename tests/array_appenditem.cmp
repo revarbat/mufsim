@@ -23,5 +23,6 @@
     7: #4 line 2 ("", "d", "a", "b", "c", 3) ARRAY_MAKE
     8: #4 line 2 ("", "d", 3["a", "b", "c"]) ARRAY_APPENDITEM
     9: #4 line 3 ("", 4["a", "b", "c", "d"]) EXIT
+Program exited.
 Execution completed in 10 steps.
 

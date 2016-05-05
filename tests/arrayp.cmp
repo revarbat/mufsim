@@ -27,5 +27,6 @@
     9: #4 line 2 ("", 3, 4, 5, 6, 7, 8, 6) ARRAY_MAKE
    10: #4 line 3 ("", 6[3, 4, 5, 6, 7, 8]) ARRAY?
    11: #4 line 4 ("", 1) EXIT
+Program exited.
 Execution completed in 12 steps.
 

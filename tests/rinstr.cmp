@@ -25,5 +25,6 @@
     8: #4 line 4 ("", 7, 0, "abacadabra") "Blah"
     9: #4 line 4 ("", 7, 0, "abacadabra", "Blah") RINSTR
    10: #4 line 5 ("", 7, 0, 0) EXIT
+Program exited.
 Execution completed in 11 steps.
 

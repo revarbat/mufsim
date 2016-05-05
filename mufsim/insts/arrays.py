@@ -376,9 +376,9 @@ class InstArrayJoin(Instruction):
             elif type(val) is si.DBRef:
                 out += "#%d" % val.value
             elif type(val) is si.Address:
-                out += "Addr: " + val.value
+                out += "Addr:%d" % val.value
             else:
-                out += val
+                out += str(val)
         fr.data_push(out)
 
 

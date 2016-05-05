@@ -17,5 +17,6 @@ GETPROP "_version" on #4 = "3.14"
     2: #4 line 11 ("", "Pass") "Pass"
     3: #4 line 14 ("", "Pass", "Pass") "Pass"
     4: #4 line 18 ("", "Pass", "Pass", "Pass") EXIT
+Program exited.
 Execution completed in 5 steps.
 

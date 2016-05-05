@@ -30,5 +30,6 @@ RECONNECTED DESCRIPTOR 11 FROM John_Doe(#5) TO Jane_Doe(#6) USING PW '53cr37'
    10: #4 line 5 ("", 11) DESCRDBREF
    11: #4 line 5 ("", #6) POP
    12: #4 line 6 ("") EXIT
+Program exited.
 Execution completed in 13 steps.
 

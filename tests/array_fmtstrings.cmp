@@ -79,5 +79,6 @@
 NOTIFY TO [John_Doe(#5)]: Johnny                   4        Jane_Doe  3.14
 NOTIFY TO [John_Doe(#5)]: Ghaladahsk_Fadja       123        John_Doe     0
    36: #4 line 18 ("") EXIT
+Program exited.
 Execution completed in 37 steps.
 

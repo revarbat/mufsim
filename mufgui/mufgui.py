@@ -292,6 +292,19 @@ class MufGui(object):
         if sys.argv[1:]:
             self.handle_open_files(*sys.argv[1:])
 
+        if platform.system() == 'Darwin':
+            self.root.bind_all('<Command-Key-o>', self.handle_load_program)
+            self.root.bind_all('<Command-Key-l>', self.handle_load_library)
+            self.root.bind_all('<Command-Key-x>', "event generate [focus] <<Cut>>")
+            self.root.bind_all('<Command-Key-c>', "event generate [focus] <<Copy>>")
+            self.root.bind_all('<Command-Key-v>', "event generate [focus] <<Paste>>")
+        else:
+            self.root.bind_all('<Control-Key-o>', self.handle_load_program)
+            self.root.bind_all('<Control-Key-l>', self.handle_load_library)
+            self.root.bind_all('<Control-Key-x>', "event generate [focus] <<Cut>>")
+            self.root.bind_all('<Control-Key-c>', "event generate [focus] <<Copy>>")
+            self.root.bind_all('<Control-Key-v>', "event generate [focus] <<Paste>>")
+
         self.update_displays()
 
     def handle_help_dlog(self):
@@ -795,7 +808,7 @@ class MufGui(object):
         self.fr.call_stack = []
         self.update_displays()
 
-    def handle_load_program(self):
+    def handle_load_program(self, event=None):
         filename = tkFileDialog.askopenfilename(
             parent=self.root,
             title="Load Program",
@@ -812,7 +825,7 @@ class MufGui(object):
             return
         self.load_program_from_file(filename)
 
-    def handle_load_library(self):
+    def handle_load_library(self, event=None):
         filename = tkFileDialog.askopenfilename(
             parent=self.root,
             title="Load Library",

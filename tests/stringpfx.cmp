@@ -25,5 +25,6 @@
     8: #4 line 4 ("", 1, 1, "foobar") "bar"
     9: #4 line 4 ("", 1, 1, "foobar", "bar") STRINGPFX
    10: #4 line 5 ("", 1, 1, 0) EXIT
+Program exited.
 Execution completed in 11 steps.
 

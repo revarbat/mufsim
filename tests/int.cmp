@@ -23,5 +23,6 @@
     7: #4 line 6 ("", 3, 5, 0) SV0: foo
     8: #4 line 6 ("", 3, 5, 0, SV0) INT
     9: #4 line 7 ("", 3, 5, 0, 0) EXIT
+Program exited.
 Execution completed in 10 steps.
 

@@ -22,5 +22,6 @@
     7: #4 line 2 ("", #2, #5, "foo") NOTIFY_EXCEPT
 NOTIFY TO ALL IN Main Room(#2) EXCEPT John_Doe(#5): foo
     8: #4 line 3 ("") EXIT
+Program exited.
 Execution completed in 9 steps.
 

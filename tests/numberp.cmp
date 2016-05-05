@@ -19,5 +19,6 @@
     5: #4 line 4 ("", 1, 1) "foo"
     6: #4 line 4 ("", 1, 1, "foo") NUMBER?
     7: #4 line 5 ("", 1, 1, 0) EXIT
+Program exited.
 Execution completed in 8 steps.
 

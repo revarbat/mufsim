@@ -47,5 +47,6 @@
    19: #4 line 6 ("", #1, "John_Doe") RMATCH
    20: #4 line 6 ("", #-1) POP
    21: #4 line 7 ("") EXIT
+Program exited.
 Execution completed in 22 steps.
 

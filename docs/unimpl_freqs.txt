@@ -1,35 +1,24 @@
     217 parseprop
-     97 locked?
      71 pid
      59 kill
-     54 setlockstr
-     47 checkargs
      40 timestamps
-     24 getlockstr
      17 fork
-     17 array_get_propvals
-     16 testlock
      16 ispid?
      16 gui_available
      15 timesplit
      15 gui_dlog_show
      13 queue
-     11 parselock
      11 compile
-     10 array_put_propvals
       9 gui_dlog_close
       8 gui_value_set
-      7 prettylock
       6 gui_value_get
       5 program_getlines
       5 mcp_supports
       5 mcp_send
       5 mcp_register_event
-      5 ignoring?
       4 gui_values_get
       4 event_send
       4 checkpassword
-      3 unparselock
       3 timer_start
       2 gui_dlog_create
       2 gui_ctrl_command

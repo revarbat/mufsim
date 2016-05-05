@@ -368,5 +368,6 @@ GETPROP "foo" on #5 = "A"
     8: #4 line 2 ("", 0) JmpIfFalse: 74
    74: #4 line 29 ("") __FORPOP__
    75: #4 line 30 ("") EXIT
+Program exited.
 Execution completed in 261 steps.
 

@@ -210,5 +210,6 @@ NOTIFY: John_Doe is in Its happy place by Itself and it suits It, as it is Its, 
    17: #4 line 5 ("", 0) JmpIfFalse: 40
    40: #4 line 9 ("") __FORPOP__
    41: #4 line 10 ("") EXIT
+Program exited.
 Execution completed in 140 steps.
 

@@ -17,5 +17,6 @@ DESCRFLUSH ALL DESCRS.
     4: #4 line 3 ("", 11) DESCRFLUSH
 DESCRFLUSH 11, John_Doe(#5)
     5: #4 line 4 ("") EXIT
+Program exited.
 Execution completed in 6 steps.
 

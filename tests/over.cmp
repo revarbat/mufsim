@@ -15,5 +15,6 @@
     3: #4 line 2 ("", 3, 4) 5
     4: #4 line 2 ("", 3, 4, 5) OVER
     5: #4 line 3 ("", 3, 4, 5, 4) EXIT
+Program exited.
 Execution completed in 6 steps.
 

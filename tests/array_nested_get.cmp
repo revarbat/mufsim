@@ -45,5 +45,6 @@
    18: #4 line 3 ("", 1{"a": 1{"x": 3}}, "a", "x", 2) ARRAY_MAKE
    19: #4 line 4 ("", 1{"a": 1{"x": 3}}, 2["a", "x"]) ARRAY_NESTED_GET
    20: #4 line 5 ("", 3) EXIT
+Program exited.
 Execution completed in 21 steps.
 

@@ -58,5 +58,6 @@ UNBLESSPROP "abc" on #5
 IS_BLESSED "abc" on #5 = False
    23: #4 line 6 ("", 0) POP
    24: #4 line 7 ("") EXIT
+Program exited.
 Execution completed in 25 steps.
 

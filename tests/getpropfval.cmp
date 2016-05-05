@@ -16,5 +16,6 @@
     4: #4 line 2 ("", #5, "sex") GETPROPFVAL
 GETPROP "sex" on #5 = "male"
     5: #4 line 3 ("", 0.0) EXIT
+Program exited.
 Execution completed in 6 steps.
 

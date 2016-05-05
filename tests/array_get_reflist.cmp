@@ -43,5 +43,6 @@ SETPROP "refs" on #5 = "#5 #4 #3"
 GETPROP "refs" on #5 = "#5 #4 #3"
    17: #4 line 4 (3[#5, #4, #3]) POP
    18: #4 line 5 () EXIT
+Program exited.
 Execution completed in 19 steps.
 

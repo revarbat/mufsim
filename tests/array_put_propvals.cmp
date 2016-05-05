@@ -1,0 +1,78 @@
+#### Compiling MUF Program cmd-test(#4) ###############
+
+#### Showing Tokens for cmd-test(#4) ##################
+    0: Function: main (0 vars)
+    1: LV0: me
+    2: @
+    3: "abc"
+    4: ARRAY_GET_PROPVALS
+    5: "quxqux"
+    6: SWAP
+    7: "foob"
+    8: ARRAY_SETITEM
+    9: "feefie"
+   10: SWAP
+   11: "bamboom"
+   12: ARRAY_SETITEM
+   13: LV0: me
+   14: @
+   15: "abc"
+   16: ROT
+   17: ARRAY_PUT_PROPVALS
+   18: LV0: me
+   19: @
+   20: "abc"
+   21: ARRAY_GET_PROPVALS
+   22: POP
+   23: EXIT
+
+#### Executing Tokens #################################
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") LV0: me
+    2: #4 line 2 ("", LV0) @
+    3: #4 line 2 ("", #5) "abc"
+    4: #4 line 2 ("", #5, "abc") ARRAY_GET_PROPVALS
+NEXTPROP "abc" on #5 = "abc/def"
+GETPROP "abc/def" on #5 = "prop_def"
+NEXTPROP "abc/def" on #5 = "abc/efg"
+GETPROP "abc/efg" on #5 = "prop_efg"
+NEXTPROP "abc/efg" on #5 = "abc/nop"
+GETPROP "abc/nop" on #5 = None
+NEXTPROP "abc/nop" on #5 = ""
+    5: #4 line 3 ("", 2{"def": "prop_def", "efg": "prop_efg"}) "quxqux"
+    6: #4 line 3 ("", 2{"def": "prop_def", "efg": "prop_efg"}, "quxqux") SWAP
+    7: #4 line 3 ("", "quxqux", 2{"def": "prop_def", "efg": "prop_efg"}) "foob"
+    8: #4 line 3 ("", "quxqux", 2{"def": "prop_def", "efg": "prop_efg"}, "foob") ARRAY_SETITEM
+    9: #4 line 4 ("", 3{"def": "prop_def", "efg": "prop_efg", "foob": "quxqux"}) "feefie"
+   10: #4 line 4 ("", 3{"def": "prop_def", "efg": "prop_efg", "foob": "quxqux"}, "feefie") SWAP
+   11: #4 line 4 ("", "feefie", 3{"def": "prop_def", "efg": "prop_efg", "foob": "quxqux"}) "bamboom"
+   12: #4 line 4 ("", "feefie", 3{"def": "prop_def", "efg": "prop_efg", "foob": "quxqux"}, "bamboom") ARRAY_SETITEM
+   13: #4 line 5 ("", 4{"bamboom": "feefie", "def": "prop_def", "efg": "prop_efg", "foob": "quxqux"}) LV0: me
+   14: #4 line 5 ("", 4{"bamboom": "feefie", "def": "prop_def", "efg": "prop_efg", "foob": "quxqux"}, LV0) @
+   15: #4 line 5 ("", 4{"bamboom": "feefie", "def": "prop_def", "efg": "prop_efg", "foob": "quxqux"}, #5) "abc"
+   16: #4 line 5 ("", 4{"bamboom": "feefie", "def": "prop_def", "efg": "prop_efg", "foob": "quxqux"}, #5, "abc") ROT
+   17: #4 line 5 ("", #5, "abc", 4{"bamboom": "feefie", "def": "prop_def", "efg": "prop_efg", "foob": "quxqux"}) ARRAY_PUT_PROPVALS
+SETPROP "abc/bamboom" on #5 = "feefie"
+SETPROP "abc/def" on #5 = "prop_def"
+SETPROP "abc/foob" on #5 = "quxqux"
+SETPROP "abc/efg" on #5 = "prop_efg"
+   18: #4 line 6 ("") LV0: me
+   19: #4 line 6 ("", LV0) @
+   20: #4 line 6 ("", #5) "abc"
+   21: #4 line 6 ("", #5, "abc") ARRAY_GET_PROPVALS
+NEXTPROP "abc" on #5 = "abc/bamboom"
+GETPROP "abc/bamboom" on #5 = "feefie"
+NEXTPROP "abc/bamboom" on #5 = "abc/def"
+GETPROP "abc/def" on #5 = "prop_def"
+NEXTPROP "abc/def" on #5 = "abc/efg"
+GETPROP "abc/efg" on #5 = "prop_efg"
+NEXTPROP "abc/efg" on #5 = "abc/foob"
+GETPROP "abc/foob" on #5 = "quxqux"
+NEXTPROP "abc/foob" on #5 = "abc/nop"
+GETPROP "abc/nop" on #5 = None
+NEXTPROP "abc/nop" on #5 = ""
+   22: #4 line 6 ("", 4{"bamboom": "feefie", "def": "prop_def", "efg": "prop_efg", "foob": "quxqux"}) POP
+   23: #4 line 7 ("") EXIT
+Program exited.
+Execution completed in 24 steps.
+

@@ -35,5 +35,6 @@
    14: #4 line 5 ("", "bar", "qux") "baz2"
    15: #4 line 5 ("", "bar", "qux", "baz2") JMP: 17
    17: #4 line 6 ("", "bar", "qux", "baz2") EXIT
+Program exited.
 Execution completed in 14 steps.
 

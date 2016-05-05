@@ -33,5 +33,6 @@
     5: #4 line 4 ("", 3, 0) JmpIfFalse: 8
     8: #4 line 7 ("", 3) POP
     9: #4 line 8 ("") EXIT
+Program exited.
 Execution completed in 20 steps.
 

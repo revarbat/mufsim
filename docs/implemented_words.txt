@@ -1,3 +1,4 @@
+checkargs
 !
 $abort
 $author
@@ -70,8 +71,10 @@ array_filter_prop
 array_findval
 array_first
 array_fmtstrings
+array_get_ignorelist
 array_get_propdirs
 array_get_proplist
+array_get_propvals
 array_get_reflist
 array_getitem
 array_getrange
@@ -92,6 +95,7 @@ array_next
 array_notify
 array_prev
 array_put_proplist
+array_put_propvals
 array_put_reflist
 array_reverse
 array_setitem
@@ -208,12 +212,16 @@ gaussian
 getlink
 getlinks
 getlinks_array
+getlockstr
 getprop
 getpropfval
 getpropstr
 getpropval
 gmtoffset
 if
+ignore_add
+ignore_del
+ignoring?
 inf
 instr
 instring
@@ -227,6 +235,7 @@ ldup
 localvar
 location
 lock?
+locked?
 log
 log10
 lreverse
@@ -256,12 +265,14 @@ notify
 notify_except
 notify_exclude
 number?
+objmem
 ok?
 online
 online_array
 or
 over
 owner
+parselock
 part_pmatch
 pennies
 pi
@@ -273,6 +284,7 @@ polar_to_xyz
 pop
 popn
 pow
+prettylock
 prog
 program?
 pronoun_sub
@@ -298,10 +310,12 @@ rot
 rotate
 round
 rsplit
+secure_sysvars
 set
 set_error
 setlink
 setlinks_array
+setlockstr
 setmode
 setname
 setown
@@ -338,6 +352,7 @@ sysparm_array
 systime
 systime_precise
 tan
+testlock
 textattr
 then
 thing?
@@ -351,6 +366,7 @@ trig
 truename
 try
 unblessprop
+unparselock
 unparseobj
 until
 userlog

@@ -71,5 +71,6 @@
    31: #4 line 9 ("", "bar", "Bar") STRINGCMP
    32: #4 line 9 ("", 0) POP
    33: #4 line 10 ("") EXIT
+Program exited.
 Execution completed in 34 steps.
 

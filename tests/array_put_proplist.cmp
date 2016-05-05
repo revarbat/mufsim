@@ -32,5 +32,6 @@ SETPROP "outlist#/2" on #5 = "is"
 SETPROP "outlist#/3" on #5 = "a"
 SETPROP "outlist#/4" on #5 = "test."
    11: #4 line 4 ("") EXIT
+Program exited.
 Execution completed in 12 steps.
 

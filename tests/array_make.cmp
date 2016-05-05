@@ -17,5 +17,6 @@
     4: #4 line 2 ("", "a", "b", "c") 3
     5: #4 line 3 ("", "a", "b", "c", 3) ARRAY_MAKE
     6: #4 line 4 ("", 3["a", "b", "c"]) EXIT
+Program exited.
 Execution completed in 7 steps.
 

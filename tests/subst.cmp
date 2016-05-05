@@ -15,5 +15,6 @@
     3: #4 line 2 ("", "abcdeabcde", "") "bcd"
     4: #4 line 2 ("", "abcdeabcde", "", "bcd") SUBST
     5: #4 line 3 ("", "aeae") EXIT
+Program exited.
 Execution completed in 6 steps.
 

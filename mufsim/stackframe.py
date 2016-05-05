@@ -83,7 +83,8 @@ class MufStackFrame(object):
         if prog < 0:
             addr = self.curr_addr()
             prog = addr.prog
-        return db.getobj(prog).compiled
+        comp = db.getobj(prog).compiled
+        return comp
 
     def set_trace(self, on_off):
         self.trace = on_off

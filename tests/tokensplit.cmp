@@ -21,5 +21,6 @@
     6: #4 line 2 ("", "foo/=bar", "baz") POP
     7: #4 line 2 ("", "foo/=bar") POP
     8: #4 line 3 ("") EXIT
+Program exited.
 Execution completed in 9 steps.
 

@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 import mufsim.utils as util
@@ -16,6 +18,7 @@ import mufsim.insts.directives  # noqa
 import mufsim.insts.fpmath  # noqa
 import mufsim.insts.intmath  # noqa
 import mufsim.insts.io  # noqa
+import mufsim.insts.locks  # noqa
 import mufsim.insts.objectdb  # noqa
 import mufsim.insts.predicates  # noqa
 import mufsim.insts.properties  # noqa
@@ -81,6 +84,17 @@ class MufCompiler(object):
         'setoecho': '"_/oecho" swap setprop',
         'setpecho': '"_/pecho" swap setprop',
 
+        'ignoring?': dedent(
+            '''\
+                "@__sys__/ignore/def" swap 3 dupn 3 reverse
+                reflist_find -4 rotate reflist_find or
+            '''
+        ),
+        'ignore_add': '"@__sys__/ignore/def" swap reflist_add',
+        'ignore_del': '"@__sys__/ignore/def" swap reflist_del',
+        'array_get_ignorelist': '"@__sys__/ignore/def" array_get_reflist',
+
+        'secure_sysvars': '"me" match dup me ! location loc ! trig trigger !',
         'truename': 'name',
         'version': '__version',
         'strip': 'striplead striptail',

@@ -25,5 +25,6 @@
     8: #4 line 4 ("", "\[[31;43mColor\[[0m text.") ANSI_STRLEN
     9: #4 line 4 ("", 11) POP
    10: #4 line 5 ("") EXIT
+Program exited.
 Execution completed in 11 steps.
 

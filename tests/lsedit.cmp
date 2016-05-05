@@ -2951,5 +2951,6 @@ NOTIFY: test  OBJ=LIST
  2200: #4 line 520 (0) EXIT
  2340: #4 line 549 (0) EXIT
  2392: #4 line 559 (0) EXIT
+Program exited.
 Execution completed in 518 steps.
 
