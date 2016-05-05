@@ -14,7 +14,7 @@ release:
 	rm -rf dist/MufSim-*.egg
 	python setup.py egg_info bdist_egg
 
-apps:
+app:
 	rm -rf dist/MufSimulator dist/MufSimulator.app dist/MufSim.app dist/MufSimOSX.zip
 	python setup.py py2app
 	rm -rf dist/MufSimulator

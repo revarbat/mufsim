@@ -84,15 +84,18 @@ class MufGui(object):
 
         self.menubar = Menu(self.root, name="mb")
 
+        cmd = "Control"
+        if platform.system() == 'Darwin':
+            cmd = "Command"
         self.filemenu = Menu(self.menubar, tearoff=0)
         self.filemenu.add_command(
             label="Load Program...",
-            accel="Command-O",
+            accel="%s-O" % cmd,
             command=self.handle_load_program,
         )
         self.filemenu.add_command(
             label="Load Library...",
-            accel="Command-Shift-O",
+            accel="%s-L" % cmd,
             command=self.handle_load_library,
         )
         self.menubar.add_cascade(label="File", menu=self.filemenu)
@@ -100,17 +103,17 @@ class MufGui(object):
         self.editmenu = Menu(self.menubar, tearoff=0)
         self.editmenu.add_command(
             label="Cut",
-            accel="Command-X",
+            accel="%s-X" % cmd,
             command="event generate [focus] <<Cut>>"
         )
         self.editmenu.add_command(
             label="Copy",
-            accel="Command-C",
+            accel="%s-C" % cmd,
             command="event generate [focus] <<Copy>>"
         )
         self.editmenu.add_command(
             label="Paste",
-            accel="Command-V",
+            accel="%s-V" % cmd,
             command="event generate [focus] <<Paste>>"
         )
         self.editmenu.add_command(
@@ -118,6 +121,71 @@ class MufGui(object):
             command="event generate [focus] <<Clear>>"
         )
         self.menubar.add_cascade(label="Edit", menu=self.editmenu)
+
+        self.dbugmenu = Menu(self.menubar, tearoff=0)
+        if platform.system() == 'Darwin':
+            self.dbugmenu.add_command(
+                label="Run...",
+                accel="Control-r",
+                command=self.handle_run,
+            )
+            self.dbugmenu.add_command(
+                label="Step Instruction",
+                accel="Control-i",
+                command=self.handle_step_inst,
+            )
+            self.dbugmenu.add_command(
+                label="Step Line",
+                accel="Control-s",
+                command=self.handle_step_line,
+            )
+            self.dbugmenu.add_command(
+                label="Next Line",
+                accel="Control-n",
+                command=self.handle_next_line,
+            )
+            self.dbugmenu.add_command(
+                label="Finish Function",
+                accel="Control-f",
+                command=self.handle_finish,
+            )
+            self.dbugmenu.add_command(
+                label="Continue",
+                accel="Control-c",
+                command=self.handle_continue,
+            )
+        else:
+            self.dbugmenu.add_command(
+                label="Run...",
+                accel="Control-Shift-R",
+                command=self.handle_run,
+            )
+            self.dbugmenu.add_command(
+                label="Step Instruction",
+                accel="Control-Shift-I",
+                command=self.handle_step_inst,
+            )
+            self.dbugmenu.add_command(
+                label="Step Line",
+                accel="Control-Shift-S",
+                command=self.handle_step_line,
+            )
+            self.dbugmenu.add_command(
+                label="Next Line",
+                accel="Control-Shift-N",
+                command=self.handle_next_line,
+            )
+            self.dbugmenu.add_command(
+                label="Finish Function",
+                accel="Control-Shift-F",
+                command=self.handle_finish,
+            )
+            self.dbugmenu.add_command(
+                label="Continue",
+                accel="Control-Shift-C",
+                command=self.handle_continue,
+            )
+        self.menubar.add_cascade(label="Debug", menu=self.dbugmenu)
 
         self.helpmenu = Menu(self.menubar, name="help", tearoff=0)
         self.menubar.add_cascade(label="Help", menu=self.helpmenu)
@@ -298,12 +366,24 @@ class MufGui(object):
             self.root.bind_all('<Command-Key-x>', "event generate [focus] <<Cut>>")
             self.root.bind_all('<Command-Key-c>', "event generate [focus] <<Copy>>")
             self.root.bind_all('<Command-Key-v>', "event generate [focus] <<Paste>>")
+            self.root.bind_all('<Control-Key-r>', self.handle_run)
+            self.root.bind_all('<Control-Key-i>', self.handle_step_inst)
+            self.root.bind_all('<Control-Key-s>', self.handle_step_line)
+            self.root.bind_all('<Control-Key-n>', self.handle_next_line)
+            self.root.bind_all('<Control-Key-f>', self.handle_finish)
+            self.root.bind_all('<Control-Key-c>', self.handle_continue)
         else:
             self.root.bind_all('<Control-Key-o>', self.handle_load_program)
             self.root.bind_all('<Control-Key-l>', self.handle_load_library)
             self.root.bind_all('<Control-Key-x>', "event generate [focus] <<Cut>>")
             self.root.bind_all('<Control-Key-c>', "event generate [focus] <<Copy>>")
             self.root.bind_all('<Control-Key-v>', "event generate [focus] <<Paste>>")
+            self.root.bind_all('<Control-Key-r>', self.handle_run)
+            self.root.bind_all('<Shift-Control-Key-I>', self.handle_step_inst)
+            self.root.bind_all('<Shift-Control-Key-S>', self.handle_step_line)
+            self.root.bind_all('<Shift-Control-Key-N>', self.handle_next_line)
+            self.root.bind_all('<Shift-Control-Key-F>', self.handle_finish)
+            self.root.bind_all('<Shift-Control-Key-C>', self.handle_continue)
 
         self.update_displays()
 
@@ -569,11 +649,20 @@ class MufGui(object):
             self.fr.del_breakpoint(bpnum)
         else:
             self.fr.add_breakpoint(prog, line)
-        self.update_sourcecode_display()
+        self.update_sourcecode_breakpoints(prog)
+
+    def update_sourcecode_breakpoints(self, prog):
+        self.srcs_disp.tag_remove('breakpt', '0.0', END)
+        for bpprog, line in self.fr.get_breakpoints():
+            if bpprog == prog:
+                self.srcs_disp.tag_add(
+                    'breakpt',
+                    '%d.0' % line,
+                    '%d.5' % line
+                )
 
     def update_sourcecode_display(self):
         self.srcs_disp.tag_remove('currline', '0.0', END)
-        self.srcs_disp.tag_remove('breakpt', '0.0', END)
         self.tokn_disp.tag_remove('currline', '0.0', END)
         selprog = self._get_prog_from_selector()
         addr = None
@@ -586,13 +675,6 @@ class MufGui(object):
         self.update_sourcecode_from_program(selprog)
         if not self.fr:
             return
-        for prog, line in self.fr.get_breakpoints():
-            if prog == selprog:
-                self.srcs_disp.tag_add(
-                    'breakpt',
-                    '%d.0' % line,
-                    '%d.5' % line
-                )
         if not addr:
             return
         inst = self.fr.get_inst(addr)
@@ -606,6 +688,7 @@ class MufGui(object):
             '%d.5' % (addr.value + 1),
             '%d.end+1c' % (addr.value + 1),
         )
+        self.update_sourcecode_breakpoints(selprog)
         self.srcs_disp.see('%d.0 - 2l' % inst.line)
         self.srcs_disp.see('%d.0 + 2l' % inst.line)
         self.srcs_disp.see('%d.0' % inst.line)
@@ -622,12 +705,18 @@ class MufGui(object):
             self.cont_btn,
         ]
         livestate = "disabled"
+        livecolor = "#bbb"
         if self.fr and self.fr.get_call_stack():
             livestate = "normal"
+            livecolor = "black"
         for btn in livebtns:
             btn.config(state=livestate)
         runstate = "normal" if self.fr else "disabled"
+        runcolor = "black" if self.fr else "#bbb"
         self.run_btn.config(state=runstate)
+        self.dbugmenu.entryconfig(0, state=runstate, foreground=runcolor)
+        for i in range(1, 6):
+            self.dbugmenu.entryconfig(i, state=livestate, foreground=livecolor)
 
     def update_console_display(self):
         if log_updated():
@@ -706,27 +795,27 @@ class MufGui(object):
             break
         self.update_displays()
 
-    def handle_step_inst(self):
+    def handle_step_inst(self, event=None):
         self.fr.set_break_insts(1)
         self.resume_execution()
 
-    def handle_step_line(self):
+    def handle_step_line(self, event=None):
         self.fr.set_break_steps(1)
         self.resume_execution()
 
-    def handle_next_line(self):
+    def handle_next_line(self, event=None):
         self.fr.set_break_lines(1)
         self.resume_execution()
 
-    def handle_finish(self):
+    def handle_finish(self, event=None):
         self.fr.set_break_on_finish(True)
         self.resume_execution()
 
-    def handle_continue(self):
+    def handle_continue(self, event=None):
         self.fr.reset_breaks()
         self.resume_execution()
 
-    def handle_run(self):
+    def handle_run(self, event=None):
         command = tkSimpleDialog.askstring(
             "Run program",
             "What argument string should the program be run with?",

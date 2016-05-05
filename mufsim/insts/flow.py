@@ -209,7 +209,6 @@ class InstTry(Instruction):
         if not trycode:
             raise MufCompileError("Incomplete try-catch block.")
         inst.trycode = None
-        trycode.append(InstJmp(self.line, len(subcode) + 1))
         inst.value = len(trycode) + 1
         code.append(inst)
         for prim in trycode:
@@ -235,7 +234,6 @@ class InstCatch(Instruction):
         inst = cmplr.stmt_stack[-1]
         if type(inst) is not InstTry:
             raise MufCompileError("Must be inside try block. (catch)")
-        code.append(InstTryPop(self.line))
         inst.trycode = code[:]
         inst.detailed = False
         del code[:]
@@ -250,7 +248,6 @@ class InstCatchDetailed(Instruction):
         inst = cmplr.stmt_stack[-1]
         if type(inst) is not InstTry:
             raise MufCompileError("Must be inside try block. (catch_detailed)")
-        code.append(InstTryPop(self.line))
         inst.trycode = code[:]
         inst.detailed = True
         del code[:]
@@ -265,6 +262,11 @@ class InstEndCatch(Instruction):
         inst = cmplr.stmt_stack[-1]
         if type(inst) is not InstTry:
             raise MufCompileError("Must be inside try block. (endcatch)")
+        if not inst.trycode:
+            raise MufCompileError("Incomplete try-catch block.")
+        lastline = inst.trycode[-1].line
+        inst.trycode.append(InstTryPop(lastline))
+        inst.trycode.append(InstJmp(lastline, len(code) + 1))
         return (True, src)
 
 
