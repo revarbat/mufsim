@@ -1,0 +1,32 @@
+#### Compiling MUF Program cmd-test(#4) ###############
+
+#### Showing Tokens for cmd-test(#4) ##################
+    0: Function: main (1 vars)
+    1: 1462572502
+    2: DUP
+    3: TIMESPLIT
+    4: "%03i %i %04i %02i %02i %02i %02i %02i"
+    5: FMTSTRING
+    6: "%j %w %Y %m %d %H %M %S"
+    7: ROT
+    8: TIMEFMT
+    9: STRINGCMP
+   10: POP
+   11: EXIT
+
+#### Executing Tokens #################################
+    0: #4 line 1 ("") Function: main (1 vars)
+    1: #4 line 2 () 1462572502
+    2: #4 line 2 (1462572502) DUP
+    3: #4 line 2 (1462572502, 1462572502) TIMESPLIT
+    4: #4 line 2 (1462572502, 22, 8, 15, 6, 5, 2016, 5, 127) "%03i %i %04i %02i %02i %02i %02i %02i"
+    5: #4 line 2 (1462572502, 22, 8, 15, 6, 5, 2016, 5, 127, "%03i %i %04i %02i %02i %02i %02i %02i") FMTSTRING
+    6: #4 line 3 (1462572502, "127 5 2016 05 06 15 08 22") "%j %w %Y %m %d %H %M %S"
+    7: #4 line 3 (1462572502, "127 5 2016 05 06 15 08 22", "%j %w %Y %m %d %H %M %S") ROT
+    8: #4 line 3 ("127 5 2016 05 06 15 08 22", "%j %w %Y %m %d %H %M %S", 1462572502) TIMEFMT
+    9: #4 line 4 ("127 5 2016 05 06 15 08 22", "127 5 2016 05 06 15 08 22") STRINGCMP
+   10: #4 line 4 (0) POP
+   11: #4 line 5 () EXIT
+Program exited.
+Execution completed in 12 steps.
+

@@ -1,4 +1,3 @@
-checkargs
 !
 $abort
 $author
@@ -121,9 +120,13 @@ caller
 cancall?
 catch
 ceil
+checkargs
+checkpassword
 clear
 clear_error
 cmd
+compile
+compiled?
 conboot
 concount
 condbref
@@ -252,6 +255,7 @@ name
 name-ok?
 newexit
 newobject
+newpassword
 newplayer
 newprogram
 newroom
@@ -287,6 +291,8 @@ pow
 prettylock
 prog
 program?
+program_getlines
+program_setlines
 pronoun_sub
 propdir?
 put
@@ -325,6 +331,7 @@ setseed
 setsysparm
 sign
 sin
+sleep
 smatch
 split
 sqrt
@@ -358,6 +365,9 @@ then
 thing?
 time
 timefmt
+timesplit
+timestamps
+toadplayer
 tokensplit
 tolower
 toupper
@@ -366,6 +376,7 @@ trig
 truename
 try
 unblessprop
+uncompile
 unparselock
 unparseobj
 until

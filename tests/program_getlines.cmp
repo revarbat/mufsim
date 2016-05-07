@@ -1,0 +1,125 @@
+#### Compiling MUF Program cmd-test(#4) ###############
+
+#### Showing Tokens for cmd-test(#4) ##################
+    0: Function: main (1 vars)
+    1: PROG
+    2: 1
+    3: 2
+    4: PROGRAM_GETLINES
+    5: POP
+    6: PROG
+    7: 0
+    8: 0
+    9: PROGRAM_GETLINES
+   10: SV1: lines
+   11: !
+   12: "Copy"
+   13: NEWPROGRAM
+   14: SV2: newobj
+   15: !
+   16: SV2: newobj
+   17: @
+   18: COMPILED?
+   19: POP
+   20: SV2: newobj
+   21: @
+   22: 0
+   23: 0
+   24: PROGRAM_GETLINES
+   25: POP
+   26: SV2: newobj
+   27: @
+   28: SV1: lines
+   29: @
+   30: PROGRAM_SETLINES
+   31: SV2: newobj
+   32: @
+   33: COMPILED?
+   34: POP
+   35: SV2: newobj
+   36: @
+   37: 1
+   38: COMPILE
+   39: POP
+   40: SV2: newobj
+   41: @
+   42: COMPILED?
+   43: POP
+   44: SV2: newobj
+   45: @
+   46: UNCOMPILE
+   47: SV2: newobj
+   48: @
+   49: COMPILED?
+   50: POP
+   51: SV2: newobj
+   52: @
+   53: 0
+   54: 0
+   55: PROGRAM_GETLINES
+   56: POP
+   57: EXIT
+
+#### Executing Tokens #################################
+    0: #4 line 1 ("") Function: main (1 vars)
+    1: #4 line 2 () PROG
+    2: #4 line 2 (#4) 1
+    3: #4 line 2 (#4, 1) 2
+    4: #4 line 2 (#4, 1, 2) PROGRAM_GETLINES
+    5: #4 line 2 (2[": main[ arg -- ]", "    prog 1 2 program_getlines pop"]) POP
+    6: #4 line 3 () PROG
+    7: #4 line 3 (#4) 0
+    8: #4 line 3 (#4, 0) 0
+    9: #4 line 3 (#4, 0, 0) PROGRAM_GETLINES
+   10: #4 line 3 (16[": main[ arg -- ]", "    prog 1 2 program_getlines pop", "    prog 0 0 program_getlines var! lines", "    \"Copy\" newprogram var! newobj", "    newobj @ compiled? pop", "    newobj @ 0 0 program_getlines pop", "    newobj @ lines @ program_setlines", "    newobj @ compiled? pop", "    newobj @ 1 compile pop", "    newobj @ compiled? pop", "    newobj @ uncompile", "    newobj @ compiled? pop", "    newobj @ 0 0 program_getlines pop", ";", "", ""]) SV1: lines
+   11: #4 line 3 (16[": main[ arg -- ]", "    prog 1 2 program_getlines pop", "    prog 0 0 program_getlines var! lines", "    \"Copy\" newprogram var! newobj", "    newobj @ compiled? pop", "    newobj @ 0 0 program_getlines pop", "    newobj @ lines @ program_setlines", "    newobj @ compiled? pop", "    newobj @ 1 compile pop", "    newobj @ compiled? pop", "    newobj @ uncompile", "    newobj @ compiled? pop", "    newobj @ 0 0 program_getlines pop", ";", "", ""], SV1) !
+   12: #4 line 4 () "Copy"
+   13: #4 line 4 ("Copy") NEWPROGRAM
+   14: #4 line 4 (#8) SV2: newobj
+   15: #4 line 4 (#8, SV2) !
+   16: #4 line 5 () SV2: newobj
+   17: #4 line 5 (SV2) @
+   18: #4 line 5 (#8) COMPILED?
+   19: #4 line 5 (0) POP
+   20: #4 line 6 () SV2: newobj
+   21: #4 line 6 (SV2) @
+   22: #4 line 6 (#8) 0
+   23: #4 line 6 (#8, 0) 0
+   24: #4 line 6 (#8, 0, 0) PROGRAM_GETLINES
+   25: #4 line 6 (0[]) POP
+   26: #4 line 7 () SV2: newobj
+   27: #4 line 7 (SV2) @
+   28: #4 line 7 (#8) SV1: lines
+   29: #4 line 7 (#8, SV1) @
+   30: #4 line 7 (#8, 16[": main[ arg -- ]", "    prog 1 2 program_getlines pop", "    prog 0 0 program_getlines var! lines", "    \"Copy\" newprogram var! newobj", "    newobj @ compiled? pop", "    newobj @ 0 0 program_getlines pop", "    newobj @ lines @ program_setlines", "    newobj @ compiled? pop", "    newobj @ 1 compile pop", "    newobj @ compiled? pop", "    newobj @ uncompile", "    newobj @ compiled? pop", "    newobj @ 0 0 program_getlines pop", ";", "", ""]) PROGRAM_SETLINES
+   31: #4 line 8 () SV2: newobj
+   32: #4 line 8 (SV2) @
+   33: #4 line 8 (#8) COMPILED?
+   34: #4 line 8 (0) POP
+   35: #4 line 9 () SV2: newobj
+   36: #4 line 9 (SV2) @
+   37: #4 line 9 (#8) 1
+   38: #4 line 9 (#8, 1) COMPILE
+COMPILE Copy(#8)
+   39: #4 line 9 (58) POP
+   40: #4 line 10 () SV2: newobj
+   41: #4 line 10 (SV2) @
+   42: #4 line 10 (#8) COMPILED?
+   43: #4 line 10 (1) POP
+   44: #4 line 11 () SV2: newobj
+   45: #4 line 11 (SV2) @
+   46: #4 line 11 (#8) UNCOMPILE
+   47: #4 line 12 () SV2: newobj
+   48: #4 line 12 (SV2) @
+   49: #4 line 12 (#8) COMPILED?
+   50: #4 line 12 (0) POP
+   51: #4 line 13 () SV2: newobj
+   52: #4 line 13 (SV2) @
+   53: #4 line 13 (#8) 0
+   54: #4 line 13 (#8, 0) 0
+   55: #4 line 13 (#8, 0, 0) PROGRAM_GETLINES
+   56: #4 line 13 (16[": main[ arg -- ]", "    prog 1 2 program_getlines pop", "    prog 0 0 program_getlines var! lines", "    \"Copy\" newprogram var! newobj", "    newobj @ compiled? pop", "    newobj @ 0 0 program_getlines pop", "    newobj @ lines @ program_setlines", "    newobj @ compiled? pop", "    newobj @ 1 compile pop", "    newobj @ compiled? pop", "    newobj @ uncompile", "    newobj @ compiled? pop", "    newobj @ 0 0 program_getlines pop", ";", "", ""]) POP
+   57: #4 line 14 () EXIT
+Program exited.
+Execution completed in 58 steps.
+

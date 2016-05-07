@@ -1,3 +1,5 @@
+import time
+
 import mufsim.utils as util
 import mufsim.gamedb as db
 import mufsim.stackitems as si
@@ -5,6 +7,126 @@ import mufsim.sysparms as sysparm
 from mufsim.logger import log
 from mufsim.errors import MufRuntimeError
 from mufsim.insts.base import Instruction, instr
+
+
+@instr("timestamps")
+class InstTimestamps(Instruction):
+    def execute(self, fr):
+        who = fr.data_pop_object()
+        fr.data_push(who.ts_created)
+        fr.data_push(who.ts_modified)
+        fr.data_push(who.ts_lastused)
+        fr.data_push(who.ts_usecount)
+
+
+@instr("checkpassword")
+class InstCheckPassWord(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        passwd = fr.data_pop(str)
+        who = fr.data_pop_object()
+        if who.objtype != "player":
+            raise MufRuntimeError("Expected player dbref.")
+        fr.data_push(1 if who.password == passwd else 0)
+
+
+@instr("newpassword")
+class InstNewPassWord(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        passwd = fr.data_pop(str)
+        who = fr.data_pop_object()
+        if who.objtype != "player":
+            raise MufRuntimeError("Expected player dbref.")
+        who.mark_modify()
+        who.password = passwd
+
+
+@instr("program_getlines")
+class InstProgramGetLines(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        end = fr.data_pop(int)
+        start = fr.data_pop(int)
+        obj = fr.data_pop_object()
+        if obj.objtype != "program":
+            raise MufRuntimeError("Expected program dbref.")
+        if obj.sources:
+            srcs = obj.sources.split("\n")
+            srclen = len(srcs)
+            if start < 1:
+                start = 1
+            if end < 1 or end >= srclen:
+                end = srclen
+            fr.data_push(srcs[start-1:end])
+        else:
+            fr.data_push([])
+
+
+@instr("program_setlines")
+class InstProgramSetLines(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        lines = fr.data_pop(list)
+        obj = fr.data_pop_object()
+        if obj.objtype != "program":
+            raise MufRuntimeError("Expected program dbref.")
+        for line in lines:
+            if type(line) is not str:
+                raise MufRuntimeError("Expected list of strings.")
+        obj.sources = "\n".join(lines)
+
+
+@instr("compiled?")
+class InstCompiledP(Instruction):
+    def execute(self, fr):
+        obj = fr.data_pop_object()
+        if obj.objtype != "program":
+            raise MufRuntimeError("Expected program dbref.")
+        fr.data_push(1 if obj.compiled else 0)
+
+
+@instr("uncompile")
+class InstUnCompile(Instruction):
+    def execute(self, fr):
+        obj = fr.data_pop_object()
+        if obj.objtype != "program":
+            raise MufRuntimeError("Expected program dbref.")
+        for cfr in fr.call_stack:
+            if cfr.pc.prog == obj.dbref:
+                raise MufRuntimeError("Cannot uncompile running program.")
+        obj.compiled = None
+
+
+@instr("compile")
+class InstCompile(Instruction):
+    compiler = None
+
+    def execute(self, fr):
+        showerrs = fr.data_pop(int)
+        obj = fr.data_pop_object()
+        if obj.objtype != "program":
+            raise MufRuntimeError("Expected program dbref.")
+        for cfr in fr.call_stack:
+            if cfr.pc.prog == obj.dbref:
+                raise MufRuntimeError("Cannot compile running program.")
+        obj.compiler = None
+        try:
+            success = self.compiler.compile_source(obj.dbref)
+        except (MufCompileError, MufRuntimeError) as e:
+            if showerrs:
+                log(str(e))
+        if obj.compiled:
+            fr.data_push(len(obj.compiled.code))
+        else:
+            fr.data_push(0)
+        log("COMPILE %s" % obj)
+
+    def compile(self, cmplr, code, src):
+        inst = InstCompile(self.line)
+        inst.compiler = type(cmplr)()
+        code.append(inst)
+        return (False, src)
 
 
 @instr("sysparm")
@@ -127,6 +249,7 @@ class InstAddPennies(Instruction):
         val = fr.data_pop(int)
         obj = fr.data_pop_object()
         obj.pennies += val
+        obj.mark_modify()
 
 
 @instr("movepennies")
@@ -138,6 +261,8 @@ class InstMovePennies(Instruction):
         obj = fr.data_pop_object()
         obj.pennies -= val
         dest.pennies += val
+        obj.mark_modify()
+        dest.mark_modify()
 
 
 @instr("unparseobj")
@@ -162,6 +287,7 @@ class InstSetName(Instruction):
         nam = fr.data_pop(str)
         obj = fr.data_pop_object()
         obj.name = nam
+        obj.mark_modify()
 
 
 @instr("name-ok?")
@@ -201,6 +327,7 @@ class InstSet(Instruction):
         flg = flg.strip().upper()[0]
         if flg not in obj.flags:
             obj.flags += flg
+        obj.mark_modify()
 
 
 @instr("flag?")
@@ -247,6 +374,7 @@ class InstSetOwn(Instruction):
         if newowner.objtype != "player":
             raise MufRuntimeError("Expected player dbref.")
         obj.owner = newowner.dbref
+        obj.mark_modify()
 
 
 @instr("contents")
@@ -282,7 +410,7 @@ class InstForce(Instruction):
         fr.check_underflow(2)
         cmd = fr.data_pop(str)
         obj = fr.data_pop_object()
-        log("FORCE %s(#%d) TO DO: %s" % (obj.name, obj.dbref, cmd))
+        log("FORCE %s TO DO: %s" % (obj, cmd))
         # TODO: Real forcing!  (pipe dream)
         # obj.force(cmd)
 
@@ -353,6 +481,7 @@ class InstSetLink(Instruction):
         dest = fr.data_pop_object()
         obj = fr.data_pop_object()
         obj.links = [dest.dbref]
+        obj.mark_modify()
 
 
 @instr("setlinks_array")
@@ -365,6 +494,7 @@ class InstSetLinksArray(Instruction):
             if type(dest) is not si.DBRef:
                 raise MufRuntimeError("Expected list array of dbrefs.")
         obj.links = [db.getobj(dest).dbref for dest in dests]
+        obj.mark_modify()
 
 
 @instr("getlink")
@@ -404,7 +534,13 @@ class InstCopyObj(Instruction):
         obj = fr.data_pop_object()
         if obj.objtype != "thing":
             raise MufRuntimeError("Expected thing dbref.")
-        fr.data_push(si.DBRef(db.copyobj(obj).dbref))
+        newobj = db.copyobj(obj)
+        now = int(time.time())
+        newobj.ts_created = now
+        newobj.ts_modified = now
+        newobj.ts_lastused = now
+        newobj.ts_usecount = 0
+        fr.data_push(si.DBRef(newobj.dbref))
 
 
 @instr("copyplayer")
@@ -419,7 +555,12 @@ class InstCopyPlayer(Instruction):
             raise MufRuntimeError("Player name already in use.")
         obj = db.copyobj(obj)
         obj.name = name
-        # TODO: set password for real
+        obj.password = pw
+        now = int(time.time())
+        obj.ts_created = now
+        obj.ts_modified = now
+        obj.ts_lastused = now
+        obj.ts_usecount = 0
         fr.data_push(si.DBRef(obj.dbref))
 
 
@@ -497,6 +638,19 @@ class InstNewProgram(Instruction):
             owner=db.getobj(fr.user).dbref,
         )
         fr.data_push(si.DBRef(obj.dbref))
+
+
+@instr("toadplayer")
+class InstToadPlayer(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        toad = fr.data_pop_object()
+        inheritor = fr.data_pop_object()
+        if toad.objtype != "player":
+            raise MufRuntimeError("Expected player dbref.")
+        if inheritor.objtype != "player":
+            raise MufRuntimeError("Expected player dbref.")
+        db.toadplayer(toad, inheritor)
 
 
 @instr("recycle")

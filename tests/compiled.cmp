@@ -1,0 +1,16 @@
+#### Compiling MUF Program cmd-test(#4) ###############
+
+#### Showing Tokens for cmd-test(#4) ##################
+    0: Function: main (1 vars)
+    1: PROG
+    2: COMPILED?
+    3: EXIT
+
+#### Executing Tokens #################################
+    0: #4 line 1 ("") Function: main (1 vars)
+    1: #4 line 2 () PROG
+    2: #4 line 2 (#4) COMPILED?
+    3: #4 line 3 (1) EXIT
+Program exited.
+Execution completed in 4 steps.
+

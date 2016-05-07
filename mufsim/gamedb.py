@@ -1,5 +1,6 @@
 import re
 import copy
+import time
 
 from mufsim.errors import MufRuntimeError
 import mufsim.utils as util
@@ -22,7 +23,7 @@ class DBObject(object):
     def __init__(
         self, name, objtype="thing", owner=-1,
         props={}, flags="", location=-1,
-        regname=None,
+        regname=None, passwd=None,
     ):
         global db_top
         global player_names
@@ -50,16 +51,31 @@ class DBObject(object):
         self.descr = -1
         self.sources = None
         self.compiled = None
+        self.password = None
+        self.ts_created = int(time.time())
+        self.ts_modified = int(time.time())
+        self.ts_lastused = int(time.time())
+        self.ts_usecount = 0
         if objtype == "player":
             player_names[self.name.lower()] = self.dbref
             self.descr = conn.connect(self.dbref)
+            self.password = passwd
         if regname:
             register_obj(0, regname, si.DBRef(self.dbref))
 
+    def mark_modify(self):
+        self.ts_modified = int(time.time())
+
+    def mark_use(self):
+        self.ts_lastused = int(time.time())
+        self.ts_usecount += 1
+
     def moveto(self, dest):
+        self.mark_modify()
         loc = self.location
         if loc >= 0:
             locobj = getobj(loc)
+            locobj.mark_modify()
             if self.objtype == "exit":
                 idx = locobj.exits.index(self.dbref)
                 del locobj.exits[idx]
@@ -69,6 +85,7 @@ class DBObject(object):
         dest = normobj(dest)
         if dest >= 0:
             destobj = getobj(dest)
+            destobj.mark_modify()
             if self.objtype == "exit":
                 destobj.exits.insert(0, self.dbref)
                 self.exits = dest
@@ -103,6 +120,7 @@ class DBObject(object):
 
     def setprop(self, prop, val, suppress=False):
         prop = self.normalize_prop(prop)
+        self.mark_modify()
         self.properties[prop] = val
         if not suppress:
             if type(val) is str:
@@ -114,6 +132,7 @@ class DBObject(object):
     def delprop(self, prop):
         prop = self.normalize_prop(prop)
         log("DELPROP \"%s\" on #%d" % (prop, self.dbref))
+        self.mark_modify()
         if prop in self.properties:
             del self.properties[prop]
         prop += '/'
@@ -182,6 +201,7 @@ class DBObject(object):
 
     def blessprop(self, prop, suppress=False):
         prop = self.normalize_prop(prop)
+        self.mark_modify()
         if prop in self.properties:
             self.blessed_properties[prop] = 1
         if not suppress:
@@ -190,6 +210,7 @@ class DBObject(object):
 
     def unblessprop(self, prop, suppress=False):
         prop = self.normalize_prop(prop)
+        self.mark_modify()
         if prop in self.properties:
             del self.blessed_properties[prop]
         if not suppress:
@@ -432,6 +453,28 @@ def copyobj(obj):
     return obj
 
 
+def toadplayer(toad, inheritor):
+    global objects_db
+    toad = getobj(normobj(toad))
+    inheritor = getobj(normobj(inheritor))
+    if toad.objtype != "player":
+        raise MufRuntimeError("Expected valid player object.")
+    if inheritor.objtype != "player":
+        raise MufRuntimeError("Expected valid player object.")
+    if toad.dbref <= 1:
+        raise MufRuntimeError("Cannot toad #1.")
+    toad.objtype = "thing"
+    toad.name = "A slimy toad named %s" % toad.name
+    toad.flags = ""
+    toad.owner = inheritor.dbref
+    toad.moveto(inheritor)
+    toad.links = []
+    toad.descr = -1
+    for dbref, obj in objects_db.iteritems():
+        if obj.owner == toad.dbref:
+            obj.owner = inheritor.dbref
+
+
 def recycle_object(obj):
     global recycled_list
     obj = getobj(normobj(obj))
@@ -574,12 +617,12 @@ build_commands = [
     "@chown $cmd/test=John_Doe",
     "@link *John_Doe=$mainroom",
     "@teleport *John_Doe=$mainroom",
-    "@pcreate Jane_Doe=password",
+    "@pcreate Jane_Doe=password2",
     "@link *Jane_Doe=$mainroom",
     "@teleport *Jane_Doe=$mainroom",
     "@create My Thing=100=thingy",
     "connect John_Doe password"
-    "connect Jane_Doe password"
+    "connect Jane_Doe password2"
 ]
 
 
@@ -609,6 +652,7 @@ def init_object_db():
         objtype="player",
         flags="W3",
         location=0,
+        passwd="WizPass",
         props={
             "sex": "male"
         },
@@ -645,6 +689,7 @@ def init_object_db():
         objtype="player",
         flags="3",
         location=main_room.dbref,
+        passwd="password",
         props={
             "sex": "male",
             "test#": 5,
@@ -668,6 +713,7 @@ def init_object_db():
         objtype="player",
         flags="1",
         location=main_room.dbref,
+        passwd="password2",
         props={
             "sex": "female"
         },

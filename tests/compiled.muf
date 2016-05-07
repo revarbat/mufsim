@@ -1,0 +1,3 @@
+: main[ arg -- ]
+    prog compiled?
+;

@@ -238,7 +238,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
   215: @
   216: SV2: _posargs
   217: @
-  218: Addr:34
+  218: Addr:'#4'34
   219: EXECUTE
   220: POP
   221: 0
@@ -349,7 +349,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
   324: @
   325: SV0: _posargs
   326: @
-  327: Addr:34
+  327: Addr:'#4'34
   328: EXECUTE
   329: POP
   330: JMP: 299
@@ -703,7 +703,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
   676: @
   677: SWAP
   678: NOTIFY
-  679: Addr:334
+  679: Addr:'#4'334
   680: EXECUTE
   681: POP
   682: {
@@ -721,7 +721,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
   694: @
   695: SWAP
   696: NOTIFY
-  697: Addr:334
+  697: Addr:'#4'334
   698: EXECUTE
   699: POP
   700: {
@@ -1428,7 +1428,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  1392: STRCMP
  1393: NOT
  1394: JmpIfFalse: 1399
- 1395: Addr:785
+ 1395: Addr:'#4'785
  1396: EXECUTE
  1397: POP
  1398: JMP: 2149
@@ -1490,7 +1490,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  1454: @
  1455: 1
  1456: 999999
- 1457: Addr:1204
+ 1457: Addr:'#4'1204
  1458: EXECUTE
  1459: DUP
  1460: DUP
@@ -1513,7 +1513,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  1477: @
  1478: LV10: lsedit::insert_pos
  1479: @
- 1480: Addr:859
+ 1480: Addr:'#4'859
  1481: EXECUTE
  1482: POP
  1483: JMP: 2149
@@ -1526,7 +1526,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  1490: @
  1491: 1
  1492: 1
- 1493: Addr:1204
+ 1493: Addr:'#4'1204
  1494: EXECUTE
  1495: DUP
  1496: DUP
@@ -1622,7 +1622,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  1586: @
  1587: 1
  1588: 999999
- 1589: Addr:1204
+ 1589: Addr:'#4'1204
  1590: EXECUTE
  1591: DUP
  1592: DUP
@@ -1667,7 +1667,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  1631: @
  1632: SV4: _line2
  1633: @
- 1634: Addr:925
+ 1634: Addr:'#4'925
  1635: EXECUTE
  1636: DUP
  1637: DUP
@@ -1693,7 +1693,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  1657: @
  1658: SV9: _repl
  1659: @
- 1660: Addr:1014
+ 1660: Addr:'#4'1014
  1661: EXECUTE
  1662: DUP
  1663: DUP
@@ -1750,7 +1750,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  1714: @
  1715: LV10: lsedit::insert_pos
  1716: @
- 1717: Addr:859
+ 1717: Addr:'#4'859
  1718: EXECUTE
  1719: POP
  1720: JMP: 1726
@@ -1774,7 +1774,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  1738: @
  1739: 0
  1740: 0
- 1741: Addr:1204
+ 1741: Addr:'#4'1204
  1742: EXECUTE
  1743: DUP
  1744: DUP
@@ -2036,7 +2036,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2000: @
  2001: 1
  2002: 999999
- 2003: Addr:1204
+ 2003: Addr:'#4'1204
  2004: EXECUTE
  2005: DUP
  2006: DUP
@@ -2091,7 +2091,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2055: @
  2056: SV4: _line2
  2057: @
- 2058: Addr:925
+ 2058: Addr:'#4'925
  2059: EXECUTE
  2060: DUP
  2061: DUP
@@ -2120,7 +2120,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2084: @
  2085: SV17: _cols
  2086: @
- 2087: Addr:1068
+ 2087: Addr:'#4'1068
  2088: EXECUTE
  2089: SV19: _mid
  2090: !
@@ -2166,7 +2166,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2130: @
  2131: LV10: lsedit::insert_pos
  2132: @
- 2133: Addr:859
+ 2133: Addr:'#4'859
  2134: EXECUTE
  2135: POP
  2136: JMP: 2149
@@ -2188,11 +2188,11 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2152: EXIT
 
  2153: Function: lsedit__basic (1 vars)
- 2154: Addr:0
+ 2154: Addr:'#4'0
  2155: EXECUTE
  2156: POP
  2157: ""
- 2158: Addr:118
+ 2158: Addr:'#4'118
  2159: EXECUTE
  2160: POP
  2161: ""
@@ -2200,12 +2200,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2163: }
  2164: ARRAY_MAKE
  2165: "obj=list"
- 2166: Addr:130
+ 2166: Addr:'#4'130
  2167: EXECUTE
  2168: POP
  2169: SV0: _arg
  2170: @
- 2171: Addr:464
+ 2171: Addr:'#4'464
  2172: EXECUTE
  2173: SV1: _opts
  2174: !
@@ -2230,7 +2230,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2193: ARRAY_GETITEM
  2194: NOT
  2195: JmpIfFalse: 2201
- 2196: Addr:334
+ 2196: Addr:'#4'334
  2197: EXECUTE
  2198: POP
  2199: 0
@@ -2306,7 +2306,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2269: 999999
  2270: LV10: lsedit::insert_pos
  2271: @
- 2272: Addr:859
+ 2272: Addr:'#4'859
  2273: EXECUTE
  2274: POP
  2275: SV5: _lines
@@ -2317,7 +2317,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2280: @
  2281: "list"
  2282: ARRAY_GETITEM
- 2283: Addr:1284
+ 2283: Addr:'#4'1284
  2284: EXECUTE
  2285: DUP
  2286: DUP
@@ -2368,12 +2368,12 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2331: EXIT
 
  2332: Function: _main (1 vars)
- 2333: Addr:777
+ 2333: Addr:'#4'777
  2334: EXECUTE
  2335: POP
  2336: SV0: _arg
  2337: @
- 2338: Addr:2153
+ 2338: Addr:'#4'2153
  2339: EXECUTE
  2340: EXIT
 
@@ -2426,7 +2426,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2387: ARRAY_MAKE
  2388: LV9: lsedit::help_lines
  2389: !
- 2390: Addr:2332
+ 2390: Addr:'#4'2332
  2391: EXECUTE
  2392: EXIT
 
@@ -2480,11 +2480,11 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2387: #4 line 557 ("", 0) ARRAY_MAKE
  2388: #4 line 557 ("", 0[]) LV9: lsedit::help_lines
  2389: #4 line 557 ("", 0[], LV9) !
- 2390: #4 line 558 ("") Addr:2332
- 2391: #4 line 558 ("", Addr:2332) EXECUTE
+ 2390: #4 line 558 ("") Addr:'#4'2332
+ 2391: #4 line 558 ("", Addr:'#4'2332) EXECUTE
  2332: #4 line 546 ("") Function: _main (1 vars)
- 2333: #4 line 547 () Addr:777
- 2334: #4 line 547 (Addr:777) EXECUTE
+ 2333: #4 line 547 () Addr:'#4'777
+ 2334: #4 line 547 (Addr:'#4'777) EXECUTE
   777: #4 line 207 () Function: lsedit__init_help (0 vars)
   778: #4 line 208 () {
   779: #4 line 208 (Mark) }
@@ -2496,11 +2496,11 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2335: #4 line 547 (0) POP
  2336: #4 line 548 () SV0: _arg
  2337: #4 line 548 (SV0) @
- 2338: #4 line 548 ("") Addr:2153
- 2339: #4 line 548 ("", Addr:2153) EXECUTE
+ 2338: #4 line 548 ("") Addr:'#4'2153
+ 2339: #4 line 548 ("", Addr:'#4'2153) EXECUTE
  2153: #4 line 510 ("") Function: lsedit__basic (1 vars)
- 2154: #4 line 512 () Addr:0
- 2155: #4 line 512 (Addr:0) EXECUTE
+ 2154: #4 line 512 () Addr:'#4'0
+ 2155: #4 line 512 (Addr:'#4'0) EXECUTE
     0: #4 line 12 () Function: argparse::init (0 vars)
     1: #4 line 13 () ""
     2: #4 line 13 ("") LV4: argparse::current_mode
@@ -2537,8 +2537,8 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
    33: #4 line 19 (0) EXIT
  2156: #4 line 512 (0) POP
  2157: #4 line 513 () ""
- 2158: #4 line 513 ("") Addr:118
- 2159: #4 line 513 ("", Addr:118) EXECUTE
+ 2158: #4 line 513 ("") Addr:'#4'118
+ 2159: #4 line 513 ("", Addr:'#4'118) EXECUTE
   118: #4 line 41 ("") Function: argparse::set_mode (1 vars)
   119: #4 line 42 () SV0: _name
   120: #4 line 42 (SV0) @
@@ -2557,8 +2557,8 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2163: #4 line 514 ("", Mark) }
  2164: #4 line 514 ("", 0) ARRAY_MAKE
  2165: #4 line 514 ("", 0[]) "obj=list"
- 2166: #4 line 514 ("", 0[], "obj=list") Addr:130
- 2167: #4 line 514 ("", 0[], "obj=list", Addr:130) EXECUTE
+ 2166: #4 line 514 ("", 0[], "obj=list") Addr:'#4'130
+ 2167: #4 line 514 ("", 0[], "obj=list", Addr:'#4'130) EXECUTE
   130: #4 line 46 ("", 0[], "obj=list") Function: argparse::add_mode (3 vars)
   131: #4 line 48 () SV0: _name
   132: #4 line 48 (SV0) @
@@ -2607,8 +2607,8 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
   215: #4 line 63 (SV0) @
   216: #4 line 63 ("") SV2: _posargs
   217: #4 line 63 ("", SV2) @
-  218: #4 line 63 ("", "obj=list") Addr:34
-  219: #4 line 63 ("", "obj=list", Addr:34) EXECUTE
+  218: #4 line 63 ("", "obj=list") Addr:'#4'34
+  219: #4 line 63 ("", "obj=list", Addr:'#4'34) EXECUTE
    34: #4 line 20 ("", "obj=list") Function: argparse::parse_posargs (2 vars)
    35: #4 line 23 () {
    36: #4 line 23 (Mark) SV1: _posargs
@@ -2714,8 +2714,8 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2168: #4 line 514 (0) POP
  2169: #4 line 515 () SV0: _arg
  2170: #4 line 515 (SV0) @
- 2171: #4 line 515 ("") Addr:464
- 2172: #4 line 515 ("", Addr:464) EXECUTE
+ 2171: #4 line 515 ("") Addr:'#4'464
+ 2172: #4 line 515 ("", Addr:'#4'464) EXECUTE
   464: #4 line 124 ("") Function: argparse::parse (1 vars)
   465: #4 line 127 () {
   466: #4 line 127 (Mark) }
@@ -2827,8 +2827,8 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2187: #4 line 518 (1, 1) NOT
  2188: #4 line 518 (1, 0) JmpIfFalse: 2195
  2195: #4 line 518 (1) JmpIfFalse: 2201
- 2196: #4 line 519 () Addr:334
- 2197: #4 line 519 (Addr:334) EXECUTE
+ 2196: #4 line 519 () Addr:'#4'334
+ 2197: #4 line 519 (Addr:'#4'334) EXECUTE
   334: #4 line 100 () Function: argparse::show_usage (0 vars)
   335: #4 line 103 () TRIG
   336: #4 line 103 (#3) NAME

@@ -46,7 +46,7 @@ class Address(Item):
         super(Address, self).__init__(value)
 
     def __str__(self):
-        return "Addr:%d" % self.value
+        return "Addr:'#%d'%d" % (self.prog, self.value)
 
     def __cmp__(self, other):
         return cmp(

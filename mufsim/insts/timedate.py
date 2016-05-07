@@ -28,6 +28,21 @@ class InstGmtOffset(Instruction):
         fr.data_push(-time.timezone)
 
 
+@instr("timesplit")
+class InstDate(Instruction):
+    def execute(self, fr):
+        secs = fr.data_pop(int)
+        when = time.localtime(secs)
+        fr.data_push(int(when.tm_sec))
+        fr.data_push(int(when.tm_min))
+        fr.data_push(int(when.tm_hour))
+        fr.data_push(int(when.tm_mday))
+        fr.data_push(int(when.tm_mon))
+        fr.data_push(int(when.tm_year))
+        fr.data_push(int(when.tm_wday) + 1)
+        fr.data_push(int(when.tm_yday))
+
+
 @instr("timefmt")
 class InstTimeFmt(Instruction):
     def execute(self, fr):

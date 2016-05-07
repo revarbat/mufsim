@@ -72,6 +72,7 @@ class MufGui(object):
         root.title("MUF Debugger")
         root.protocol("WM_DELETE_WINDOW", self.destroy)
         root.option_add("*Menu.foreground", "black")
+        root.option_add("*Menu.disabledForeground", "#bbb")
         root.option_add("*Panedwindow.sashWidth", "6")
         root.option_add("*Panedwindow.sashRelief", "raised")
         root.option_add("*Panedwindow.borderWidth", "1")
@@ -127,62 +128,74 @@ class MufGui(object):
             self.dbugmenu.add_command(
                 label="Run...",
                 accel="Control-r",
+                state=DISABLED,
                 command=self.handle_run,
             )
             self.dbugmenu.add_command(
                 label="Step Instruction",
                 accel="Control-i",
+                state=DISABLED,
                 command=self.handle_step_inst,
             )
             self.dbugmenu.add_command(
                 label="Step Line",
                 accel="Control-s",
+                state=DISABLED,
                 command=self.handle_step_line,
             )
             self.dbugmenu.add_command(
                 label="Next Line",
                 accel="Control-n",
+                state=DISABLED,
                 command=self.handle_next_line,
             )
             self.dbugmenu.add_command(
                 label="Finish Function",
                 accel="Control-f",
+                state=DISABLED,
                 command=self.handle_finish,
             )
             self.dbugmenu.add_command(
                 label="Continue",
                 accel="Control-c",
+                state=DISABLED,
                 command=self.handle_continue,
             )
         else:
             self.dbugmenu.add_command(
                 label="Run...",
                 accel="Control-Shift-R",
+                state=DISABLED,
                 command=self.handle_run,
             )
             self.dbugmenu.add_command(
                 label="Step Instruction",
                 accel="Control-Shift-I",
+                state=DISABLED,
                 command=self.handle_step_inst,
             )
             self.dbugmenu.add_command(
                 label="Step Line",
                 accel="Control-Shift-S",
+                state=DISABLED,
                 command=self.handle_step_line,
             )
             self.dbugmenu.add_command(
                 label="Next Line",
                 accel="Control-Shift-N",
+                state=DISABLED,
                 command=self.handle_next_line,
             )
             self.dbugmenu.add_command(
                 label="Finish Function",
                 accel="Control-Shift-F",
+                state=DISABLED,
                 command=self.handle_finish,
             )
             self.dbugmenu.add_command(
                 label="Continue",
                 accel="Control-Shift-C",
+                state=DISABLED,
                 command=self.handle_continue,
             )
         self.menubar.add_cascade(label="Debug", menu=self.dbugmenu)
@@ -357,16 +370,13 @@ class MufGui(object):
             root.after_idle(
                 root.call, 'wm', 'attributes', '.', '-topmost', False)
 
-        if sys.argv[1:]:
-            self.handle_open_files(*sys.argv[1:])
-
         if platform.system() == 'Darwin':
             self.root.bind_all('<Command-Key-o>', self.handle_load_program)
             self.root.bind_all('<Command-Key-l>', self.handle_load_library)
             self.root.bind_all('<Command-Key-x>', "event generate [focus] <<Cut>>")
             self.root.bind_all('<Command-Key-c>', "event generate [focus] <<Copy>>")
             self.root.bind_all('<Command-Key-v>', "event generate [focus] <<Paste>>")
-            self.root.bind_all('<Control-Key-r>', self.handle_run)
+            self.root.bind_all('<Control-Key-r>', lambda e: root.after(100, self.handle_run))
             self.root.bind_all('<Control-Key-i>', self.handle_step_inst)
             self.root.bind_all('<Control-Key-s>', self.handle_step_line)
             self.root.bind_all('<Control-Key-n>', self.handle_next_line)
@@ -378,7 +388,7 @@ class MufGui(object):
             self.root.bind_all('<Control-Key-x>', "event generate [focus] <<Cut>>")
             self.root.bind_all('<Control-Key-c>', "event generate [focus] <<Copy>>")
             self.root.bind_all('<Control-Key-v>', "event generate [focus] <<Paste>>")
-            self.root.bind_all('<Control-Key-r>', self.handle_run)
+            self.root.bind_all('<Control-Key-r>', lambda e: root.after(100, self.handle_run))
             self.root.bind_all('<Shift-Control-Key-I>', self.handle_step_inst)
             self.root.bind_all('<Shift-Control-Key-S>', self.handle_step_line)
             self.root.bind_all('<Shift-Control-Key-N>', self.handle_next_line)
@@ -386,6 +396,10 @@ class MufGui(object):
             self.root.bind_all('<Shift-Control-Key-C>', self.handle_continue)
 
         self.update_displays()
+
+        if len(sys.argv) > 1:
+            root.after(100, self.handle_open_files, sys.argv[1])
+
 
     def handle_help_dlog(self):
         # TODO: implement!
@@ -705,18 +719,15 @@ class MufGui(object):
             self.cont_btn,
         ]
         livestate = "disabled"
-        livecolor = "#bbb"
         if self.fr and self.fr.get_call_stack():
             livestate = "normal"
-            livecolor = "black"
+        runstate = "normal" if self.fr else "disabled"
         for btn in livebtns:
             btn.config(state=livestate)
-        runstate = "normal" if self.fr else "disabled"
-        runcolor = "black" if self.fr else "#bbb"
         self.run_btn.config(state=runstate)
-        self.dbugmenu.entryconfig(0, state=runstate, foreground=runcolor)
+        self.dbugmenu.entryconfig(0, state=runstate)
         for i in range(1, 6):
-            self.dbugmenu.entryconfig(i, state=livestate, foreground=livecolor)
+            self.dbugmenu.entryconfig(i, state=livestate)
 
     def update_console_display(self):
         if log_updated():

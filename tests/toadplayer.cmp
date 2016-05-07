@@ -1,0 +1,72 @@
+#### Compiling MUF Program cmd-test(#4) ###############
+
+#### Showing Tokens for cmd-test(#4) ##################
+    0: Function: main (1 vars)
+    1: "jane_doe"
+    2: PMATCH
+    3: DUP
+    4: PLAYER?
+    5: POP
+    6: DUP
+    7: THING?
+    8: POP
+    9: DUP
+   10: NAME
+   11: POP
+   12: DUP
+   13: OWNER
+   14: POP
+   15: #1
+   16: OVER
+   17: TOADPLAYER
+   18: DUP
+   19: PLAYER?
+   20: POP
+   21: DUP
+   22: THING?
+   23: POP
+   24: DUP
+   25: NAME
+   26: POP
+   27: DUP
+   28: OWNER
+   29: POP
+   30: POP
+   31: EXIT
+
+#### Executing Tokens #################################
+    0: #4 line 1 ("") Function: main (1 vars)
+    1: #4 line 2 () "jane_doe"
+    2: #4 line 2 ("jane_doe") PMATCH
+    3: #4 line 3 (#6) DUP
+    4: #4 line 3 (#6, #6) PLAYER?
+    5: #4 line 3 (#6, 1) POP
+    6: #4 line 4 (#6) DUP
+    7: #4 line 4 (#6, #6) THING?
+    8: #4 line 4 (#6, 0) POP
+    9: #4 line 5 (#6) DUP
+   10: #4 line 5 (#6, #6) NAME
+   11: #4 line 5 (#6, "Jane_Doe") POP
+   12: #4 line 6 (#6) DUP
+   13: #4 line 6 (#6, #6) OWNER
+   14: #4 line 6 (#6, #6) POP
+   15: #4 line 7 (#6) #1
+   16: #4 line 7 (#6, #1) OVER
+   17: #4 line 7 (#6, #1, #6) TOADPLAYER
+   18: #4 line 8 (#6) DUP
+   19: #4 line 8 (#6, #6) PLAYER?
+   20: #4 line 8 (#6, 0) POP
+   21: #4 line 9 (#6) DUP
+   22: #4 line 9 (#6, #6) THING?
+   23: #4 line 9 (#6, 1) POP
+   24: #4 line 10 (#6) DUP
+   25: #4 line 10 (#6, #6) NAME
+   26: #4 line 10 (#6, "A slimy toad named Jane_Doe") POP
+   27: #4 line 11 (#6) DUP
+   28: #4 line 11 (#6, #6) OWNER
+   29: #4 line 11 (#6, #1) POP
+   30: #4 line 12 (#6) POP
+   31: #4 line 13 () EXIT
+Program exited.
+Execution completed in 32 steps.
+

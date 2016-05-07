@@ -1,27 +1,21 @@
     217 parseprop
      71 pid
      59 kill
-     40 timestamps
      17 fork
      16 ispid?
      16 gui_available
-     15 timesplit
      15 gui_dlog_show
      13 queue
-     11 compile
       9 gui_dlog_close
       8 gui_value_set
       6 gui_value_get
-      5 program_getlines
       5 mcp_supports
       5 mcp_send
       5 mcp_register_event
       4 gui_values_get
       4 event_send
-      4 checkpassword
       3 timer_start
       2 gui_dlog_create
       2 gui_ctrl_command
-      1 program_setlines
       1 instances
       1 gui_ctrl_create

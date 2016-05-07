@@ -1,3 +1,4 @@
+import time
 import mufsim.gamedb as db
 import mufsim.stackitems as si
 from mufsim.logger import log
@@ -533,6 +534,14 @@ class InstSetMode(Instruction):
     def execute(self, fr):
         mod = fr.data_pop(int)
         fr.execution_mode = mod
+
+
+@instr("sleep")
+class InstSleep(Instruction):
+    def execute(self, fr):
+        secs = fr.data_pop(int)
+        # TODO: use proper timequeue timeslicing.
+        time.sleep(secs)
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

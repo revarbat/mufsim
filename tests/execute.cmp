@@ -6,14 +6,14 @@
     2: EXIT
 
     3: Function: main (0 vars)
-    4: Addr:0
+    4: Addr:'#4'0
     5: EXECUTE
     6: EXIT
 
 #### Executing Tokens #################################
     3: #4 line 2 ("") Function: main (0 vars)
-    4: #4 line 3 ("") Addr:0
-    5: #4 line 3 ("", Addr:0) EXECUTE
+    4: #4 line 3 ("") Addr:'#4'0
+    5: #4 line 3 ("", Addr:'#4'0) EXECUTE
     0: #4 line 1 ("") Function: foo (0 vars)
     1: #4 line 1 ("") 42
     2: #4 line 1 ("", 42) EXIT
