@@ -66,7 +66,7 @@ def user_cons(who):
 
 def is_user_online(who):
     global descriptors
-    return who in descriptors.values()
+    return who in list(descriptors.values())
 
 
 def is_descr_online(descr):

@@ -111,7 +111,7 @@ class DBObject(object):
         else:
             val = self.properties[prop]
         if not suppress:
-            if type(val) is str:
+            if isinstance(val, str):
                 log("GETPROP \"%s\" on #%d = %s" %
                     (prop, self.dbref, util.escape_str(val)))
             else:
@@ -123,7 +123,7 @@ class DBObject(object):
         self.mark_modify()
         self.properties[prop] = val
         if not suppress:
-            if type(val) is str:
+            if isinstance(val, str):
                 log("SETPROP \"%s\" on #%d = %s" %
                     (prop, self.dbref, util.escape_str(val)))
             else:
@@ -229,9 +229,9 @@ class DBObject(object):
 
 
 def normobj(obj):
-    if type(obj) is DBObject:
+    if isinstance(obj, DBObject):
         obj = obj.dbref
-    elif type(obj) is si.DBRef:
+    elif isinstance(obj, si.DBRef):
         obj = obj.value
     return obj
 
@@ -274,7 +274,7 @@ def get_env_objects(obj):
 def get_all_programs():
     return [
         si.DBRef(ref)
-        for ref, obj in objects_db.iteritems()
+        for ref, obj in objects_db.items()
         if obj.objtype == "program"
     ]
 
@@ -310,7 +310,7 @@ def match_playername_prefix(pat):
     global player_names
     pat = pat.strip().lower()
     found = -1
-    for name, dbref in player_names.iteritems():
+    for name, dbref in player_names.items():
         if name.startswith(pat):
             if found == -1:
                 found = dbref
@@ -343,11 +343,11 @@ def match_registered(remote, pat, suppress=False):
     for targ in get_env_objects(remote):
         val = targ.getprop("_reg/" + pat[1:], suppress=suppress)
         if val:
-            if type(val) is si.DBRef:
+            if isinstance(val, si.DBRef):
                 val = val.value
-            elif type(val) is str and val[0] == '#':
+            elif isinstance(val, str) and val[0] == '#':
                 val = int(val[1:])
-            if type(val) is int:
+            if isinstance(val, int):
                 val = val
             if validobj(val):
                 obj = val
@@ -431,7 +431,7 @@ def register_obj(where, name, ref):
 def entrances_array(targ):
     targ = getobj(normobj(targ))
     out = []
-    for dbref, obj in objects_db.iteritems():
+    for dbref, obj in objects_db.items():
         for link in obj.links:
             if link == targ.dbref:
                 out.append(dbref)
@@ -470,7 +470,7 @@ def toadplayer(toad, inheritor):
     toad.moveto(inheritor)
     toad.links = []
     toad.descr = -1
-    for dbref, obj in objects_db.iteritems():
+    for dbref, obj in objects_db.items():
         if obj.owner == toad.dbref:
             obj.owner = inheritor.dbref
 
@@ -508,7 +508,7 @@ def obect_db_statistics(who):
         programs=0,
         garbages=0,
     )
-    for dbref, obj in objects_db.iteritems():
+    for dbref, obj in objects_db.items():
         if who == -1 or obj.owner == who:
             stats[obj.objtype + 's'] += 1
             stats['total'] += 1
@@ -554,7 +554,7 @@ def flagsmatch(flags, obj):
 def findnext(obj, own, name, flags):
     obj = normobj(obj)
     found = obj == -1
-    for dbref, o in objects_db.iteritems():
+    for dbref, o in objects_db.items():
         if not found:
             if dbref == obj:
                 found = True
@@ -573,7 +573,7 @@ def nextentrance(targ, obj):
     targ = getobj(normobj(targ))
     obj = normobj(obj)
     found = obj == -1
-    for dbref, o in objects_db.iteritems():
+    for dbref, o in objects_db.items():
         if not found:
             if dbref == obj:
                 found = True
@@ -587,12 +587,12 @@ def nextentrance(targ, obj):
 def nextowned(obj):
     obj = getobj(normobj(obj))
     if obj.objtype == "player":
-        for dbref, o in objects_db.iteritems():
+        for dbref, o in objects_db.items():
             if o.owner == obj.owner:
                 return o.dbref
         return -1
     found = False
-    for dbref, o in objects_db.iteritems():
+    for dbref, o in objects_db.items():
         if not found:
             if dbref == obj.dbref:
                 found = True

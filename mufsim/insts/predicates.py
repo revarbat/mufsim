@@ -8,14 +8,14 @@ from mufsim.insts.base import Instruction, instr
 class InstIntP(Instruction):
     def execute(self, fr):
         val = fr.data_pop()
-        fr.data_push(1 if type(val) is int else 0)
+        fr.data_push(1 if isinstance(val, int) else 0)
 
 
 @instr("float?")
 class InstFloatP(Instruction):
     def execute(self, fr):
         val = fr.data_pop()
-        fr.data_push(1 if type(val) is float else 0)
+        fr.data_push(1 if isinstance(val, float) else 0)
 
 
 @instr("number?")
@@ -29,21 +29,21 @@ class InstNumberP(Instruction):
 class InstDBRefP(Instruction):
     def execute(self, fr):
         val = fr.data_pop()
-        fr.data_push(1 if type(val) is si.DBRef else 0)
+        fr.data_push(1 if isinstance(val, si.DBRef) else 0)
 
 
 @instr("string?")
 class InstStringP(Instruction):
     def execute(self, fr):
         val = fr.data_pop()
-        fr.data_push(1 if type(val) is str else 0)
+        fr.data_push(1 if isinstance(val, str) else 0)
 
 
 @instr("address?")
 class InstAddressP(Instruction):
     def execute(self, fr):
         val = fr.data_pop()
-        fr.data_push(1 if type(val) is si.Address else 0)
+        fr.data_push(1 if isinstance(val, si.Address) else 0)
 
 
 @instr("array?")
@@ -57,14 +57,14 @@ class InstArrayP(Instruction):
 class InstDictionaryP(Instruction):
     def execute(self, fr):
         val = fr.data_pop()
-        fr.data_push(1 if type(val) is dict else 0)
+        fr.data_push(1 if isinstance(val, dict) else 0)
 
 
 @instr("lock?")
 class InstLockP(Instruction):
     def execute(self, fr):
         val = fr.data_pop()
-        fr.data_push(1 if type(val) is si.Lock else 0)
+        fr.data_push(1 if isinstance(val, si.Lock) else 0)
 
 
 @instr("ok?")

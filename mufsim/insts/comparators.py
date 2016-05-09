@@ -34,7 +34,7 @@ class InstAnd(Instruction):
 class InstNot(Instruction):
     def execute(self, fr):
         a = fr.data_pop()
-        if type(a) is si.DBRef:
+        if isinstance(a, si.DBRef):
             fr.data_push(1 if a.value == -1 else 0)
         else:
             fr.data_push(1 if not a else 0)
@@ -46,9 +46,9 @@ class InstEquals(Instruction):
         fr.check_underflow(2)
         b = fr.data_pop(int, float, si.DBRef)
         a = fr.data_pop(int, float, si.DBRef)
-        if type(a) is si.DBRef:
+        if isinstance(a, si.DBRef):
             a = a.value
-        if type(b) is si.DBRef:
+        if isinstance(b, si.DBRef):
             b = b.value
         fr.data_push(1 if a == b else 0)
 
@@ -62,9 +62,9 @@ class InstLessThan(Instruction):
         fr.check_underflow(2)
         b = fr.data_pop(int, float, si.DBRef)
         a = fr.data_pop(int, float, si.DBRef)
-        if type(a) is si.DBRef:
+        if isinstance(a, si.DBRef):
             a = a.value
-        if type(b) is si.DBRef:
+        if isinstance(b, si.DBRef):
             b = b.value
         fr.data_push(1 if a < b else 0)
 
@@ -78,9 +78,9 @@ class InstLessThanOrEquals(Instruction):
         fr.check_underflow(2)
         b = fr.data_pop(int, float, si.DBRef)
         a = fr.data_pop(int, float, si.DBRef)
-        if type(a) is si.DBRef:
+        if isinstance(a, si.DBRef):
             a = a.value
-        if type(b) is si.DBRef:
+        if isinstance(b, si.DBRef):
             b = b.value
         fr.data_push(1 if a <= b else 0)
 
@@ -94,9 +94,9 @@ class InstGreaterThan(Instruction):
         fr.check_underflow(2)
         b = fr.data_pop(int, float, si.DBRef)
         a = fr.data_pop(int, float, si.DBRef)
-        if type(a) is si.DBRef:
+        if isinstance(a, si.DBRef):
             a = a.value
-        if type(b) is si.DBRef:
+        if isinstance(b, si.DBRef):
             b = b.value
         fr.data_push(1 if a > b else 0)
 
@@ -110,9 +110,9 @@ class InstGreaterThanOrEquals(Instruction):
         fr.check_underflow(2)
         b = fr.data_pop(int, float, si.DBRef)
         a = fr.data_pop(int, float, si.DBRef)
-        if type(a) is si.DBRef:
+        if isinstance(a, si.DBRef):
             a = a.value
-        if type(b) is si.DBRef:
+        if isinstance(b, si.DBRef):
             b = b.value
         fr.data_push(1 if a >= b else 0)
 

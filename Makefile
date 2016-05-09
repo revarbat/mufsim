@@ -2,22 +2,22 @@ all:
 	@echo "Nothing to do."
 
 install:
-	python setup.py build install -f
+	python3 setup.py build install -f
 
 test:
 	cd tests && ./runtests.sh
 
 nightly:
-	python setup.py egg_info --tag-date --tag-build=DEV bdist_egg
+	python3 setup.py egg_info --tag-date --tag-build=DEV bdist_egg
 
 release:
 	rm -rf dist/MufSim-*.egg
-	python setup.py egg_info bdist_egg
+	python3 setup.py egg_info bdist_egg
 
 app:
-	rm -rf dist/MufSimulator dist/MufSimulator.app dist/MufSim.app dist/MufSimOSX.zip
-	python setup.py py2app
-	rm -rf dist/MufSimulator
+	rm -rf dist/MufSim dist/MufSim.app dist/MufSimOSX.zip
+	python3 setup.py py2app
+	rm -rf dist/MufSim
 	tools/mkosxicns.sh
 	cp osxbundlefiles/MufSim.icns dist/MufSim.app/Contents/Resources/
 	mkdir -p dist/MufSim.app/Contents/Resources/muv
@@ -25,9 +25,14 @@ app:
 	cp -a /usr/local/share/muv/incls dist/MufSim.app/Contents/Resources/muv/incls
 	cd dist && zip -r MufSimOSX MufSim.app
 
+exe:
+	rm -rf dist/MufSim dist/MufSim.exe dist/MufSimWin64.zip
+	python3 setup.py py2exe
+	cd dist && zip -r MufSimWin64 MufSim.exe
+
 upload:
 	twine upload dist/*.egg
 
 clean:
-	rm -rf build dist/MufSimulator* dist/MufSim.app
+	rm -rf build dist/MufSimulator* dist/MufSim.app dist/mufsim.exe dist/mufsim
 

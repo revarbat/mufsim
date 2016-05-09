@@ -26,15 +26,14 @@ class CompiledMuf(object):
         ]
 
     def add_function(self, funcname, addr):
-        if type(addr) is int:
+        if isinstance(addr, int):
             addr = si.Address(addr, self.program)
         self.functions[funcname] = addr
         self.func_vars[funcname] = []
         self.lastfunction = addr
 
     def get_functions(self):
-        funcs = self.functions.keys()
-        funcs.sort()
+        funcs = sorted(self.functions.keys())
         return funcs
 
     def get_function_addr(self, funcname):
@@ -49,21 +48,21 @@ class CompiledMuf(object):
         return True
 
     def find_func(self, addr):
-        if type(addr) is si.Address:
+        if isinstance(addr, si.Address):
             addr = addr.value
-        while addr > 0 and type(self.code[addr]) is not InstFunc:
+        while addr > 0 and not isinstance(self.code[addr], InstFunc):
             addr -= 1
-        if type(self.code[addr]) is not InstFunc:
+        if not isinstance(self.code[addr], InstFunc):
             return ""
         return self.code[addr].funcname
 
     def get_inst(self, addr):
-        if type(addr) is si.Address:
+        if isinstance(addr, si.Address):
             addr = addr.value
         return self.code[addr]
 
     def get_inst_line(self, addr):
-        if type(addr) is si.Address:
+        if isinstance(addr, si.Address):
             addr = addr.value
         return self.code[addr].line
 

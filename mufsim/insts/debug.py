@@ -20,8 +20,7 @@ class InstDebugOff(Instruction):
 @instr("debug_line")
 class InstDebugLine(Instruction):
     def execute(self, fr):
-        log(fr.get_trace_line())
-        sys.stdout.flush()
+        log(fr.get_trace_line(), msgtype='trace')
 
 
 @instr("debugger_break")

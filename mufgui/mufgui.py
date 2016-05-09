@@ -1,18 +1,27 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
-from subprocess import call
 import platform
-import Tkinter  # noqa
-from Tkinter import *  # noqa
-import tkFileDialog
-import tkSimpleDialog
-import tkMessageBox
-from ScrolledText import ScrolledText
+from subprocess import Popen, PIPE
+
+try:  # Python 2
+    from Tkinter import *  # noqa
+    from tkFont import Font
+    from tkSimpleDialog import askstring
+    from tkFileDialog import askopenfilename
+    from tkMessageBox import showinfo
+    from ScrolledText import ScrolledText
+except ImportError:  # Python 3
+    from tkinter import *  # noqa
+    from tkinter.simpledialog import askstring
+    from tkinter.filedialog import askopenfilename
+    from tkinter.messagebox import showinfo
+    from tkinter.scrolledtext import ScrolledText
+    from tkinter.font import Font
 
 import mufsim.stackitems as si
 import mufsim.gamedb as db
-from mufsim.logger import log, get_log, log_updated, clear_log
+from mufsim.logger import log, warnlog, errlog, set_output_command
 from mufsim.compiler import MufCompiler
 from mufsim.stackframe import MufStackFrame
 
@@ -39,8 +48,6 @@ class ReadOnlyText(ScrolledText):
 
 class ListDisplay(ReadOnlyText):
     def __init__(self, master, **kwargs):
-        if 'font' not in kwargs:
-            kwargs['font'] = "Helvetica"
         ReadOnlyText.__init__(
             self,
             master,
@@ -68,6 +75,8 @@ class MufGui(object):
         self.current_program.set("- Load a Program -")
         self.current_function = StringVar()
         self.current_function.set("")
+        self.dotrace = StringVar()
+        self.dotrace.set('0')
 
         root.title("MUF Debugger")
         root.protocol("WM_DELETE_WINDOW", self.destroy)
@@ -82,8 +91,28 @@ class MufGui(object):
         root.option_add("*Text.highlightBackground", "white")
         root.option_add("*Entry.background", "white")
         root.option_add("*Entry.highlightBackground", "gray75")
+        if platform.system() == 'Windows':
+            root.option_add("*Menubutton.relief", "raised")
+            monospace = Font(family="Menlo", size=10)
+            monospace_b = Font(family="Menlo", size=10, weight="bold")
+            seriffont = Font(family="Times", size=10)
+            sansserif = Font(family="Arial", size=10)
+            sansserif_i = Font(family="Arial", size=10, slant="italic")
+        if platform.system() == 'Darwin':
+            monospace = Font(family="Monaco", size=12)
+            monospace_b = Font(family="Monaco", size=12, weight="bold")
+            seriffont = Font(family="Times", size=12)
+            sansserif = Font(family="Tahoma", size=12)
+            sansserif_i = Font(family="Tahoma", size=12, slant="italic")
+        else:
+            monospace = Font(family="Courier", size=10)
+            monospace_b = Font(family="Courier", size=10, weight="bold")
+            seriffont = Font(family="Times", size=10)
+            sansserif = Font(family="Helvetica", size=10)
+            sansserif_i = Font(family="Helvetica", size=10, slant="italic")
+        root.option_add("*Text.font", sansserif)
 
-        self.menubar = Menu(self.root, name="mb")
+        self.menubar = Menu(self.root, name="mb", tearoff=0)
 
         cmd = "Control"
         if platform.system() == 'Darwin':
@@ -99,6 +128,20 @@ class MufGui(object):
             accel="%s-L" % cmd,
             command=self.handle_load_library,
         )
+        if platform.system() == 'Windows':
+            self.filemenu.add_separator()
+            self.filemenu.add_command(
+                label="Exit",
+                accel="Alt-F4",
+                command=self.destroy,
+            )
+        elif platform.system() == 'Linux':
+            self.filemenu.add_separator()
+            self.filemenu.add_command(
+                label="Quit",
+                accel="Control-Q",
+                command=self.destroy,
+            )
         self.menubar.add_cascade(label="File", menu=self.filemenu)
 
         self.editmenu = Menu(self.menubar, tearoff=0)
@@ -217,10 +260,10 @@ class MufGui(object):
         self.data_disp = ListDisplay(datafr)
         self.data_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.data_disp.tag_config(
-            'empty', foreground="gray50", font="Helvetica 12 italic")
+            'empty', foreground="gray50", font=sansserif_i)
         self.data_disp.tag_config(
             'gutter', background="gray75",
-            foreground="black", font="Courier 12",
+            foreground="black", font=monospace,
         )
         self.data_disp.tag_bind(
             'sitem', '<Double-Button-1>', self.handle_stack_item_dblclick)
@@ -229,10 +272,10 @@ class MufGui(object):
         self.call_disp = ListDisplay(callfr)
         self.call_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.call_disp.tag_config(
-            'empty', foreground="gray50", font="Helvetica 12 italic")
+            'empty', foreground="gray50", font=sansserif_i)
         self.call_disp.tag_config(
             'gutter', background="gray75",
-            foreground="black", font="Courier 12",
+            foreground="black", font=monospace,
         )
         self.call_disp.tag_bind(
             'callfr', '<Button-1>', self.handle_call_stack_click)
@@ -243,9 +286,9 @@ class MufGui(object):
         self.vars_disp = ListDisplay(varsfr)
         self.vars_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.vars_disp.tag_config(
-            'gvar', foreground="#00f", font="Times")
+            'gvar', foreground="#00f", font=seriffont)
         self.vars_disp.tag_config(
-            'fvar', foreground="#090", font="Times")
+            'fvar', foreground="#090", font=seriffont)
         self.vars_disp.tag_config('gname', foreground="black")
         self.vars_disp.tag_config('fname', foreground="black")
         self.vars_disp.tag_config('eq', foreground="#777")
@@ -272,21 +315,21 @@ class MufGui(object):
             srcselfr, width=20,
             textvariable=self.current_program,
         )
-        self.src_sel.menu = Menu(self.src_sel)
+        self.src_sel.menu = Menu(self.src_sel, tearoff=0)
         self.src_sel['menu'] = self.src_sel.menu
         self.fun_lbl = Label(srcselfr, text="  Func")
         self.fun_sel = Menubutton(
             srcselfr, width=20,
             textvariable=self.current_function,
         )
-        self.fun_sel.menu = Menu(self.fun_sel)
+        self.fun_sel.menu = Menu(self.fun_sel, tearoff=0)
         self.fun_sel['menu'] = self.fun_sel.menu
         self.src_lbl.pack(side=LEFT, fill=NONE, expand=0)
         self.src_sel.pack(side=LEFT, fill=NONE, expand=0)
         self.fun_lbl.pack(side=LEFT, fill=NONE, expand=0)
         self.fun_sel.pack(side=LEFT, fill=NONE, expand=0)
 
-        self.srcs_disp = ListDisplay(srcfr, font="Courier 12")
+        self.srcs_disp = ListDisplay(srcfr, font=monospace)
         self.srcs_disp.tag_config(
             'breakpt', background="#f77", foreground="black")
         self.srcs_disp.tag_config(
@@ -301,13 +344,15 @@ class MufGui(object):
         self.srcs_disp.pack(side=BOTTOM, fill=BOTH, expand=1)
 
         tokfr = LabelFrame(panes3, text="Tokens", relief="flat")
-        self.tokn_disp = ListDisplay(tokfr, font="Courier 12")
+        self.tokn_disp = ListDisplay(tokfr, font=monospace)
         self.tokn_disp.tag_config(
             'gutter', background="gray75", foreground="black")
         self.tokn_disp.tag_config(
-            'func', foreground="#00c", font="Courier 12 bold")
+            'func', foreground="#00c", font=monospace_b)
 
         btnsfr = Frame(tokfr)
+        self.run_btn = Button(
+            btnsfr, text="Run", command=self.handle_run)
         self.stepi_btn = Button(
             btnsfr, text="Step Inst", command=self.handle_step_inst)
         self.stepl_btn = Button(
@@ -318,14 +363,20 @@ class MufGui(object):
             btnsfr, text="Finish", command=self.handle_finish)
         self.cont_btn = Button(
             btnsfr, text="Continue", command=self.handle_continue)
-        self.run_btn = Button(
-            btnsfr, text="Run", command=self.handle_run)
+        self.trace_chk = Checkbutton(
+            btnsfr, text="Trace",
+            variable=self.dotrace,
+            onvalue='1',
+            offvalue='0',
+            command=self.handle_trace,
+        )
+        self.run_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.stepi_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.stepl_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.nextl_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.finish_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.cont_btn.pack(side=LEFT, fill=NONE, expand=0)
-        self.run_btn.pack(side=LEFT, fill=NONE, expand=0)
+        self.trace_chk.pack(side=LEFT, fill=NONE, expand=0)
 
         btnsfr.pack(side=BOTTOM, fill=X, expand=0)
         self.tokn_disp.pack(side=BOTTOM, fill=BOTH, expand=1)
@@ -333,18 +384,24 @@ class MufGui(object):
             'currline', background="#77f", foreground="white")
 
         consfr = Frame(panes3)
-        self.cons_disp = ListDisplay(consfr, height=1, font="Courier 12")
+        self.cons_disp = ListDisplay(consfr, height=1, font=monospace)
         self.cons_in = Entry(consfr, relief=SUNKEN)
         self.cons_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.cons_in.pack(side=TOP, fill=X, expand=0)
+        self.cons_disp.tag_config('good', foreground="#0a0")
+        self.cons_disp.tag_config('trace', foreground="#777")
+        self.cons_disp.tag_config('warning', foreground="#880")
+        self.cons_disp.tag_config('error', foreground="#c00")
 
         panes3.add(srcfr, minsize=100, height=350)
         panes3.add(tokfr, minsize=100, height=150)
         panes3.add(consfr, minsize=50, height=100)
 
+        set_output_command(self.log_to_console)
+
         try:
             root.tk.call('console', 'hide')
-        except tkinter.TclError:
+        except TclError:
             # Some versions of the Tk framework don't have a console object
             pass
 
@@ -400,7 +457,6 @@ class MufGui(object):
         if len(sys.argv) > 1:
             root.after(100, self.handle_open_files, sys.argv[1])
 
-
     def handle_help_dlog(self):
         # TODO: implement!
         print("Display help dlog.")
@@ -412,10 +468,14 @@ class MufGui(object):
     def handle_about_dlog(self):
         global mufsim_version
         if platform.system() == 'Darwin' and not mufsim_version:
-            from plistlib import Plist
-            plist = Plist.fromFile(os.path.join('..', 'Info.plist'))
-            mufsim_version = plist['CFBundleShortVersionString']
-        tkMessageBox.showinfo(
+            if "MufSim.app/Contents/Resources" in os.getcwd():
+                from plistlib import Plist
+                print(os.getcwd())
+                plist = Plist.fromFile(os.path.join('..', 'Info.plist'))
+                mufsim_version = plist['CFBundleShortVersionString']
+        if mufsim_version is None:
+            mufsim_version = ""
+        showinfo(
             "About MufSimulator",
             "MufSimulator %s\nCopyright 2016\nRevar Desmera" % mufsim_version,
             parent=self.root,
@@ -596,7 +656,6 @@ class MufGui(object):
             val = self.fr.data_pick(item)
             val = si.item_repr_pretty(val)
             log("pick(%d) = %s" % (item, val))
-            self.update_console_display()
 
     def handle_vars_gname_dblclick(self, event):
         w = event.widget
@@ -609,7 +668,6 @@ class MufGui(object):
             val = self.fr.globalvar_get(vnum)
             val = si.item_repr_pretty(val)
             log("%s = %s" % (vname, val))
-            self.update_console_display()
 
     def handle_vars_fname_dblclick(self, event):
         w = event.widget
@@ -623,7 +681,6 @@ class MufGui(object):
             val = self.fr.funcvar_get(vnum, self.call_level)
             val = si.item_repr_pretty(val)
             log("%s = %s" % (vname, val))
-            self.update_console_display()
 
     def _get_prog_from_selector(self):
         if self.current_program.get().startswith('- '):
@@ -729,13 +786,9 @@ class MufGui(object):
         for i in range(1, 6):
             self.dbugmenu.entryconfig(i, state=livestate)
 
-    def update_console_display(self):
-        if log_updated():
-            for line in get_log():
-                self.cons_disp.insert(END, "\n")
-                self.cons_disp.insert(END, line)
-            clear_log()
-            self.cons_disp.see('end linestart')
+    def log_to_console(self, msgtype, msg):
+        self.cons_disp.insert(END, msg + "\n", msgtype)
+        self.cons_disp.see('end linestart')
 
     def update_displays(self, level=-1):
         if self.fr and level < 0:
@@ -743,7 +796,6 @@ class MufGui(object):
         self.call_level = level
         self.update_buttonbar()
         self.update_source_selectors()
-        self.update_console_display()
         self.update_call_stack_display()
         self.update_data_stack_display()
         if not self.fr:
@@ -760,12 +812,13 @@ class MufGui(object):
         if self.fr:
             breakpts = self.fr.breakpoints
         self.fr = MufStackFrame()
+        self.fr.set_trace(self.dotrace.get() != '0')
         self.fr.breakpoints = breakpts
         self.fr.setup(progobj, userobj, trigobj, command)
 
     def handle_reads(self):
         self.update_displays()
-        readline = tkSimpleDialog.askstring(
+        readline = askstring(
             "MUF Read Requested",
             "Enter text to satisfy the READ request.",
             initialvalue="",
@@ -776,16 +829,16 @@ class MufGui(object):
                 self.fr.call_pop()
             while self.fr.catch_stack:
                 self.fr.catch_pop()
-            log("Aborting program.")
+            warnlog("Aborting program.")
             return False
         if not readline and not self.fr.read_wants_blanks:
-            log("Blank line ignored.")
+            warnlog("Blank line ignored.")
             return True
         self.fr.pc_advance(1)
         if self.fr.wait_state == self.fr.WAIT_READ:
             self.fr.data_push(readline)
         elif readline == "@T":
-            log("Faking time-out.")
+            warnlog("Faking time-out.")
             self.fr.data_push("")
             self.fr.data_push(1)
         else:
@@ -797,7 +850,7 @@ class MufGui(object):
         while True:
             self.fr.execute_code(self.call_level)
             if not self.fr.get_call_stack():
-                log("Program exited.")
+                warnlog("Program exited.")
                 break
             if self.fr.wait_state in [
                 self.fr.WAIT_READ, self.fr.WAIT_TREAD
@@ -827,7 +880,7 @@ class MufGui(object):
         self.resume_execution()
 
     def handle_run(self, event=None):
-        command = tkSimpleDialog.askstring(
+        command = askstring(
             "Run program",
             "What argument string should the program be run with?",
             initialvalue="",
@@ -838,6 +891,10 @@ class MufGui(object):
         self.reset_execution(command)
         self.update_displays()
 
+    def handle_trace(self, event=None):
+        if self.fr:
+            self.fr.set_trace(self.dotrace.get() != '0')
+
     def process_muv(self, infile):
         tmpfile = infile
         if tmpfile[-4:] == ".muv":
@@ -845,20 +902,27 @@ class MufGui(object):
         else:
             tmpfile += ".muf"
         if "MufSim.app/Contents/Resources" in os.getcwd():
-            muvbin = os.path.join(os.getcwd(), "muv", "muv")
-            incldir = os.path.join(os.getcwd(), "muv", "incls")
-            retcode = call(
-                [muvbin, "-I", incldir, "-o", tmpfile, infile],
-                stderr=sys.stderr
-            )
+            muvdir = os.path.join(os.getcwd(), "muv")
+            cmdarr = [
+                os.path.join(muvdir, "muv"),
+                "-I", os.path.join(muvdir, "incls"),
+                "-o", tmpfile,
+                infile
+            ]
         else:
-            retcode = call(["muv", "-o", tmpfile, infile], stderr=sys.stderr)
-        if retcode != 0:
-            log("MUV compilation failed!")
+            cmdarr = ["muv", "-o", tmpfile, infile]
+        p = Popen(cmdarr, stdout=PIPE, stderr=PIPE)
+        outdata, errdata = p.communicate()
+        for line in outdata.split("\n"):
+            if line:
+                log(line)
+        for line in errdata.split("\n"):
+            if line:
+                errlog(line)
+        if p.returncode != 0:
+            errlog("MUV compilation failed!")
             return None
-        log("MUV compilation successful.")
-        log("------------------------------------------------------------")
-        self.update_console_display()
+        log("MUV compilation successful.", msgtype="good")
         return tmpfile
 
     def load_program_from_file(self, filename, regname=None):
@@ -898,21 +962,24 @@ class MufGui(object):
         self.fr = None
         self.update_sourcecode_from_program(progobj.dbref)
         if not success:
-            log("MUF tokenization failed!")
+            errlog("MUF tokenization failed!")
             self.update_displays()
             return None
-        log("MUF tokenization successful.")
-        log("------------------------------------------------------------")
+        log("MUF tokenization successful.", msgtype="good")
         self.reset_execution()
         self.update_displays()
         self.fr.call_stack = []
         self.update_displays()
 
     def handle_load_program(self, event=None):
-        filename = tkFileDialog.askopenfilename(
+        extras = {}
+        if platform.system() == 'Darwin':
+            extras = dict(
+                message="Select a source file to load...",
+            )
+        filename = askopenfilename(
             parent=self.root,
             title="Load Program",
-            message="Select a source file to load...",
             defaultextension=".muf",
             filetypes=[
                 ('all files', '.*'),
@@ -920,16 +987,21 @@ class MufGui(object):
                 ('MUF files', '.m'),
                 ('MUV files', '.muv'),
             ],
+            **extras
         )
         if not filename:
             return
         self.load_program_from_file(filename)
 
     def handle_load_library(self, event=None):
-        filename = tkFileDialog.askopenfilename(
+        extras = {}
+        if platform.system() == 'Darwin':
+            extras = dict(
+                message="Select a library file to load...",
+            )
+        filename = askopenfilename(
             parent=self.root,
             title="Load Library",
-            message="Select a library file to load...",
             defaultextension=".muf",
             filetypes=[
                 ('all files', '.*'),
@@ -937,13 +1009,14 @@ class MufGui(object):
                 ('MUF files', '.m'),
                 ('MUV files', '.muv'),
             ],
+            **extras
         )
         if not filename:
             return
         regname = os.path.basename(filename)
         if regname.endswith('.muv') or regname.endswith('.muf'):
             regname = regname[:-4]
-        regname = tkSimpleDialog.askstring(
+        regname = askstring(
             "Library Name",
             "What should the library be registered as?",
             initialvalue=regname,
@@ -965,7 +1038,10 @@ class MufGui(object):
 
 
 def main():
-    MufGui().main()
+    try:
+        MufGui().main()
+    except Exception as e:
+        print(e)
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ import copy
 
 import mufsim.stackitems as si
 import mufsim.gamedb as db
-from mufsim.logger import log
+from mufsim.logger import log, warnlog, errlog
 from mufsim.errors import MufRuntimeError, MufBreakExecution
 from mufsim.callframe import MufCallFrame
 
@@ -80,6 +80,7 @@ class MufStackFrame(object):
         self.data_push(cmd)
 
     def get_compiled(self, prog=-1):
+        prog = db.normobj(prog)
         if prog < 0:
             addr = self.curr_addr()
             prog = addr.prog
@@ -90,7 +91,7 @@ class MufStackFrame(object):
         self.trace = on_off
 
     def set_text_entry(self, text):
-        if type(text) is list:
+        if isinstance(text, list):
             self.text_entry = text
         else:
             self.text_entry = text.split('\n')
@@ -118,7 +119,7 @@ class MufStackFrame(object):
         return None
 
     def pc_set(self, addr):
-        if type(addr) is not si.Address:
+        if not isinstance(addr, si.Address):
             raise MufRuntimeError("Expected an address!")
         return self.call_stack[-1].pc_set(addr)
 
@@ -134,24 +135,24 @@ class MufStackFrame(object):
         return self.call_stack[level].caller
 
     def funcvar_get(self, v, level=-1):
-        if type(v) is si.FuncVar:
+        if isinstance(v, si.FuncVar):
             v = v.value
         return self.call_stack[level].variable_get(v)
 
     def funcvar_set(self, v, val, level=-1):
-        if type(v) is si.FuncVar:
+        if isinstance(v, si.FuncVar):
             v = v.value
         return self.call_stack[level].variable_set(v, val)
 
     def globalvar_get(self, v):
-        if type(v) is si.GlobalVar:
+        if isinstance(v, si.GlobalVar):
             v = v.value
         if v in self.globalvars:
             return self.globalvars[v]
         return 0
 
     def globalvar_set(self, v, val):
-        if type(v) is si.GlobalVar:
+        if isinstance(v, si.GlobalVar):
             v = v.value
         self.globalvars[v] = val
 
@@ -181,15 +182,15 @@ class MufStackFrame(object):
         inst = self.get_inst(addr)
         caddr = self.catch_addr()
         if not caddr:
-            log("Error in #%d line %d (%s): %s" %
-                (addr.prog, inst.line, str(inst), e))
+            errlog("Error in #%d line %d (%s): %s" %
+                   (addr.prog, inst.line, str(inst), e))
             self.call_stack = []
             return False
-        if type(caddr) is not si.Address:
+        if not isinstance(caddr, si.Address):
             raise MufRuntimeError("Expected an address!")
         if self.trace:
-            log("Caught error in #%d line %d (%s): %s" %
-                (addr.prog, inst.line, str(inst), e))
+            warnlog("Caught error in #%d line %d (%s): %s" %
+                    (addr.prog, inst.line, str(inst), e))
         # Clear stack down to stacklock
         while self.data_depth() > self.catch_locklevel():
             self.data_pop()
@@ -359,7 +360,7 @@ class MufStackFrame(object):
             if self.breakpoints:
                 if currline in self.breakpoints:
                     bpnum = self.breakpoints.index(currline)
-                    log("Stopped at breakpoint %d." % bpnum)
+                    warnlog("Stopped at breakpoint %d." % bpnum)
                     self._trigger_breakpoint()
             if self.break_type == self.BREAK_NEXT:
                 if len(self.call_stack) > self.prev_call_level:
@@ -388,7 +389,7 @@ class MufStackFrame(object):
             addr = self.curr_addr()
             inst = self.get_inst(addr)
             if self.trace:
-                log(self.get_trace_line())
+                log(self.get_trace_line(), msgtype='trace')
                 sys.stdout.flush()
             try:
                 self.cycles += 1
@@ -528,7 +529,7 @@ class MufStackFrame(object):
             maxcnt = depth
         else:
             out += '...'
-        for i in xrange(-depth, 0):
+        for i in range(-depth, 0):
             if out:
                 out += ', '
             out += si.item_repr(self.data_stack[i])

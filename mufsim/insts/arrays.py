@@ -1,6 +1,7 @@
 import re
 import copy
 import random
+from functools import cmp_to_key
 
 import mufsim.utils as util
 import mufsim.gamedb as db
@@ -15,7 +16,7 @@ class InstArrayMake(Instruction):
         num = fr.data_pop(int)
         fr.check_underflow(num)
         arr = []
-        for i in xrange(num):
+        for i in range(num):
             arr.insert(0, fr.data_pop())
         fr.data_push(arr)
 
@@ -26,7 +27,7 @@ class InstArrayMakeDict(Instruction):
         num = fr.data_pop(int)
         fr.check_underflow(num * 2)
         d = {}
-        for i in xrange(num):
+        for i in range(num):
             val = fr.data_pop()
             key = fr.data_pop(int, str)
             d[key] = val
@@ -54,14 +55,14 @@ class InstArrayGetItem(Instruction):
         fr.check_underflow(2)
         key = fr.data_pop()
         arr = fr.data_pop(list, dict)
-        if type(arr) is list:
-            if type(key) is not int:
+        if isinstance(arr, list):
+            if not isinstance(key, int):
                 fr.data_push(0)
             elif key < 0 or key >= len(arr):
                 fr.data_push(0)
             else:
                 fr.data_push(arr[key])
-        elif type(arr) is dict:
+        elif isinstance(arr, dict):
             if key in arr:
                 fr.data_push(arr[key])
             else:
@@ -75,8 +76,8 @@ class InstArraySetItem(Instruction):
         key = fr.data_pop()
         arr = fr.data_pop(list, dict)
         val = fr.data_pop()
-        if type(arr) is list:
-            if type(key) is not int:
+        if isinstance(arr, list):
+            if not isinstance(key, int):
                 raise MufRuntimeError("List array expects integer index.")
             elif key < 0 or key > len(arr):
                 raise MufRuntimeError("Index out of array bounds.")
@@ -84,8 +85,8 @@ class InstArraySetItem(Instruction):
                 arr = arr[:]
                 arr[key] = val
             fr.data_push(arr)
-        elif type(arr) is dict:
-            if type(key) is not int and type(key) is not str:
+        elif isinstance(arr, dict):
+            if not isinstance(key, int) and not isinstance(key, str):
                 raise MufRuntimeError("Index must be integer or string.")
             arr = dict(arr)
             arr[key] = val
@@ -99,8 +100,8 @@ class InstArrayInsertItem(Instruction):
         key = fr.data_pop()
         arr = fr.data_pop(list, dict)
         val = fr.data_pop()
-        if type(arr) is list:
-            if type(key) is not int:
+        if isinstance(arr, list):
+            if not isinstance(key, int):
                 raise MufRuntimeError("List array expects integer index.")
             elif key < 0 or key > len(arr):
                 raise MufRuntimeError("Index out of array bounds.")
@@ -108,8 +109,8 @@ class InstArrayInsertItem(Instruction):
                 arr = arr[:]
                 arr.insert(key, val)
             fr.data_push(arr)
-        elif type(arr) is dict:
-            if type(key) is not int and type(key) is not str:
+        elif isinstance(arr, dict):
+            if not isinstance(key, int) and not isinstance(key, str):
                 raise MufRuntimeError("Index must be integer or string.")
             arr = dict(arr)
             arr[key] = val
@@ -122,8 +123,8 @@ class InstArrayDelItem(Instruction):
         fr.check_underflow(2)
         key = fr.data_pop()
         arr = fr.data_pop(list, dict)
-        if type(arr) is list:
-            if type(key) is not int:
+        if isinstance(arr, list):
+            if not isinstance(key, int):
                 raise MufRuntimeError("List array expects integer index.")
             elif key < 0 or key > len(arr):
                 raise MufRuntimeError("Index out of array bounds.")
@@ -131,8 +132,8 @@ class InstArrayDelItem(Instruction):
                 arr = arr[:]
                 del arr[key]
             fr.data_push(arr)
-        elif type(arr) is dict:
-            if type(key) is not int and type(key) is not str:
+        elif isinstance(arr, dict):
+            if not isinstance(key, int) and not isinstance(key, str):
                 raise MufRuntimeError("Index must be integer or string.")
             arr = dict(arr)
             del arr[key]
@@ -156,7 +157,7 @@ class InstArrayExtract(Instruction):
         fr.check_underflow(2)
         keys = fr.data_pop(list)
         arr = fr.data_pop(list, dict)
-        if type(arr) is list:
+        if isinstance(arr, list):
             arr = {k: v for k, v in enumerate(arr)}
         out = {}
         for key in keys:
@@ -196,7 +197,7 @@ class InstArrayDelRange(Instruction):
         arr = fr.data_pop(list)[:]
         if end >= len(arr):
             end = len(arr) - 1
-        for i in xrange(st, end + 1):
+        for i in range(st, end + 1):
             del arr[st]
         fr.data_push(arr)
 
@@ -222,11 +223,11 @@ class InstArrayNestedGet(Instruction):
         keys = fr.data_pop(list)
         arr = fr.data_pop(list, dict)
         for key in keys:
-            if type(key) is not int and type(key) is not str:
+            if not isinstance(key, int) and not isinstance(key, str):
                 raise MufRuntimeError("Index must be integer or string.")
-            if type(arr) is list:
+            if isinstance(arr, list):
                 arr = {idx: val for idx, val in enumerate(arr)}
-            if type(arr) is not dict:
+            if not isinstance(arr, dict):
                 arr = 0
                 break
             elif key not in arr:
@@ -248,7 +249,7 @@ class InstArrayNestedSet(Instruction):
         subarr = arr
         keyslen = len(keys)
         for keynum, key in enumerate(keys):
-            if type(subarr) is list:
+            if isinstance(subarr, list):
                 fr.check_type(key, [int])
                 if key < 0 or key > len(subarr):
                     raise MufRuntimeError("Index out of list array bounds.")
@@ -258,7 +259,7 @@ class InstArrayNestedSet(Instruction):
                     subarr = subarr[key]
                 else:
                     subarr[key] = val
-            elif type(subarr) is dict:
+            elif isinstance(subarr, dict):
                 fr.check_type(key, [int, str])
                 if keynum < keyslen - 1:
                     if key not in subarr:
@@ -281,7 +282,7 @@ class InstArrayNestedDel(Instruction):
         subarr = arr
         keyslen = len(keys)
         for keynum, key in enumerate(keys):
-            if type(subarr) is list:
+            if isinstance(subarr, list):
                 fr.check_type(key, [int])
                 if key < 0 or key > len(subarr):
                     raise MufRuntimeError("Index out of list array bounds.")
@@ -291,7 +292,7 @@ class InstArrayNestedDel(Instruction):
                     subarr = subarr[key]
                 else:
                     del subarr[key]
-            elif type(subarr) is dict:
+            elif isinstance(subarr, dict):
                 fr.check_type(key, [int, str])
                 if keynum < keyslen - 1:
                     if key not in subarr:
@@ -309,13 +310,13 @@ class InstArrayKeys(Instruction):
     def execute(self, fr):
         arr = fr.data_pop(list, dict)
         cnt = 0
-        if type(arr) is list:
+        if isinstance(arr, list):
             for key, val in enumerate(arr):
                 fr.data_push(key)
                 cnt += 1
             fr.data_push(cnt)
-        elif type(arr) is dict:
-            for key, val in arr.iteritems():
+        elif isinstance(arr, dict):
+            for key, val in arr.items():
                 fr.data_push(key)
                 cnt += 1
             fr.data_push(cnt)
@@ -326,13 +327,13 @@ class InstArrayVals(Instruction):
     def execute(self, fr):
         arr = fr.data_pop(list, dict)
         cnt = 0
-        if type(arr) is list:
+        if isinstance(arr, list):
             for key, val in enumerate(arr):
                 fr.data_push(val)
                 cnt += 1
             fr.data_push(cnt)
-        elif type(arr) is dict:
-            for key, val in arr.iteritems():
+        elif isinstance(arr, dict):
+            for key, val in arr.items():
                 fr.data_push(val)
                 cnt += 1
             fr.data_push(cnt)
@@ -343,14 +344,14 @@ class InstArrayExplode(Instruction):
     def execute(self, fr):
         arr = fr.data_pop(list, dict)
         cnt = 0
-        if type(arr) is list:
+        if isinstance(arr, list):
             for key, val in enumerate(arr):
                 fr.data_push(key)
                 fr.data_push(val)
                 cnt += 1
             fr.data_push(cnt)
-        elif type(arr) is dict:
-            for key, val in arr.iteritems():
+        elif isinstance(arr, dict):
+            for key, val in arr.items():
                 fr.data_push(key)
                 fr.data_push(val)
                 cnt += 1
@@ -367,15 +368,15 @@ class InstArrayJoin(Instruction):
         for idx, val in enumerate(arr):
             if idx > 0:
                 out += delim
-            if type(val) is str:
+            if isinstance(val, str):
                 out += val
-            elif type(val) is int:
+            elif isinstance(val, int):
                 out += "%d" % val
-            elif type(val) is float:
+            elif isinstance(val, float):
                 out += "%g" % val
-            elif type(val) is si.DBRef:
+            elif isinstance(val, si.DBRef):
                 out += "#%d" % val.value
-            elif type(val) is si.Address:
+            elif isinstance(val, si.Address):
                 out += "Addr:%d" % val.value
             else:
                 out += str(val)
@@ -388,10 +389,10 @@ class InstArrayFindVal(Instruction):
         fr.check_underflow(2)
         val = fr.data_pop()
         arr = fr.data_pop(list, dict)
-        if type(arr) is list:
+        if isinstance(arr, list):
             arr = {k: v for k, v in enumerate(arr)}
         out = []
-        for k, v in arr.iteritems():
+        for k, v in arr.items():
             if v == val:
                 out.append(k)
         fr.data_push(out)
@@ -403,11 +404,11 @@ class InstArrayMatchKey(Instruction):
         fr.check_underflow(2)
         pat = fr.data_pop(str)
         arr = fr.data_pop(list, dict)
-        if type(arr) is list:
+        if isinstance(arr, list):
             arr = {k: v for k, v in enumerate(arr)}
         out = {}
-        for k, v in arr.iteritems():
-            if type(k) is str and util.smatch(pat, k):
+        for k, v in arr.items():
+            if isinstance(k, str) and util.smatch(pat, k):
                 out[k] = v
         fr.data_push(out)
 
@@ -418,11 +419,11 @@ class InstArrayMatchVal(Instruction):
         fr.check_underflow(2)
         pat = fr.data_pop(str)
         arr = fr.data_pop(list, dict)
-        if type(arr) is list:
+        if isinstance(arr, list):
             arr = {k: v for k, v in enumerate(arr)}
         out = {}
-        for k, v in arr.iteritems():
-            if type(v) is str and util.smatch(pat, v):
+        for k, v in arr.items():
+            if isinstance(v, str) and util.smatch(pat, v):
                 out[k] = v
         fr.data_push(out)
 
@@ -433,8 +434,8 @@ class InstArrayCut(Instruction):
         fr.check_underflow(2)
         pos = fr.data_pop(int, str)
         arr = fr.data_pop(list, dict)
-        if type(arr) is list:
-            if type(pos) is str:
+        if isinstance(arr, list):
+            if isinstance(pos, str):
                 fr.data_push(arr[:])
                 fr.data_push([])
             else:
@@ -443,7 +444,7 @@ class InstArrayCut(Instruction):
         else:
             out1 = {}
             out2 = {}
-            for k, v in arr.iteritems():
+            for k, v in arr.items():
                 if si.sortcomp(k, pos) < 0:
                     out1[k] = v
                 else:
@@ -458,10 +459,10 @@ class InstArrayExcludeVal(Instruction):
         fr.check_underflow(2)
         val = fr.data_pop()
         arr = fr.data_pop(list, dict)
-        if type(arr) is list:
+        if isinstance(arr, list):
             arr = {k: v for k, v in enumerate(arr)}
         out = []
-        for k, v in arr.iteritems():
+        for k, v in arr.items():
             if v != val:
                 out.append(k)
         fr.data_push(out)
@@ -485,12 +486,12 @@ class InstArraySort(Instruction):
         dorev = flags & 2 != 0
         doshuffle = flags & 4 != 0
         if doshuffle:
-            for i in xrange(7):
+            for i in range(7):
                 random.shuffle(arr)
         elif nocase:
-            arr = sorted(arr, cmp=si.sortcompi, reverse=dorev)
+            arr = sorted(arr, key=cmp_to_key(si.sortcompi), reverse=dorev)
         else:
-            arr = sorted(arr, cmp=si.sortcomp, reverse=dorev)
+            arr = sorted(arr, key=cmp_to_key(si.sortcomp), reverse=dorev)
         fr.data_push(arr)
 
 
@@ -508,13 +509,13 @@ class InstArraySortIndexed(Instruction):
             random.shuffle(arr)
         elif nocase:
             arr = sorted(
-                arr, key=lambda x: x[idx],
-                cmp=si.sortcompi, reverse=dorev
+                arr, reverse=dorev,
+                key=cmp_to_key(lambda x, y: si.sortcompi(x[idx], y[idx])),
             )
         else:
             arr = sorted(
-                arr, key=lambda x: x[idx],
-                cmp=si.sortcomp, reverse=dorev
+                arr, reverse=dorev,
+                key=cmp_to_key(lambda x, y: si.sortcomp(x[idx], y[idx])),
             )
         fr.data_push(arr)
 
@@ -526,11 +527,11 @@ class InstArrayFirst(Instruction):
         if not arr:
             fr.data_push(0)
             fr.data_push(0)
-        elif type(arr) is list:
+        elif isinstance(arr, list):
             fr.data_push(0)
             fr.data_push(1)
         else:
-            keys = sorted(arr.keys(), cmp=si.sortcomp, reverse=False)
+            keys = sorted(list(arr.keys()), key=cmp_to_key(si.sortcomp), reverse=False)
             fr.data_push(keys[0])
             fr.data_push(1)
 
@@ -542,11 +543,11 @@ class InstArrayLast(Instruction):
         if not arr:
             fr.data_push(0)
             fr.data_push(0)
-        elif type(arr) is list:
+        elif isinstance(arr, list):
             fr.data_push(len(arr) - 1)
             fr.data_push(1)
         else:
-            keys = sorted(arr.keys(), cmp=si.sortcomp, reverse=True)
+            keys = sorted(list(arr.keys()), key=cmp_to_key(si.sortcomp), reverse=True)
             fr.data_push(keys[0])
             fr.data_push(1)
 
@@ -561,12 +562,12 @@ class InstArrayPrev(Instruction):
             fr.data_push(0)
             fr.data_push(0)
             return
-        if type(arr) is list:
-            keys = range(len(arr))
+        if isinstance(arr, list):
+            keys = list(range(len(arr)))
         else:
-            keys = arr.keys()
+            keys = list(arr.keys())
         keys = [k for k in keys if si.sortcomp(k, idx) < 0]
-        keys = sorted(keys, cmp=si.sortcomp, reverse=True)
+        keys = sorted(keys, key=cmp_to_key(si.sortcomp), reverse=True)
         if keys:
             fr.data_push(keys[0])
             fr.data_push(1)
@@ -585,12 +586,12 @@ class InstArrayNext(Instruction):
             fr.data_push(0)
             fr.data_push(0)
             return
-        if type(arr) is list:
-            keys = range(len(arr))
+        if isinstance(arr, list):
+            keys = list(range(len(arr)))
         else:
-            keys = arr.keys()
+            keys = list(arr.keys())
         keys = [k for k in keys if si.sortcomp(k, idx) > 0]
-        keys = sorted(keys, cmp=si.sortcomp)
+        keys = sorted(keys, key=cmp_to_key(si.sortcomp))
         if keys:
             fr.data_push(keys[0])
             fr.data_push(1)

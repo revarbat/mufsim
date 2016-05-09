@@ -1,4 +1,5 @@
 import mufsim.utils as util
+from functools import cmp_to_key
 
 
 class Item(object):
@@ -66,8 +67,8 @@ class FuncVar(Item):
 
 
 def sortcomp(a, b, nocase=False):
-    if type(a) is type(b):
-        if type(a) is str and nocase:
+    if isinstance(a, type(b)):
+        if isinstance(a, str) and nocase:
             a = a.upper()
             b = b.upper()
         return cmp(a, b)
@@ -77,13 +78,13 @@ def sortcomp(a, b, nocase=False):
         return -1
     if util.is_number(b):
         return 1
-    if type(a) is DBRef:
+    if isinstance(a, DBRef):
         return -1
-    if type(b) is DBRef:
+    if isinstance(b, DBRef):
         return 1
-    if type(a) is str:
+    if isinstance(a, str):
         return -1
-    if type(b) is str:
+    if isinstance(b, str):
         return 1
     return cmp(a, b)
 
@@ -101,23 +102,23 @@ def item_type_name(val):
 
 
 def item_repr(x):
-    if type(x) is int:
+    if isinstance(x, int):
         return "%d" % x
-    elif type(x) is float:
+    elif isinstance(x, float):
         x = "%.12g" % x
         if "e" in x or "." in x or x in ["-inf", "inf", "nan"]:
             return x
         else:
             return "%s.0" % x
-    elif type(x) is str:
+    elif isinstance(x, str):
         return util.escape_str(x)
-    elif type(x) is list or type(x) is tuple:
+    elif isinstance(x, list) or isinstance(x, tuple):
         out = "%d[" % len(x)
         out += ", ".join([item_repr(v) for v in x])
         out += "]"
         return out
-    elif type(x) is dict:
-        keys = sorted(x.keys(), cmp=sortcomp)
+    elif isinstance(x, dict):
+        keys = sorted(list(x.keys()), key=cmp_to_key(sortcomp))
         out = "%d{" % len(x)
         out += ", ".join(
             ["%s: %s" % (item_repr(k), item_repr(x[k])) for k in keys]
@@ -130,17 +131,17 @@ def item_repr(x):
 
 def item_repr_pretty(x, indent=""):
     subind = indent + '  '
-    if type(x) is int:
+    if isinstance(x, int):
         return "%s%d" % (indent, x)
-    elif type(x) is float:
+    elif isinstance(x, float):
         x = "%.12g" % x
         if "e" in x or "." in x or x in ["-inf", "inf", "nan"]:
             return "%s%s" % (indent, x)
         else:
             return "%s%s.0" % (indent, x)
-    elif type(x) is str:
+    elif isinstance(x, str):
         return "%s%s" % (indent, util.escape_str(x))
-    elif type(x) is list or type(x) is tuple:
+    elif isinstance(x, list) or isinstance(x, tuple):
         if not x:
             return "%s[]" % indent
         items = [
@@ -148,7 +149,7 @@ def item_repr_pretty(x, indent=""):
             for v in x
         ]
         return "%s[\n%s\n%s]" % (indent, ",\n".join(items), indent)
-    elif type(x) is dict:
+    elif isinstance(x, dict):
         if not x:
             return "%s{}" % indent
         items = [
@@ -156,7 +157,7 @@ def item_repr_pretty(x, indent=""):
                 item_repr_pretty(k, subind),
                 item_repr_pretty(x[k], subind).lstrip(),
             )
-            for k in sorted(x.keys(), cmp=sortcomp)
+            for k in sorted(list(x.keys()), key=cmp_to_key(sortcomp))
         ]
         return "%s{\n%s\n%s}" % (indent, ",\n".join(items), indent)
     else:

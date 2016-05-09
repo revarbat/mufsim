@@ -132,7 +132,7 @@ class MufCompiler(object):
 
     def splitword(self, txt):
         txt = self.lstrip(txt)
-        for i in xrange(len(txt)):
+        for i in range(len(txt)):
             if txt[i].isspace():
                 break
             i += 1
@@ -149,7 +149,7 @@ class MufCompiler(object):
     def strip_comment(self, src):
         src = src[1:]
         lev = 1
-        for i in xrange(len(src)):
+        for i in range(len(src)):
             if lev <= 0:
                 break
             if src[i] == "\n":
@@ -261,15 +261,15 @@ class MufCompiler(object):
 
     def check_for_incomplete_block(self):
         if self.stmt_stack:
-            if type(self.stmt_stack[-1]) is instfl.InstIf:
+            if isinstance(self.stmt_stack[-1], instfl.InstIf):
                 raise MufCompileError("Incomplete if-then block.")
-            if type(self.stmt_stack[-1]) is instfl.InstTry:
+            if isinstance(self.stmt_stack[-1], instfl.InstTry):
                 raise MufCompileError("Incomplete try-catch block.")
-            if type(self.stmt_stack[-1]) is instfl.InstBegin:
+            if isinstance(self.stmt_stack[-1], instfl.InstBegin):
                 raise MufCompileError("Incomplete loop.")
-            if type(self.stmt_stack[-1]) is instfl.InstFor:
+            if isinstance(self.stmt_stack[-1], instfl.InstFor):
                 raise MufCompileError("Incomplete for loop.")
-            if type(self.stmt_stack[-1]) is instfl.InstForeach:
+            if isinstance(self.stmt_stack[-1], instfl.InstForeach):
                 raise MufCompileError("Incomplete foreach loop.")
 
     @literal_handler

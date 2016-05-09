@@ -93,7 +93,7 @@ class InstGetPropStr(Instruction):
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
         val = obj.getprop(prop)
-        if type(val) is not str:
+        if not isinstance(val, str):
             val = ""
         fr.data_push(val)
 
@@ -105,7 +105,7 @@ class InstGetPropVal(Instruction):
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
         val = obj.getprop(prop)
-        if type(val) is not int:
+        if not isinstance(val, int):
             val = 0
         fr.data_push(val)
 
@@ -117,7 +117,7 @@ class InstGetPropFVal(Instruction):
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
         val = obj.getprop(prop)
-        if type(val) is not float:
+        if not isinstance(val, float):
             val = 0.0
         fr.data_push(val)
 
@@ -149,7 +149,7 @@ class InstEnvPropStr(Instruction):
             if val is not None:
                 break
             obj = db.getobj(obj).location
-        if type(val) is str:
+        if isinstance(val, str):
             fr.data_push(val)
         else:
             fr.data_push("")
@@ -193,16 +193,16 @@ class InstArrayGetPropList(Instruction):
         val = obj.getprop("%s#" % prop)
         cnt = 0
         if val:
-            if type(val) is str:
+            if isinstance(val, str):
                 try:
                     cnt = int(cnt)
                 except:
                     cnt = 0
-            elif type(val) is int:
+            elif isinstance(val, int):
                 cnt = val
-        for i in xrange(cnt):
+        for i in range(cnt):
             val = obj.getprop("%s#/%d" % (prop, i + 1))
-            if type(val) is str:
+            if isinstance(val, str):
                 out.append(val)
         fr.data_push(out)
 
@@ -244,7 +244,7 @@ class InstArrayPutPropVals(Instruction):
         d = fr.data_pop(dict)
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
-        for k, v in d.iteritems():
+        for k, v in d.items():
             obj.setprop("%s/%s" % (prop, k), v)
 
 
@@ -255,7 +255,7 @@ class InstArrayGetReflist(Instruction):
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
         val = obj.getprop(prop)
-        if type(val) is not str:
+        if not isinstance(val, str):
             fr.data_push([])
         else:
             vals = [
@@ -274,7 +274,7 @@ class InstArrayPutReflist(Instruction):
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
         for ref in refs:
-            if type(ref) is not si.DBRef:
+            if not isinstance(ref, si.DBRef):
                 raise MufRuntimeError("Expected list of dbrefs.")
         refstr = " ".join(["#%d" % ref.value for ref in refs])
         obj.setprop(prop, refstr)
@@ -288,7 +288,7 @@ class InstRefListAdd(Instruction):
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
         val = obj.getprop(prop)
-        if type(val) is not str:
+        if not isinstance(val, str):
             refs = []
         else:
             refs = [
@@ -311,7 +311,7 @@ class InstRefListDel(Instruction):
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
         val = obj.getprop(prop)
-        if type(val) is not str:
+        if not isinstance(val, str):
             refs = []
         else:
             refs = [
@@ -333,7 +333,7 @@ class InstRefListFind(Instruction):
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
         val = obj.getprop(prop)
-        if type(val) is not str:
+        if not isinstance(val, str):
             refs = []
         else:
             refs = [
@@ -356,7 +356,7 @@ class InstArrayFilterProp(Instruction):
         objs = fr.data_pop(list)
         found = []
         for obj in objs:
-            if type(obj) is not si.DBRef:
+            if not isinstance(obj, si.DBRef):
                 raise MufRuntimeError("Expected list of dbrefs.")
             if db.validobj(obj):
                 val = db.getobj(obj).getprop(prop)

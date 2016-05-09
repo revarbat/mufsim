@@ -5,7 +5,7 @@ import mufsim.stackitems as si
 
 class MufCallFrame(object):
     def __init__(self, addr, caller):
-        if type(caller) is int:
+        if isinstance(caller, int):
             caller = si.DBRef(caller)
         self.variables = {}
         self.loop_stack = []

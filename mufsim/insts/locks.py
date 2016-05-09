@@ -11,7 +11,7 @@ class InstLockedP(Instruction):
         what = fr.data_pop_object()
         who = fr.data_pop_object()
         lock = what.getprop("_/lok")
-        if type(lock) is not si.Lock:
+        if not isinstance(lock, si.Lock):
             raise MufRuntimeError("Expected lock in property.")
         fr.data_push(0 if lock.value.eval(who) else 1)
 
@@ -66,8 +66,7 @@ class InstGetLockStr(Instruction):
     def execute(self, fr):
         obj = fr.data_pop_object()
         lock = obj.getprop("_/lok")
-        print("loooock=%s" % type(lock))
-        if type(lock) is not si.Lock:
+        if not isinstance(lock, si.Lock):
             fr.data_push("*UNLOCKED*")
         else:
             fr.data_push(str(lock.value))

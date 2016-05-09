@@ -72,7 +72,7 @@ class InstProgramSetLines(Instruction):
         if obj.objtype != "program":
             raise MufRuntimeError("Expected program dbref.")
         for line in lines:
-            if type(line) is not str:
+            if not isinstance(line, str):
                 raise MufRuntimeError("Expected list of strings.")
         obj.sources = "\n".join(lines)
 
@@ -309,7 +309,7 @@ class InstExtNameOkP(Instruction):
     def execute(self, fr):
         obj = fr.data_pop(str, si.DBRef)
         nam = fr.data_pop(str)
-        if type(obj) is si.DBRef:
+        if isinstance(obj, si.DBRef):
             typ = db.getobj(obj).objtype
         else:
             typ = obj
@@ -491,7 +491,7 @@ class InstSetLinksArray(Instruction):
         dests = fr.data_pop(list)
         obj = fr.data_pop_object()
         for dest in dests:
-            if type(dest) is not si.DBRef:
+            if not isinstance(dest, si.DBRef):
                 raise MufRuntimeError("Expected list array of dbrefs.")
         obj.links = [db.getobj(dest).dbref for dest in dests]
         obj.mark_modify()

@@ -57,9 +57,9 @@ class InstBang(Instruction):
         fr.check_underflow(2)
         v = fr.data_pop(si.GlobalVar, si.FuncVar)
         val = fr.data_pop()
-        if type(v) is si.GlobalVar:
+        if isinstance(v, si.GlobalVar):
             fr.globalvar_set(v.value, val)
-        elif type(v) is si.FuncVar:
+        elif isinstance(v, si.FuncVar):
             fr.funcvar_set(v.value, val)
 
     def __str__(self):
@@ -70,10 +70,10 @@ class InstBang(Instruction):
 class InstAt(Instruction):
     def execute(self, fr):
         v = fr.data_pop(si.GlobalVar, si.FuncVar)
-        if type(v) is si.GlobalVar:
+        if isinstance(v, si.GlobalVar):
             val = fr.globalvar_get(v.value)
             fr.data_push(val)
-        elif type(v) is si.FuncVar:
+        elif isinstance(v, si.FuncVar):
             val = fr.funcvar_get(v.value)
             fr.data_push(val)
 
@@ -94,7 +94,7 @@ class InstDupN(Instruction):
     def execute(self, fr):
         n = fr.data_pop(int)
         fr.check_underflow(n)
-        for i in xrange(n):
+        for i in range(n):
             fr.data_push(fr.data_pick(n))
 
 
@@ -102,11 +102,11 @@ class InstDupN(Instruction):
 class InstLDup(Instruction):
     def execute(self, fr):
         n = fr.data_pick(1)
-        if type(n) is not int:
+        if not isinstance(n, int):
             raise MufRuntimeError("Expected integer argument.")
         n += 1
         fr.check_underflow(n)
-        for i in xrange(n):
+        for i in range(n):
             fr.data_push(fr.data_pick(n))
 
 
@@ -121,7 +121,7 @@ class InstPopN(Instruction):
     def execute(self, fr):
         n = fr.data_pop(int)
         fr.check_underflow(n)
-        for i in xrange(n):
+        for i in range(n):
             fr.data_pop()
 
 
@@ -202,7 +202,7 @@ class InstReverse(Instruction):
         fr.check_underflow(num)
         if not num:
             return
-        arr = [fr.data_pop() for i in xrange(num)]
+        arr = [fr.data_pop() for i in range(num)]
         for val in arr:
             fr.data_push(val)
 
@@ -214,7 +214,7 @@ class InstLReverse(Instruction):
         fr.check_underflow(num)
         if not num:
             return
-        arr = [fr.data_pop() for i in xrange(num)]
+        arr = [fr.data_pop() for i in range(num)]
         for val in arr:
             fr.data_push(val)
         fr.data_push(num)
@@ -229,9 +229,9 @@ class InstMark(Instruction):
 @instr("}")
 class InstMarkCount(Instruction):
     def execute(self, fr):
-        for i in xrange(fr.data_depth()):
+        for i in range(fr.data_depth()):
             a = fr.data_pick(i + 1)
-            if type(a) is si.Mark:
+            if isinstance(a, si.Mark):
                 fr.data_pull(i + 1)
                 fr.data_push(i)
                 return

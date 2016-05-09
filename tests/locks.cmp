@@ -46,8 +46,6 @@
    42: EXIT
 
 #### Executing Tokens #################################
-loooock=<type 'NoneType'>
-loooock=<class 'mufsim.stackitems.Lock'>
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") LV0: me
     2: #4 line 2 ("", LV0) @

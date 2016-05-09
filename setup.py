@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-VERSION = "0.7.8"
+VERSION = "0.7.9"
 
 COPYRIGHT = "Copyright 2016 by Revar Desmera"
 LONG_DESCR = """\
@@ -70,6 +70,8 @@ setup(
         'Operating System :: POSIX',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Software Development :: Compilers',
         'Topic :: Software Development :: Debuggers',
         'Topic :: Software Development :: Interpreters',
@@ -83,5 +85,5 @@ setup(
     install_requires=['setuptools'],
     data_files=DATA_FILES,
     options={'py2app': OPTIONS},
-    setup_requires=['py2app'],
+    # setup_requires=['py2app'],
 )

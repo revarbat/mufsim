@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: MufSim
-Version: 0.7.8
+Version: 0.7.9
 Summary: Muf language simulator and debugger.
 Home-page: https://github.com/revarbat/mufsim
 Author: Revar Desmera
@@ -23,6 +23,8 @@ Classifier: Operating System :: Microsoft :: Windows
 Classifier: Operating System :: POSIX
 Classifier: Programming Language :: Python :: 2
 Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
 Classifier: Topic :: Software Development :: Compilers
 Classifier: Topic :: Software Development :: Debuggers
 Classifier: Topic :: Software Development :: Interpreters

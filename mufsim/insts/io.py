@@ -97,10 +97,10 @@ class InstArrayNotify(Instruction):
         targs = fr.data_pop(list)
         msgs = fr.data_pop(list)
         for targ in targs:
-            if type(targ) is not si.DBRef:
+            if not isinstance(targ, si.DBRef):
                 raise MufRuntimeError("Expected list array of dbrefs. (2)")
         for msg in msgs:
-            if type(msg) is not str:
+            if not isinstance(msg, str):
                 raise MufRuntimeError("Expected list array of strings. (1)")
             targs = [db.getobj(o) for o in targs]
             log("NOTIFY TO %s: %s" % (targs, msg))
@@ -128,7 +128,7 @@ class InstNotifyExclude(Instruction):
         pcount = fr.data_pop(int)
         fr.check_underflow(pcount + 1)
         excl = []
-        for i in xrange(pcount):
+        for i in range(pcount):
             who = fr.data_pop_object()
             excl.append(si.DBRef(who.dbref))
         where = fr.data_pop_object()

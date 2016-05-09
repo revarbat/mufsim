@@ -12,10 +12,19 @@ from subprocess import call
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 import mufsim.utils as util
-from mufsim.logger import log, get_log, log_updated, clear_log
+from mufsim.logger import log, set_output_command
 from mufsim.compiler import MufCompiler
 from mufsim.stackframe import MufStackFrame
 import mufsim.configs as confs
+
+
+def log_print(msgtype, msg):
+    if msgtype in ['warning', 'error']:
+        print(msg, file=sys.stderr)
+        sys.stderr.flush()
+    else:
+        print(msg)
+        sys.stdout.flush()
 
 
 class ConsoleMufDebugger(object):
@@ -23,16 +32,8 @@ class ConsoleMufDebugger(object):
         self.fr = fr
         self.matches = []
 
-    def flush_log(self):
-        if log_updated():
-            for line in get_log():
-                print(line)
-            clear_log()
-        sys.stdout.flush()
-
     def handle_reads(self):
-        self.flush_log()
-        readline = raw_input("READ>")
+        readline = input("READ>")
         if readline is None or readline == "@Q":
             while self.fr.call_stack:
                 self.fr.call_pop()
@@ -66,7 +67,6 @@ class ConsoleMufDebugger(object):
             ] and self.handle_reads():
                 continue
             break
-        self.flush_log()
 
     def complete(self, text, state):
         cmds = [
@@ -197,7 +197,7 @@ class ConsoleMufDebugger(object):
 
     def debug_cmd_delete(self, args):
         bps = self.fr.get_breakpoints()
-        if not util.is_int(args) or int(args) - 1 not in range(len(bps)):
+        if not util.is_int(args) or int(args) - 1 not in list(range(len(bps))):
             log("Usage: delete BREAKPOINTNUM")
         else:
             self.fr.del_breakpoint(int(args) - 1)
@@ -326,7 +326,7 @@ class ConsoleMufDebugger(object):
             args = int(args)
             if args > depth:
                 args = depth
-            for i in xrange(args):
+            for i in range(args):
                 val = self.fr.data_pick(i + 1)
                 val = si.item_repr(val)
                 log("Stack %d: %s" % (depth - i, val))
@@ -430,7 +430,7 @@ class ConsoleMufDebugger(object):
         readline.parse_and_bind("tab: complete")
         while True:
             if prevcmd:
-                cmd = raw_input("DEBUG>")
+                cmd = input("DEBUG>")
                 if not cmd:
                     cmd = prevcmd
             else:
@@ -478,24 +478,15 @@ class ConsoleMufDebugger(object):
                 commands[cmd](args)
             else:
                 self.debug_cmd_help(args)
-            self.flush_log()
             if not self.fr.call_stack:
                 break
 
 
 class MufConsole(object):
-    def print(self, *args):
-        if log_updated():
-            for line in get_log():
-                print(line)
-            clear_log()
-        print(*args)
-        sys.stdout.flush()
-
-    def print_header(self, header):
+    def header(self, header):
         out = '#### %s ' % header
         out += '#' * (55 - len(out))
-        self.print(out)
+        log(out)
 
     def process_cmdline(self):
         parser = argparse.ArgumentParser(prog='mufsim')
@@ -558,7 +549,7 @@ class MufConsole(object):
             tmpfile += ".muf"
         retcode = call(["muv", "-o", tmpfile, infile], stderr=sys.stderr)
         if retcode != 0:
-            self.print("Aborting.")
+            log("Aborting.")
             return None
         return tmpfile
 
@@ -583,10 +574,10 @@ class MufConsole(object):
             st = time.time()
             dbg.resume_execution()
             et = time.time()
-            self.print("Execution completed in %d steps." % fr.cycles)
+            log("Execution completed in %d steps." % fr.cycles)
             if self.opts.timing:
-                self.print("%g secs elapsed.  %g instructions/sec" %
-                           (et-st, fr.cycles/(et-st)))
+                log("%g secs elapsed.  %g instructions/sec" %
+                    (et-st, fr.cycles/(et-st)))
         self.readline_teardown()
 
     def show_compiled_tokens(self, prog):
@@ -597,17 +588,17 @@ class MufConsole(object):
         for inum, tokeninfo in enumerate(alltokens):
             rep = tokeninfo['repr']
             if inum > 0 and rep.startswith("Function:"):
-                print("")
-            print("% 5d: %s" % (inum, rep))
+                log("")
+            log("% 5d: %s" % (inum, rep))
 
     def main(self):
         self.process_cmdline()
         for name, filename in self.opts.progs:
             origfile = filename
             if filename.endswith(".muv"):
-                self.print_header("Compiling MUV Code to MUF")
+                self.header("Compiling MUV Code to MUF")
                 filename = self.process_muv(filename)
-                self.print("")
+                log("")
             if not filename:
                 return
             srcs = ""
@@ -626,26 +617,27 @@ class MufConsole(object):
                     location=userobj.dbref,
                 )
                 db.register_obj(globenv, name, progobj)
-                print("CREATED PROG %s, REGISTERED AS $%s\n" % (progobj, name))
+                log("CREATED PROG %s, REGISTERED AS $%s\n" % (progobj, name))
             else:
                 progobj = db.get_registered_obj(userobj, "$cmd/test")
             progobj.sources = srcs
-            self.print_header("Compiling MUF Program %s" % progobj)
+            self.header("Compiling MUF Program %s" % progobj)
             success = MufCompiler().compile_source(progobj.dbref)
-            self.print("")
+            log("")
             if not success:
                 return
             if self.opts.uncompile:
-                self.print_header("Showing Tokens for %s" % progobj)
+                self.header("Showing Tokens for %s" % progobj)
                 self.show_compiled_tokens(progobj)
-                self.print("")
+                log("")
         if self.opts.run:
-            self.print_header("Executing Tokens")
+            self.header("Executing Tokens")
             self.run_code()
-            self.print("")
+            log("")
 
 
 def main():
+    set_output_command(log_print)
     MufConsole().main()
 
 

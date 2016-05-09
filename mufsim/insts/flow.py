@@ -54,7 +54,7 @@ class InstFunc(Instruction):
 
     def execute(self, fr):
         fr.check_underflow(self.varcount)
-        for i in reversed(range(self.varcount)):
+        for i in reversed(list(range(self.varcount))):
             fr.funcvar_set(i, fr.data_pop())
 
     def get_header_vars(self, cmplr, src):
@@ -148,7 +148,7 @@ class InstCall(Instruction):
     def execute(self, fr):
         saddr = fr.curr_addr()
         x = fr.data_pop(si.DBRef, str)
-        if type(x) is str:
+        if isinstance(x, str):
             pub = x
             obj = fr.data_pop_dbref()
         else:
@@ -233,7 +233,7 @@ class InstCatch(Instruction):
         if not cmplr.stmt_stack:
             raise MufCompileError("Must be inside try block. (catch)")
         inst = cmplr.stmt_stack[-1]
-        if type(inst) is not InstTry:
+        if not isinstance(inst, InstTry):
             raise MufCompileError("Must be inside try block. (catch)")
         inst.trycode = code[:]
         inst.detailed = False
@@ -247,7 +247,7 @@ class InstCatchDetailed(Instruction):
         if not cmplr.stmt_stack:
             raise MufCompileError("Must be inside try block. (catch_detailed)")
         inst = cmplr.stmt_stack[-1]
-        if type(inst) is not InstTry:
+        if not isinstance(inst, InstTry):
             raise MufCompileError("Must be inside try block. (catch_detailed)")
         inst.trycode = code[:]
         inst.detailed = True
@@ -261,7 +261,7 @@ class InstEndCatch(Instruction):
         if not cmplr.stmt_stack:
             raise MufCompileError("Must be inside try block. (endcatch)")
         inst = cmplr.stmt_stack[-1]
-        if type(inst) is not InstTry:
+        if not isinstance(inst, InstTry):
             raise MufCompileError("Must be inside try block. (endcatch)")
         if not inst.trycode:
             raise MufCompileError("Incomplete try-catch block.")
@@ -289,7 +289,7 @@ class InstIf(Instruction):
         brinst = InstJmpIfFalse(self.line, len(subcode)+1)
         code.append(brinst)
         for instnum, inst in enumerate(subcode):
-            if type(inst) is InstElse:
+            if isinstance(inst, InstElse):
                 inst = InstJmp(inst.line, bodylen - instnum)
                 brinst.value = instnum + 2
             code.append(inst)
@@ -302,7 +302,7 @@ class InstElse(Instruction):
         if not cmplr.stmt_stack:
             raise MufCompileError("ELSE must be inside if block.")
         inst = cmplr.stmt_stack[-1]
-        if type(inst) is not InstIf:
+        if not isinstance(inst, InstIf):
             raise MufCompileError("ELSE must be inside if block.")
         code.append(InstElse(self.line))
         return (False, src)
@@ -314,7 +314,7 @@ class InstThen(Instruction):
         if not cmplr.stmt_stack:
             raise MufCompileError("THEN must end an if block.")
         inst = cmplr.stmt_stack[-1]
-        if type(inst) is not InstIf:
+        if not isinstance(inst, InstIf):
             raise MufCompileError("THEN must end an if block.")
         return (True, src)
 
@@ -328,11 +328,11 @@ class InstBegin(Instruction):
         cmplr.stmt_stack.pop()
         bodylen = len(subcode)
         for instnum, inst in enumerate(subcode):
-            if type(inst) is InstWhile:
+            if isinstance(inst, InstWhile):
                 inst = InstJmpIfFalse(inst.line, bodylen - instnum)
-            elif type(inst) is InstBreak:
+            elif isinstance(inst, InstBreak):
                 inst = InstJmp(inst.line, bodylen - instnum)
-            elif type(inst) is InstContinue:
+            elif isinstance(inst, InstContinue):
                 inst = InstJmp(inst.line, -instnum)
             code.append(inst)
         return (False, src)
@@ -345,7 +345,7 @@ class InstFor(Instruction):
         inc = fr.data_pop(int)
         end = fr.data_pop(int)
         start = fr.data_pop(int)
-        fr.loop_iter_push("for", iter(xrange(start, end + inc, inc)))
+        fr.loop_iter_push("for", iter(range(start, end + inc, inc)))
 
     def compile(self, cmplr, code, src):
         inst = InstFor(self.line)
@@ -356,11 +356,11 @@ class InstFor(Instruction):
         cmplr.stmt_stack.pop()
         bodylen = len(subcode)
         for instnum, inst in enumerate(subcode):
-            if type(inst) is InstWhile:
+            if isinstance(inst, InstWhile):
                 inst = InstJmpIfFalse(inst.line, bodylen - instnum)
-            elif type(inst) is InstBreak:
+            elif isinstance(inst, InstBreak):
                 inst = InstJmp(inst.line, bodylen - instnum)
-            elif type(inst) is InstContinue:
+            elif isinstance(inst, InstContinue):
                 inst = InstJmp(inst.line, -instnum)
             code.append(inst)
         code.append(InstForPop(inst.line))
@@ -371,9 +371,9 @@ class InstFor(Instruction):
 class InstForeach(Instruction):
     def execute(self, fr):
         arr = fr.data_pop(list, dict)
-        if type(arr) is list:
+        if isinstance(arr, list):
             arr = {k: v for k, v in enumerate(arr)}
-        fr.loop_iter_push("foreach", arr.iteritems())
+        fr.loop_iter_push("foreach", iter(arr.items()))
 
     def compile(self, cmplr, code, src):
         inst = InstForeach(self.line)
@@ -384,11 +384,11 @@ class InstForeach(Instruction):
         cmplr.stmt_stack.pop()
         bodylen = len(subcode)
         for instnum, inst in enumerate(subcode):
-            if type(inst) is InstWhile:
+            if isinstance(inst, InstWhile):
                 inst = InstJmpIfFalse(inst.line, bodylen - instnum)
-            elif type(inst) is InstBreak:
+            elif isinstance(inst, InstBreak):
                 inst = InstJmp(inst.line, bodylen - instnum)
-            elif type(inst) is InstContinue:
+            elif isinstance(inst, InstContinue):
                 inst = InstJmp(inst.line, -instnum)
             code.append(inst)
         code.append(InstForPop(inst.line))
@@ -457,7 +457,7 @@ class InstRepeat(Instruction):
         loopinst = cmplr.in_loop_inst()
         if not loopinst:
             raise MufCompileError("REPEAT must end a loop.")
-        if type(cmplr.stmt_stack[-1]) is InstIf:
+        if isinstance(cmplr.stmt_stack[-1], InstIf):
             raise MufCompileError("REPEAT must end a loop.")
         code.append(InstJmp(self.line, -len(code)))
         return (True, src)
@@ -469,7 +469,7 @@ class InstUntil(Instruction):
         loopinst = cmplr.in_loop_inst()
         if not loopinst:
             raise MufCompileError("UNTIL must end a loop.")
-        if type(cmplr.stmt_stack[-1]) is InstIf:
+        if isinstance(cmplr.stmt_stack[-1], InstIf):
             raise MufCompileError("UNTIL must end a loop.")
         code.append(InstJmpIfFalse(self.line, -len(code)))
         return (True, src)

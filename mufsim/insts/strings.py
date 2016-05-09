@@ -228,7 +228,7 @@ class InstRegExp(Instruction):
         else:
             submatches = []
             indexes = []
-            for i in xrange(len(matches.groups()) + 1):
+            for i in range(len(matches.groups()) + 1):
                 submatches.append(matches.group(i))
                 indexes.append(list(matches.span(i)))
             fr.data_push(submatches)
@@ -419,7 +419,7 @@ class InstPronounSub(Instruction):
         txt = fr.data_pop(str)
         obj = fr.data_pop_object()
         sex = obj.getprop("sex")
-        if type(sex) is not str:
+        if not isinstance(sex, str):
             sex = ""
         if sex.strip().lower() == "male":
             subs = {
@@ -481,7 +481,7 @@ class InstPronounSub(Instruction):
                 "%R": "Itself",
                 "%N": obj.name,
             }
-        for fnd, repl in subs.iteritems():
+        for fnd, repl in subs.items():
             txt = txt.replace(fnd, repl)
         fr.data_push(txt)
 

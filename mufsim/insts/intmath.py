@@ -9,15 +9,15 @@ from mufsim.insts.base import Instruction, instr
 class InstInt(Instruction):
     def execute(self, fr):
         val = fr.data_pop()
-        if type(val) is si.GlobalVar:
+        if isinstance(val, si.GlobalVar):
             val = val.value
-        elif type(val) is si.FuncVar:
+        elif isinstance(val, si.FuncVar):
             val = val.value
-        elif type(val) is si.DBRef:
+        elif isinstance(val, si.DBRef):
             val = val.value
-        elif type(val) is int:
+        elif isinstance(val, int):
             val = val
-        elif type(val) is float:
+        elif isinstance(val, float):
             if (
                 math.isinf(val) or
                 math.isnan(val) or
@@ -39,13 +39,13 @@ class InstPlus(Instruction):
         b = fr.data_pop(int, float, si.DBRef)
         a = fr.data_pop(int, float, si.DBRef)
         makedbref = False
-        if type(a) is si.DBRef:
-            if type(b) is float:
+        if isinstance(a, si.DBRef):
+            if isinstance(b, float):
                 raise MufRuntimeError("Cannot add float to dbref.")
             makedbref = True
             a = a.value
-        if type(b) is si.DBRef:
-            if type(a) is float:
+        if isinstance(b, si.DBRef):
+            if isinstance(a, float):
                 raise MufRuntimeError("Cannot add float to dbref.")
             makedbref = True
             b = b.value
@@ -67,17 +67,17 @@ class InstPlus(Instruction):
 class InstPlusPlus(Instruction):
     def execute(self, fr):
         a = fr.data_pop(int, float, si.DBRef, si.FuncVar, si.GlobalVar)
-        if type(a) is si.FuncVar:
+        if isinstance(a, si.FuncVar):
             val = fr.funcvar_get(a) + 1
             fr.funcvar_set(a, val)
-        elif type(a) is si.GlobalVar:
+        elif isinstance(a, si.GlobalVar):
             val = fr.globalvar_get(a) + 1
             fr.globalvar_set(a, val)
-        elif type(a) is si.DBRef:
+        elif isinstance(a, si.DBRef):
             fr.data_push(si.DBRef(a.value + 1))
-        elif type(a) is int:
+        elif isinstance(a, int):
             fr.data_push(a + 1)
-        elif type(a) is float:
+        elif isinstance(a, float):
             if math.isinf(a):
                 fr.set_error("FBOUNDS")
             fr.data_push(a + 1)
@@ -93,13 +93,13 @@ class InstMinus(Instruction):
         b = fr.data_pop(int, float, si.DBRef)
         a = fr.data_pop(int, float, si.DBRef)
         makedbref = False
-        if type(a) is si.DBRef:
-            if type(b) is float:
+        if isinstance(a, si.DBRef):
+            if isinstance(b, float):
                 raise MufRuntimeError("Cannot add float to dbref.")
             makedbref = True
             a = a.value
-        if type(b) is si.DBRef:
-            if type(a) is float:
+        if isinstance(b, si.DBRef):
+            if isinstance(a, float):
                 raise MufRuntimeError("Cannot add float to dbref.")
             makedbref = True
             b = b.value
@@ -121,17 +121,17 @@ class InstMinus(Instruction):
 class InstMinusMinus(Instruction):
     def execute(self, fr):
         a = fr.data_pop(int, float, si.DBRef, si.FuncVar, si.GlobalVar)
-        if type(a) is si.FuncVar:
+        if isinstance(a, si.FuncVar):
             val = fr.funcvar_get(a) - 1
             fr.funcvar_set(a, val)
-        elif type(a) is si.GlobalVar:
+        elif isinstance(a, si.GlobalVar):
             val = fr.globalvar_get(a) - 1
             fr.globalvar_set(a, val)
-        elif type(a) is si.DBRef:
+        elif isinstance(a, si.DBRef):
             fr.data_push(si.DBRef(a.value + 1))
-        elif type(a) is int:
+        elif isinstance(a, int):
             fr.data_push(a - 1)
-        elif type(a) is float:
+        elif isinstance(a, float):
             if math.isinf(a):
                 fr.set_error("FBOUNDS")
             fr.data_push(a - 1)

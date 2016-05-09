@@ -378,7 +378,7 @@ class InstClear(Instruction):
 class InstClearError(Instruction):
     def execute(self, fr):
         x = fr.data_pop(int, str)
-        if type(x) is int:
+        if isinstance(x, int):
             x = fr.fp_error_names[x]
         fr.clear_error(x)
 
@@ -419,7 +419,7 @@ class InstErrorNum(Instruction):
 class InstErrorStr(Instruction):
     def execute(self, fr):
         x = fr.data_pop(int, str)
-        if type(x) is str:
+        if isinstance(x, str):
             if x in fr.fp_error_names:
                 x = fr.fp_error_names.index(x)
             else:
@@ -438,7 +438,7 @@ class InstErrorStr(Instruction):
 class InstIsSetP(Instruction):
     def execute(self, fr):
         x = fr.data_pop(int, str)
-        if type(x) is int:
+        if isinstance(x, int):
             x = fr.fp_error_names[x]
         fr.data_push(1 if fr.has_error(x) else 0)
 
@@ -447,7 +447,7 @@ class InstIsSetP(Instruction):
 class InstSetError(Instruction):
     def execute(self, fr):
         x = fr.data_pop(int, str)
-        if type(x) is int:
+        if isinstance(x, int):
             x = fr.fp_error_names[x]
         fr.set_error(x)
 
