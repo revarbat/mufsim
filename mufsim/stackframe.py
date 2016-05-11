@@ -3,6 +3,7 @@ import copy
 
 import mufsim.stackitems as si
 import mufsim.gamedb as db
+from mufsim.compiler import MufCompiler
 from mufsim.logger import log, warnlog, errlog
 from mufsim.errors import MufRuntimeError, MufBreakExecution
 from mufsim.callframe import MufCallFrame
@@ -84,8 +85,8 @@ class MufStackFrame(object):
         if prog < 0:
             addr = self.curr_addr()
             prog = addr.prog
-        comp = db.getobj(prog).compiled
-        return comp
+        progobj = db.getobj(prog)
+        return progobj.compiled
 
     def set_trace(self, on_off):
         self.trace = on_off
@@ -409,6 +410,14 @@ class MufStackFrame(object):
     ###############################################################
     def get_programs(self):
         return db.get_all_programs()
+
+    def program_compile(self, prog):
+        progobj = db.getobj(prog)
+        progobj.compiled = None
+        res = False
+        if progobj.sources:
+            res = MufCompiler().compile_source(progobj.dbref)
+        return res
 
     def program_tokens(self, prog):
         comp = self.get_compiled(prog)

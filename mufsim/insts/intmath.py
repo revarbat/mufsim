@@ -167,7 +167,10 @@ class InstDivide(Instruction):
             fr.set_error("FBOUNDS")
         out = 0
         try:
-            out = a / b
+            if isinstance(a, int) and isinstance(b, int):
+                out = a // b
+            else:
+                out = a / b
             if math.isnan(out):
                 fr.set_error("NAN")
         except ZeroDivisionError:

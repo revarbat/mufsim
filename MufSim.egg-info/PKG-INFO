@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: MufSim
-Version: 0.7.9
+Version: 0.8.0
 Summary: Muf language simulator and debugger.
 Home-page: https://github.com/revarbat/mufsim
 Author: Revar Desmera
@@ -9,7 +9,7 @@ License: BSD 2-clause
 Download-URL: https://github.com/revarbat/mufsim/archive/master.zip
 Description: An offline tokenizer, interpreter, and debugger for MUF, a stack-based
         forth-alike MUCK extension language.
-Keywords: muf debugger development
+Keywords: muf muv debugger development
 Platform: UNKNOWN
 Classifier: Development Status :: 4 - Beta
 Classifier: Environment :: Console

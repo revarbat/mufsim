@@ -9,6 +9,7 @@ mufconsole/__init__.py
 mufconsole/mufconsole.py
 mufgui/__init__.py
 mufgui/mufgui.py
+mufgui/tooltip.py
 mufsim/__init__.py
 mufsim/callframe.py
 mufsim/compiled.py

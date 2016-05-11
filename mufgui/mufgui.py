@@ -19,6 +19,7 @@ except ImportError:  # Python 3
     from tkinter.scrolledtext import ScrolledText
     from tkinter.font import Font
 
+from mufgui.tooltip import CreateToolTip
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 from mufsim.logger import log, warnlog, errlog, set_output_command
@@ -26,6 +27,7 @@ from mufsim.compiler import MufCompiler
 from mufsim.stackframe import MufStackFrame
 
 mufsim_version = None
+menu_item_handlers = []
 
 
 class ReadOnlyText(ScrolledText):
@@ -59,6 +61,42 @@ class ListDisplay(ReadOnlyText):
         )
 
 
+# Decorator declarations
+def menu_item(menu_name, label, plats=["Windows", "Darwin", "Linux"]):
+    def func_decorator(func):
+        if platform.system() in plats:
+            func.menu_name = menu_name
+            func.menu_label = label
+            global menu_item_handlers
+            menu_item_handlers.append(func.__name__)
+        return func
+    return func_decorator
+
+
+def separator(func):
+    func.separator = True
+    return func
+
+
+def accels(mac=None, win=None, lin=None):
+    def func_decorator(func):
+        if platform.system() == "Darwin":
+            func.accelerator = mac
+        if platform.system() == "Windows":
+            func.accelerator = win
+        if platform.system() == "Linux":
+            func.accelerator = lin
+        return func
+    return func_decorator
+
+
+def enable_test(tst):
+    def func_decorator(func):
+        func.enable_test = tst
+        return func
+    return func_decorator
+
+
 class MufGui(object):
     def __init__(self):
         self.fr = None
@@ -66,10 +104,14 @@ class MufGui(object):
         self.call_level = 0
         self.prev_prog = -1
         self.setup_gui()
+        set_output_command(self.log_to_console)
+        if len(sys.argv) > 1:
+            self.defer(self.handle_open_files, sys.argv[1])
 
     def setup_gui(self):
-        root = Tk()
-        self.root = root
+        self.root = Tk()
+        self.root.title("MUF Debugger")
+        self.root.protocol("WM_DELETE_WINDOW", self.filemenu_quit)
 
         self.current_program = StringVar()
         self.current_program.set("- Load a Program -")
@@ -78,177 +120,11 @@ class MufGui(object):
         self.dotrace = StringVar()
         self.dotrace.set('0')
 
-        root.title("MUF Debugger")
-        root.protocol("WM_DELETE_WINDOW", self.destroy)
-        root.option_add("*Menu.foreground", "black")
-        root.option_add("*Menu.disabledForeground", "#bbb")
-        root.option_add("*Panedwindow.sashWidth", "6")
-        root.option_add("*Panedwindow.sashRelief", "raised")
-        root.option_add("*Panedwindow.borderWidth", "1")
-        root.option_add("*Background", "gray75")
-        root.option_add("*Button.highlightBackground", "gray75")
-        root.option_add("*Text.background", "white")
-        root.option_add("*Text.highlightBackground", "white")
-        root.option_add("*Entry.background", "white")
-        root.option_add("*Entry.highlightBackground", "gray75")
-        if platform.system() == 'Windows':
-            root.option_add("*Menubutton.relief", "raised")
-            monospace = Font(family="Menlo", size=10)
-            monospace_b = Font(family="Menlo", size=10, weight="bold")
-            seriffont = Font(family="Times", size=10)
-            sansserif = Font(family="Arial", size=10)
-            sansserif_i = Font(family="Arial", size=10, slant="italic")
-        if platform.system() == 'Darwin':
-            monospace = Font(family="Monaco", size=12)
-            monospace_b = Font(family="Monaco", size=12, weight="bold")
-            seriffont = Font(family="Times", size=12)
-            sansserif = Font(family="Tahoma", size=12)
-            sansserif_i = Font(family="Tahoma", size=12, slant="italic")
-        else:
-            monospace = Font(family="Courier", size=10)
-            monospace_b = Font(family="Courier", size=10, weight="bold")
-            seriffont = Font(family="Times", size=10)
-            sansserif = Font(family="Helvetica", size=10)
-            sansserif_i = Font(family="Helvetica", size=10, slant="italic")
-        root.option_add("*Text.font", sansserif)
+        self.setup_gui_fonts()
+        self.setup_gui_optiondb()
+        self.root['menu'] = self.setup_gui_menus()
 
-        self.menubar = Menu(self.root, name="mb", tearoff=0)
-
-        cmd = "Control"
-        if platform.system() == 'Darwin':
-            cmd = "Command"
-        self.filemenu = Menu(self.menubar, tearoff=0)
-        self.filemenu.add_command(
-            label="Load Program...",
-            accel="%s-O" % cmd,
-            command=self.handle_load_program,
-        )
-        self.filemenu.add_command(
-            label="Load Library...",
-            accel="%s-L" % cmd,
-            command=self.handle_load_library,
-        )
-        if platform.system() == 'Windows':
-            self.filemenu.add_separator()
-            self.filemenu.add_command(
-                label="Exit",
-                accel="Alt-F4",
-                command=self.destroy,
-            )
-        elif platform.system() == 'Linux':
-            self.filemenu.add_separator()
-            self.filemenu.add_command(
-                label="Quit",
-                accel="Control-Q",
-                command=self.destroy,
-            )
-        self.menubar.add_cascade(label="File", menu=self.filemenu)
-
-        self.editmenu = Menu(self.menubar, tearoff=0)
-        self.editmenu.add_command(
-            label="Cut",
-            accel="%s-X" % cmd,
-            command="event generate [focus] <<Cut>>"
-        )
-        self.editmenu.add_command(
-            label="Copy",
-            accel="%s-C" % cmd,
-            command="event generate [focus] <<Copy>>"
-        )
-        self.editmenu.add_command(
-            label="Paste",
-            accel="%s-V" % cmd,
-            command="event generate [focus] <<Paste>>"
-        )
-        self.editmenu.add_command(
-            label="Clear",
-            command="event generate [focus] <<Clear>>"
-        )
-        self.menubar.add_cascade(label="Edit", menu=self.editmenu)
-
-        self.dbugmenu = Menu(self.menubar, tearoff=0)
-        if platform.system() == 'Darwin':
-            self.dbugmenu.add_command(
-                label="Run...",
-                accel="Control-r",
-                state=DISABLED,
-                command=self.handle_run,
-            )
-            self.dbugmenu.add_command(
-                label="Step Instruction",
-                accel="Control-i",
-                state=DISABLED,
-                command=self.handle_step_inst,
-            )
-            self.dbugmenu.add_command(
-                label="Step Line",
-                accel="Control-s",
-                state=DISABLED,
-                command=self.handle_step_line,
-            )
-            self.dbugmenu.add_command(
-                label="Next Line",
-                accel="Control-n",
-                state=DISABLED,
-                command=self.handle_next_line,
-            )
-            self.dbugmenu.add_command(
-                label="Finish Function",
-                accel="Control-f",
-                state=DISABLED,
-                command=self.handle_finish,
-            )
-            self.dbugmenu.add_command(
-                label="Continue",
-                accel="Control-c",
-                state=DISABLED,
-                command=self.handle_continue,
-            )
-        else:
-            self.dbugmenu.add_command(
-                label="Run...",
-                accel="Control-Shift-R",
-                state=DISABLED,
-                command=self.handle_run,
-            )
-            self.dbugmenu.add_command(
-                label="Step Instruction",
-                accel="Control-Shift-I",
-                state=DISABLED,
-                command=self.handle_step_inst,
-            )
-            self.dbugmenu.add_command(
-                label="Step Line",
-                accel="Control-Shift-S",
-                state=DISABLED,
-                command=self.handle_step_line,
-            )
-            self.dbugmenu.add_command(
-                label="Next Line",
-                accel="Control-Shift-N",
-                state=DISABLED,
-                command=self.handle_next_line,
-            )
-            self.dbugmenu.add_command(
-                label="Finish Function",
-                accel="Control-Shift-F",
-                state=DISABLED,
-                command=self.handle_finish,
-            )
-            self.dbugmenu.add_command(
-                label="Continue",
-                accel="Control-Shift-C",
-                state=DISABLED,
-                command=self.handle_continue,
-            )
-        self.menubar.add_cascade(label="Debug", menu=self.dbugmenu)
-
-        self.helpmenu = Menu(self.menubar, name="help", tearoff=0)
-        self.menubar.add_cascade(label="Help", menu=self.helpmenu)
-
-        self.root['menu'] = self.menubar
-
-        panes1 = PanedWindow(root)
+        panes1 = PanedWindow(self.root)
         panes1.pack(fill=BOTH, expand=1)
 
         panes2 = PanedWindow(panes1, orient=VERTICAL)
@@ -256,39 +132,207 @@ class MufGui(object):
         panes1.add(panes2, minsize=150, width=250)
         panes1.add(panes3, minsize=300)
 
-        datafr = LabelFrame(panes2, text="Data Stack", relief="flat")
+        panes2.add(self.setup_gui_data_frame(panes2), minsize=100, height=200)
+        panes2.add(self.setup_gui_call_frame(panes2), minsize=100, height=200)
+        panes2.add(self.setup_gui_vars_frame(panes2), minsize=100, height=200)
+
+        panes3.add(self.setup_gui_source_frame(panes3), minsize=100, height=350)
+        panes3.add(self.setup_gui_tokens_frame(panes3), minsize=100, height=150)
+        panes3.add(self.setup_gui_console_frame(panes3), minsize=50, height=100)
+
+        self.gui_raise_window()
+        self.update_displays()
+
+    def setup_gui_fonts(self):
+        if platform.system() == 'Windows':
+            self.monospace = Font(family="Menlo", size=10)
+            self.monospace_b = Font(family="Menlo", size=10, weight="bold")
+            self.seriffont = Font(family="Times", size=10)
+            self.sansserif = Font(family="Arial", size=10)
+            self.sansserif_i = Font(family="Arial", size=10, slant="italic")
+        if platform.system() == 'Darwin':
+            self.monospace = Font(family="Monaco", size=12)
+            self.monospace_b = Font(family="Monaco", size=12, weight="bold")
+            self.seriffont = Font(family="Times", size=12)
+            self.sansserif = Font(family="Tahoma", size=12)
+            self.sansserif_i = Font(family="Tahoma", size=12, slant="italic")
+        else:
+            self.monospace = Font(family="Courier", size=10)
+            self.monospace_b = Font(family="Courier", size=10, weight="bold")
+            self.seriffont = Font(family="Times", size=10)
+            self.sansserif = Font(family="Helvetica", size=10)
+            self.sansserif_i = Font(family="Helvetica", size=10, slant="italic")
+
+    def setup_gui_optiondb(self):
+        root = self.root
+        root.option_add("*Background", "gray75")
+        root.option_add("*Button.highlightBackground", "gray75")
+        root.option_add("*Entry.background", "white")
+        root.option_add("*Entry.highlightBackground", "gray75")
+        root.option_add("*Menu.disabledForeground", "#bbb")
+        root.option_add("*Menu.foreground", "black")
+        root.option_add("*Panedwindow.borderWidth", "1")
+        root.option_add("*Panedwindow.sashRelief", "raised")
+        root.option_add("*Panedwindow.sashWidth", "6")
+        root.option_add("*Text.background", "white")
+        root.option_add("*Text.highlightBackground", "white")
+        root.option_add("*Text.font", self.sansserif)
+        if platform.system() == 'Windows':
+            root.option_add("*Menubutton.relief", "raised")
+
+    def setup_gui_menus(self):
+        self.menubar = Menu(self.root, name="mb", tearoff=0)
+
+        if platform.system() == 'Darwin':
+            # self.root.createcommand(
+            #     '::tk::mac::ShowPreferences',
+            #     self.appmenu_prefs_dlog
+            # )
+            self.root.createcommand(
+                'tkAboutDialog',
+                self.handle_about_dlog
+            )
+            self.root.createcommand(
+                "::tk::mac::OpenDocument",
+                self.handle_open_files
+            )
+
+        # Make menus from methods marked with @menu_item decorator.
+        # Will appear in menus in order declared.
+        menu_names = []
+        menus = {}
+        global menu_item_handlers
+        for hndlr_name in menu_item_handlers:
+            hndlr = getattr(self, hndlr_name)
+            if hndlr.menu_name not in menu_names:
+                name = hndlr.menu_name
+                menu_names.append(name)
+                menus[hndlr.menu_name] = Menu(
+                    self.menubar,
+                    tearoff=0,
+                    postcommand=lambda x=name: self.gui_menu_enabler(x),
+                )
+            menu = menus[hndlr.menu_name]
+            if hasattr(hndlr, 'separator') and hndlr.separator:
+                menu.add_separator()
+            extraopts = {}
+            if hasattr(hndlr, 'accelerator') and hndlr.accelerator:
+                accel = hndlr.accelerator
+                # Standardize to proper binding format.
+                accel.replace('Ctrl', 'Control')
+                accel.replace('Cmd', 'Command')
+                accel.replace('Opt', 'Option')
+                accel.replace('+', '-')
+                if '-' in accel:
+                    mods, key = accel.rsplit('-', 1)
+                    mods += '-'
+                else:
+                    mods = ''
+                    key = accel
+                # Tk is odd about how it handles Caps Lock.
+                # <a> triggers only if CapsLock and Shift are off.
+                # <A> triggers only if CapsLock or Shift is on.
+                # <Shift-a> never ever triggers for ANY key combination.
+                # <Shift-A> triggers only when Shift is pressed.
+                # <Shift-A> has priority over <Command-A>
+                # May as well bind for both upper and lowercase key.
+                key_u = key.upper() if len(key) == 1 else key
+                self.root.bind(
+                    "<%s%s>" % (mods, key_u),
+                    self.defer_evt(hndlr)  # Prevents some window deadlocks
+                )
+                key_l = key.lower() if len(key) == 1 else key
+                self.root.bind(
+                    "<%s%s>" % (mods, key_l),
+                    self.defer_evt(hndlr)  # Prevents some window deadlocks
+                )
+                if platform.system() == "Windows":
+                    # Standardize menu accelerator for Windows
+                    menuaccel = "%s%s" % (mods, key.upper()),
+                    menuaccel.replace('Control', 'CTRL')
+                    menuaccel.replace('Alt', 'ALT')
+                    menuaccel.replace('Shift', 'SHIFT')
+                    menuaccel.replace('-', '+')
+                else:
+                    # Always show uppercase letter in menu accelerator.
+                    menuaccel = "%s%s" % (mods, key_u),
+                extraopts['accel'] = menuaccel
+            menu.add_command(
+                label=hndlr.menu_label,
+                command=self.defer(hndlr),  # Prevents some window deadlocks
+                **extraopts
+            )
+        for menu_name in menu_names:
+            self.menubar.add_cascade(label=menu_name, menu=menus[menu_name])
+        if platform.system() == 'Darwin':
+            self.helpmenu = Menu(self.menubar, name="help", tearoff=0)
+            # self.root.createcommand(
+            #     'tk::mac::ShowHelp', self.helpmenu_help_dlog)
+            self.menubar.add_cascade(label="Help", menu=self.helpmenu)
+        self.menus = menus
+        return self.menubar
+
+    def gui_menu_enabler(self, menu_name):
+        menu = self.menus[menu_name]
+        global menu_item_handlers
+        for hndlr_name in menu_item_handlers:
+            hndlr = getattr(self, hndlr_name)
+            if menu_name == hndlr.menu_name:
+                if hasattr(hndlr, 'enable_test') and hndlr.enable_test:
+                    test = getattr(self, hndlr.enable_test)
+                    state = "disabled"
+                    color = "#bbb"
+                    if test():
+                        state = "normal"
+                        color = "black"
+                    idx = menu.index(hndlr.menu_label)
+                    menu.entryconfig(idx, state=state)
+                    menu.entryconfig(idx, foreground=color)
+
+    def setup_gui_data_frame(self, master):
+        datafr = LabelFrame(master, text="Data Stack", relief="flat")
         self.data_disp = ListDisplay(datafr)
         self.data_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.data_disp.tag_config(
-            'empty', foreground="gray50", font=sansserif_i)
+            'empty', foreground="gray50", font=self.sansserif_i)
         self.data_disp.tag_config(
             'gutter', background="gray75",
-            foreground="black", font=monospace,
+            foreground="black", font=self.monospace,
         )
         self.data_disp.tag_bind(
             'sitem', '<Double-Button-1>', self.handle_stack_item_dblclick)
+        CreateToolTip(
+            self.data_disp, 'Double-Click on stack item to print value.')
+        return datafr
 
-        callfr = LabelFrame(panes2, text="Call Stack", relief="flat")
+    def setup_gui_call_frame(self, master):
+        callfr = LabelFrame(master, text="Call Stack", relief="flat")
         self.call_disp = ListDisplay(callfr)
         self.call_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.call_disp.tag_config(
-            'empty', foreground="gray50", font=sansserif_i)
+            'empty', foreground="gray50", font=self.sansserif_i)
         self.call_disp.tag_config(
             'gutter', background="gray75",
-            foreground="black", font=monospace,
+            foreground="black", font=self.monospace,
         )
         self.call_disp.tag_bind(
             'callfr', '<Button-1>', self.handle_call_stack_click)
         self.call_disp.tag_config(
             'currline', background="#77f", foreground="white")
+        CreateToolTip(
+            self.call_disp,
+            'Click on call to view variables and source for that call level.'
+        )
+        return callfr
 
-        varsfr = LabelFrame(panes2, text="Variables", relief="flat")
+    def setup_gui_vars_frame(self, master):
+        varsfr = LabelFrame(master, text="Variables", relief="flat")
         self.vars_disp = ListDisplay(varsfr)
         self.vars_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.vars_disp.tag_config(
-            'gvar', foreground="#00f", font=seriffont)
+            'gvar', foreground="#00f", font=self.seriffont)
         self.vars_disp.tag_config(
-            'fvar', foreground="#090", font=seriffont)
+            'fvar', foreground="#090", font=self.seriffont)
         self.vars_disp.tag_config('gname', foreground="black")
         self.vars_disp.tag_config('fname', foreground="black")
         self.vars_disp.tag_config('eq', foreground="#777")
@@ -302,14 +346,12 @@ class MufGui(object):
             'gval', '<Double-Button-1>', self.handle_vars_gname_dblclick)
         self.vars_disp.tag_bind(
             'fval', '<Double-Button-1>', self.handle_vars_fname_dblclick)
+        CreateToolTip(
+            self.vars_disp, 'Double-Click on variable to print value.')
+        return varsfr
 
-        panes2.add(datafr, minsize=100, height=200)
-        panes2.add(callfr, minsize=100, height=200)
-        panes2.add(varsfr, minsize=100, height=200)
-
-        srcfr = Frame(panes3)
-
-        srcselfr = Frame(srcfr)
+    def setup_gui_source_selectors_frame(self, master):
+        srcselfr = Frame(master)
         self.src_lbl = Label(srcselfr, text="Prog")
         self.src_sel = Menubutton(
             srcselfr, width=20,
@@ -328,41 +370,58 @@ class MufGui(object):
         self.src_sel.pack(side=LEFT, fill=NONE, expand=0)
         self.fun_lbl.pack(side=LEFT, fill=NONE, expand=0)
         self.fun_sel.pack(side=LEFT, fill=NONE, expand=0)
+        return srcselfr
 
-        self.srcs_disp = ListDisplay(srcfr, font=monospace)
-        self.srcs_disp.tag_config(
-            'breakpt', background="#f77", foreground="black")
+    def setup_gui_source_display_frame(self, master):
+        srcdispfr = Frame(master)
+        self.srcs_disp = ListDisplay(srcdispfr, font=self.monospace)
         self.srcs_disp.tag_config(
             'gutter', background="gray75", foreground="black")
-        self.srcs_disp.tag_raise('breakpt', aboveThis='gutter')
         self.srcs_disp.tag_bind(
             'gutter', '<Button-1>', self.handle_sources_breakpoint_toggle)
         self.srcs_disp.tag_config(
             'currline', background="#77f", foreground="white")
-
-        srcselfr.pack(side=TOP, fill=X, expand=0)
+        self.srcs_disp.tag_config(
+            'breakpt', background="#f77", foreground="black")
         self.srcs_disp.pack(side=BOTTOM, fill=BOTH, expand=1)
+        CreateToolTip(
+            self.srcs_disp, 'Click on line number to toggle breakpoint.')
+        return srcdispfr
 
-        tokfr = LabelFrame(panes3, text="Tokens", relief="flat")
-        self.tokn_disp = ListDisplay(tokfr, font=monospace)
+    def setup_gui_source_frame(self, master):
+        srcfr = Frame(master)
+        srcselfr = self.setup_gui_source_selectors_frame(srcfr)
+        srcdispfr = self.setup_gui_source_display_frame(srcfr)
+        srcselfr.pack(side=TOP, fill=X, expand=0)
+        srcdispfr.pack(side=BOTTOM, fill=BOTH, expand=1)
+        return srcfr
+
+    def setup_gui_tokens_display_frame(self, master):
+        tokfr = LabelFrame(master, text="Tokens", relief="flat")
+        self.tokn_disp = ListDisplay(tokfr, font=self.monospace)
         self.tokn_disp.tag_config(
             'gutter', background="gray75", foreground="black")
         self.tokn_disp.tag_config(
-            'func', foreground="#00c", font=monospace_b)
+            'func', foreground="#00c", font=self.monospace_b)
+        self.tokn_disp.tag_config(
+            'currline', background="#77f", foreground="white")
+        self.tokn_disp.pack(side=TOP, fill=BOTH, expand=1)
+        return tokfr
 
-        btnsfr = Frame(tokfr)
+    def setup_gui_debug_buttons_frame(self, master):
+        btnsfr = Frame(master)
         self.run_btn = Button(
-            btnsfr, text="Run", command=self.handle_run)
+            btnsfr, text="Run", command=self.debugmenu_run)
         self.stepi_btn = Button(
-            btnsfr, text="Step Inst", command=self.handle_step_inst)
+            btnsfr, text="Inst", command=self.debugmenu_step_inst)
         self.stepl_btn = Button(
-            btnsfr, text="Step Line", command=self.handle_step_line)
+            btnsfr, text="Step", command=self.debugmenu_step_line)
         self.nextl_btn = Button(
-            btnsfr, text="Next Line", command=self.handle_next_line)
+            btnsfr, text="Next", command=self.debugmenu_next_line)
         self.finish_btn = Button(
-            btnsfr, text="Finish", command=self.handle_finish)
+            btnsfr, text="Finish", command=self.debugmenu_finish)
         self.cont_btn = Button(
-            btnsfr, text="Continue", command=self.handle_continue)
+            btnsfr, text="Cont", command=self.debugmenu_continue)
         self.trace_chk = Checkbutton(
             btnsfr, text="Trace",
             variable=self.dotrace,
@@ -377,93 +436,188 @@ class MufGui(object):
         self.finish_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.cont_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.trace_chk.pack(side=LEFT, fill=NONE, expand=0)
+        CreateToolTip(self.run_btn, 'Run program from the start.')
+        CreateToolTip(self.stepi_btn, 'Execute one instruction.')
+        CreateToolTip(self.stepl_btn, 'Step one line, following calls.')
+        CreateToolTip(self.nextl_btn, 'Next line, stepping over calls.')
+        CreateToolTip(self.finish_btn, 'Finish the current function.')
+        CreateToolTip(self.cont_btn, 'Continue execution.')
+        CreateToolTip(self.trace_chk, 'Show stack trace for each instruction.')
+        return btnsfr
 
+    def setup_gui_tokens_frame(self, master):
+        tokfr = Frame(master)
+        tokdispfr = self.setup_gui_tokens_display_frame(tokfr)
+        btnsfr = self.setup_gui_debug_buttons_frame(tokfr)
         btnsfr.pack(side=BOTTOM, fill=X, expand=0)
-        self.tokn_disp.pack(side=BOTTOM, fill=BOTH, expand=1)
-        self.tokn_disp.tag_config(
-            'currline', background="#77f", foreground="white")
+        tokdispfr.pack(side=BOTTOM, fill=BOTH, expand=1)
+        return tokfr
 
-        consfr = Frame(panes3)
-        self.cons_disp = ListDisplay(consfr, height=1, font=monospace)
-        self.cons_in = Entry(consfr, relief=SUNKEN)
-        self.cons_disp.pack(side=TOP, fill=BOTH, expand=1)
-        self.cons_in.pack(side=TOP, fill=X, expand=0)
+    def setup_gui_console_frame(self, master):
+        consfr = Frame(master)
+        self.cons_disp = ListDisplay(consfr, height=1, font=self.monospace)
         self.cons_disp.tag_config('good', foreground="#0a0")
         self.cons_disp.tag_config('trace', foreground="#777")
         self.cons_disp.tag_config('warning', foreground="#880")
         self.cons_disp.tag_config('error', foreground="#c00")
+        self.cons_in = Entry(consfr, relief=SUNKEN)
+        self.cons_disp.pack(side=TOP, fill=BOTH, expand=1)
+        self.cons_in.pack(side=TOP, fill=X, expand=0)
+        return consfr
 
-        panes3.add(srcfr, minsize=100, height=350)
-        panes3.add(tokfr, minsize=100, height=150)
-        panes3.add(consfr, minsize=50, height=100)
+    def allow_run(self):
+        return self.fr is not None
 
-        set_output_command(self.log_to_console)
+    def allow_debug(self):
+        return self.fr and self.fr.get_call_stack()
 
-        try:
-            root.tk.call('console', 'hide')
-        except TclError:
-            # Some versions of the Tk framework don't have a console object
-            pass
-
-        if platform.system() == 'Darwin':
-            # root.createcommand(
-            #     '::tk::mac::ShowPreferences', self.handle_prefs_dlog)
-            root.createcommand('tk::mac::ShowHelp', self.handle_help_dlog)
-            root.createcommand('tkAboutDialog', self.handle_about_dlog)
-            root.createcommand(
-                "::tk::mac::OpenDocument", self.handle_open_files)
-            if "MufSim.app/Contents/Resources" in os.getcwd():
-                appname = "MufSim"
-            else:
-                appname = "Python"
-            ascript = (
-                'tell app "Finder" to set frontmost of process "%s" to true' %
-                appname
-            )
-            os.system("/usr/bin/osascript -e '%s' " % ascript)
-        else:
-            root.lift()
-            root.call('wm', 'attributes', '.', '-topmost', True)
-            root.after_idle(
-                root.call, 'wm', 'attributes', '.', '-topmost', False)
-
-        if platform.system() == 'Darwin':
-            self.root.bind_all('<Command-Key-o>', self.handle_load_program)
-            self.root.bind_all('<Command-Key-l>', self.handle_load_library)
-            self.root.bind_all('<Command-Key-x>', "event generate [focus] <<Cut>>")
-            self.root.bind_all('<Command-Key-c>', "event generate [focus] <<Copy>>")
-            self.root.bind_all('<Command-Key-v>', "event generate [focus] <<Paste>>")
-            self.root.bind_all('<Control-Key-r>', lambda e: root.after(100, self.handle_run))
-            self.root.bind_all('<Control-Key-i>', self.handle_step_inst)
-            self.root.bind_all('<Control-Key-s>', self.handle_step_line)
-            self.root.bind_all('<Control-Key-n>', self.handle_next_line)
-            self.root.bind_all('<Control-Key-f>', self.handle_finish)
-            self.root.bind_all('<Control-Key-c>', self.handle_continue)
-        else:
-            self.root.bind_all('<Control-Key-o>', self.handle_load_program)
-            self.root.bind_all('<Control-Key-l>', self.handle_load_library)
-            self.root.bind_all('<Control-Key-x>', "event generate [focus] <<Cut>>")
-            self.root.bind_all('<Control-Key-c>', "event generate [focus] <<Copy>>")
-            self.root.bind_all('<Control-Key-v>', "event generate [focus] <<Paste>>")
-            self.root.bind_all('<Control-Key-r>', lambda e: root.after(100, self.handle_run))
-            self.root.bind_all('<Shift-Control-Key-I>', self.handle_step_inst)
-            self.root.bind_all('<Shift-Control-Key-S>', self.handle_step_line)
-            self.root.bind_all('<Shift-Control-Key-N>', self.handle_next_line)
-            self.root.bind_all('<Shift-Control-Key-F>', self.handle_finish)
-            self.root.bind_all('<Shift-Control-Key-C>', self.handle_continue)
-
-        self.update_displays()
-
-        if len(sys.argv) > 1:
-            root.after(100, self.handle_open_files, sys.argv[1])
-
-    def handle_help_dlog(self):
-        # TODO: implement!
-        print("Display help dlog.")
-
-    def handle_prefs_dlog(self):
+    def appmenu_prefs_dlog(self):
         # TODO: implement!
         print("Display preferences dlog.")
+
+    @menu_item("File", "Open Program...")
+    @accels(mac="Command-o", win="Control-o", lin="Control-o")
+    def filemenu_load_program(self, event=None):
+        extras = {}
+        if platform.system() == 'Darwin':
+            extras = dict(
+                message="Select a source file to load...",
+            )
+        filename = askopenfilename(
+            parent=self.root,
+            title="Load Program",
+            defaultextension=".muf",
+            filetypes=[
+                ('all files', '.*'),
+                ('MUF files', '.muf'),
+                ('MUF files', '.m'),
+                ('MUV files', '.muv'),
+            ],
+            **extras
+        )
+        if not filename:
+            return
+        self.load_program_from_file(filename)
+
+    @menu_item("File", "Open Library...")
+    @accels(mac="Command-l", win="Control-l", lin="Control-l")
+    def filemenu_load_library(self, event=None):
+        extras = {}
+        if platform.system() == 'Darwin':
+            extras = dict(
+                message="Select a library file to load...",
+            )
+        filename = askopenfilename(
+            parent=self.root,
+            title="Load Library",
+            defaultextension=".muf",
+            filetypes=[
+                ('all files', '.*'),
+                ('MUF files', '.muf'),
+                ('MUF files', '.m'),
+                ('MUV files', '.muv'),
+            ],
+            **extras
+        )
+        if not filename:
+            return
+        regname = os.path.basename(filename)
+        if regname.endswith('.muv') or regname.endswith('.muf'):
+            regname = regname[:-4]
+        regname = askstring(
+            "Library Name",
+            "What should the library be registered as?",
+            initialvalue=regname,
+            parent=self.root,
+        )
+        if not regname:
+            return
+        self.load_program_from_file(filename, regname=regname)
+
+    @separator
+    @menu_item("File", "Exit", plats=["Windows"])
+    @menu_item("File", "Quit", plats=["Linux"])
+    @accels(win="Alt-F4", lin="Control-Q")
+    def filemenu_quit(self):
+        try:
+            self.root.destroy()
+        except:
+            pass
+
+    @menu_item("Edit", "Cut")
+    @accels(mac="Command-X", win="Control-X", lin="Control-X")
+    def editmenu_cut(self):
+        self.gen_foc_ev("Cut"),
+
+    @menu_item("Edit", "Copy")
+    @accels(mac="Command-C", win="Control-C", lin="Control-C")
+    def editmenu_copy(self):
+        self.gen_foc_ev("Copy"),
+
+    @menu_item("Edit", "Paste")
+    @accels(mac="Command-V", win="Control-V", lin="Control-V")
+    def editmenu_paste(self):
+        self.gen_foc_ev("Paste"),
+
+    @separator
+    @menu_item("Edit", "Clear")
+    @accels(mac="Delete", win="Delete", lin="Delete")
+    def editmenu_clear(self):
+        self.gen_foc_ev("Clear"),
+
+    @menu_item("Debug", "Run...")
+    @accels(mac="Control-R", win="Control-Shift-R", lin="Control-Shift-R")
+    @enable_test('allow_run')
+    def debugmenu_run(self, event=None):
+        command = askstring(
+            "Run program",
+            "What argument string should the program be run with?",
+            initialvalue="",
+            parent=self.root,
+        )
+        if command is None:
+            return
+        self.reset_execution(command)
+        self.update_displays()
+
+    @menu_item("Debug", "Step Instruction")
+    @accels(mac="Control-I", win="Control-Shift-I", lin="Control-Shift-I")
+    @enable_test('allow_debug')
+    def debugmenu_step_inst(self, event=None):
+        self.fr.set_break_insts(1)
+        self.resume_execution()
+
+    @menu_item("Debug", "Step Line")
+    @accels(mac="Control-S", win="Control-Shift-S", lin="Control-Shift-S")
+    @enable_test('allow_debug')
+    def debugmenu_step_line(self, event=None):
+        self.fr.set_break_steps(1)
+        self.resume_execution()
+
+    @menu_item("Debug", "Next Line")
+    @accels(mac="Control-N", win="Control-Shift-N", lin="Control-Shift-N")
+    @enable_test('allow_debug')
+    def debugmenu_next_line(self, event=None):
+        self.fr.set_break_lines(1)
+        self.resume_execution()
+
+    @menu_item("Debug", "Finish Function")
+    @accels(mac="Control-F", win="Control-Shift-F", lin="Control-Shift-F")
+    @enable_test('allow_debug')
+    def debugmenu_finish(self, event=None):
+        self.fr.set_break_on_finish(True)
+        self.resume_execution()
+
+    @menu_item("Debug", "Continue Execution")
+    @accels(mac="Control-C", win="Control-Shift-C", lin="Control-Shift-C")
+    @enable_test('allow_debug')
+    def debugmenu_continue(self, event=None):
+        self.fr.reset_breaks()
+        self.resume_execution()
+
+    def helpmenu_help_dlog(self):
+        # TODO: implement!
+        print("Display help dlog.")
 
     def handle_about_dlog(self):
         global mufsim_version
@@ -485,14 +639,161 @@ class MufGui(object):
         for file in files:
             self.load_program_from_file(file)
 
-    def update_source_selectors(self):
+    def handle_call_stack_click(self, event):
+        w = event.widget
+        index = w.index("@%s,%s" % (event.x, event.y))
+        level = int(index.split('.')[0]) - 1
+        self.update_displays(level=level)
+
+    def handle_stack_item_dblclick(self, event):
+        w = event.widget
+        index = w.index("@%s,%s" % (event.x, event.y))
+        rng = w.tag_prevrange('gutter', index)
+        if rng and self.fr:
+            item = int(w.get(*rng))
+            val = self.fr.data_pick(item)
+            val = si.item_repr_pretty(val)
+            log("pick(%d) = %s" % (item, val))
+
+    def handle_vars_gname_dblclick(self, event):
+        w = event.widget
+        index = w.index("@%s,%s" % (event.x, event.y))
+        rng = w.tag_prevrange('gname', index + '+1c')
+        if rng and self.fr:
+            vname = w.get(*rng)
+            addr = self.fr.call_addr(self.call_level)
+            vnum = self.fr.program_global_var(addr.prog, vname)
+            val = self.fr.globalvar_get(vnum)
+            val = si.item_repr_pretty(val)
+            log("%s = %s" % (vname, val))
+
+    def handle_vars_fname_dblclick(self, event):
+        w = event.widget
+        index = w.index("@%s,%s" % (event.x, event.y))
+        rng = w.tag_prevrange('fname', index + '+1c')
+        if rng:
+            vname = w.get(*rng)
+            addr = self.fr.call_addr(self.call_level)
+            fun = self.fr.program_find_func(addr)
+            vnum = self.fr.program_func_var(addr.prog, fun, vname)
+            val = self.fr.funcvar_get(vnum, self.call_level)
+            val = si.item_repr_pretty(val)
+            log("%s = %s" % (vname, val))
+
+    def handle_source_selector_change(self):
+        prog = self._get_prog_from_selector()
+        if prog is not None:
+            self.update_sourcecode_from_program(prog)
+
+    def handle_function_selector_change(self):
+        prog = self._get_prog_from_selector()
+        if prog is None:
+            return
+        if not self.current_function.get():
+            return
+        fun = self.current_function.get()
+        addr = self.fr.program_function_addr(prog, fun)
+        line = self.fr.get_inst_line(addr)
+        self.update_sourcecode_from_program(prog)
+        self.srcs_disp.see('%d.0' % line)
+        self.tokn_disp.see('%d.0' % (addr.value + 1))
+
+    def handle_sources_breakpoint_toggle(self, event):
+        w = event.widget
+        index = w.index("@%s,%s" % (event.x, event.y))
+        line = int(index.split('.')[0])
+        prog = self._get_prog_from_selector()
+        if prog is None:
+            return
+        bpnum = self.fr.find_breakpoint(prog, line)
+        if bpnum is not None:
+            self.fr.del_breakpoint(bpnum)
+        else:
+            self.fr.add_breakpoint(prog, line)
+        self.update_sourcecode_breakpoints(prog)
+
+    def handle_reads(self):
+        self.update_displays()
+        readline = askstring(
+            "MUF Read Requested",
+            "Enter text to satisfy the READ request.",
+            initialvalue="",
+            parent=self.root,
+        )
+        if readline is None or readline == "@Q":
+            while self.fr.call_stack:
+                self.fr.call_pop()
+            while self.fr.catch_stack:
+                self.fr.catch_pop()
+            warnlog("Aborting program.")
+            return False
+        if not readline and not self.fr.read_wants_blanks:
+            warnlog("Blank line ignored.")
+            return True
+        self.fr.pc_advance(1)
+        if self.fr.wait_state == self.fr.WAIT_READ:
+            self.fr.data_push(readline)
+        elif readline == "@T":
+            warnlog("Faking time-out.")
+            self.fr.data_push("")
+            self.fr.data_push(1)
+        else:
+            self.fr.data_push(readline)
+            self.fr.data_push(0)
+        return True
+
+    def handle_trace(self, event=None):
+        if self.fr:
+            self.fr.set_trace(self.dotrace.get() != '0')
+
+    def gui_raise_window(self):
+        try:
+            self.root.tk.call('console', 'hide')
+        except TclError:
+            # Some versions of the Tk framework don't have a console object
+            pass
+        if platform.system() == 'Darwin':
+            if "MufSim.app/Contents/Resources" in os.getcwd():
+                appname = "MufSim"
+            else:
+                appname = "Python"
+            ascript = (
+                'tell app "Finder" to set frontmost of process "%s" to true' %
+                appname
+            )
+            os.system("/usr/bin/osascript -e '%s' " % ascript)
+        else:
+            self.root.lift()
+            self.root.call('wm', 'attributes', '.', '-topmost', True)
+            self.root.after_idle(
+                self.root.call, 'wm', 'attributes', '.', '-topmost', False)
+
+    def gen_foc_ev(self, virt):
+        return "event generate [focus] <<%s>>" % virt
+
+    def defer(self, *args):
+        return lambda: self.root.after(10, *args)
+
+    def defer_evt(self, cmd):
+        return lambda e: self.root.after(10, cmd)
+
+    def log_to_console(self, msgtype, msg):
+        self.cons_disp.insert(END, msg + "\n", msgtype)
+        self.cons_disp.see('end linestart')
+
+    def _get_prog_from_selector(self):
+        if self.current_program.get().startswith('- '):
+            return None
+        prog = self.current_program.get()
+        prog = prog.split('(#', 1)[1]
+        prog = prog.split(')', 1)[0]
+        return int(prog)
+
+    def update_program_selector(self):
         self.src_sel.menu.delete(0, END)
-        currprog = -1
         progs = db.get_all_programs()
         if not progs:
             self.current_program.set("- Load a Program -")
-        else:
-            currprog = progs[0].value
         for prog in progs:
             name = "%s(%s)" % (db.getobj(prog).name, prog)
             self.src_sel.menu.add_radiobutton(
@@ -504,22 +805,30 @@ class MufGui(object):
             if self.fr:
                 addr = self.fr.call_addr(self.call_level)
                 if addr and prog.value == addr.prog:
-                    currprog = prog.value
                     self.current_program.set(name)
             elif prog == progs[0]:
                 self.current_program.set(name)
         self.src_sel.menu.add_separator()
         self.src_sel.menu.add_command(
             label="Load Program...",
-            command=self.handle_load_program,
+            command=self.filemenu_load_program,
         )
         self.src_sel.menu.add_command(
             label="Load Library...",
-            command=self.handle_load_library,
+            command=self.filemenu_load_library,
         )
+
+    def update_function_selector(self):
+        prog = self._get_prog_from_selector()
+        if prog is None:
+            prog = -1
+        if self.fr:
+            addr = self.fr.call_addr(self.call_level)
+            if addr:
+                prog = addr.prog
         self.fun_sel.menu.delete(0, END)
         funs = []
-        comp = db.getobj(currprog).compiled
+        comp = db.getobj(prog).compiled
         currfun = ""
         if comp:
             funs = comp.get_functions()
@@ -641,87 +950,6 @@ class MufGui(object):
                     self.tokn_disp.insert(END, line)
             self.tokn_disp.delete('end-1c', END)
 
-    def handle_call_stack_click(self, event):
-        w = event.widget
-        index = w.index("@%s,%s" % (event.x, event.y))
-        level = int(index.split('.')[0]) - 1
-        self.update_displays(level=level)
-
-    def handle_stack_item_dblclick(self, event):
-        w = event.widget
-        index = w.index("@%s,%s" % (event.x, event.y))
-        rng = w.tag_prevrange('gutter', index)
-        if rng and self.fr:
-            item = int(w.get(*rng))
-            val = self.fr.data_pick(item)
-            val = si.item_repr_pretty(val)
-            log("pick(%d) = %s" % (item, val))
-
-    def handle_vars_gname_dblclick(self, event):
-        w = event.widget
-        index = w.index("@%s,%s" % (event.x, event.y))
-        rng = w.tag_prevrange('gname', index + '+1c')
-        if rng and self.fr:
-            vname = w.get(*rng)
-            addr = self.fr.call_addr(self.call_level)
-            vnum = self.fr.program_global_var(addr.prog, vname)
-            val = self.fr.globalvar_get(vnum)
-            val = si.item_repr_pretty(val)
-            log("%s = %s" % (vname, val))
-
-    def handle_vars_fname_dblclick(self, event):
-        w = event.widget
-        index = w.index("@%s,%s" % (event.x, event.y))
-        rng = w.tag_prevrange('fname', index + '+1c')
-        if rng:
-            vname = w.get(*rng)
-            addr = self.fr.call_addr(self.call_level)
-            fun = self.fr.program_find_func(addr)
-            vnum = self.fr.program_func_var(addr.prog, fun, vname)
-            val = self.fr.funcvar_get(vnum, self.call_level)
-            val = si.item_repr_pretty(val)
-            log("%s = %s" % (vname, val))
-
-    def _get_prog_from_selector(self):
-        if self.current_program.get().startswith('- '):
-            return None
-        prog = self.current_program.get()
-        prog = prog.split('(#', 1)[1]
-        prog = prog.split(')', 1)[0]
-        return int(prog)
-
-    def handle_source_selector_change(self):
-        prog = self._get_prog_from_selector()
-        if prog is not None:
-            self.update_sourcecode_from_program(prog)
-
-    def handle_function_selector_change(self):
-        prog = self._get_prog_from_selector()
-        if prog is None:
-            return
-        if not self.current_function.get():
-            return
-        fun = self.current_function.get()
-        addr = self.fr.program_function_addr(prog, fun)
-        line = self.fr.get_inst_line(addr)
-        self.update_sourcecode_from_program(prog)
-        self.srcs_disp.see('%d.0' % line)
-        self.tokn_disp.see('%d.0' % (addr.value + 1))
-
-    def handle_sources_breakpoint_toggle(self, event):
-        w = event.widget
-        index = w.index("@%s,%s" % (event.x, event.y))
-        line = int(index.split('.')[0])
-        prog = self._get_prog_from_selector()
-        if prog is None:
-            return
-        bpnum = self.fr.find_breakpoint(prog, line)
-        if bpnum is not None:
-            self.fr.del_breakpoint(bpnum)
-        else:
-            self.fr.add_breakpoint(prog, line)
-        self.update_sourcecode_breakpoints(prog)
-
     def update_sourcecode_breakpoints(self, prog):
         self.srcs_disp.tag_remove('breakpt', '0.0', END)
         for bpprog, line in self.fr.get_breakpoints():
@@ -767,7 +995,23 @@ class MufGui(object):
         self.tokn_disp.see('%d.0 + 1l' % (addr.value + 1))
         self.tokn_disp.see('%d.0' % (addr.value + 1))
 
+    def update_displays(self, level=-1):
+        if self.fr and level < 0:
+            level = len(self.fr.get_call_stack()) + level
+        self.call_level = level
+        self.update_buttonbar()
+        self.update_program_selector()
+        self.update_function_selector()
+        self.update_call_stack_display()
+        self.update_data_stack_display()
+        if not self.fr:
+            return
+        self.update_variables_display()
+        self.update_sourcecode_display()
+
     def update_buttonbar(self):
+        livestate = "normal" if self.allow_debug() else "disabled"
+        runstate = "normal" if self.allow_run() else "disabled"
         livebtns = [
             self.stepi_btn,
             self.stepl_btn,
@@ -775,33 +1019,9 @@ class MufGui(object):
             self.finish_btn,
             self.cont_btn,
         ]
-        livestate = "disabled"
-        if self.fr and self.fr.get_call_stack():
-            livestate = "normal"
-        runstate = "normal" if self.fr else "disabled"
         for btn in livebtns:
             btn.config(state=livestate)
         self.run_btn.config(state=runstate)
-        self.dbugmenu.entryconfig(0, state=runstate)
-        for i in range(1, 6):
-            self.dbugmenu.entryconfig(i, state=livestate)
-
-    def log_to_console(self, msgtype, msg):
-        self.cons_disp.insert(END, msg + "\n", msgtype)
-        self.cons_disp.see('end linestart')
-
-    def update_displays(self, level=-1):
-        if self.fr and level < 0:
-            level = len(self.fr.get_call_stack()) + level
-        self.call_level = level
-        self.update_buttonbar()
-        self.update_source_selectors()
-        self.update_call_stack_display()
-        self.update_data_stack_display()
-        if not self.fr:
-            return
-        self.update_variables_display()
-        self.update_sourcecode_display()
 
     def reset_execution(self, command=""):
         # db.init_object_db()
@@ -816,36 +1036,6 @@ class MufGui(object):
         self.fr.breakpoints = breakpts
         self.fr.setup(progobj, userobj, trigobj, command)
 
-    def handle_reads(self):
-        self.update_displays()
-        readline = askstring(
-            "MUF Read Requested",
-            "Enter text to satisfy the READ request.",
-            initialvalue="",
-            parent=self.root,
-        )
-        if readline is None or readline == "@Q":
-            while self.fr.call_stack:
-                self.fr.call_pop()
-            while self.fr.catch_stack:
-                self.fr.catch_pop()
-            warnlog("Aborting program.")
-            return False
-        if not readline and not self.fr.read_wants_blanks:
-            warnlog("Blank line ignored.")
-            return True
-        self.fr.pc_advance(1)
-        if self.fr.wait_state == self.fr.WAIT_READ:
-            self.fr.data_push(readline)
-        elif readline == "@T":
-            warnlog("Faking time-out.")
-            self.fr.data_push("")
-            self.fr.data_push(1)
-        else:
-            self.fr.data_push(readline)
-            self.fr.data_push(0)
-        return True
-
     def resume_execution(self):
         while True:
             self.fr.execute_code(self.call_level)
@@ -858,42 +1048,6 @@ class MufGui(object):
                 continue
             break
         self.update_displays()
-
-    def handle_step_inst(self, event=None):
-        self.fr.set_break_insts(1)
-        self.resume_execution()
-
-    def handle_step_line(self, event=None):
-        self.fr.set_break_steps(1)
-        self.resume_execution()
-
-    def handle_next_line(self, event=None):
-        self.fr.set_break_lines(1)
-        self.resume_execution()
-
-    def handle_finish(self, event=None):
-        self.fr.set_break_on_finish(True)
-        self.resume_execution()
-
-    def handle_continue(self, event=None):
-        self.fr.reset_breaks()
-        self.resume_execution()
-
-    def handle_run(self, event=None):
-        command = askstring(
-            "Run program",
-            "What argument string should the program be run with?",
-            initialvalue="",
-            parent=self.root,
-        )
-        if command is None:
-            return
-        self.reset_execution(command)
-        self.update_displays()
-
-    def handle_trace(self, event=None):
-        if self.fr:
-            self.fr.set_trace(self.dotrace.get() != '0')
 
     def process_muv(self, infile):
         tmpfile = infile
@@ -913,6 +1067,8 @@ class MufGui(object):
             cmdarr = ["muv", "-o", tmpfile, infile]
         p = Popen(cmdarr, stdout=PIPE, stderr=PIPE)
         outdata, errdata = p.communicate()
+        outdata = outdata.decode()
+        errdata = errdata.decode()
         for line in outdata.split("\n"):
             if line:
                 log(line)
@@ -971,77 +1127,13 @@ class MufGui(object):
         self.fr.call_stack = []
         self.update_displays()
 
-    def handle_load_program(self, event=None):
-        extras = {}
-        if platform.system() == 'Darwin':
-            extras = dict(
-                message="Select a source file to load...",
-            )
-        filename = askopenfilename(
-            parent=self.root,
-            title="Load Program",
-            defaultextension=".muf",
-            filetypes=[
-                ('all files', '.*'),
-                ('MUF files', '.muf'),
-                ('MUF files', '.m'),
-                ('MUV files', '.muv'),
-            ],
-            **extras
-        )
-        if not filename:
-            return
-        self.load_program_from_file(filename)
-
-    def handle_load_library(self, event=None):
-        extras = {}
-        if platform.system() == 'Darwin':
-            extras = dict(
-                message="Select a library file to load...",
-            )
-        filename = askopenfilename(
-            parent=self.root,
-            title="Load Library",
-            defaultextension=".muf",
-            filetypes=[
-                ('all files', '.*'),
-                ('MUF files', '.muf'),
-                ('MUF files', '.m'),
-                ('MUV files', '.muv'),
-            ],
-            **extras
-        )
-        if not filename:
-            return
-        regname = os.path.basename(filename)
-        if regname.endswith('.muv') or regname.endswith('.muf'):
-            regname = regname[:-4]
-        regname = askstring(
-            "Library Name",
-            "What should the library be registered as?",
-            initialvalue=regname,
-            parent=self.root,
-        )
-        if not regname:
-            return
-        self.load_program_from_file(filename, regname=regname)
-
-    def destroy(self):
-        self.root.destroy()
-
     def main(self):
         self.root.mainloop()
-        try:
-            self.root.destroy()
-        except:
-            pass
+        self.filemenu_quit()
 
 
 def main():
-    try:
-        MufGui().main()
-    except Exception as e:
-        print(e)
+    MufGui().main()
 
 
 if __name__ == "__main__":

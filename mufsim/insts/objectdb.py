@@ -5,7 +5,7 @@ import mufsim.gamedb as db
 import mufsim.stackitems as si
 import mufsim.sysparms as sysparm
 from mufsim.logger import log
-from mufsim.errors import MufRuntimeError
+from mufsim.errors import MufRuntimeError, MufCompileError
 from mufsim.insts.base import Instruction, instr
 
 
@@ -100,8 +100,6 @@ class InstUnCompile(Instruction):
 
 @instr("compile")
 class InstCompile(Instruction):
-    compiler = None
-
     def execute(self, fr):
         showerrs = fr.data_pop(int)
         obj = fr.data_pop_object()
@@ -110,9 +108,9 @@ class InstCompile(Instruction):
         for cfr in fr.call_stack:
             if cfr.pc.prog == obj.dbref:
                 raise MufRuntimeError("Cannot compile running program.")
-        obj.compiler = None
+        obj.compiled = None
         try:
-            success = self.compiler.compile_source(obj.dbref)
+            fr.program_compile(obj.dbref)
         except (MufCompileError, MufRuntimeError) as e:
             if showerrs:
                 log(str(e))
@@ -121,12 +119,6 @@ class InstCompile(Instruction):
         else:
             fr.data_push(0)
         log("COMPILE %s" % obj)
-
-    def compile(self, cmplr, code, src):
-        inst = InstCompile(self.line)
-        inst.compiler = type(cmplr)()
-        code.append(inst)
-        return (False, src)
 
 
 @instr("sysparm")

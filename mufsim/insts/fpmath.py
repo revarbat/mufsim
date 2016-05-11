@@ -16,7 +16,7 @@ class InstAbs(Instruction):
 class InstSign(Instruction):
     def execute(self, fr):
         a = fr.data_pop(int)
-        fr.data_push(cmp(a, 0))
+        fr.data_push((a > 0) - (a < 0))
 
 
 @instr("float")
@@ -91,14 +91,14 @@ class InstFabs(Instruction):
 class InstCeil(Instruction):
     def execute(self, fr):
         x = fr.data_pop(float)
-        fr.data_push(math.ceil(x))
+        fr.data_push(float(math.ceil(x)))
 
 
 @instr("floor")
 class InstFloor(Instruction):
     def execute(self, fr):
         x = fr.data_pop(float)
-        fr.data_push(math.floor(x))
+        fr.data_push(float(math.floor(x)))
 
 
 @instr("round")
@@ -124,10 +124,10 @@ class InstModF(Instruction):
     def execute(self, fr):
         a = fr.data_pop(float)
         if a < 0.0:
-            fr.data_push(math.ceil(a))
+            fr.data_push(float(math.ceil(a)))
             fr.data_push(a - math.ceil(a))
         else:
-            fr.data_push(math.floor(a))
+            fr.data_push(float(math.floor(a)))
             fr.data_push(a - math.floor(a))
 
 

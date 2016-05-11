@@ -1,5 +1,5 @@
 import mufsim.utils as util
-from functools import cmp_to_key
+from functools import cmp_to_key, total_ordering
 
 
 class Item(object):
@@ -23,22 +23,31 @@ class Mark(Item):
         return "Mark"
 
 
+@total_ordering
 class DBRef(Item):
     def __str__(self):
         return "#%d" % self.value
 
-    def __cmp__(self, other):
-        return cmp(self.value, other.value)
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __eq__(self, other):
+        return self.value == other.value
 
 
+@total_ordering
 class Lock(Item):
     def __str__(self):
         return "Lock:%s" % self.value
 
-    def __cmp__(self, other):
-        return cmp(self.value, other.value)
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __eq__(self, other):
+        return self.value == other.value
 
 
+@total_ordering
 class Address(Item):
     prog = -1
 
@@ -49,11 +58,15 @@ class Address(Item):
     def __str__(self):
         return "Addr:'#%d'%d" % (self.prog, self.value)
 
-    def __cmp__(self, other):
-        return cmp(
-            (self.prog, self.value),
-            (other.prog, other.value)
-        )
+    def __lt__(self, other):
+        a = (self.prog, self.value)
+        b = (other.prog, other.value)
+        return (a < b)
+
+    def __eq__(self, other):
+        a = (self.prog, self.value)
+        b = (other.prog, other.value)
+        return (a == b)
 
 
 class GlobalVar(Item):
@@ -71,9 +84,9 @@ def sortcomp(a, b, nocase=False):
         if isinstance(a, str) and nocase:
             a = a.upper()
             b = b.upper()
-        return cmp(a, b)
+        return (a > b) - (a < b)
     if util.is_number(a) and util.is_number(b):
-        return cmp(a, b)
+        return (a > b) - (a < b)
     if util.is_number(a):
         return -1
     if util.is_number(b):
@@ -86,7 +99,7 @@ def sortcomp(a, b, nocase=False):
         return -1
     if isinstance(b, str):
         return 1
-    return cmp(a, b)
+    return (a > b) - (a < b)
 
 
 def sortcompi(a, b):
@@ -106,10 +119,9 @@ def item_repr(x):
         return "%d" % x
     elif isinstance(x, float):
         x = "%.12g" % x
-        if "e" in x or "." in x or x in ["-inf", "inf", "nan"]:
-            return x
-        else:
-            return "%s.0" % x
+        if "e" not in x and "." not in x and x not in ["-inf", "inf", "nan"]:
+            x = "%s.0" % x
+        return x
     elif isinstance(x, str):
         return util.escape_str(x)
     elif isinstance(x, list) or isinstance(x, tuple):

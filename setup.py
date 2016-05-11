@@ -1,17 +1,23 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
+import sys
+import platform
+from glob import glob
 
-VERSION = "0.7.9"
+VERSION = "0.8.0"
 
+
+APP = ['mufgui/mufgui.py']
 COPYRIGHT = "Copyright 2016 by Revar Desmera"
 LONG_DESCR = """\
 An offline tokenizer, interpreter, and debugger for MUF, a stack-based
 forth-alike MUCK extension language."""
 
-APP = ['mufgui/mufgui.py']
-DATA_FILES = []
-OPTIONS = dict(
+extra_options = {}
+data_files = []
+
+py2app_options = dict(
     argv_emulation=True,
     plist=dict(
         CFBundleIconFile="MufSim.icns",
@@ -39,6 +45,27 @@ OPTIONS = dict(
         ]
     )
 )
+
+py2exe_options = dict(
+    bundle_files=1,
+    excludes=["tests", "dist", "build"],
+)
+
+if platform.system() == 'Windows':
+    data_files.append(
+        (
+            "Microsoft.VC90.CRT",
+            glob(
+                r'C:\Program Files\Microsoft Visual Studio 9.0\VC\redist' +
+                r'\x86\Microsoft.VC90.CRT\*.*'
+            )
+        )
+    )
+    sys.path.append(
+        r'C:\Program Files\Microsoft Visual Studio 9.0\VC\redist' +
+        r'\x86\Microsoft.VC90.CRT'
+    )
+    extra_options['windows'] = APP
 
 setup(
     app=APP,
@@ -77,13 +104,17 @@ setup(
         'Topic :: Software Development :: Interpreters',
         'Topic :: Software Development :: Testing',
     ],
-    keywords='muf debugger development',
+    keywords='muf muv debugger development',
     entry_points={
         'console_scripts': ['mufsim=mufconsole.mufconsole:main'],
         'gui_scripts': ['mufsimgui=mufgui.mufgui:main']
     },
     install_requires=['setuptools'],
-    data_files=DATA_FILES,
-    options={'py2app': OPTIONS},
+    data_files=data_files,
+    options={
+        'py2app': py2app_options,
+        'py2exe': py2exe_options,
+    },
     # setup_requires=['py2app'],
+    **extra_options
 )

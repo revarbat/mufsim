@@ -35,4 +35,5 @@ upload:
 
 clean:
 	rm -rf build dist/MufSimulator* dist/MufSim.app dist/mufsim.exe dist/mufsim
+	find . -name '*.pyc' -exec rm {} \;
 

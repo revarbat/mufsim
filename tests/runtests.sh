@@ -12,7 +12,7 @@ for f in *.muf *.muv ; do
     cmpfile=$base.cmp
     if [ "$refresh_only" -eq 0 -o ! -e "$cmpfile" ]; then
         echo $f
-        ../mufconsole/mufconsole.py $f -u -r -t 2>&1 | sed 's/.\[?1034h//g' >$outfile
+        mufsim $f -u -r -t 2>&1 | sed 's/.\[?1034h//g' >$outfile
         if [ ! -e "$cmpfile" ]; then
             echo "Installing results as $cmpfile"
             mv -f $outfile $cmpfile

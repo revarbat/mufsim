@@ -269,7 +269,7 @@ class InstStrCmp(Instruction):
         fr.check_underflow(2)
         b = fr.data_pop(str)
         a = fr.data_pop(str)
-        fr.data_push(cmp(a, b))
+        fr.data_push((a > b) - (a < b))
 
 
 @instr("strncmp")
@@ -277,9 +277,9 @@ class InstStrNCmp(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
         n = fr.data_pop(int)
-        b = fr.data_pop(str)
-        a = fr.data_pop(str)
-        fr.data_push(cmp(a[:n], b[:n]))
+        b = fr.data_pop(str)[:n]
+        a = fr.data_pop(str)[:n]
+        fr.data_push((a > b) - (a < b))
 
 
 @instr("stringcmp")
@@ -288,7 +288,7 @@ class InstStringCmp(Instruction):
         fr.check_underflow(2)
         b = fr.data_pop(str).upper()
         a = fr.data_pop(str).upper()
-        fr.data_push(cmp(a, b))
+        fr.data_push((a > b) - (a < b))
 
 
 @instr("stringpfx")
@@ -297,7 +297,7 @@ class InstStringPfx(Instruction):
         fr.check_underflow(2)
         b = fr.data_pop(str).upper()
         a = fr.data_pop(str).upper()
-        fr.data_push(0 if cmp(a[:len(b)], b) else 1)
+        fr.data_push(1 if a.startswith(b) else 0)
 
 
 @instr("smatch")

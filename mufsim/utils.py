@@ -111,4 +111,17 @@ def getsize(obj):
     return inner(obj)
 
 
+def compare_dicts(a, b):
+    keys1 = sorted(list(a.keys()))
+    keys2 = sorted(list(b.keys()))
+    if keys1 != keys2:
+        return (keys1 > keys2) - (keys1 < keys2)
+    for k in keys1:
+        val1 = a[k]
+        val2 = b[k]
+        if val1 != val2:
+            return (val1 > val2) - (val1 < val2)
+    return 0
+
+
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

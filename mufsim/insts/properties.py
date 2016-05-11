@@ -1,3 +1,5 @@
+from functools import cmp_to_key
+
 import mufsim.utils as util
 import mufsim.gamedb as db
 import mufsim.stackitems as si
@@ -244,8 +246,12 @@ class InstArrayPutPropVals(Instruction):
         d = fr.data_pop(dict)
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
-        for k, v in d.items():
-            obj.setprop("%s/%s" % (prop, k), v)
+        keys = sorted(
+            list(d.keys()),
+            key=cmp_to_key(si.sortcomp),
+        )
+        for key in keys:
+            obj.setprop("%s/%s" % (prop, key), d[key])
 
 
 @instr("array_get_reflist")

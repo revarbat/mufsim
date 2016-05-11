@@ -1,7 +1,6 @@
 import re
 
 from mufsim.errors import MufRuntimeError
-from mufsim.stackframe import MufStackFrame
 import mufsim.gamedb as db
 
 
@@ -30,6 +29,7 @@ class LockNodeObject(LockNode):
         if not db.validobj(self.dbref):
             return False
         if db.getobj(self.dbref).objtype == "program":
+            from mufsim.stackframe import MufStackFrame
             fr = MufStackFrame()
             trig = supp  # TODO: Use consistent real trigger!
             fr.setup(self.dbref, supp, trig, "")

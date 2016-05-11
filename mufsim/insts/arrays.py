@@ -46,7 +46,7 @@ class InstArrayCompare(Instruction):
     def execute(self, fr):
         arr2 = fr.data_pop(list, dict)
         arr1 = fr.data_pop(list, dict)
-        fr.data_push(cmp(arr1, arr2))
+        fr.data_push(util.compare_dicts(arr1, arr2))
 
 
 @instr("array_getitem")
@@ -309,53 +309,56 @@ class InstArrayNestedDel(Instruction):
 class InstArrayKeys(Instruction):
     def execute(self, fr):
         arr = fr.data_pop(list, dict)
-        cnt = 0
         if isinstance(arr, list):
             for key, val in enumerate(arr):
                 fr.data_push(key)
-                cnt += 1
-            fr.data_push(cnt)
+            fr.data_push(len(arr))
         elif isinstance(arr, dict):
-            for key, val in arr.items():
+            keys = sorted(
+                list(arr.keys()),
+                key=cmp_to_key(si.sortcomp),
+            )
+            for key in keys:
                 fr.data_push(key)
-                cnt += 1
-            fr.data_push(cnt)
+            fr.data_push(len(arr))
 
 
 @instr("array_vals")
 class InstArrayVals(Instruction):
     def execute(self, fr):
         arr = fr.data_pop(list, dict)
-        cnt = 0
         if isinstance(arr, list):
-            for key, val in enumerate(arr):
+            for val in arr:
                 fr.data_push(val)
-                cnt += 1
-            fr.data_push(cnt)
+            fr.data_push(len(arr))
         elif isinstance(arr, dict):
-            for key, val in arr.items():
-                fr.data_push(val)
-                cnt += 1
-            fr.data_push(cnt)
+            keys = sorted(
+                list(arr.keys()),
+                key=cmp_to_key(si.sortcomp),
+            )
+            for key in keys:
+                fr.data_push(arr[key])
+            fr.data_push(len(arr))
 
 
 @instr("array_explode")
 class InstArrayExplode(Instruction):
     def execute(self, fr):
         arr = fr.data_pop(list, dict)
-        cnt = 0
         if isinstance(arr, list):
             for key, val in enumerate(arr):
                 fr.data_push(key)
                 fr.data_push(val)
-                cnt += 1
-            fr.data_push(cnt)
+            fr.data_push(len(arr))
         elif isinstance(arr, dict):
-            for key, val in arr.items():
+            keys = sorted(
+                list(arr.keys()),
+                key=cmp_to_key(si.sortcomp),
+            )
+            for key in keys:
                 fr.data_push(key)
-                fr.data_push(val)
-                cnt += 1
-            fr.data_push(cnt)
+                fr.data_push(arr[key])
+            fr.data_push(len(arr))
 
 
 @instr("array_join")
@@ -531,7 +534,11 @@ class InstArrayFirst(Instruction):
             fr.data_push(0)
             fr.data_push(1)
         else:
-            keys = sorted(list(arr.keys()), key=cmp_to_key(si.sortcomp), reverse=False)
+            keys = sorted(
+                list(arr.keys()),
+                key=cmp_to_key(si.sortcomp),
+                reverse=False
+            )
             fr.data_push(keys[0])
             fr.data_push(1)
 
@@ -547,7 +554,11 @@ class InstArrayLast(Instruction):
             fr.data_push(len(arr) - 1)
             fr.data_push(1)
         else:
-            keys = sorted(list(arr.keys()), key=cmp_to_key(si.sortcomp), reverse=True)
+            keys = sorted(
+                list(arr.keys()),
+                key=cmp_to_key(si.sortcomp),
+                reverse=True
+            )
             fr.data_push(keys[0])
             fr.data_push(1)
 

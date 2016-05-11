@@ -54,8 +54,8 @@ NEXTPROP "abc/nop" on #5 = ""
    17: #4 line 5 ("", #5, "abc", 4{"bamboom": "feefie", "def": "prop_def", "efg": "prop_efg", "foob": "quxqux"}) ARRAY_PUT_PROPVALS
 SETPROP "abc/bamboom" on #5 = "feefie"
 SETPROP "abc/def" on #5 = "prop_def"
-SETPROP "abc/foob" on #5 = "quxqux"
 SETPROP "abc/efg" on #5 = "prop_efg"
+SETPROP "abc/foob" on #5 = "quxqux"
    18: #4 line 6 ("") LV0: me
    19: #4 line 6 ("", LV0) @
    20: #4 line 6 ("", #5) "abc"
