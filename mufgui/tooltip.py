@@ -10,18 +10,29 @@ class CreateToolTip(object):
     """
     create a tooltip for a given widget
     """
-    def __init__(self, widget, text='widget info'):
+    def __init__(self, widget, text='widget info', tag=None):
         self.waittime = 500    # miliseconds
         self.wraplength = 180  # pixels
         self.widget = widget
         self.text = text
-        self.widget.bind("<Enter>", self.enter)
-        self.widget.bind("<Leave>", self.leave)
-        self.widget.bind("<ButtonPress>", self.leave)
+        self.tag = tag
+        self.index = None
+        if tag:
+            self.widget.tag_bind(tag, "<Enter>", self.enter)
+            self.widget.tag_bind(tag, "<Leave>", self.leave)
+            self.widget.tag_bind(tag, "<ButtonPress>", self.leave)
+        else:
+            self.widget.bind("<Enter>", self.enter)
+            self.widget.bind("<Leave>", self.leave)
+            self.widget.bind("<ButtonPress>", self.leave)
         self.id = None
         self.tw = None
 
     def enter(self, event=None):
+        if self.widget.cget("state") == "disabled":
+            return
+        if self.tag:
+            self.index = self.widget.index("@%s,%s" % (event.x, event.y))
         self.schedule()
 
     def leave(self, event=None):
@@ -41,7 +52,10 @@ class CreateToolTip(object):
     def showtip(self, event=None):
         x = y = 0
         try:
-            x, y, cx, cy = self.widget.bbox("insert")
+            if self.index:
+                x, y, cx, cy = self.widget.bbox(self.index)
+            else:
+                x, y, cx, cy = self.widget.bbox("insert")
         except:
             pass
         x += self.widget.winfo_rootx() + 25

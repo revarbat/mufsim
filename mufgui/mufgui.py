@@ -302,7 +302,10 @@ class MufGui(object):
         self.data_disp.tag_bind(
             'sitem', '<Double-Button-1>', self.handle_stack_item_dblclick)
         CreateToolTip(
-            self.data_disp, 'Double-Click on stack item to print value.')
+            self.data_disp,
+            'Double-Click to print value.',
+            tag='sitem',
+        )
         return datafr
 
     def setup_gui_call_frame(self, master):
@@ -321,7 +324,8 @@ class MufGui(object):
             'currline', background="#77f", foreground="white")
         CreateToolTip(
             self.call_disp,
-            'Click on call to view variables and source for that call level.'
+            'Click to view call level.',
+            tag='callfr',
         )
         return callfr
 
@@ -346,8 +350,12 @@ class MufGui(object):
             'gval', '<Double-Button-1>', self.handle_vars_gname_dblclick)
         self.vars_disp.tag_bind(
             'fval', '<Double-Button-1>', self.handle_vars_fname_dblclick)
-        CreateToolTip(
-            self.vars_disp, 'Double-Click on variable to print value.')
+        for tag in ['gname', 'fname', 'gval', 'fval']:
+            CreateToolTip(
+                self.vars_disp,
+                'Double-Click to print value.',
+                tag=tag,
+            )
         return varsfr
 
     def setup_gui_source_selectors_frame(self, master):
@@ -385,7 +393,10 @@ class MufGui(object):
             'breakpt', background="#f77", foreground="black")
         self.srcs_disp.pack(side=BOTTOM, fill=BOTH, expand=1)
         CreateToolTip(
-            self.srcs_disp, 'Click on line number to toggle breakpoint.')
+            self.srcs_disp,
+            'Click on line number to toggle breakpoint.',
+            tag='gutter',
+        )
         return srcdispfr
 
     def setup_gui_source_frame(self, master):
