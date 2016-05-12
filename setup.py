@@ -5,7 +5,7 @@ import sys
 import platform
 from glob import glob
 
-VERSION = "0.8.1"
+VERSION = "0.8.2"
 
 
 APP = ['mufgui/mufgui.py']
