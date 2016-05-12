@@ -18,8 +18,8 @@ app:
 	rm -rf dist/MufSim dist/MufSim.app dist/MufSimOSX.zip
 	python3 setup.py py2app
 	rm -rf dist/MufSim
-	tools/mkosxicns.sh
-	cp osxbundlefiles/MufSim.icns dist/MufSim.app/Contents/Resources/
+	tools/mkicons.sh
+	cp icons/MufSim.icns dist/MufSim.app/Contents/Resources/
 	mkdir -p dist/MufSim.app/Contents/Resources/muv
 	cp /usr/local/bin/muv dist/MufSim.app/Contents/Resources/muv/
 	cp -a /usr/local/share/muv/incls dist/MufSim.app/Contents/Resources/muv/incls

@@ -60,7 +60,7 @@ class InstFunc(Instruction):
     def get_header_vars(self, cmplr, src):
         funcvars = []
         while True:
-            v, line, src = cmplr.get_word(src)
+            v, src = cmplr.get_word(src)
             if v == ']':
                 break
             if v == '--':
@@ -80,7 +80,7 @@ class InstFunc(Instruction):
         if cmplr.funcname:
             raise MufCompileError(
                 "Function definition incomplete: %s" % cmplr.funcname)
-        funcname, line, src = cmplr.get_word(src)
+        funcname, src = cmplr.get_word(src)
         comp = cmplr.compiled
         funcvars = []
         if funcname[-1] == '[':
@@ -92,7 +92,7 @@ class InstFunc(Instruction):
         for v in funcvars:
             comp.add_func_var(funcname, v)
         cmplr.funcname = funcname
-        code.append(InstFunc(line, funcname, len(funcvars)))
+        code.append(InstFunc(cmplr.word_line, funcname, len(funcvars)))
         fcode, src = cmplr.compile_r(src)
         for inst in fcode:
             code.append(inst)
@@ -115,7 +115,7 @@ class InstEndFunc(Instruction):
 @instr("public")
 class InstPublic(Instruction):
     def compile(self, cmplr, code, src):
-        nam, line, src = cmplr.get_word(src)
+        nam, src = cmplr.get_word(src)
         comp = cmplr.compiled
         if not comp.publicize_function(nam):
             raise MufCompileError("Unrecognized identifier: %s" % nam)
@@ -127,7 +127,7 @@ class InstPublic(Instruction):
 class InstWizCall(Instruction):
     def compile(self, cmplr, code, src):
         # TODO: Check wizbit on call!
-        nam, line, src = cmplr.get_word(src)
+        nam, src = cmplr.get_word(src)
         comp = cmplr.compiled
         if not comp.publicize_function(nam):
             raise MufCompileError("Unrecognized identifier: %s" % nam)
@@ -478,7 +478,7 @@ class InstUntil(Instruction):
 @instr("lvar")
 class InstLVar(Instruction):
     def compile(self, cmplr, code, src):
-        vname, line, src = cmplr.get_word(src)
+        vname, src = cmplr.get_word(src)
         comp = cmplr.compiled
         if not vname:
             raise MufCompileError("Variable declaration incomplete.")
@@ -491,7 +491,7 @@ class InstLVar(Instruction):
 @instr("var")
 class InstVar(Instruction):
     def compile(self, cmplr, code, src):
-        vname, line, src = cmplr.get_word(src)
+        vname, src = cmplr.get_word(src)
         comp = cmplr.compiled
         if not vname:
             raise MufCompileError("Variable declaration incomplete.")
@@ -511,15 +511,15 @@ class InstVar(Instruction):
 @instr("var!")
 class InstVarBang(Instruction):
     def compile(self, cmplr, code, src):
-        vname, line, src = cmplr.get_word(src)
+        vname, src = cmplr.get_word(src)
         comp = cmplr.compiled
         if not vname:
             raise MufCompileError("Variable declaration incomplete.")
         if comp.get_func_var(cmplr.funcname, vname):
             raise MufCompileError("Variable already declared.")
         vnum = comp.add_func_var(cmplr.funcname, vname)
-        code.append(InstFuncVar(line, vnum, vname))
-        code.append(InstBang(line))
+        code.append(InstFuncVar(cmplr.word_line, vnum, vname))
+        code.append(InstBang(cmplr.word_line))
         return (False, src)
 
 

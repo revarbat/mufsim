@@ -8,6 +8,7 @@ MufSim.egg-info/top_level.txt
 mufconsole/__init__.py
 mufconsole/mufconsole.py
 mufgui/__init__.py
+mufgui/listdisplay.py
 mufgui/mufgui.py
 mufgui/tooltip.py
 mufsim/__init__.py

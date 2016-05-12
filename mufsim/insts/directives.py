@@ -57,7 +57,7 @@ class InstDollarNote(Instruction):
 @instr("$version")
 class InstDollarVersion(Instruction):
     def compile(self, cmplr, code, src):
-        val, line, src = cmplr.get_word(src)
+        val, src = cmplr.get_word(src)
         comp = cmplr.compiled
         db.getobj(comp.program).setprop("_version", val)
         return (False, src)
@@ -66,7 +66,7 @@ class InstDollarVersion(Instruction):
 @instr("$lib-version")
 class InstDollarLibVersion(Instruction):
     def compile(self, cmplr, code, src):
-        val, line, src = cmplr.get_word(src)
+        val, src = cmplr.get_word(src)
         comp = cmplr.compiled
         db.getobj(comp.program).setprop("_lib-version", val)
         return (False, src)
@@ -75,7 +75,7 @@ class InstDollarLibVersion(Instruction):
 @instr("$def")
 class InstDollarDef(Instruction):
     def compile(self, cmplr, code, src):
-        nam, line, src = cmplr.get_word(src)
+        nam, src = cmplr.get_word(src)
         val, src = cmplr.get_to_eol(src)
         cmplr.defines[nam] = val
         return (False, src)
@@ -84,7 +84,7 @@ class InstDollarDef(Instruction):
 @instr("$define")
 class InstDollarDefine(Instruction):
     def compile(self, cmplr, code, src):
-        nam, line, src = cmplr.get_word(src)
+        nam, src = cmplr.get_word(src)
         if "$enddef" not in src:
             raise MufCompileError("Incomplete $define for %s" % nam)
         val, src = src.split("$enddef", 1)
@@ -95,7 +95,7 @@ class InstDollarDefine(Instruction):
 @instr("$undef")
 class InstDollarUnDef(Instruction):
     def compile(self, cmplr, code, src):
-        nam, line, src = cmplr.get_word(src)
+        nam, src = cmplr.get_word(src)
         if nam in cmplr.defines:
             del cmplr.defines[nam]
         return (False, src)
@@ -105,7 +105,7 @@ class InstDollarUnDef(Instruction):
 class InstDollarInclude(Instruction):
     def compile(self, cmplr, code, src):
         comp = cmplr.compiled
-        targ, line, src = cmplr.get_word(src)
+        targ, src = cmplr.get_word(src)
         if targ == "this":
             obj = comp.program
         else:
@@ -119,7 +119,7 @@ class InstDollarInclude(Instruction):
 class InstDollarPubDef(Instruction):
     def compile(self, cmplr, code, src):
         comp = cmplr.compiled
-        nam, line, src = cmplr.get_word(src)
+        nam, src = cmplr.get_word(src)
         val, src = cmplr.get_to_eol(src)
         if nam == ":":
             db.getobj(comp.program).delprop("_defs")
@@ -138,7 +138,7 @@ class InstDollarPubDef(Instruction):
 class InstDollarLibDef(Instruction):
     def compile(self, cmplr, code, src):
         comp = cmplr.compiled
-        nam, line, src = cmplr.get_word(src)
+        nam, src = cmplr.get_word(src)
         if nam.startswith('\\'):
             nam = nam[1:]
             if db.getobj(comp.program).getprop("_defs/%s" % nam):
@@ -152,7 +152,7 @@ class InstDollarLibDef(Instruction):
 @instr("$cleardefs")
 class InstDollarClearDefs(Instruction):
     def compile(self, cmplr, code, src):
-        val, line, src = cmplr.get_word(src)
+        val, src = cmplr.get_word(src)
         cmplr.defines = dict(cmplr.builtin_defines)
         if val.strip().upper() != "ALL":
             cmplr.include_defs_from(0, suppress=True)
@@ -162,7 +162,7 @@ class InstDollarClearDefs(Instruction):
 @instr("$ifdef")
 class InstDollarIfDef(Instruction):
     def compile(self, cmplr, code, src):
-        cond, line, src = cmplr.get_word(src, expand=False)
+        cond, src = cmplr.get_word(src, expand=False)
         istrue = True
         if '=' in cond:
             nam, val = cond.split('=', 1)
@@ -183,7 +183,7 @@ class InstDollarIfDef(Instruction):
 @instr("$ifndef")
 class InstDollarIfNDef(Instruction):
     def compile(self, cmplr, code, src):
-        cond, line, src = cmplr.get_word(src, expand=False)
+        cond, src = cmplr.get_word(src, expand=False)
         istrue = True
         if '=' in cond:
             nam, val = cond.split('=', 1)
@@ -205,8 +205,8 @@ class InstDollarIfNDef(Instruction):
 class InstDollarIfVer(Instruction):
     def compile(self, cmplr, code, src):
         comp = cmplr.compiled
-        obj, line, src = cmplr.get_word(src)
-        ver, line, src = cmplr.get_word(src)
+        obj, src = cmplr.get_word(src)
+        ver, src = cmplr.get_word(src)
         if obj == "this":
             obj = comp.program
         else:
@@ -230,8 +230,8 @@ class InstDollarIfVer(Instruction):
 class InstDollarIfNVer(Instruction):
     def compile(self, cmplr, code, src):
         comp = cmplr.compiled
-        obj, line, src = cmplr.get_word(src)
-        ver, line, src = cmplr.get_word(src)
+        obj, src = cmplr.get_word(src)
+        ver, src = cmplr.get_word(src)
         if obj == "this":
             obj = comp.program
         else:
@@ -255,8 +255,8 @@ class InstDollarIfNVer(Instruction):
 class InstDollarIfLibVer(Instruction):
     def compile(self, cmplr, code, src):
         comp = cmplr.compiled
-        obj, line, src = cmplr.get_word(src)
-        ver, line, src = cmplr.get_word(src)
+        obj, src = cmplr.get_word(src)
+        ver, src = cmplr.get_word(src)
         if obj == "this":
             obj = comp.program
         else:
@@ -280,8 +280,8 @@ class InstDollarIfLibVer(Instruction):
 class InstDollarIfNLibVer(Instruction):
     def compile(self, cmplr, code, src):
         comp = cmplr.compiled
-        obj, line, src = cmplr.get_word(src)
-        ver, line, src = cmplr.get_word(src)
+        obj, src = cmplr.get_word(src)
+        ver, src = cmplr.get_word(src)
         if obj == "this":
             obj = comp.program
         else:
@@ -305,7 +305,7 @@ class InstDollarIfNLibVer(Instruction):
 class InstDollarIfLib(Instruction):
     def compile(self, cmplr, code, src):
         comp = cmplr.compiled
-        obj, line, src = cmplr.get_word(src)
+        obj, src = cmplr.get_word(src)
         if obj == "this":
             obj = comp.program
         else:
@@ -321,7 +321,7 @@ class InstDollarIfLib(Instruction):
 class InstDollarIfNLib(Instruction):
     def compile(self, cmplr, code, src):
         comp = cmplr.compiled
-        obj, line, src = cmplr.get_word(src)
+        obj, src = cmplr.get_word(src)
         if obj == "this":
             obj = comp.program
         else:
@@ -337,8 +337,8 @@ class InstDollarIfNLib(Instruction):
 class InstDollarIfCanCall(Instruction):
     def compile(self, cmplr, code, src):
         comp = cmplr.compiled
-        obj, line, src = cmplr.get_word(src)
-        pub, line, src = cmplr.get_word(src)
+        obj, src = cmplr.get_word(src)
+        pub, src = cmplr.get_word(src)
         if obj == "this":
             obj = comp.program
         else:
@@ -360,8 +360,8 @@ class InstDollarIfCanCall(Instruction):
 class InstDollarIfNCanCall(Instruction):
     def compile(self, cmplr, code, src):
         comp = cmplr.compiled
-        obj, line, src = cmplr.get_word(src)
-        pub, line, src = cmplr.get_word(src)
+        obj, src = cmplr.get_word(src)
+        pub, src = cmplr.get_word(src)
         if obj == "this":
             obj = comp.program
         else:
@@ -386,9 +386,9 @@ class InstDollarElse(Instruction):
         while True:
             if not src:
                 raise MufCompileError("Incomplete $else directive block.")
-            word, line, src = cmplr.get_word(src, expand=False)
+            word, src = cmplr.get_word(src, expand=False)
             if word.startswith("$if"):
-                cond, line, src = cmplr.get_word(src, expand=False)
+                cond, src = cmplr.get_word(src, expand=False)
                 level += 1
             elif word == "$endif":
                 if not level:

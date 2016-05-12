@@ -29,7 +29,7 @@ class InstGmtOffset(Instruction):
 
 
 @instr("timesplit")
-class InstDate(Instruction):
+class InstTimeSplit(Instruction):
     def execute(self, fr):
         secs = fr.data_pop(int)
         when = time.localtime(secs)

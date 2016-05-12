@@ -79,7 +79,7 @@ setup(
     download_url='https://github.com/revarbat/mufsim/archive/master.zip',
     packages=find_packages(
         exclude=[
-            'build', 'dist', 'docs', 'examples', 'osxbundlefiles',
+            'build', 'dist', 'docs', 'examples', 'icons',
             'tests', 'tools',
         ]
     ),

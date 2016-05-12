@@ -1,5 +1,3 @@
-import sys
-
 from mufsim.logger import log
 from mufsim.errors import MufBreakExecution
 from mufsim.insts.base import Instruction, instr

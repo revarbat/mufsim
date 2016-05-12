@@ -6,8 +6,12 @@ import os
 import sys
 import time
 import argparse
-import readline
 from subprocess import call
+
+try:
+    import readline
+except:
+    pass
 
 import mufsim.stackitems as si
 import mufsim.gamedb as db
@@ -425,9 +429,12 @@ class ConsoleMufDebugger(object):
     def debug_code(self):
         prevcmd = ""
         self.fr.nextline = -1
-        readline.set_completer(self.complete)
-        readline.set_completer_delims(" ")
-        readline.parse_and_bind("tab: complete")
+        try:
+            readline.set_completer(self.complete)
+            readline.set_completer_delims(" ")
+            readline.parse_and_bind("tab: complete")
+        except:
+            pass
         while True:
             if prevcmd:
                 cmd = input("DEBUG>")
@@ -531,9 +538,9 @@ class MufConsole(object):
     def readline_setup(self):
         try:
             readline.read_history_file(confs.HISTORY_FILE)
+            readline.set_history_length(1000)
         except:
             pass
-        readline.set_history_length(1000)
 
     def readline_teardown(self):
         try:

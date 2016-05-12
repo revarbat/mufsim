@@ -3,7 +3,7 @@ from textwrap import dedent
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 import mufsim.utils as util
-from mufsim.logger import log
+from mufsim.logger import errlog
 from mufsim.compiled import CompiledMuf
 from mufsim.errors import MufCompileError
 
@@ -124,6 +124,7 @@ class MufCompiler(object):
 
     def __init__(self):
         self.compiled = None
+        self.word_line = 1
         self.line = 1
         self.stmt_stack = []
         self.funcname = None
@@ -198,14 +199,14 @@ class MufCompiler(object):
             # Strip whitespace
             src = self.lstrip(src)
             if not src:
-                return (None, None, None)
+                return (None, None)
             if src[0] != '(':
                 break
             src = self.strip_comment(src)
-        line = self.line
+        self.word_line = self.line
         if src[0] == '"':
             word, src = self.get_string(src)
-            return (word, line, src)
+            return (word, src)
         # Get next word.
         word, src = self.splitword(src)
         # Expand defines if needed
@@ -213,20 +214,20 @@ class MufCompiler(object):
             word = word[1:]
         elif expand and word in self.defines:
             src = self.defines[word] + " " + src
-            word, line, src = self.get_word(src)
-            return (word, line, src)
+            word, src = self.get_word(src)
+            return (word, src)
         # Return raw word.
         src = self.lstrip(src)
-        return (word, line, src)
+        return (word, src)
 
     def skip_directive_if_block(self, src):
         level = 0
         while True:
             if not src:
                 raise MufCompileError("Incomplete $if directive block.")
-            word, line, src = self.get_word(src)
+            word, src = self.get_word(src)
             if word.startswith("$if"):
-                cond, line, src = self.get_word(src, expand=False)
+                cond, src = self.get_word(src, expand=False)
                 level += 1
             elif word == "$endif":
                 if not level:
@@ -343,7 +344,7 @@ class MufCompiler(object):
     def compile_r(self, src):
         code = []
         while True:
-            word, line, src = self.get_word(src)
+            word, src = self.get_word(src)
             if not word:
                 return (code, src)
             if not self.funcname:
@@ -354,14 +355,14 @@ class MufCompiler(object):
                     raise MufCompileError("Not in function: %s" % word)
             foundlit = False
             for fun in literal_handlers:
-                if fun(self, line, code, word):
+                if fun(self, self.word_line, code, word):
                     foundlit = True
                     break
             if foundlit:
                 continue
             if word in primitives:
                 instcls = primitives[word]
-                inst = instcls(line)
+                inst = instcls(self.word_line)
                 doret, src = inst.compile(self, code, src)
                 if doret:
                     return (code, src)
@@ -372,6 +373,7 @@ class MufCompiler(object):
         comp = CompiledMuf(prog)
         self.compiled = comp
         self.line = 1
+        self.word_line = 1
         self.stmt_stack = []
         self.funcname = None
         self.defines = dict(self.builtin_defines)
@@ -395,7 +397,7 @@ class MufCompiler(object):
                 return True
             return False
         except MufCompileError as e:
-            log("Error in line %d: %s" % (self.line, e))
+            errlog("Error in line %d: %s" % (self.word_line, e))
             return None
 
 

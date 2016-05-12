@@ -10,16 +10,16 @@ try:  # Python 2
     from tkSimpleDialog import askstring
     from tkFileDialog import askopenfilename
     from tkMessageBox import showinfo
-    from ScrolledText import ScrolledText
 except ImportError:  # Python 3
     from tkinter import *  # noqa
     from tkinter.simpledialog import askstring
     from tkinter.filedialog import askopenfilename
     from tkinter.messagebox import showinfo
-    from tkinter.scrolledtext import ScrolledText
     from tkinter.font import Font
 
 from mufgui.tooltip import CreateToolTip
+from mufgui.listdisplay import ListDisplay
+
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 from mufsim.logger import log, warnlog, errlog, set_output_command
@@ -28,37 +28,6 @@ from mufsim.stackframe import MufStackFrame
 
 mufsim_version = None
 menu_item_handlers = []
-
-
-class ReadOnlyText(ScrolledText):
-    def __init__(self, *args, **kwargs):
-        if 'insertontime' not in kwargs:
-            kwargs['insertontime'] = 0
-        if 'borderwidth' not in kwargs:
-            kwargs['borderwidth'] = 1
-        if 'highlightthickness' not in kwargs:
-            kwargs['highlightthickness'] = 0
-        ScrolledText.__init__(self, *args, **kwargs)
-        self.bind("<Key>", lambda e: "break")
-        self.bind("<<Cut>>", lambda e: "break")
-        self.bind("<<Clear>>", lambda e: "break")
-        self.bind("<<Paste>>", lambda e: "break")
-        self.bind("<<PasteSelection>>", lambda e: "break")
-        self.bind('<Double-Button-1>', lambda e: "break")
-        self.tag_config("sel", foreground="black")
-
-
-class ListDisplay(ReadOnlyText):
-    def __init__(self, master, **kwargs):
-        ReadOnlyText.__init__(
-            self,
-            master,
-            relief=SUNKEN,
-            cursor='arrow',
-            takefocus=0,
-            wrap=NONE,
-            **kwargs
-        )
 
 
 # Decorator declarations
@@ -219,10 +188,10 @@ class MufGui(object):
             if hasattr(hndlr, 'accelerator') and hndlr.accelerator:
                 accel = hndlr.accelerator
                 # Standardize to proper binding format.
-                accel.replace('Ctrl', 'Control')
-                accel.replace('Cmd', 'Command')
-                accel.replace('Opt', 'Option')
-                accel.replace('+', '-')
+                accel = accel.replace('Ctrl', 'Control')
+                accel = accel.replace('Cmd', 'Command')
+                accel = accel.replace('Opt', 'Option')
+                accel = accel.replace('+', '-')
                 if '-' in accel:
                     mods, key = accel.rsplit('-', 1)
                     mods += '-'
@@ -272,52 +241,27 @@ class MufGui(object):
         self.menus = menus
         return self.menubar
 
-    def gui_menu_enabler(self, menu_name):
-        menu = self.menus[menu_name]
-        global menu_item_handlers
-        for hndlr_name in menu_item_handlers:
-            hndlr = getattr(self, hndlr_name)
-            if menu_name == hndlr.menu_name:
-                if hasattr(hndlr, 'enable_test') and hndlr.enable_test:
-                    test = getattr(self, hndlr.enable_test)
-                    state = "disabled"
-                    color = "#bbb"
-                    if test():
-                        state = "normal"
-                        color = "black"
-                    idx = menu.index(hndlr.menu_label)
-                    menu.entryconfig(idx, state=state)
-                    menu.entryconfig(idx, foreground=color)
-
     def setup_gui_data_frame(self, master):
-        datafr = LabelFrame(master, text="Data Stack", relief="flat")
-        self.data_disp = ListDisplay(datafr)
+        datafr = LabelFrame(master, text="Data Stack", relief="flat", borderwidth=0)
+        self.data_disp = ListDisplay(datafr, readonly=True, gutter=4)
         self.data_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.data_disp.tag_config(
             'empty', foreground="gray50", font=self.sansserif_i)
-        self.data_disp.tag_config(
-            'gutter', background="gray75",
-            foreground="black", font=self.monospace,
-        )
         self.data_disp.tag_bind(
             'sitem', '<Double-Button-1>', self.handle_stack_item_dblclick)
         CreateToolTip(
             self.data_disp,
-            'Double-Click to print value.',
+            'Double-Click to pretty-print value.',
             tag='sitem',
         )
         return datafr
 
     def setup_gui_call_frame(self, master):
-        callfr = LabelFrame(master, text="Call Stack", relief="flat")
-        self.call_disp = ListDisplay(callfr)
+        callfr = LabelFrame(master, text="Call Stack", relief="flat", borderwidth=0)
+        self.call_disp = ListDisplay(callfr, readonly=True, gutter=4)
         self.call_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.call_disp.tag_config(
             'empty', foreground="gray50", font=self.sansserif_i)
-        self.call_disp.tag_config(
-            'gutter', background="gray75",
-            foreground="black", font=self.monospace,
-        )
         self.call_disp.tag_bind(
             'callfr', '<Button-1>', self.handle_call_stack_click)
         self.call_disp.tag_config(
@@ -330,8 +274,8 @@ class MufGui(object):
         return callfr
 
     def setup_gui_vars_frame(self, master):
-        varsfr = LabelFrame(master, text="Variables", relief="flat")
-        self.vars_disp = ListDisplay(varsfr)
+        varsfr = LabelFrame(master, text="Variables", relief="flat", borderwidth=0)
+        self.vars_disp = ListDisplay(varsfr, readonly=True)
         self.vars_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.vars_disp.tag_config(
             'gvar', foreground="#00f", font=self.seriffont)
@@ -353,7 +297,7 @@ class MufGui(object):
         for tag in ['gname', 'fname', 'gval', 'fval']:
             CreateToolTip(
                 self.vars_disp,
-                'Double-Click to print value.',
+                'Double-Click to pretty-print value.',
                 tag=tag,
             )
         return varsfr
@@ -374,28 +318,34 @@ class MufGui(object):
         )
         self.fun_sel.menu = Menu(self.fun_sel, tearoff=0)
         self.fun_sel['menu'] = self.fun_sel.menu
+        self.comp_btn = Button(
+            srcselfr, text="Compile", command=self.debugmenu_compile)
         self.src_lbl.pack(side=LEFT, fill=NONE, expand=0)
         self.src_sel.pack(side=LEFT, fill=NONE, expand=0)
         self.fun_lbl.pack(side=LEFT, fill=NONE, expand=0)
         self.fun_sel.pack(side=LEFT, fill=NONE, expand=0)
+        self.comp_btn.pack(side=LEFT, fill=NONE, expand=0)
         return srcselfr
 
     def setup_gui_source_display_frame(self, master):
         srcdispfr = Frame(master)
-        self.srcs_disp = ListDisplay(srcdispfr, font=self.monospace)
+        self.srcs_disp = ListDisplay(srcdispfr, font=self.monospace, gutter=5)
+        self.srcs_disp.gutter.bind(
+            '<Button-1>', self.handle_sources_breakpoint_toggle)
         self.srcs_disp.tag_config(
-            'gutter', background="gray75", foreground="black")
-        self.srcs_disp.tag_bind(
-            'gutter', '<Button-1>', self.handle_sources_breakpoint_toggle)
+            'hilite', background="#aff", foreground="black")
+        self.srcs_disp.tag_config(
+            'error', background="#faa", foreground="black")
+        self.srcs_disp.tag_config(
+            'warning', background="#ffa", foreground="black")
         self.srcs_disp.tag_config(
             'currline', background="#77f", foreground="white")
-        self.srcs_disp.tag_config(
-            'breakpt', background="#f77", foreground="black")
+        self.srcs_disp.gutter.tag_config(
+            'breakpt', background="#447", foreground="white")
         self.srcs_disp.pack(side=BOTTOM, fill=BOTH, expand=1)
         CreateToolTip(
-            self.srcs_disp,
+            self.srcs_disp.gutter,
             'Click on line number to toggle breakpoint.',
-            tag='gutter',
         )
         return srcdispfr
 
@@ -408,12 +358,17 @@ class MufGui(object):
         return srcfr
 
     def setup_gui_tokens_display_frame(self, master):
-        tokfr = LabelFrame(master, text="Tokens", relief="flat")
-        self.tokn_disp = ListDisplay(tokfr, font=self.monospace)
-        self.tokn_disp.tag_config(
-            'gutter', background="gray75", foreground="black")
+        tokfr = LabelFrame(master, text="Tokens", relief="flat", borderwidth=0)
+        self.tokn_disp = ListDisplay(
+            tokfr,
+            font=self.monospace,
+            readonly=True,
+            gutter=5,
+        )
         self.tokn_disp.tag_config(
             'func', foreground="#00c", font=self.monospace_b)
+        self.tokn_disp.tag_config(
+            'hilite', background="#aff", foreground="black")
         self.tokn_disp.tag_config(
             'currline', background="#77f", foreground="white")
         self.tokn_disp.pack(side=TOP, fill=BOTH, expand=1)
@@ -466,7 +421,12 @@ class MufGui(object):
 
     def setup_gui_console_frame(self, master):
         consfr = Frame(master)
-        self.cons_disp = ListDisplay(consfr, height=1, font=self.monospace)
+        self.cons_disp = ListDisplay(
+            consfr,
+            height=1,
+            readonly=True,
+            font=self.monospace
+        )
         self.cons_disp.tag_config('good', foreground="#0a0")
         self.cons_disp.tag_config('trace', foreground="#777")
         self.cons_disp.tag_config('warning', foreground="#880")
@@ -474,7 +434,25 @@ class MufGui(object):
         self.cons_in = Entry(consfr, relief=SUNKEN)
         self.cons_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.cons_in.pack(side=TOP, fill=X, expand=0)
+        self.cons_in.focus()
         return consfr
+
+    def gui_menu_enabler(self, menu_name):
+        menu = self.menus[menu_name]
+        global menu_item_handlers
+        for hndlr_name in menu_item_handlers:
+            hndlr = getattr(self, hndlr_name)
+            if menu_name == hndlr.menu_name:
+                if hasattr(hndlr, 'enable_test') and hndlr.enable_test:
+                    test = getattr(self, hndlr.enable_test)
+                    state = "disabled"
+                    color = "#bbb"
+                    if test():
+                        state = "normal"
+                        color = "black"
+                    idx = menu.index(hndlr.menu_label)
+                    menu.entryconfig(idx, state=state)
+                    menu.entryconfig(idx, foreground=color)
 
     def allow_run(self):
         return self.fr is not None
@@ -487,7 +465,7 @@ class MufGui(object):
         print("Display preferences dlog.")
 
     @menu_item("File", "Open Program...")
-    @accels(mac="Command-o", win="Control-o", lin="Control-o")
+    @accels(mac="Cmd-O", win="Ctrl-O", lin="Ctrl-O")
     def filemenu_load_program(self, event=None):
         extras = {}
         if platform.system() == 'Darwin':
@@ -511,7 +489,7 @@ class MufGui(object):
         self.load_program_from_file(filename)
 
     @menu_item("File", "Open Library...")
-    @accels(mac="Command-l", win="Control-l", lin="Control-l")
+    @accels(mac="Cmd-L", win="Ctrl-L", lin="Ctrl-L")
     def filemenu_load_library(self, event=None):
         extras = {}
         if platform.system() == 'Darwin':
@@ -548,7 +526,7 @@ class MufGui(object):
     @separator
     @menu_item("File", "Exit", plats=["Windows"])
     @menu_item("File", "Quit", plats=["Linux"])
-    @accels(win="Alt-F4", lin="Control-Q")
+    @accels(win="Alt-F4", lin="Ctrl-Q")
     def filemenu_quit(self):
         try:
             self.root.destroy()
@@ -556,17 +534,17 @@ class MufGui(object):
             pass
 
     @menu_item("Edit", "Cut")
-    @accels(mac="Command-X", win="Control-X", lin="Control-X")
+    @accels(mac="Cmd-X", win="Ctrl-X", lin="Ctrl-X")
     def editmenu_cut(self):
         self.gen_foc_ev("Cut"),
 
     @menu_item("Edit", "Copy")
-    @accels(mac="Command-C", win="Control-C", lin="Control-C")
+    @accels(mac="Cmd-C", win="Ctrl-C", lin="Ctrl-C")
     def editmenu_copy(self):
         self.gen_foc_ev("Copy"),
 
     @menu_item("Edit", "Paste")
-    @accels(mac="Command-V", win="Control-V", lin="Control-V")
+    @accels(mac="Cmd-V", win="Ctrl-V", lin="Ctrl-V")
     def editmenu_paste(self):
         self.gen_foc_ev("Paste"),
 
@@ -576,8 +554,17 @@ class MufGui(object):
     def editmenu_clear(self):
         self.gen_foc_ev("Clear"),
 
+    @menu_item("Debug", "Compile")
+    @accels(mac="Cmd-K", win="Ctrl-Shift-K", lin="Ctrl-Shift-K")
+    def debugmenu_compile(self, event=None):
+        prog = self._get_prog_from_selector()
+        if prog:
+            progobj = db.getobj(prog)
+            progobj.sources = self.srcs_disp.get('1.0', 'end-2c')
+            self.compile_program(prog)
+
     @menu_item("Debug", "Run...")
-    @accels(mac="Control-R", win="Control-Shift-R", lin="Control-Shift-R")
+    @accels(mac="Cmd-R", win="Ctrl-Shift-R", lin="Ctrl-Shift-R")
     @enable_test('allow_run')
     def debugmenu_run(self, event=None):
         command = askstring(
@@ -591,36 +578,37 @@ class MufGui(object):
         self.reset_execution(command)
         self.update_displays()
 
+    @separator
     @menu_item("Debug", "Step Instruction")
-    @accels(mac="Control-I", win="Control-Shift-I", lin="Control-Shift-I")
+    @accels(mac="Ctrl-I", win="Ctrl-Shift-I", lin="Ctrl-Shift-I")
     @enable_test('allow_debug')
     def debugmenu_step_inst(self, event=None):
         self.fr.set_break_insts(1)
         self.resume_execution()
 
     @menu_item("Debug", "Step Line")
-    @accels(mac="Control-S", win="Control-Shift-S", lin="Control-Shift-S")
+    @accels(mac="Ctrl-S", win="Ctrl-Shift-S", lin="Ctrl-Shift-S")
     @enable_test('allow_debug')
     def debugmenu_step_line(self, event=None):
         self.fr.set_break_steps(1)
         self.resume_execution()
 
     @menu_item("Debug", "Next Line")
-    @accels(mac="Control-N", win="Control-Shift-N", lin="Control-Shift-N")
+    @accels(mac="Ctrl-N", win="Ctrl-Shift-N", lin="Ctrl-Shift-N")
     @enable_test('allow_debug')
     def debugmenu_next_line(self, event=None):
         self.fr.set_break_lines(1)
         self.resume_execution()
 
     @menu_item("Debug", "Finish Function")
-    @accels(mac="Control-F", win="Control-Shift-F", lin="Control-Shift-F")
+    @accels(mac="Ctrl-F", win="Ctrl-Shift-F", lin="Ctrl-Shift-F")
     @enable_test('allow_debug')
     def debugmenu_finish(self, event=None):
         self.fr.set_break_on_finish(True)
         self.resume_execution()
 
     @menu_item("Debug", "Continue Execution")
-    @accels(mac="Control-C", win="Control-Shift-C", lin="Control-Shift-C")
+    @accels(mac="Ctrl-C", win="Ctrl-Shift-C", lin="Ctrl-Shift-C")
     @enable_test('allow_debug')
     def debugmenu_continue(self, event=None):
         self.fr.reset_breaks()
@@ -635,7 +623,6 @@ class MufGui(object):
         if platform.system() == 'Darwin' and not mufsim_version:
             if "MufSim.app/Contents/Resources" in os.getcwd():
                 from plistlib import Plist
-                print(os.getcwd())
                 plist = Plist.fromFile(os.path.join('..', 'Info.plist'))
                 mufsim_version = plist['CFBundleShortVersionString']
         if mufsim_version is None:
@@ -659,9 +646,8 @@ class MufGui(object):
     def handle_stack_item_dblclick(self, event):
         w = event.widget
         index = w.index("@%s,%s" % (event.x, event.y))
-        rng = w.tag_prevrange('gutter', index)
-        if rng and self.fr:
-            item = int(w.get(*rng))
+        if index and self.fr:
+            item = int(float(index))
             val = self.fr.data_pick(item)
             val = si.item_repr_pretty(val)
             log("pick(%d) = %s" % (item, val))
@@ -697,6 +683,8 @@ class MufGui(object):
             self.update_sourcecode_from_program(prog)
 
     def handle_function_selector_change(self):
+        self.srcs_disp.tag_remove('hilite', '0.0', END)
+        self.tokn_disp.tag_remove('hilite', '0.0', END)
         prog = self._get_prog_from_selector()
         if prog is None:
             return
@@ -705,14 +693,25 @@ class MufGui(object):
         fun = self.current_function.get()
         addr = self.fr.program_function_addr(prog, fun)
         line = self.fr.get_inst_line(addr)
-        self.update_sourcecode_from_program(prog)
+        self.srcs_disp.tag_add(
+            'hilite',
+            '%d.0' % line,
+            '%d.end+1c' % line,
+        )
+        self.tokn_disp.tag_add(
+            'hilite',
+            '%d.0' % (addr.value + 1),
+            '%d.end+1c' % (addr.value + 1),
+        )
         self.srcs_disp.see('%d.0' % line)
         self.tokn_disp.see('%d.0' % (addr.value + 1))
 
     def handle_sources_breakpoint_toggle(self, event):
+        if not self.fr:
+            return
         w = event.widget
         index = w.index("@%s,%s" % (event.x, event.y))
-        line = int(index.split('.')[0])
+        line = int(float(index))
         prog = self._get_prog_from_selector()
         if prog is None:
             return
@@ -788,7 +787,25 @@ class MufGui(object):
     def defer_evt(self, cmd):
         return lambda e: self.root.after(10, cmd)
 
+    def clear_errors(self):
+        self.errors_queue = []
+
+    def update_errors(self):
+        first = True
+        for line, typ, msg in self.errors_queue:
+            self.srcs_disp.tag_add(typ, '%d.0' % line, '%d.end+1c' % line)
+            # CreateToolTip(self.srcs_disp, msg, tag=typ)
+            if first:
+                first = False
+                self.srcs_disp.see('%d.0' % line)
+
     def log_to_console(self, msgtype, msg):
+        m = re.match(r'^(Warning|Error) in line (\d+): (.*)$', msg)
+        if m:
+            errtype = m.group(1).lower()
+            errline = int(m.group(2))
+            errmsg = m.group(3)
+            self.errors_queue.append((errline, errtype, errmsg))
         self.cons_disp.insert(END, msg + "\n", msgtype)
         self.cons_disp.see('end linestart')
 
@@ -806,10 +823,10 @@ class MufGui(object):
         if not progs:
             self.current_program.set("- Load a Program -")
         for prog in progs:
-            name = "%s(%s)" % (db.getobj(prog).name, prog)
+            progobj = db.getobj(prog)
+            name = "%s(%s)" % (progobj.name, prog)
             self.src_sel.menu.add_radiobutton(
-                label=name,
-                value=name,
+                label=name, value=name,
                 variable=self.current_program,
                 command=self.handle_source_selector_change,
             )
@@ -838,6 +855,9 @@ class MufGui(object):
             if addr:
                 prog = addr.prog
         self.fun_sel.menu.delete(0, END)
+        if not db.validobj(prog):
+            self.current_function.set("")
+            return
         funs = []
         comp = db.getobj(prog).compiled
         currfun = ""
@@ -867,32 +887,28 @@ class MufGui(object):
             self.data_disp.insert('0.0', ' - EMPTY STACK - ', 'empty')
             return
         for i, val in enumerate(reversed(self.fr.data_stack)):
-            repr = si.item_repr(val)
-            line = '%4d' % (i+1,)
-            self.data_disp.insert(END, line, 'gutter')
-            line = ' %s\n' % repr
+            line = '%s\n' % si.item_repr(val)
             self.data_disp.insert(END, line, 'sitem')
         self.data_disp.delete('end-1c', END)
         self.data_disp.see('0.0')
 
     def update_call_stack_display(self):
         self.call_disp.tag_remove('currline', '0.0', END)
-        fmt = " {progname}({prog}), {func}, {line}\n"
+        fmt = "{progname}({prog}), {func}, {line}\n"
         self.call_disp.delete('0.0', END)
         if not self.fr or not self.fr.get_call_stack():
             self.call_disp.insert('0.0', ' - NOT RUNNING - ', 'empty')
             return
         for callinfo in self.fr.get_call_stack():
             callinfo['progname'] = db.getobj(callinfo['prog']).name
-            line = "%4d" % callinfo['level']
-            self.call_disp.insert(END, line, 'gutter')
             line = fmt.format(**callinfo)
             self.call_disp.insert(END, line, 'callfr')
         self.call_disp.tag_add(
             'currline',
-            '%d.4' % (self.call_level + 1),
+            '%d.0' % (self.call_level + 1),
             '%d.end+1c' % (self.call_level + 1),
         )
+        self.call_disp.delete('end-1c', END)
         self.call_disp.see('0.0')
 
     def update_variables_display(self):
@@ -929,8 +945,8 @@ class MufGui(object):
         self.vars_disp.delete('end-1c', END)
         self.vars_disp.see("%d.0" % cnt)
 
-    def update_sourcecode_from_program(self, prog):
-        if prog != self.prev_prog:
+    def update_sourcecode_from_program(self, prog, force=False):
+        if prog != self.prev_prog or force:
             if not db.validobj(prog):
                 return
             self.prev_prog = prog
@@ -940,38 +956,36 @@ class MufGui(object):
                 srcs = progobj.sources.split("\n")
             self.srcs_disp.delete('0.0', END)
             for i, srcline in enumerate(srcs):
-                line = "%5d" % (i + 1)
-                self.srcs_disp.insert(END, line, "gutter")
-                line = " %s\n" % srcline
+                line = "%s\n" % srcline
                 self.srcs_disp.insert(END, line)
-            self.srcs_disp.delete('end-1c', END)
+            self.tokn_disp.delete('end-1c', END)
 
             tokens = []
             if progobj.compiled:
                 tokens = progobj.compiled.get_tokens_info()
             self.tokn_disp.delete('0.0', END)
             for i, token in enumerate(tokens):
-                line = "%5d" % i
-                self.tokn_disp.insert(END, line, "gutter")
-                repr = token['repr']
-                line = " %s\n" % repr
-                if repr.startswith('Function:'):
+                rep = token['repr']
+                line = "%s\n" % rep
+                if rep.startswith('Function:'):
                     self.tokn_disp.insert(END, line, "func")
                 else:
                     self.tokn_disp.insert(END, line)
             self.tokn_disp.delete('end-1c', END)
 
     def update_sourcecode_breakpoints(self, prog):
-        self.srcs_disp.tag_remove('breakpt', '0.0', END)
+        self.srcs_disp.gutter.tag_remove('breakpt', '0.0', END)
         for bpprog, line in self.fr.get_breakpoints():
             if bpprog == prog:
-                self.srcs_disp.tag_add(
+                self.srcs_disp.gutter.tag_add(
                     'breakpt',
                     '%d.0' % line,
                     '%d.5' % line
                 )
 
     def update_sourcecode_display(self):
+        self.srcs_disp.tag_remove('hilite', '0.0', END)
+        self.tokn_disp.tag_remove('hilite', '0.0', END)
         self.srcs_disp.tag_remove('currline', '0.0', END)
         self.tokn_disp.tag_remove('currline', '0.0', END)
         selprog = self._get_prog_from_selector()
@@ -981,7 +995,7 @@ class MufGui(object):
             if addr:
                 selprog = addr.prog
         if selprog is None:
-            selprog = db.get_registered_obj(userobj, "$cmd/test")
+            selprog = db.get_registered_obj(1, "$cmd/test")
         self.update_sourcecode_from_program(selprog)
         if not self.fr:
             return
@@ -990,12 +1004,12 @@ class MufGui(object):
         inst = self.fr.get_inst(addr)
         self.srcs_disp.tag_add(
             'currline',
-            '%d.5' % inst.line,
+            '%d.0' % inst.line,
             '%d.end+1c' % inst.line,
         )
         self.tokn_disp.tag_add(
             'currline',
-            '%d.5' % (addr.value + 1),
+            '%d.0' % (addr.value + 1),
             '%d.end+1c' % (addr.value + 1),
         )
         self.update_sourcecode_breakpoints(selprog)
@@ -1015,14 +1029,13 @@ class MufGui(object):
         self.update_function_selector()
         self.update_call_stack_display()
         self.update_data_stack_display()
-        if not self.fr:
-            return
         self.update_variables_display()
         self.update_sourcecode_display()
 
     def update_buttonbar(self):
-        livestate = "normal" if self.allow_debug() else "disabled"
         runstate = "normal" if self.allow_run() else "disabled"
+        livestate = "normal" if self.allow_debug() else "disabled"
+        self.run_btn.config(state=runstate)
         livebtns = [
             self.stepi_btn,
             self.stepl_btn,
@@ -1032,7 +1045,21 @@ class MufGui(object):
         ]
         for btn in livebtns:
             btn.config(state=livestate)
-        self.run_btn.config(state=runstate)
+
+    def compile_program(self, prog):
+        self.clear_errors()
+        self.fr = None
+        success = MufCompiler().compile_source(prog)
+        self.update_sourcecode_from_program(prog, force=True)
+        if not success:
+            errlog("MUF tokenization failed!")
+        else:
+            log("MUF tokenization successful.", msgtype="good")
+            self.reset_execution()
+            self.update_displays()
+            self.fr.call_stack = []
+        self.update_errors()
+        self.update_displays()
 
     def reset_execution(self, command=""):
         # db.init_object_db()
@@ -1124,19 +1151,7 @@ class MufGui(object):
             progobj = db.get_registered_obj(userobj, "$cmd/test")
             progobj.name = os.path.basename(filename)
         progobj.sources = srcs
-        success = MufCompiler().compile_source(progobj.dbref)
-        self.prev_prog = -1
-        self.fr = None
-        self.update_sourcecode_from_program(progobj.dbref)
-        if not success:
-            errlog("MUF tokenization failed!")
-            self.update_displays()
-            return None
-        log("MUF tokenization successful.", msgtype="good")
-        self.reset_execution()
-        self.update_displays()
-        self.fr.call_stack = []
-        self.update_displays()
+        self.compile_program(progobj.dbref)
 
     def main(self):
         self.root.mainloop()
