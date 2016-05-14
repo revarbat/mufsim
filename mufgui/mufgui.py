@@ -10,12 +10,14 @@ try:  # Python 2
     from tkSimpleDialog import askstring
     from tkFileDialog import askopenfilename
     from tkMessageBox import showinfo
+    from ttk import Combobox
 except ImportError:  # Python 3
     from tkinter import *  # noqa
     from tkinter.font import Font
     from tkinter.simpledialog import askstring
     from tkinter.filedialog import askopenfilename
     from tkinter.messagebox import showinfo
+    from tkinter.ttk import Combobox
 
 from .tooltip import CreateToolTip
 from .listdisplay import ListDisplay
@@ -66,7 +68,8 @@ class MufGui(object):
         self.root = Tk()
         self.root.title("MUF Debugger")
         self.root.protocol("WM_DELETE_WINDOW", self.filemenu_quit)
-        self.root.wm_attributes("-modified", 0)
+        if platform.system() == "Darwin":
+            self.root.wm_attributes("-modified", 0)
 
         self.current_program = StringVar()
         self.current_program.set("- Load a Program -")
@@ -120,20 +123,27 @@ class MufGui(object):
 
     def setup_gui_optiondb(self):
         root = self.root
-        root.option_add("*Background", "gray75")
-        root.option_add("*Button.highlightBackground", "gray75")
-        root.option_add("*Entry.background", "white")
-        root.option_add("*Entry.highlightBackground", "gray75")
-        root.option_add("*Menu.disabledForeground", "#bbb")
-        root.option_add("*Menu.foreground", "black")
+        if platform.system() == 'Darwin':
+            root.option_add("*background", "gray90")
+            root.option_add("*Button.highlightBackground", "gray90")
+            root.option_add("*Entry.highlightBackground", "gray90")
+            root.option_add("*Panedwindow.sashRelief", RAISED)
+            root.option_add("*Menu.foreground", "black")
+            root.option_add("*disabledForeground", "#ccc")
+        elif platform.system() == 'Windows':
+            root.option_add("*Button.relief", RAISED)
+            root.option_add("*Button.borderWidth", "2")
+            root.option_add("*background", "white")
+            root.option_add("*Panedwindow.sashRelief", FLAT)
+            root.option_add("*disabledForeground", "#aaa")
+        else:
+            root.option_add("*Panedwindow.sashRelief", RAISED)
         root.option_add("*Panedwindow.borderWidth", "1")
-        root.option_add("*Panedwindow.sashRelief", "raised")
         root.option_add("*Panedwindow.sashWidth", "6")
+        root.option_add("*Entry.background", "white")
         root.option_add("*Text.background", "white")
         root.option_add("*Text.highlightBackground", "white")
         root.option_add("*Text.font", self.sansserif)
-        if platform.system() == 'Windows':
-            root.option_add("*Menubutton.relief", "raised")
 
     def setup_gui_menus(self):
         self.menubar = Menu(self.root, name="mb", tearoff=0)
@@ -227,26 +237,38 @@ class MufGui(object):
     def setup_gui_source_selectors_frame(self, master):
         srcselfr = Frame(master)
         self.src_lbl = Label(srcselfr, text="Prog")
-        self.src_sel = Menubutton(
-            srcselfr, width=20,
+        self.src_sel = Combobox(
+            srcselfr,
+            width=20,
+            justify="left",
+            state="readonly",
             textvariable=self.current_program,
+            values=[]
         )
-        self.src_sel.menu = Menu(self.src_sel, tearoff=0)
-        self.src_sel['menu'] = self.src_sel.menu
+        self.src_sel.bind(
+            "<<ComboboxSelected>>",
+            self.handle_source_selector_change
+        )
         self.fun_lbl = Label(srcselfr, text="  Func")
-        self.fun_sel = Menubutton(
-            srcselfr, width=20,
+        self.fun_sel = Combobox(
+            srcselfr,
+            width=20,
+            justify="left",
+            state="readonly",
             textvariable=self.current_function,
+            values=[]
         )
-        self.fun_sel.menu = Menu(self.fun_sel, tearoff=0)
-        self.fun_sel['menu'] = self.fun_sel.menu
+        self.fun_sel.bind(
+            "<<ComboboxSelected>>",
+            self.handle_function_selector_change
+        )
         self.comp_btn = Button(
             srcselfr, text="Compile", command=self.debugmenu_compile)
         self.src_lbl.pack(side=LEFT, fill=NONE, expand=0)
-        self.src_sel.pack(side=LEFT, fill=NONE, expand=0)
+        self.src_sel.pack(side=LEFT, fill=Y, expand=0, padx=5, pady=2)
         self.fun_lbl.pack(side=LEFT, fill=NONE, expand=0)
-        self.fun_sel.pack(side=LEFT, fill=NONE, expand=0)
-        self.comp_btn.pack(side=LEFT, fill=NONE, expand=0)
+        self.fun_sel.pack(side=LEFT, fill=Y, expand=0, padx=5, pady=2)
+        self.comp_btn.pack(side=LEFT, fill=Y, expand=0, padx=10, pady=2)
         return srcselfr
 
     def setup_gui_source_display_frame(self, master):
@@ -307,17 +329,17 @@ class MufGui(object):
     def setup_gui_debug_buttons_frame(self, master):
         btnsfr = Frame(master)
         self.run_btn = Button(
-            btnsfr, text="Run", command=self.debugmenu_run)
+            btnsfr, text="Run", width=5, command=self.debugmenu_run)
         self.stepi_btn = Button(
-            btnsfr, text="Inst", command=self.debugmenu_step_inst)
+            btnsfr, text="Inst", width=5, command=self.debugmenu_step_inst)
         self.stepl_btn = Button(
-            btnsfr, text="Step", command=self.debugmenu_step_line)
+            btnsfr, text="Step", width=5, command=self.debugmenu_step_line)
         self.nextl_btn = Button(
-            btnsfr, text="Next", command=self.debugmenu_next_line)
+            btnsfr, text="Next", width=5, command=self.debugmenu_next_line)
         self.finish_btn = Button(
-            btnsfr, text="Finish", command=self.debugmenu_finish)
+            btnsfr, text="Finish", width=5, command=self.debugmenu_finish)
         self.cont_btn = Button(
-            btnsfr, text="Cont", command=self.debugmenu_continue)
+            btnsfr, text="Cont", width=5, command=self.debugmenu_continue)
         self.trace_chk = Checkbutton(
             btnsfr, text="Trace",
             variable=self.dotrace,
@@ -398,7 +420,6 @@ class MufGui(object):
             title="Load Program",
             defaultextension=".muf",
             filetypes=[
-                ('all files', '.*'),
                 ('MUF files', '.muf'),
                 ('MUF files', '.m'),
                 ('MUV files', '.muv'),
@@ -422,7 +443,6 @@ class MufGui(object):
             title="Load Library",
             defaultextension=".muf",
             filetypes=[
-                ('all files', '.*'),
                 ('MUF files', '.muf'),
                 ('MUF files', '.m'),
                 ('MUV files', '.muv'),
@@ -646,7 +666,7 @@ class MufGui(object):
             self.update_sourcecode_from_program(prog)
         self.cons_in.focus()
 
-    def handle_function_selector_change(self):
+    def handle_function_selector_change(self, event=None):
         self.srcs_disp.tag_remove('hilite', '0.0', END)
         self.tokn_disp.tag_remove('hilite', '0.0', END)
         prog = self._get_prog_from_selector()
@@ -1206,33 +1226,21 @@ class MufGui(object):
         return int(prog)
 
     def update_program_selector(self):
-        self.src_sel.menu.delete(0, END)
         progs = db.get_all_programs()
         if not progs:
             self.current_program.set("- Load a Program -")
+        values = []
         for prog in progs:
             progobj = db.getobj(prog)
             name = "%s(%s)" % (progobj.name, prog)
-            self.src_sel.menu.add_radiobutton(
-                label=name, value=name,
-                variable=self.current_program,
-                command=self.handle_source_selector_change,
-            )
+            values.append(name)
             if self.fr:
                 addr = self.fr.call_addr(self.call_level)
                 if addr and prog.value == addr.prog:
                     self.current_program.set(name)
             elif prog == progs[0]:
                 self.current_program.set(name)
-        self.src_sel.menu.add_separator()
-        self.src_sel.menu.add_command(
-            label="Load Program...",
-            command=self.filemenu_load_program,
-        )
-        self.src_sel.menu.add_command(
-            label="Load Library...",
-            command=self.filemenu_load_library,
-        )
+        self.src_sel.config(values=values)
 
     def update_function_selector(self):
         prog = self._get_prog_from_selector()
@@ -1242,7 +1250,6 @@ class MufGui(object):
             addr = self.fr.call_addr(self.call_level)
             if addr:
                 prog = addr.prog
-        self.fun_sel.menu.delete(0, END)
         if not db.validobj(prog):
             self.current_function.set("")
             return
@@ -1260,14 +1267,8 @@ class MufGui(object):
         if not funs:
             self.current_function.set("")
         else:
+            self.fun_sel.config(values=funs)
             self.current_function.set(currfun)
-            for fun in funs:
-                self.fun_sel.menu.add_radiobutton(
-                    label=fun,
-                    value=fun,
-                    variable=self.current_function,
-                    command=self.handle_function_selector_change,
-                )
 
     def update_data_stack_display(self):
         self.data_disp.delete('0.0', END)

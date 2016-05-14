@@ -162,17 +162,17 @@ def create_menus(obj, master, menubar):
             )
             if platform.system() == "Windows":
                 # Standardize menu accelerator for Windows
-                menuaccel = "%s%s" % (mods, key.upper())
-                menuaccel = menuaccel.replace('Control', 'CTRL')
-                menuaccel = menuaccel.replace('Alt', 'ALT')
-                menuaccel = menuaccel.replace('Shift', 'SHIFT')
+                menuaccel = "%s%s" % (mods, key.title())
+                menuaccel = menuaccel.replace('Control', 'Ctrl')
+                menuaccel = menuaccel.replace('Alt', 'Alt')
+                menuaccel = menuaccel.replace('Shift', 'Shift')
                 menuaccel = menuaccel.replace('-', '+')
             else:
                 # Always show uppercase letter in menu accelerator.
-                menuaccel = "%s%s" % (mods, key_u)
+                menuaccel = "%s%s" % (mods, key_u.title())
             replacements = [
-                ('bracketleft', '['),
-                ('bracketright', ']'),
+                ('Bracketleft', '['),
+                ('Bracketright', ']'),
             ]
             for find, repl in replacements:
                 menuaccel = menuaccel.replace(find, repl)
