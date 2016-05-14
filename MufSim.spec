@@ -3,8 +3,31 @@
 block_cipher = None
 
 
-a = Analysis(['winstart.py'],
-             pathex=['Y:\\'],
+plist_opts = dict(
+    NSHighResolutionCapable=True,
+    CFBundleDocumentTypes=[
+	dict(
+	    CFBundleTypeName="MUF File",
+	    CFBundleTypeRole="Viewer",
+	    LSHandlerRank="Alternate",
+	    CFBundleTypeMIMETypes=["text/x-muf", "application/x-muf"],
+	    LSItemContentTypes=["org.fuzzball.muf"],
+	    CFBundleTypeExtensions=["muf"],
+	),
+	dict(
+	    CFBundleTypeName="MUV File",
+	    CFBundleTypeRole="Viewer",
+	    LSHandlerRank="Alternate",
+	    CFBundleTypeMIMETypes=["text/x-muv", "application/x-muv"],
+	    LSItemContentTypes=["com.belfry.muv"],
+	    CFBundleTypeExtensions=["muv"],
+	),
+    ],
+)
+
+
+a = Analysis(['kickstart.py'],
+             pathex=[],
              binaries=None,
              datas=None,
              hiddenimports=[],
@@ -25,4 +48,9 @@ exe = EXE(pyz,
           debug=False,
           strip=False,
           upx=True,
-          console=False , icon='icons\\MufSim.ico')
+          console=False , icon='icons/MufSim.ico')
+app = BUNDLE(exe,
+             name='MufSim.app',
+             icon='icons/MufSim.icns',
+	     info_plist=plist_opts,
+             bundle_identifier='com.belfry.mufsimulator')

@@ -153,7 +153,7 @@ class InstRotate(Instruction):
         if num < 0:
             a = fr.data_pop()
             fr.data_insert((-num) - 1, a)
-        else:
+        elif num > 0:
             a = fr.data_pull(num)
             fr.data_push(a)
 

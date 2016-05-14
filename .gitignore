@@ -7,4 +7,5 @@ build/
 dist/MufSim
 dist/*.app
 dist/*.exe
+dist-win
 .ropeproject

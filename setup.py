@@ -8,7 +8,7 @@ from glob import glob
 VERSION = "0.8.2"
 
 
-APP = ['mufgui/mufgui.py']
+APP = ['kickstart.py']
 COPYRIGHT = "Copyright 2016 by Revar Desmera"
 LONG_DESCR = """\
 An offline tokenizer, interpreter, and debugger for MUF, a stack-based
@@ -47,28 +47,28 @@ py2app_options = dict(
 )
 
 py2exe_options = dict(
-    bundle_files=1,
+    bundle_files=2,
+    dist_dir='dist-win',
     excludes=["tests", "dist", "build"],
 )
 
 if platform.system() == 'Windows':
+    import py2exe
     data_files.append(
         (
             "Microsoft.VC90.CRT",
-            glob(
-                r'C:\Program Files\Microsoft Visual Studio 9.0\VC\redist' +
-                r'\x86\Microsoft.VC90.CRT\*.*'
-            )
+            glob(r'C:\Windows\WinSxS\x86_microsoft.vc90.crt_*\*.*')
         )
     )
     sys.path.append(
-        r'C:\Program Files\Microsoft Visual Studio 9.0\VC\redist' +
-        r'\x86\Microsoft.VC90.CRT'
+        glob(r'C:\Windows\WinSxS\x86_microsoft.vc90.crt_*')
     )
     extra_options['windows'] = APP
+    extra_options['zipfile'] = None
+elif platform.system() == 'Darwin':
+    extra_options['app'] = APP
 
 setup(
-    app=APP,
     name='MufSim',
     version=VERSION,
     description='Muf language simulator and debugger.',

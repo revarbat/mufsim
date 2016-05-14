@@ -133,5 +133,37 @@ class ListDisplay(Text):
     def place(self, *args, **kwargs):
         return self.frame.place(*args, **kwargs)
 
+    def indent_text(self, by=4):
+        rng = self.tag_ranges("sel")
+        if rng:
+            sel_first = int(float(str(rng[0])))
+            sel_last = int(float(self.index(str(rng[1]) + '-1c')))
+            lines = range(sel_first, sel_last + 1)
+            self.tag_remove('sel', '0.0', END)
+        else:
+            lines = [int(float(self.index('insert')))]
+        for line in lines:
+            line_start_idx = "%d.0" % line
+            line_end_idx = "%d.end" % line
+            txtline = self.get(line_start_idx, line_end_idx)
+            currind = 0
+            for ch in list(txtline):
+                if ch == ' ':
+                    currind += 1
+                elif ch == '\t':
+                    currind = 8*(1+int(currind//8))
+                else:
+                    break
+            pfx = ' ' * (currind + by)
+            txtline = pfx + txtline.lstrip()
+            self.delete(line_start_idx, line_end_idx)
+            self.insert(line_start_idx, txtline)
+        if rng:
+            self.tag_add(
+                'sel',
+                '%d.0' % sel_first,
+                '%d.end+1c' % sel_last,
+            )
+
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

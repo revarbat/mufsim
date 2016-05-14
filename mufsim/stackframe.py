@@ -45,6 +45,7 @@ class MufStackFrame(object):
         self.trace = False
         self.cycles = 0
         self.breakpoints = []
+        self.break_on_error = False
         self.break_type = None
         self.break_count = -1
         self.prev_call_level = -1
@@ -185,7 +186,11 @@ class MufStackFrame(object):
         if not caddr:
             errlog("Error in #%d line %d (%s): %s" %
                    (addr.prog, inst.line, str(inst), e))
-            self.call_stack = []
+            if self.break_on_error:
+                self.break_count = -1
+                self.break_type = None
+            else:
+                self.call_stack = []
             return False
         if not isinstance(caddr, si.Address):
             raise MufRuntimeError("Expected an address!")
@@ -300,7 +305,7 @@ class MufStackFrame(object):
         if n < 1:
             self.data_stack.append(val)
         else:
-            self.data_stack.insert(1 - n, val)
+            self.data_stack.insert(-n, val)
 
     def loop_iter_push(self, typ, it):
         return self.call_stack[-1].loop_iter_push(typ, it)
@@ -489,6 +494,9 @@ class MufStackFrame(object):
             self.reset_breaks()
             self.break_type = self.BREAK_FINISH
             self.break_count = val
+
+    def set_break_on_error(self, val=True):
+        self.break_on_error = val
 
     def get_data_stack(self):
         return self.data_stack

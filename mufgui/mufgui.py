@@ -12,58 +12,39 @@ try:  # Python 2
     from tkMessageBox import showinfo
 except ImportError:  # Python 3
     from tkinter import *  # noqa
+    from tkinter.font import Font
     from tkinter.simpledialog import askstring
     from tkinter.filedialog import askopenfilename
     from tkinter.messagebox import showinfo
-    from tkinter.font import Font
 
-from mufgui.tooltip import CreateToolTip
-from mufgui.listdisplay import ListDisplay
+from .tooltip import CreateToolTip
+from .listdisplay import ListDisplay
+from .menudecorators import (
+    menu_cmd, menu_check, separator, accels, enable_test,
+    process_enablers, create_menus,
+)
 
 import mufsim.stackitems as si
 import mufsim.gamedb as db
+import mufsim.utils as util
 from mufsim.logger import log, warnlog, errlog, set_output_command
 from mufsim.compiler import MufCompiler
 from mufsim.stackframe import MufStackFrame
 
 mufsim_version = None
-menu_item_handlers = []
+
+command_handlers = {}
 
 
-# Decorator declarations
-def menu_item(menu_name, label, plats=["Windows", "Darwin", "Linux"]):
-    def func_decorator(func):
-        if platform.system() in plats:
-            func.menu_name = menu_name
-            func.menu_label = label
-            global menu_item_handlers
-            menu_item_handlers.append(func.__name__)
+def debugger_command(words=[], usage=None, desc=None):
+    def cmd_wrapper(func):
+        global command_handlers
+        func.usage_mesg = usage
+        func.help_mesg = desc
+        for word in words:
+            command_handlers[word] = func.__name__
         return func
-    return func_decorator
-
-
-def separator(func):
-    func.separator = True
-    return func
-
-
-def accels(mac=None, win=None, lin=None):
-    def func_decorator(func):
-        if platform.system() == "Darwin":
-            func.accelerator = mac
-        if platform.system() == "Windows":
-            func.accelerator = win
-        if platform.system() == "Linux":
-            func.accelerator = lin
-        return func
-    return func_decorator
-
-
-def enable_test(tst):
-    def func_decorator(func):
-        func.enable_test = tst
-        return func
-    return func_decorator
+    return cmd_wrapper
 
 
 class MufGui(object):
@@ -72,6 +53,10 @@ class MufGui(object):
         self.current_program = None
         self.call_level = 0
         self.prev_prog = -1
+        self.history = []
+        self.history_line = 0
+        self.prev_command = ''
+        self.curr_command = ''
         self.setup_gui()
         set_output_command(self.log_to_console)
         if len(sys.argv) > 1:
@@ -81,6 +66,7 @@ class MufGui(object):
         self.root = Tk()
         self.root.title("MUF Debugger")
         self.root.protocol("WM_DELETE_WINDOW", self.filemenu_quit)
+        self.root.wm_attributes("-modified", 0)
 
         self.current_program = StringVar()
         self.current_program.set("- Load a Program -")
@@ -101,13 +87,13 @@ class MufGui(object):
         panes1.add(panes2, minsize=150, width=250)
         panes1.add(panes3, minsize=300)
 
-        panes2.add(self.setup_gui_data_frame(panes2), minsize=100, height=200)
-        panes2.add(self.setup_gui_call_frame(panes2), minsize=100, height=200)
-        panes2.add(self.setup_gui_vars_frame(panes2), minsize=100, height=200)
+        panes2.add(self.setup_gui_data_frame(panes2), minsize=100, height=150)
+        panes2.add(self.setup_gui_call_frame(panes2), minsize=100, height=150)
+        panes2.add(self.setup_gui_vars_frame(panes2), minsize=100, height=300)
 
-        panes3.add(self.setup_gui_source_frame(panes3), minsize=100, height=350)
-        panes3.add(self.setup_gui_tokens_frame(panes3), minsize=100, height=150)
-        panes3.add(self.setup_gui_console_frame(panes3), minsize=50, height=100)
+        panes3.add(self.setup_gui_source_frame(panes3), minsize=100, height=300)
+        panes3.add(self.setup_gui_tokens_frame(panes3), minsize=100, height=100)
+        panes3.add(self.setup_gui_console_frame(panes3), minsize=50, height=200)
 
         self.gui_raise_window()
         self.update_displays()
@@ -151,7 +137,6 @@ class MufGui(object):
 
     def setup_gui_menus(self):
         self.menubar = Menu(self.root, name="mb", tearoff=0)
-
         if platform.system() == 'Darwin':
             # self.root.createcommand(
             #     '::tk::mac::ShowPreferences',
@@ -165,84 +150,19 @@ class MufGui(object):
                 "::tk::mac::OpenDocument",
                 self.handle_open_files
             )
-
-        # Make menus from methods marked with @menu_item decorator.
+        # Make menus from methods marked with @menu_cmd decorator.
         # Will appear in menus in order declared.
-        menu_names = []
-        menus = {}
-        global menu_item_handlers
-        for hndlr_name in menu_item_handlers:
-            hndlr = getattr(self, hndlr_name)
-            if hndlr.menu_name not in menu_names:
-                name = hndlr.menu_name
-                menu_names.append(name)
-                menus[hndlr.menu_name] = Menu(
-                    self.menubar,
-                    tearoff=0,
-                    postcommand=lambda x=name: self.gui_menu_enabler(x),
-                )
-            menu = menus[hndlr.menu_name]
-            if hasattr(hndlr, 'separator') and hndlr.separator:
-                menu.add_separator()
-            extraopts = {}
-            if hasattr(hndlr, 'accelerator') and hndlr.accelerator:
-                accel = hndlr.accelerator
-                # Standardize to proper binding format.
-                accel = accel.replace('Ctrl', 'Control')
-                accel = accel.replace('Cmd', 'Command')
-                accel = accel.replace('Opt', 'Option')
-                accel = accel.replace('+', '-')
-                if '-' in accel:
-                    mods, key = accel.rsplit('-', 1)
-                    mods += '-'
-                else:
-                    mods = ''
-                    key = accel
-                # Tk is odd about how it handles Caps Lock.
-                # <a> triggers only if CapsLock and Shift are off.
-                # <A> triggers only if CapsLock or Shift is on.
-                # <Shift-a> never ever triggers for ANY key combination.
-                # <Shift-A> triggers only when Shift is pressed.
-                # <Shift-A> has priority over <Command-A>
-                # May as well bind for both upper and lowercase key.
-                key_u = key.upper() if len(key) == 1 else key
-                self.root.bind(
-                    "<%s%s>" % (mods, key_u),
-                    self.defer_evt(hndlr)  # Prevents some window deadlocks
-                )
-                key_l = key.lower() if len(key) == 1 else key
-                self.root.bind(
-                    "<%s%s>" % (mods, key_l),
-                    self.defer_evt(hndlr)  # Prevents some window deadlocks
-                )
-                if platform.system() == "Windows":
-                    # Standardize menu accelerator for Windows
-                    menuaccel = "%s%s" % (mods, key.upper()),
-                    menuaccel.replace('Control', 'CTRL')
-                    menuaccel.replace('Alt', 'ALT')
-                    menuaccel.replace('Shift', 'SHIFT')
-                    menuaccel.replace('-', '+')
-                else:
-                    # Always show uppercase letter in menu accelerator.
-                    menuaccel = "%s%s" % (mods, key_u),
-                extraopts['accel'] = menuaccel
-            menu.add_command(
-                label=hndlr.menu_label,
-                command=self.defer(hndlr),  # Prevents some window deadlocks
-                **extraopts
-            )
-        for menu_name in menu_names:
-            self.menubar.add_cascade(label=menu_name, menu=menus[menu_name])
+        self.menus = create_menus(self, self.root, self.menubar)
         if platform.system() == 'Darwin':
             self.helpmenu = Menu(self.menubar, name="help", tearoff=0)
             # self.root.createcommand(
             #     'tk::mac::ShowHelp', self.helpmenu_help_dlog)
             self.menubar.add_cascade(label="Help", menu=self.helpmenu)
-        self.menus = menus
         return self.menubar
 
     def setup_gui_data_frame(self, master):
-        datafr = LabelFrame(master, text="Data Stack", relief="flat", borderwidth=0)
+        datafr = LabelFrame(
+            master, text="Data Stack", relief="flat", borderwidth=0)
         self.data_disp = ListDisplay(datafr, readonly=True, gutter=4)
         self.data_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.data_disp.tag_config(
@@ -257,7 +177,8 @@ class MufGui(object):
         return datafr
 
     def setup_gui_call_frame(self, master):
-        callfr = LabelFrame(master, text="Call Stack", relief="flat", borderwidth=0)
+        callfr = LabelFrame(
+            master, text="Call Stack", relief="flat", borderwidth=0)
         self.call_disp = ListDisplay(callfr, readonly=True, gutter=4)
         self.call_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.call_disp.tag_config(
@@ -274,7 +195,8 @@ class MufGui(object):
         return callfr
 
     def setup_gui_vars_frame(self, master):
-        varsfr = LabelFrame(master, text="Variables", relief="flat", borderwidth=0)
+        varsfr = LabelFrame(
+            master, text="Variables", relief="flat", borderwidth=0)
         self.vars_disp = ListDisplay(varsfr, readonly=True)
         self.vars_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.vars_disp.tag_config(
@@ -329,7 +251,14 @@ class MufGui(object):
 
     def setup_gui_source_display_frame(self, master):
         srcdispfr = Frame(master)
-        self.srcs_disp = ListDisplay(srcdispfr, font=self.monospace, gutter=5)
+        self.srcs_disp = ListDisplay(
+            srcdispfr,
+            font=self.monospace,
+            gutter=5,
+            undo=True,
+            autoseparators=True,
+            maxundo=1000,
+        )
         self.srcs_disp.gutter.bind(
             '<Button-1>', self.handle_sources_breakpoint_toggle)
         self.srcs_disp.tag_config(
@@ -343,6 +272,7 @@ class MufGui(object):
         self.srcs_disp.gutter.tag_config(
             'breakpt', background="#447", foreground="white")
         self.srcs_disp.pack(side=BOTTOM, fill=BOTH, expand=1)
+        self.srcs_disp.bind("<Tab>", self.source_editor_tab_handler)
         CreateToolTip(
             self.srcs_disp.gutter,
             'Click on line number to toggle breakpoint.',
@@ -393,7 +323,7 @@ class MufGui(object):
             variable=self.dotrace,
             onvalue='1',
             offvalue='0',
-            command=self.handle_trace,
+            command=self.debugmenu_trace,
         )
         self.run_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.stepi_btn.pack(side=LEFT, fill=NONE, expand=0)
@@ -424,6 +354,7 @@ class MufGui(object):
         self.cons_disp = ListDisplay(
             consfr,
             height=1,
+            wrap=WORD,
             readonly=True,
             font=self.monospace
         )
@@ -434,25 +365,15 @@ class MufGui(object):
         self.cons_in = Entry(consfr, relief=SUNKEN)
         self.cons_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.cons_in.pack(side=TOP, fill=X, expand=0)
+        self.cons_in.bind("<Key-Up>", self.handle_command_history_prev)
+        self.cons_in.bind("<Key-Down>", self.handle_command_history_next)
+        self.cons_in.bind("<Key-Tab>", self.handle_command_completion)
+        self.cons_in.bind("<Key-Return>", self.handle_command)
         self.cons_in.focus()
         return consfr
 
-    def gui_menu_enabler(self, menu_name):
-        menu = self.menus[menu_name]
-        global menu_item_handlers
-        for hndlr_name in menu_item_handlers:
-            hndlr = getattr(self, hndlr_name)
-            if menu_name == hndlr.menu_name:
-                if hasattr(hndlr, 'enable_test') and hndlr.enable_test:
-                    test = getattr(self, hndlr.enable_test)
-                    state = "disabled"
-                    color = "#bbb"
-                    if test():
-                        state = "normal"
-                        color = "black"
-                    idx = menu.index(hndlr.menu_label)
-                    menu.entryconfig(idx, state=state)
-                    menu.entryconfig(idx, foreground=color)
+    def allow_srcsedit(self):
+        return self.root.focus_get() == self.srcs_disp
 
     def allow_run(self):
         return self.fr is not None
@@ -460,11 +381,11 @@ class MufGui(object):
     def allow_debug(self):
         return self.fr and self.fr.get_call_stack()
 
-    def appmenu_prefs_dlog(self):
+    def appmenu_prefs_dlog(self, event=None):
         # TODO: implement!
         print("Display preferences dlog.")
 
-    @menu_item("File", "Open Program...")
+    @menu_cmd("File", "Open Program...")
     @accels(mac="Cmd-O", win="Ctrl-O", lin="Ctrl-O")
     def filemenu_load_program(self, event=None):
         extras = {}
@@ -488,7 +409,7 @@ class MufGui(object):
             return
         self.load_program_from_file(filename)
 
-    @menu_item("File", "Open Library...")
+    @menu_cmd("File", "Open Library...")
     @accels(mac="Cmd-L", win="Ctrl-L", lin="Ctrl-L")
     def filemenu_load_library(self, event=None):
         extras = {}
@@ -519,42 +440,69 @@ class MufGui(object):
             initialvalue=regname,
             parent=self.root,
         )
+        self.cons_in.focus()
         if not regname:
             return
         self.load_program_from_file(filename, regname=regname)
 
     @separator
-    @menu_item("File", "Exit", plats=["Windows"])
-    @menu_item("File", "Quit", plats=["Linux"])
+    @menu_cmd("File", "Exit", plats=["Windows"])
+    @menu_cmd("File", "Quit", plats=["Linux"])
     @accels(win="Alt-F4", lin="Ctrl-Q")
-    def filemenu_quit(self):
+    def filemenu_quit(self, event=None):
         try:
             self.root.destroy()
         except:
             pass
 
-    @menu_item("Edit", "Cut")
+    @menu_cmd("Edit", "Undo")
+    @accels(mac="Cmd-Z", win="Ctrl-Z", lin="Ctrl-Z")
+    def editmenu_undo(self, event=None):
+        self.gen_foc_ev("Undo"),
+
+    @menu_cmd("Edit", "Redo")
+    @accels(mac="Cmd-Y", win="Ctrl-Y", lin="Ctrl-Y")
+    def editmenu_redo(self, event=None):
+        self.gen_foc_ev("Redo"),
+
+    @separator
+    @menu_cmd("Edit", "Cut")
     @accels(mac="Cmd-X", win="Ctrl-X", lin="Ctrl-X")
-    def editmenu_cut(self):
+    def editmenu_cut(self, event=None):
         self.gen_foc_ev("Cut"),
 
-    @menu_item("Edit", "Copy")
+    @menu_cmd("Edit", "Copy")
     @accels(mac="Cmd-C", win="Ctrl-C", lin="Ctrl-C")
-    def editmenu_copy(self):
+    def editmenu_copy(self, event=None):
         self.gen_foc_ev("Copy"),
 
-    @menu_item("Edit", "Paste")
+    @menu_cmd("Edit", "Paste")
     @accels(mac="Cmd-V", win="Ctrl-V", lin="Ctrl-V")
-    def editmenu_paste(self):
+    def editmenu_paste(self, event=None):
         self.gen_foc_ev("Paste"),
 
     @separator
-    @menu_item("Edit", "Clear")
+    @menu_cmd("Edit", "Clear")
     @accels(mac="Delete", win="Delete", lin="Delete")
-    def editmenu_clear(self):
+    def editmenu_clear(self, event=None):
         self.gen_foc_ev("Clear"),
 
-    @menu_item("Debug", "Compile")
+    @separator
+    @menu_cmd("Edit", "Indent")
+    @accels(mac="Cmd-]", win="Ctrl+]", lin="Ctrl+]")
+    @enable_test('allow_srcsedit')
+    def editmenu_indent(self, event=None):
+        self.srcs_disp.indent_text(by=4)
+        return 'break'
+
+    @menu_cmd("Edit", "Unindent")
+    @accels(mac="Cmd-[", win="Ctrl+[", lin="Ctrl+[")
+    @enable_test('allow_srcsedit')
+    def editmenu_unindent(self, event=None):
+        self.srcs_disp.indent_text(by=-4)
+        return 'break'
+
+    @menu_cmd("Debug", "Compile")
     @accels(mac="Cmd-K", win="Ctrl-Shift-K", lin="Ctrl-Shift-K")
     def debugmenu_compile(self, event=None):
         prog = self._get_prog_from_selector()
@@ -563,7 +511,7 @@ class MufGui(object):
             progobj.sources = self.srcs_disp.get('1.0', 'end-2c')
             self.compile_program(prog)
 
-    @menu_item("Debug", "Run...")
+    @menu_cmd("Debug", "Run...")
     @accels(mac="Cmd-R", win="Ctrl-Shift-R", lin="Ctrl-Shift-R")
     @enable_test('allow_run')
     def debugmenu_run(self, event=None):
@@ -573,46 +521,57 @@ class MufGui(object):
             initialvalue="",
             parent=self.root,
         )
+        self.cons_in.focus()
         if command is None:
             return
         self.reset_execution(command)
         self.update_displays()
 
     @separator
-    @menu_item("Debug", "Step Instruction")
+    @menu_cmd("Debug", "Step Instruction")
     @accels(mac="Ctrl-I", win="Ctrl-Shift-I", lin="Ctrl-Shift-I")
     @enable_test('allow_debug')
     def debugmenu_step_inst(self, event=None):
         self.fr.set_break_insts(1)
         self.resume_execution()
 
-    @menu_item("Debug", "Step Line")
+    @menu_cmd("Debug", "Step Line")
     @accels(mac="Ctrl-S", win="Ctrl-Shift-S", lin="Ctrl-Shift-S")
     @enable_test('allow_debug')
     def debugmenu_step_line(self, event=None):
         self.fr.set_break_steps(1)
         self.resume_execution()
 
-    @menu_item("Debug", "Next Line")
+    @menu_cmd("Debug", "Next Line")
     @accels(mac="Ctrl-N", win="Ctrl-Shift-N", lin="Ctrl-Shift-N")
     @enable_test('allow_debug')
     def debugmenu_next_line(self, event=None):
         self.fr.set_break_lines(1)
         self.resume_execution()
 
-    @menu_item("Debug", "Finish Function")
+    @menu_cmd("Debug", "Finish Function")
     @accels(mac="Ctrl-F", win="Ctrl-Shift-F", lin="Ctrl-Shift-F")
     @enable_test('allow_debug')
     def debugmenu_finish(self, event=None):
         self.fr.set_break_on_finish(True)
         self.resume_execution()
 
-    @menu_item("Debug", "Continue Execution")
+    @menu_cmd("Debug", "Continue Execution")
     @accels(mac="Ctrl-C", win="Ctrl-Shift-C", lin="Ctrl-Shift-C")
     @enable_test('allow_debug')
     def debugmenu_continue(self, event=None):
         self.fr.reset_breaks()
         self.resume_execution()
+
+    @separator
+    @menu_check("Debug", "Trace", 'dotrace')
+    @accels(mac="Cmd-T", win="Ctrl-Shift-T", lin="Ctrl-Shift-T")
+    @enable_test('allow_run')
+    def debugmenu_trace(self, event=None):
+        if event:
+            self.dotrace.set('0' if self.dotrace.get() != '0' else '1')
+        if self.fr:
+            self.fr.set_trace(self.dotrace.get() != '0')
 
     def helpmenu_help_dlog(self):
         # TODO: implement!
@@ -642,6 +601,7 @@ class MufGui(object):
         index = w.index("@%s,%s" % (event.x, event.y))
         level = int(index.split('.')[0]) - 1
         self.update_displays(level=level)
+        self.cons_in.focus()
 
     def handle_stack_item_dblclick(self, event):
         w = event.widget
@@ -651,6 +611,7 @@ class MufGui(object):
             val = self.fr.data_pick(item)
             val = si.item_repr_pretty(val)
             log("pick(%d) = %s" % (item, val))
+        self.cons_in.focus()
 
     def handle_vars_gname_dblclick(self, event):
         w = event.widget
@@ -663,6 +624,7 @@ class MufGui(object):
             val = self.fr.globalvar_get(vnum)
             val = si.item_repr_pretty(val)
             log("%s = %s" % (vname, val))
+        self.cons_in.focus()
 
     def handle_vars_fname_dblclick(self, event):
         w = event.widget
@@ -676,11 +638,13 @@ class MufGui(object):
             val = self.fr.funcvar_get(vnum, self.call_level)
             val = si.item_repr_pretty(val)
             log("%s = %s" % (vname, val))
+        self.cons_in.focus()
 
     def handle_source_selector_change(self):
         prog = self._get_prog_from_selector()
         if prog is not None:
             self.update_sourcecode_from_program(prog)
+        self.cons_in.focus()
 
     def handle_function_selector_change(self):
         self.srcs_disp.tag_remove('hilite', '0.0', END)
@@ -705,6 +669,7 @@ class MufGui(object):
         )
         self.srcs_disp.see('%d.0' % line)
         self.tokn_disp.see('%d.0' % (addr.value + 1))
+        self.cons_in.focus()
 
     def handle_sources_breakpoint_toggle(self, event):
         if not self.fr:
@@ -730,6 +695,7 @@ class MufGui(object):
             initialvalue="",
             parent=self.root,
         )
+        self.cons_in.focus()
         if readline is None or readline == "@Q":
             while self.fr.call_stack:
                 self.fr.call_pop()
@@ -752,9 +718,433 @@ class MufGui(object):
             self.fr.data_push(0)
         return True
 
-    def handle_trace(self, event=None):
+    def handle_command_completion(self, event=None):
+        global command_handlers
+        cmd = self.cons_in.get()
+        idx = self.cons_in.index(INSERT)
+        if ' ' not in cmd[:idx]:
+            cmds = [
+                x for x in sorted(list(command_handlers.keys()))
+                if len(x) > 1
+            ]
+            found = []
+            for word in cmds:
+                if word.startswith(cmd[:idx]):
+                    found.append(word)
+            if len(found) == 0:
+                self.root.bell()
+                warnlog("No match.")
+                return 'break'
+            elif len(found) == 1:
+                word = found[0]
+            else:
+                self.root.bell()
+                word = os.path.commonprefix(found)
+                warnlog("Ambiguous: %s" % " ".join(found))
+            cmd = word + cmd[idx:]
+            idx = len(word)
+            self.cons_in.delete(0, END)
+            self.cons_in.insert(0, cmd)
+            self.cons_in.icursor(idx)
+        return 'break'
+
+    def handle_command_history_prev(self, event=None):
+        if self.history_line > 0:
+            if self.history_line == len(self.history):
+                self.curr_command = self.cons_in.get()
+            self.history_line -= 1
+            self.cons_in.delete(0, END)
+            self.cons_in.insert(0, self.history[self.history_line])
+            self.cons_in.icursor(END)
+        return 'break'
+
+    def handle_command_history_next(self, event=None):
+        if self.history_line < len(self.history) - 1:
+            self.history_line += 1
+            self.cons_in.delete(0, END)
+            self.cons_in.insert(0, self.history[self.history_line])
+            self.cons_in.icursor(END)
+        elif self.history_line == len(self.history) - 1:
+            self.history_line += 1
+            self.cons_in.delete(0, END)
+            self.cons_in.insert(0, self.curr_command)
+            self.cons_in.icursor(END)
+        return 'break'
+
+    def handle_command(self, event=None):
+        global command_handlers
+        cmd = self.cons_in.get()
+        self.cons_in.delete(0, END)
+        if cmd and self.history and cmd != self.history[-1]:
+            self.history.append(cmd)
+        while len(self.history) > 1000:
+            self.history.pop(0)
+        self.history_line = len(self.history)
+        if cmd:
+            self.prev_command = cmd
+        else:
+            cmd = self.prev_command
+        args = ''
+        if ' ' in cmd:
+            cmd, args = cmd.split(' ', 1)
+            args = args.strip()
+        if cmd in command_handlers:
+            meth = command_handlers[cmd]
+            getattr(self, meth)(args)
+            self.update_displays(level=self.call_level)
+        else:
+            errlog("Unrecognized command.")
+        return 'break'
+
+    @debugger_command(
+        words=["h", "help"],
+        usage="help [CMD]",
+        desc="Shows help."
+    )
+    def cmd_help(self, args):
+        global command_handlers
+        if args and args in command_handlers:
+            func = getattr(self, command_handlers[args])
+            log("Usage: %s" % func.usage_mesg)
+            log("%s" % func.help_mesg)
+        else:
+            cmds = [
+                x for x in sorted(list(command_handlers.keys()))
+                if len(x) > 1
+            ]
+            log("Available commands: %s" % " ".join(cmds))
+            log("Use 'help COMMAND' for more help on a command.")
+
+    @debugger_command(
+        words=["r", "run"],
+        usage="run [TEXT]",
+        desc="Starts the MUF program, with the given command args."
+    )
+    def cmd_run(self, args):
+        log("Starting run with command = %s" % util.escape_str(args))
+        self.reset_execution(args)
+        self.update_displays()
+
+    @debugger_command(
+        words=["i", "istep"],
+        usage="istep [COUNT]",
+        desc="Steps execution by one or more instructions."
+    )
+    def cmd_istep(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        try:
+            if not args:
+                args = "1"
+            cnt = int(args)
+            self.fr.set_break_insts(cnt)
+            self.resume_execution()
+        except:
+            errlog("Usage: istep [COUNT]")
+
+    @debugger_command(
+        words=["s", "step"],
+        usage="step [COUNT]",
+        desc="Steps execution by one or more source lines.  Steps into calls."
+    )
+    def cmd_step(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        try:
+            if not args:
+                args = "1"
+            cnt = int(args)
+            self.fr.set_break_steps(cnt)
+            self.resume_execution()
+        except:
+            errlog("Usage: step [COUNT]")
+
+    @debugger_command(
+        words=["n", "next"],
+        usage="next [COUNT]",
+        desc="Steps execution by one or more source lines.  Steps over calls."
+    )
+    def cmd_next(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        try:
+            if not args:
+                args = "1"
+            cnt = int(args)
+            self.fr.set_break_lines(cnt)
+            self.resume_execution()
+        except:
+            errlog("Usage: next [COUNT]")
+
+    @debugger_command(
+        words=["f", "finish"],
+        usage="finish",
+        desc="Finish execution of current function."
+    )
+    def cmd_finish(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        if args:
+            errlog("Usage: finish")
+            return
+        self.fr.set_break_on_finish(True)
+        self.resume_execution()
+
+    @debugger_command(
+        words=["c", "cont", "continue"],
+        usage="finish",
+        desc="Continue execution until next breakpoint, or program finishes."
+    )
+    def cmd_continue(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        if args:
+            errlog("Usage: continue")
+            return
+        self.fr.set_break_on_finish(True)
+        self.resume_execution()
+
+    @debugger_command(
+        words=["b", "break"],
+        usage="break LINE|FUNCNAME",
+        desc="Sets breakpoint at given line or function."
+    )
+    def cmd_break(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        addr = self.fr.call_addr(self.call_level)
+        try:
+            line = int(args)
+            bpnum = self.fr.add_breakpoint(addr.prog, line)
+        except:
+            funcaddr = self.fr.program_function_addr(addr.prog, args)
+            if not funcaddr:
+                log("Usage: break [LINE|FUNCNAME]")
+                return
+            line = self.fr.get_inst_line(funcaddr)
+            bpnum = self.fr.add_breakpoint(addr.prog, line)
+        log("Added breakpoint %d at #%d line %d." % (bpnum, addr.prog, line))
+        self.update_sourcecode_breakpoints(addr.prog)
+
+    @debugger_command(
+        words=["delete"],
+        usage="delete BPNUM",
+        desc="Deletes the given breakpoint."
+    )
+    def cmd_delete(self, args):
+        bps = self.fr.get_breakpoints()
+        if not util.is_int(args) or int(args) - 1 not in list(range(len(bps))):
+            errlog("Usage: delete BREAKPOINTNUM")
+        else:
+            self.fr.del_breakpoint(int(args) - 1)
+            log("Deleted breakpoint %d." % int(args))
+            prog = _get_prog_from_selector()
+            self.update_sourcecode_breakpoints(prog)
+
+    @debugger_command(
+        words=["p", "print"],
+        usage="print VAR",
+        desc="Pretty-prints the given variable to the console."
+    )
+    def cmd_print(self, args):
+        if not self.fr:
+            log("Program not running.")
+            return
+        addr = self.fr.call_addr(self.call_level)
+        fun = self.fr.program_find_func(addr)
+        if self.fr.program_func_var(addr.prog, fun, args):
+            v = self.fr.program_func_var(addr.prog, fun, args)
+            val = self.fr.funcvar_get(v)
+        elif self.fr.program_global_var(addr.prog, args):
+            v = self.fr.program_global_var(addr.prog, args)
+            val = self.fr.globalvar_get(v)
+        else:
+            errlog("Variable not found: %s" % args)
+            val = None
+        if val is not None:
+            val = si.item_repr_pretty(val)
+            log("%s = %s" % (args, val))
+
+    @debugger_command(
+        words=["w", "where"],
+        usage="where",
+        desc="Show the current call stack."
+    )
+    def cmd_where(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        fmt = (
+            "{mk}{level:-3d}: In prog {prog}, func '{func}'," +
+            " line {line}: {inst}\n" +
+            "    {src}"
+        )
+        for callinfo in self.fr.get_call_stack():
+            if callinfo['level'] == self.call_level:
+                callinfo['mk'] = '>'
+            else:
+                callinfo['mk'] = ' '
+            log(fmt.format(**callinfo))
+
+    @debugger_command(
+        words=["up"],
+        usage="up",
+        desc="Move context up the call stack."
+    )
+    def cmd_up(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        if self.call_level <= 0:
+            errlog("Already at first call level.")
+            return
+        self.call_level -= 1
+        log("Now at call level %d" % (self.call_level + 1))
+
+    @debugger_command(
+        words=["dn", "down"],
+        usage="down",
+        desc="Move context down the call stack."
+    )
+    def cmd_down(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        levels = self.fr.get_call_stack()
+        if self.call_level >= len(levels) - 1:
+            errlog("Already at last call level.")
+            return
+        self.call_level += 1
+        log("Now at call level %d" % (self.call_level + 1))
+
+    @debugger_command(
+        words=["trace"],
+        usage="trace",
+        desc="Enable per-instruction data stack tracing."
+    )
+    def cmd_trace(self, args):
+        if not self.allow_run():
+            errlog("Program not compiled.")
+            return
+        self.dotrace.set('1')
         if self.fr:
             self.fr.set_trace(self.dotrace.get() != '0')
+
+    @debugger_command(
+        words=["notrace"],
+        usage="notrace",
+        desc="Disable per-instruction data stack tracing."
+    )
+    def cmd_notrace(self, args):
+        if not self.allow_run():
+            errlog("Program not compiled.")
+            return
+        self.dotrace.set('0')
+        if self.fr:
+            self.fr.set_trace(self.dotrace.get() != '0')
+
+    @debugger_command(
+        words=["pop"],
+        usage="pop [COUNT]",
+        desc="Pop one or more items off the data stack."
+    )
+    def cmd_pop(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        try:
+            if not args:
+                args = "1"
+            cnt = int(args)
+            for i in range(cnt):
+                self.fr.data_pop()
+        except:
+            errlog("Usage: pop [COUNT]")
+
+    @debugger_command(
+        words=["dup"],
+        usage="dup [COUNT]",
+        desc="Duplicate one or more items from the top of the data stack."
+    )
+    def cmd_dup(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        try:
+            if not args:
+                args = "1"
+            cnt = int(args)
+            for i in range(cnt):
+                self.fr.data_pick(cnt)
+        except:
+            errlog("Usage: dup [COUNT]")
+
+    @debugger_command(
+        words=["rot", "rotate"],
+        usage="rot COUNT",
+        desc="Rotate top COUNT items on the top of the data stack."
+    )
+    def cmd_rotate(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        try:
+            if not args:
+                args = "1"
+            cnt = int(args)
+            if cnt > 0:
+                self.fr.data_push(self.fr.data_pull(cnt))
+            elif cnt < 0:
+                val = self.fr.data_pop()
+                self.fr.data_insert((-cnt) - 1, val)
+        except:
+            errlog("Usage: dup [COUNT]")
+
+    @debugger_command(
+        words=["swap"],
+        usage="swap",
+        desc="Swap top two items on the top of the data stack."
+    )
+    def cmd_swap(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        a = self.fr.data_pop()
+        b = self.fr.data_pop()
+        self.fr.data_push(a)
+        self.fr.data_push(b)
+
+    @debugger_command(
+        words=["push"],
+        usage="push VALUE",
+        desc="Push VALUE onto the top of the data stack."
+    )
+    def cmd_push(self, args):
+        if not self.fr:
+            errlog("Program not running.")
+            return
+        elif not args:
+            errlog("Usage: push VALUE")
+            return
+        elif util.is_int(args):
+            self.fr.data_push(int(args))
+        elif util.is_float(args):
+            self.fr.data_push(float(args))
+        elif util.is_dbref(args):
+            self.fr.data_push(si.DBRef(int(args[1:])))
+        elif util.is_strlit(args):
+            self.fr.data_push(args[1:-1])
+        log("Stack item pushed.")
+
+    def source_editor_tab_handler(self, event=None):
+        self.srcs_disp.insert(INSERT, "    ")
+        return 'break'
 
     def gui_raise_window(self):
         try:
@@ -784,9 +1174,6 @@ class MufGui(object):
     def defer(self, *args):
         return lambda: self.root.after(10, *args)
 
-    def defer_evt(self, cmd):
-        return lambda e: self.root.after(10, cmd)
-
     def clear_errors(self):
         self.errors_queue = []
 
@@ -806,7 +1193,8 @@ class MufGui(object):
             errline = int(m.group(2))
             errmsg = m.group(3)
             self.errors_queue.append((errline, errtype, errmsg))
-        self.cons_disp.insert(END, msg + "\n", msgtype)
+        self.cons_disp.insert(END, "\n")
+        self.cons_disp.insert(END, msg, msgtype)
         self.cons_disp.see('end linestart')
 
     def _get_prog_from_selector(self):
@@ -1031,11 +1419,13 @@ class MufGui(object):
         self.update_data_stack_display()
         self.update_variables_display()
         self.update_sourcecode_display()
+        process_enablers(self)
 
     def update_buttonbar(self):
         runstate = "normal" if self.allow_run() else "disabled"
         livestate = "normal" if self.allow_debug() else "disabled"
         self.run_btn.config(state=runstate)
+        self.trace_chk.config(state=runstate)
         livebtns = [
             self.stepi_btn,
             self.stepl_btn,
@@ -1049,6 +1439,7 @@ class MufGui(object):
     def compile_program(self, prog):
         self.clear_errors()
         self.fr = None
+        db.getobj(prog).compiled = None
         success = MufCompiler().compile_source(prog)
         self.update_sourcecode_from_program(prog, force=True)
         if not success:
@@ -1060,6 +1451,7 @@ class MufGui(object):
             self.fr.call_stack = []
         self.update_errors()
         self.update_displays()
+        self.cons_in.focus()
 
     def reset_execution(self, command=""):
         # db.init_object_db()
@@ -1070,12 +1462,13 @@ class MufGui(object):
         if self.fr:
             breakpts = self.fr.breakpoints
         self.fr = MufStackFrame()
+        self.fr.set_break_on_error()
         self.fr.set_trace(self.dotrace.get() != '0')
         self.fr.breakpoints = breakpts
         self.fr.setup(progobj, userobj, trigobj, command)
 
     def resume_execution(self):
-        while True:
+        while self.fr and self.fr.call_stack:
             self.fr.execute_code(self.call_level)
             if not self.fr.get_call_stack():
                 warnlog("Program exited.")
@@ -1086,6 +1479,7 @@ class MufGui(object):
                 continue
             break
         self.update_displays()
+        self.cons_in.focus()
 
     def process_muv(self, infile):
         tmpfile = infile

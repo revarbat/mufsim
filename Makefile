@@ -34,6 +34,9 @@ upload:
 	twine upload dist/*.egg
 
 clean:
-	rm -rf build dist/MufSimulator* dist/MufSim.app dist/mufsim.exe dist/mufsim
-	find . -name '*.pyc' -exec rm {} \;
+	rm -rf build *.pyc
+	find mufgui mufconsole mufsim -name '*.pyc' -exec rm {} \;
+
+distclean: clean
+	rm -rf dist dist-win
 

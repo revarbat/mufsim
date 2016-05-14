@@ -1,6 +1,6 @@
 #### Compiling MUV Code to MUF ########################
 
-#### Compiling MUF Program cmd-test(#4) ###############
+#### Compiling MUF Program Untitled.muf(#4) ###########
 SETPROP "_author" on #4 = "Revar Desmera <revar@gmail.com>"
 SETPROP "_note" on #4 = "An example replacement for the lsedit program, written in MUV."
 SETPROP "_version" on #4 = "1.0"
@@ -16,7 +16,7 @@ SETPROP "_defs/lsedit__editor" on #4 = "#4 \"lsedit__editor\" call"
 EXPOSED 'lsedit__basic' AS PUBLIC
 SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
 
-#### Showing Tokens for cmd-test(#4) ##################
+#### Showing Tokens for Untitled.muf(#4) ##############
     0: Function: argparse::init (0 vars)
     1: ""
     2: LV4: argparse::current_mode

@@ -675,7 +675,7 @@ def init_object_db():
     )
 
     program_object = DBObject(
-        name="cmd-test",
+        name="Untitled.muf",
         objtype="program",
         flags="3",
         owner=wizard_player.dbref,
