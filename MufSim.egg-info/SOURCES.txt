@@ -1,3 +1,4 @@
+setup.cfg
 setup.py
 MufSim.egg-info/PKG-INFO
 MufSim.egg-info/SOURCES.txt
@@ -5,13 +6,6 @@ MufSim.egg-info/dependency_links.txt
 MufSim.egg-info/entry_points.txt
 MufSim.egg-info/requires.txt
 MufSim.egg-info/top_level.txt
-mufconsole/__init__.py
-mufconsole/mufconsole.py
-mufgui/__init__.py
-mufgui/listdisplay.py
-mufgui/menudecorators.py
-mufgui/mufgui.py
-mufgui/tooltip.py
 mufsim/__init__.py
 mufsim/callframe.py
 mufsim/compiled.py
@@ -26,6 +20,11 @@ mufsim/stackframe.py
 mufsim/stackitems.py
 mufsim/sysparms.py
 mufsim/utils.py
+mufsim/console/__init__.py
+mufsim/gui/__init__.py
+mufsim/gui/listdisplay.py
+mufsim/gui/menudecorators.py
+mufsim/gui/tooltip.py
 mufsim/insts/__init__.py
 mufsim/insts/arrays.py
 mufsim/insts/base.py

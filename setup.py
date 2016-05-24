@@ -5,7 +5,7 @@ import sys
 import platform
 from glob import glob
 
-VERSION = "0.8.2"
+VERSION = "0.8.3"
 
 
 APP = ['kickstart.py']
@@ -83,7 +83,7 @@ setup(
             'tests', 'tools',
         ]
     ),
-    license='BSD 2-clause',
+    license='MIT License',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
@@ -91,7 +91,7 @@ setup(
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Developers',
         'Intended Audience :: Other Audience',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
@@ -106,10 +106,14 @@ setup(
     ],
     keywords='muf muv debugger development',
     entry_points={
-        'console_scripts': ['mufsim=mufconsole.mufconsole:main'],
-        'gui_scripts': ['mufsimgui=mufgui.mufgui:main']
+        'console_scripts': ['mufsim=mufsim.console:main'],
+        'gui_scripts': ['mufsimgui=mufsim.gui:main']
     },
-    install_requires=['setuptools'],
+    install_requires=[
+        'setuptools',
+        'belfrywidgets>=0.9.3',
+        'mudclientprotocol>=0.1.0'
+    ],
     data_files=data_files,
     options={
         'py2app': py2app_options,

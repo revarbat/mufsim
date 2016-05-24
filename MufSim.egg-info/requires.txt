@@ -1,1 +1,3 @@
 setuptools
+belfrywidgets>=0.9.3
+mudclientprotocol>=0.1.0

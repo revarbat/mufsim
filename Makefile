@@ -1,18 +1,18 @@
 all:
 	@echo "Nothing to do."
 
-install:
-	python3 setup.py build install -f
-
 test:
 	cd tests && ./runtests.sh
 
-nightly:
-	python3 setup.py egg_info --tag-date --tag-build=DEV bdist_egg
+install:
+	python3 setup.py build install -f
 
 release:
-	rm -rf dist/MufSim-*.egg
-	python3 setup.py egg_info bdist_egg
+	rm -rf dist/MufSim-*.egg dist/MufSim-*.tar.gz dist/MufSim-*.whl
+	python3 setup.py egg_info sdist bdist_wheel bdist_egg
+
+upload: release
+	twine upload dist/*.tar.gz dist/*.whl dist/*.egg
 
 app:
 	rm -rf dist/MufSim dist/MufSim.app dist/MufSimOSX.zip
@@ -27,15 +27,17 @@ app:
 
 exe:
 	rm -rf dist/MufSim dist/MufSim.exe dist/MufSimWin64.zip
-	python3 setup.py py2exe
-	cd dist && zip -r MufSimWin64 MufSim.exe
+	pyinstaller MufSim.spec
+	# cd dist && zip -r MufSimWin64 MufSim.exe
 
-upload:
-	twine upload dist/*.egg
+py2exe:
+	rm -rf dist/MufSim dist/MufSim.exe dist/MufSimWin64.zip
+	python3 setup.py py2exe
+	# cd dist && zip -r MufSimWin64 MufSim.exe
 
 clean:
-	rm -rf build *.pyc
-	find mufgui mufconsole mufsim -name '*.pyc' -exec rm {} \;
+	rm -rf build *.pyc __pycache__
+	find mufsim -name '*.pyc' -exec rm {} \;
 
 distclean: clean
 	rm -rf dist dist-win

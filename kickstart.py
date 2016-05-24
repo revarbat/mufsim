@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from mufgui.mufgui import main
+from mufsim.gui import main
 
 
 main()
