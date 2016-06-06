@@ -88,6 +88,7 @@
    84: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") {
     2: #4 line 3 ("", Mark) {
@@ -173,6 +174,7 @@
    82: #4 line 13 ("", 6[2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 37, "name": "Mary"}, 2{"age": 17, "name": "Raul"}, 2{"age": 26, "name": "Faun"}, 2{"age": 35, "name": "Mike"}], 3, "name") ARRAY_SORT_INDEXED
    83: #4 line 13 ("", 6[2{"age": 17, "name": "Raul"}, 2{"age": 35, "name": "Mike"}, 2{"age": 37, "name": "Mary"}, 2{"age": 23, "name": "John"}, 2{"age": 25, "name": "Jane"}, 2{"age": 26, "name": "Faun"}]) POP
    84: #4 line 14 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 85 steps.
 

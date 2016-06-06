@@ -17,6 +17,7 @@
    13: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "Bold"
     2: #4 line 2 ("", "Bold") "bold"
@@ -31,6 +32,7 @@
    11: #4 line 4 ("", "Foobar", "bold,red,bg_green") TEXTATTR
    12: #4 line 4 ("", "\[[1;31;42mFoobar\[[0m") POP
    13: #4 line 5 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 14 steps.
 

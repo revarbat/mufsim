@@ -29,6 +29,7 @@
    25: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") POP
     2: #4 line 3 () LV0: me
@@ -58,6 +59,7 @@ GETPROP "refs" on #5 = "#5 #4 #3"
 GETPROP "refs" on #5 = "#5 #4 #3"
    24: #4 line 5 (0) POP
    25: #4 line 6 () EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 26 steps.
 

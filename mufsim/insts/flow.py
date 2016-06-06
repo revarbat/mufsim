@@ -540,8 +540,8 @@ class InstSetMode(Instruction):
 class InstSleep(Instruction):
     def execute(self, fr):
         secs = fr.data_pop(int)
-        # TODO: use proper timequeue timeslicing.
-        time.sleep(secs)
+        fr.pc_advance(1)
+        fr.sleep(secs)
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

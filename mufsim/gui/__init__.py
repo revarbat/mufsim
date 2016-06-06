@@ -31,7 +31,8 @@ import mufsim.gamedb as db
 import mufsim.utils as util
 from mufsim.logger import log, warnlog, errlog, set_output_command
 from mufsim.compiler import MufCompiler
-from mufsim.stackframe import MufStackFrame
+from mufsim.interface import network_interface as netifc
+from mufsim.processlist import process_list
 from belfrywidgets.tabbednotebook import TabbedNoteBook
 
 
@@ -53,7 +54,6 @@ def debugger_command(words=[], usage=None, desc=None):
 
 class MufGui(object):
     def __init__(self):
-        self.fr = None
         self.call_level = 0
         self.prev_prog = -1
         self.history = []
@@ -67,6 +67,29 @@ class MufGui(object):
         set_output_command(self.update_console)
         if len(sys.argv) > 1:
             self.root.after(10, self.handle_open_files, sys.argv[1])
+
+    def _current_pid(self):
+        pid = self.current_process.get().strip()
+        if pid.startswith('- '):
+            return None
+        if pid.startswith('PID: '):
+            pid = pid[5:]
+        if ' ' in pid:
+            pid = pid.split(' ', 1)[0]
+        try:
+            return int(pid)
+        except:
+            return None
+
+    def _current_prog(self):
+        if self.srcs_nb.selected_pane:
+            return self.srcs_nb.selected_pane
+        return None
+
+    def _selected_process(self):
+        pid = self._current_pid()
+        proc = process_list.get(pid)
+        return proc
 
     def setup_gui(self):
         self.root = Tk()
@@ -106,7 +129,10 @@ class MufGui(object):
 
         self.gui_raise_window()
         self.update_displays()
-        self.root.after(1000, self.update_modified)
+        self.root.after(100, self.update_modified)
+        self.root.after(100, self.handle_processes)
+        process_list.watch_process_change(self.handle_process_change)
+        process_list.set_read_handler(self.handle_read)
 
     def setup_gui_fonts(self):
         if platform.system() == 'Windows':
@@ -175,15 +201,36 @@ class MufGui(object):
         return self.menubar
 
     def setup_gui_data_frame(self, master):
-        datafr = LabelFrame(
-            master, text="Data Stack", relief="flat", borderwidth=0)
+        self.current_process = StringVar()
+        self.current_process.set("- No Processes -")
+        datafr = Frame(master, relief=FLAT, borderwidth=0)
+        selfr = Frame(datafr, relief=FLAT, borderwidth=0)
+        pid_lbl = Label(selfr, text="Process")
+        self.pid_sel = Combobox(
+            selfr,
+            width=15,
+            justify="left",
+            state="readonly",
+            textvariable=self.current_process,
+            values=[]
+        )
+        self.pid_sel.bind(
+            "<<ComboboxSelected>>",
+            self.handle_process_selector_change
+        )
+        pid_lbl.pack(side=LEFT, fill=NONE, expand=0)
+        self.pid_sel.pack(side=LEFT, fill=Y, expand=0, padx=5, pady=2)
+        datalblfr = LabelFrame(
+            datafr, text="Data Stack", relief="flat", borderwidth=0)
         self.data_disp = ListDisplay(
-            datafr,
+            datalblfr,
             readonly=True,
             font=self.monospace,
             gutter=4,
             gutterfont=self.monospace,
         )
+        selfr.pack(side=TOP, fill=X, expand=0)
+        datalblfr.pack(side=TOP, fill=BOTH, expand=1)
         self.data_disp.pack(side=TOP, fill=BOTH, expand=1)
         self.data_disp.tag_config(
             'empty', foreground="gray50", font=self.sansserif_i)
@@ -256,24 +303,28 @@ class MufGui(object):
         return self.srcs_nb
 
     def setup_program_source_frame(self, prog, filename, sources):
-        nbfr = self.srcs_nb.add_pane(
-            prog,
-            "%s(#%d)" % (filename, prog),
-            closecommand=lambda p=prog: self.handle_close_tab(p)
-        )
-        nbfr.program = prog
-        selfr = self.setup_gui_source_selectors_frame(nbfr, prog)
-        panes = PanedWindow(nbfr, orient=VERTICAL)
-        panes.add(
-            self.setup_gui_source_display_frame(panes, prog),
-            minsize=100, height=300
-        )
-        panes.add(
-            self.setup_gui_tokens_frame(panes, prog),
-            minsize=100, height=100
-        )
-        selfr.pack(side=TOP, fill=X, expand=0)
-        panes.pack(side=TOP, fill=BOTH, expand=1)
+        if prog in self.source_displays:
+            lbl = self.srcs_nb.pane_label(prog)
+            lbl.config(text="%s(#%d)" % (filename, prog))
+        else:
+            nbfr = self.srcs_nb.add_pane(
+                prog,
+                "%s(#%d)" % (filename, prog),
+                closecommand=lambda p=prog: self.handle_close_tab(p)
+            )
+            nbfr.program = prog
+            selfr = self.setup_gui_source_selectors_frame(nbfr, prog)
+            panes = PanedWindow(nbfr, orient=VERTICAL)
+            panes.add(
+                self.setup_gui_source_display_frame(panes, prog),
+                minsize=100, height=300
+            )
+            panes.add(
+                self.setup_gui_tokens_frame(panes, prog),
+                minsize=100, height=100
+            )
+            selfr.pack(side=TOP, fill=X, expand=0)
+            panes.pack(side=TOP, fill=BOTH, expand=1)
         self.root.update_idletasks()
         self.populate_source_display(prog)
         self.populate_token_display(prog)
@@ -446,10 +497,10 @@ class MufGui(object):
             self.root.after_idle(
                 self.root.call, 'wm', 'attributes', '.', '-topmost', False)
 
-    def _current_prog(self):
-        if self.srcs_nb.selected_pane:
-            return self.srcs_nb.selected_pane
-        return None
+    def handle_processes(self):
+        netifc.poll(0.0)
+        process_list.process(self.call_level)
+        self.root.after(250, self.handle_processes)
 
     def handle_close_tab(self, prog):
         progobj = db.getobj(prog)
@@ -464,7 +515,7 @@ class MufGui(object):
                 return False
             if dosave:
                 self.save_program_to_file(prog)
-        self.fr = None
+        process_list.killall(prog)
         db.recycle_object(prog)
         self.update_displays()
         return True
@@ -498,9 +549,10 @@ class MufGui(object):
     def handle_stack_item_dblclick(self, event):
         w = event.widget
         index = w.index("@%s,%s" % (event.x, event.y))
-        if index and self.fr:
+        currproc = self._selected_process()
+        if index and currproc:
             item = int(float(index))
-            val = self.fr.data_pick(item)
+            val = currproc.data_pick(item)
             val = si.item_repr_pretty(val)
             log("pick(%d) = %s" % (item, val))
         self.cons_in.focus()
@@ -509,11 +561,12 @@ class MufGui(object):
         w = event.widget
         index = w.index("@%s,%s" % (event.x, event.y))
         rng = w.tag_prevrange('gname', index + '+1c')
-        if rng and self.fr:
+        currproc = self._selected_process()
+        if rng and currproc:
             vname = w.get(*rng)
-            addr = self.fr.call_addr(self.call_level)
-            vnum = self.fr.program_global_var(addr.prog, vname)
-            val = self.fr.globalvar_get(vnum)
+            addr = currproc.call_addr(self.call_level)
+            vnum = currproc.program_global_var(addr.prog, vname)
+            val = currproc.globalvar_get(vnum)
             val = si.item_repr_pretty(val)
             log("%s = %s" % (vname, val))
         self.cons_in.focus()
@@ -522,15 +575,20 @@ class MufGui(object):
         w = event.widget
         index = w.index("@%s,%s" % (event.x, event.y))
         rng = w.tag_prevrange('fname', index + '+1c')
-        if rng:
+        currproc = self._selected_process()
+        if rng and currproc:
             vname = w.get(*rng)
-            addr = self.fr.call_addr(self.call_level)
-            fun = self.fr.program_find_func(addr)
-            vnum = self.fr.program_func_var(addr.prog, fun, vname)
-            val = self.fr.funcvar_get(vnum, self.call_level)
+            addr = currproc.call_addr(self.call_level)
+            fun = currproc.program_find_func(addr)
+            vnum = currproc.program_func_var(addr.prog, fun, vname)
+            val = currproc.funcvar_get(vnum, self.call_level)
             val = si.item_repr_pretty(val)
             log("%s = %s" % (vname, val))
         self.cons_in.focus()
+
+    def handle_process_selector_change(self, event=None):
+        self.update_process_selected()
+        self.update_displays()
 
     def handle_function_selector_change(self, event=None):
         prog = self._current_prog()
@@ -543,10 +601,11 @@ class MufGui(object):
         fun = self.current_function[prog].get()
         if not fun:
             return
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             return
-        addr = self.fr.program_function_addr(prog, fun)
-        line = self.fr.get_inst_line(addr)
+        addr = currproc.program_function_addr(prog, fun)
+        line = currproc.get_inst_line(addr)
         srcs_disp.tag_add(
             'hilite',
             '%d.0' % line,
@@ -563,7 +622,8 @@ class MufGui(object):
         self.root.after_idle(srcs_disp.focus)
 
     def handle_sources_breakpoint_toggle(self, event):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             return
         w = event.widget
         index = w.index("@%s,%s" % (event.x, event.y))
@@ -571,43 +631,24 @@ class MufGui(object):
         prog = self._current_prog()
         if prog is None:
             return
-        bpnum = self.fr.find_breakpoint(prog, line)
+        bpnum = currproc.find_breakpoint(prog, line)
         if bpnum is not None:
-            self.fr.del_breakpoint(bpnum)
+            currproc.del_breakpoint(bpnum)
         else:
-            self.fr.add_breakpoint(prog, line)
+            currproc.add_breakpoint(prog, line)
         self.update_sourcecode_breakpoints(prog)
 
-    def handle_reads(self):
-        self.update_displays()
-        readline = askstring(
-            "MUF Read Requested",
-            "Enter text to satisfy the READ request.",
-            initialvalue="",
-            parent=self.root,
-        )
-        self.cons_in.focus()
-        if readline is None or readline == "@Q":
-            while self.fr.call_stack:
-                self.fr.call_pop()
-            while self.fr.catch_stack:
-                self.fr.catch_pop()
-            warnlog("Aborting program.")
-            return False
-        if not readline and not self.fr.read_wants_blanks:
-            warnlog("Blank line ignored.")
-            return True
-        self.fr.pc_advance(1)
-        if self.fr.wait_state == self.fr.WAIT_READ:
-            self.fr.data_push(readline)
-        elif readline == "@T":
-            warnlog("Faking time-out.")
-            self.fr.data_push("")
-            self.fr.data_push(1)
-        else:
-            self.fr.data_push(readline)
-            self.fr.data_push(0)
-        return True
+    def handle_read(self):
+        while True:
+            self.update_displays()
+            readline = askstring(
+                "MUF Read Requested",
+                "Enter text to satisfy the READ request.",
+                initialvalue="",
+                parent=self.root,
+            )
+            self.cons_in.focus()
+            return readline
 
     def handle_command_completion(self, event=None):
         global command_handlers
@@ -694,6 +735,18 @@ class MufGui(object):
     def handle_editor_modify(self, event):
         self.update_modified()
 
+    def _pid_text(self, pid):
+        proc = process_list.get(pid)
+        if not proc:
+            return None
+        return "PID: %d %s" % (proc.pid, proc.wait_state)
+
+    def handle_process_change(self):
+        txt = self._pid_text(process_list.current_process.pid)
+        self.current_process.set(txt)
+        self.update_displays()
+        self.root.update()
+
     def clear_errors(self):
         self.errors_queue = []
 
@@ -736,12 +789,29 @@ class MufGui(object):
         else:
             self.root.wm_attributes("-modified", 0)
 
+    def update_process_selected(self):
+        if not process_list.get_pids():
+            self.current_process.set("- No Processes -")
+        elif not process_list.current_process:
+            self.current_process.set("- Select Process -")
+        else:
+            currproc = process_list.current_process
+            self.current_process.set(self._pid_text(currproc.pid))
+
+    def update_process_selector(self):
+        funs = [
+            self._pid_text(pid)
+            for pid in process_list.get_pids()
+        ]
+        self.pid_sel.config(values=funs)
+
     def update_function_selector(self):
         prog = self._current_prog()
         if prog is None:
             return
-        if self.fr:
-            addr = self.fr.call_addr(self.call_level)
+        currproc = self._selected_process()
+        if currproc:
+            addr = currproc.call_addr(self.call_level)
             if addr:
                 prog = addr.prog
         if not db.validobj(prog):
@@ -753,11 +823,11 @@ class MufGui(object):
         if comp:
             funs = comp.get_functions()
             currfun = funs[0]
-        if self.fr:
-            addr = self.fr.call_addr(self.call_level)
+        if currproc:
+            addr = currproc.call_addr(self.call_level)
             if addr:
-                funs = self.fr.program_functions(addr.prog)
-                currfun = self.fr.program_find_func(addr)
+                funs = currproc.program_functions(addr.prog)
+                currfun = currproc.program_find_func(addr)
         if not funs:
             self.current_function[prog].set("")
         else:
@@ -767,10 +837,11 @@ class MufGui(object):
 
     def update_data_stack_display(self):
         self.data_disp.delete('0.0', END)
-        if not self.fr or not self.fr.data_stack:
+        currproc = self._selected_process()
+        if not currproc or not currproc.data_stack:
             self.data_disp.insert('0.0', ' - EMPTY STACK - ', 'empty')
             return
-        for i, val in enumerate(reversed(self.fr.data_stack)):
+        for i, val in enumerate(reversed(currproc.data_stack)):
             line = '%s\n' % si.item_repr(val)
             self.data_disp.insert(END, line, 'sitem')
         self.data_disp.delete('end-1c', END)
@@ -780,10 +851,11 @@ class MufGui(object):
         self.call_disp.tag_remove('currline', '0.0', END)
         fmt = "{progname}({prog}), {func}, {line}\n"
         self.call_disp.delete('0.0', END)
-        if not self.fr or not self.fr.get_call_stack():
+        currproc = self._selected_process()
+        if not currproc or not currproc.get_call_stack():
             self.call_disp.insert('0.0', ' - NOT RUNNING - ', 'empty')
             return
-        for callinfo in self.fr.get_call_stack():
+        for callinfo in currproc.get_call_stack():
             callinfo['progname'] = db.getobj(callinfo['prog']).name
             line = fmt.format(**callinfo)
             self.call_disp.insert(END, line, 'callfr')
@@ -797,15 +869,16 @@ class MufGui(object):
 
     def update_variables_display(self):
         self.vars_disp.delete('0.0', END)
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             return
-        addr = self.fr.call_addr(self.call_level)
+        addr = currproc.call_addr(self.call_level)
         if not addr:
             return
-        gvars = self.fr.program_global_vars(addr.prog)
+        gvars = currproc.program_global_vars(addr.prog)
         cnt = 0
         for vnum, vname in enumerate(gvars):
-            val = self.fr.globalvar_get(vnum)
+            val = currproc.globalvar_get(vnum)
             val = si.item_repr(val)
             self.vars_disp.insert(END, "G", 'gvar')
             self.vars_disp.insert(END, " ")
@@ -814,10 +887,10 @@ class MufGui(object):
             self.vars_disp.insert(END, val, 'gval')
             self.vars_disp.insert(END, "\n")
             cnt += 1
-        fun = self.fr.program_find_func(addr)
-        fvars = self.fr.program_func_vars(addr.prog, fun)
+        fun = currproc.program_find_func(addr)
+        fvars = currproc.program_func_vars(addr.prog, fun)
         for vnum, vname in enumerate(fvars):
-            val = self.fr.funcvar_get(vnum)
+            val = currproc.funcvar_get(vnum)
             val = si.item_repr(val)
             self.vars_disp.insert(END, "F", 'fvar')
             self.vars_disp.insert(END, " ")
@@ -839,7 +912,10 @@ class MufGui(object):
     def update_sourcecode_breakpoints(self, prog):
         srcs_disp = self.source_displays[prog]
         srcs_disp.gutter.tag_remove('breakpt', '0.0', END)
-        for bpprog, line in self.fr.get_breakpoints():
+        currproc = self._selected_process()
+        if not currproc:
+            return
+        for bpprog, line in currproc.get_breakpoints():
             if bpprog == prog:
                 srcs_disp.gutter.tag_add(
                     'breakpt',
@@ -852,19 +928,20 @@ class MufGui(object):
         if prog is None:
             return
         addr = None
-        if self.fr:
-            addr = self.fr.call_addr(self.call_level)
+        currproc = self._selected_process()
+        if currproc:
+            addr = currproc.call_addr(self.call_level)
             if addr:
                 prog = addr.prog
         srcs_disp = self.source_displays[prog]
         srcs_disp.tag_remove('hilite', '0.0', END)
         srcs_disp.tag_remove('currline', '0.0', END)
         self.update_sourcecode_from_program(prog)
-        if not self.fr:
+        if not currproc:
             return
         if not addr:
             return
-        inst = self.fr.get_inst(addr)
+        inst = currproc.get_inst(addr)
         srcs_disp.tag_add(
             'currline',
             '%d.0' % inst.line,
@@ -888,10 +965,12 @@ class MufGui(object):
         tokn_disp.see('%d.0' % (addr.value + 1))
 
     def update_displays(self, level=-1):
-        if self.fr and level < 0:
-            level = len(self.fr.get_call_stack()) + level
+        currproc = self._selected_process()
+        if currproc and level < 0:
+            level = len(currproc.get_call_stack()) + level
         self.call_level = level
         self.update_buttonbar()
+        self.update_process_selector()
         self.update_function_selector()
         self.update_call_stack_display()
         self.update_data_stack_display()
@@ -946,7 +1025,7 @@ class MufGui(object):
 
     def compile_program(self, prog):
         self.clear_errors()
-        self.fr = None
+        process_list.killall(prog)
         progobj = db.getobj(prog)
         progobj.compiled = None
         success = MufCompiler().compile_source(prog)
@@ -964,9 +1043,7 @@ class MufGui(object):
                 ),
                 msgtype="good"
             )
-            self.reset_execution(prog=prog, command="")
             self.update_displays()
-            self.fr.call_stack = []
         self.update_errors()
         self.populate_token_display(prog)
         self.update_displays()
@@ -980,25 +1057,21 @@ class MufGui(object):
         else:
             progobj = db.get_registered_obj(userobj, "$cmd/test")
         breakpts = []
-        if self.fr:
-            breakpts = self.fr.breakpoints
-        self.fr = MufStackFrame()
-        self.fr.set_break_on_error()
-        self.fr.set_trace(self.dotrace.get() != '0')
-        self.fr.breakpoints = breakpts
-        self.fr.setup(progobj, userobj, trigobj, command)
+        currproc = self._selected_process()
+        if currproc:
+            breakpts = currproc.breakpoints
+        currproc = process_list.new_process()
+        currproc.set_break_on_error()
+        currproc.set_trace(self.dotrace.get() != '0')
+        currproc.breakpoints = breakpts
+        currproc.setup(progobj, userobj, trigobj, command)
 
     def resume_execution(self):
-        while self.fr and self.fr.call_stack:
-            self.fr.execute_code(self.call_level)
-            if not self.fr.get_call_stack():
+        currproc = self._selected_process()
+        if currproc and currproc.get_call_stack():
+            currproc.execute_code(self.call_level)
+            if not currproc.get_call_stack():
                 warnlog("Program exited.")
-                break
-            if self.fr.wait_state in [
-                self.fr.WAIT_READ, self.fr.WAIT_TREAD
-            ] and self.handle_reads():
-                continue
-            break
         self.update_displays()
         self.cons_in.focus()
 
@@ -1047,14 +1120,24 @@ class MufGui(object):
         if origfile.endswith(".muv"):
             os.unlink(filename)
         userobj = db.get_player_obj("John_Doe")
-        progobj = db.DBObject(
-            name=os.path.basename(filename),
-            objtype="program",
-            flags="3",
-            owner=userobj.dbref,
-            location=userobj.dbref,
-        )
-        log("CREATED PROG %s FROM %s" % (progobj, filename))
+        selprog = self._current_prog()
+        if (
+            selprog and db.validobj(selprog) and
+            db.getobj(selprog).name == 'Untitled.muf' and
+            db.getobj(selprog).objtype == 'program' and
+            not db.getobj(selprog).sources
+        ):
+            progobj = db.getobj(selprog)
+            progobj.name = os.path.basename(filename)
+        else:
+            progobj = db.DBObject(
+                name=os.path.basename(filename),
+                objtype="program",
+                flags="3",
+                owner=userobj.dbref,
+                location=userobj.dbref,
+            )
+            log("CREATED PROG %s FROM %s" % (progobj, filename))
         progobj.sources = srcs
         self.setup_program_source_frame(
             progobj.dbref,
@@ -1090,6 +1173,8 @@ class MufGui(object):
             progobj.name = filename
         with open(filename, "w") as f:
             f.write(progobj.sources)
+        lbl = self.srcs_nb.pane_label(progobj.dbref)
+        lbl.config(text="%s(#%d)" % (filename, progobj.dbref))
         srcs_disp.edit_modified(False)
 
     @debugger_command(
@@ -1128,14 +1213,15 @@ class MufGui(object):
         desc="Steps execution by one or more instructions."
     )
     def cmd_istep(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
         try:
             if not args:
                 args = "1"
             cnt = int(args)
-            self.fr.set_break_insts(cnt)
+            currproc.set_break_insts(cnt)
             self.resume_execution()
         except:
             errlog("Usage: istep [COUNT]")
@@ -1146,14 +1232,15 @@ class MufGui(object):
         desc="Steps execution by one or more source lines.  Steps into calls."
     )
     def cmd_step(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
         try:
             if not args:
                 args = "1"
             cnt = int(args)
-            self.fr.set_break_steps(cnt)
+            currproc.set_break_steps(cnt)
             self.resume_execution()
         except:
             errlog("Usage: step [COUNT]")
@@ -1164,14 +1251,15 @@ class MufGui(object):
         desc="Steps execution by one or more source lines.  Steps over calls."
     )
     def cmd_next(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
         try:
             if not args:
                 args = "1"
             cnt = int(args)
-            self.fr.set_break_lines(cnt)
+            currproc.set_break_lines(cnt)
             self.resume_execution()
         except:
             errlog("Usage: next [COUNT]")
@@ -1182,13 +1270,14 @@ class MufGui(object):
         desc="Finish execution of current function."
     )
     def cmd_finish(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
         if args:
             errlog("Usage: finish")
             return
-        self.fr.set_break_on_finish(True)
+        currproc.set_break_on_finish(True)
         self.resume_execution()
 
     @debugger_command(
@@ -1197,13 +1286,14 @@ class MufGui(object):
         desc="Continue execution until next breakpoint, or program finishes."
     )
     def cmd_continue(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
         if args:
             errlog("Usage: continue")
             return
-        self.fr.set_break_on_finish(True)
+        currproc.set_break_on_finish(True)
         self.resume_execution()
 
     @debugger_command(
@@ -1212,20 +1302,21 @@ class MufGui(object):
         desc="Sets breakpoint at given line or function."
     )
     def cmd_break(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
-        addr = self.fr.call_addr(self.call_level)
+        addr = currproc.call_addr(self.call_level)
         try:
             line = int(args)
-            bpnum = self.fr.add_breakpoint(addr.prog, line)
+            bpnum = currproc.add_breakpoint(addr.prog, line)
         except:
-            funcaddr = self.fr.program_function_addr(addr.prog, args)
+            funcaddr = currproc.program_function_addr(addr.prog, args)
             if not funcaddr:
                 log("Usage: break [LINE|FUNCNAME]")
                 return
-            line = self.fr.get_inst_line(funcaddr)
-            bpnum = self.fr.add_breakpoint(addr.prog, line)
+            line = currproc.get_inst_line(funcaddr)
+            bpnum = currproc.add_breakpoint(addr.prog, line)
         log("Added breakpoint %d at #%d line %d." % (bpnum, addr.prog, line))
         self.update_sourcecode_breakpoints(addr.prog)
 
@@ -1235,11 +1326,15 @@ class MufGui(object):
         desc="Deletes the given breakpoint."
     )
     def cmd_delete(self, args):
-        bps = self.fr.get_breakpoints()
+        currproc = self._selected_process()
+        if not currproc:
+            errlog("Program not running.")
+            return
+        bps = currproc.get_breakpoints()
         if not util.is_int(args) or int(args) - 1 not in list(range(len(bps))):
             errlog("Usage: delete BREAKPOINTNUM")
         else:
-            self.fr.del_breakpoint(int(args) - 1)
+            currproc.del_breakpoint(int(args) - 1)
             log("Deleted breakpoint %d." % int(args))
             prog = _current_prog()
             self.update_sourcecode_breakpoints(prog)
@@ -1250,17 +1345,18 @@ class MufGui(object):
         desc="Pretty-prints the given variable to the console."
     )
     def cmd_print(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             log("Program not running.")
             return
-        addr = self.fr.call_addr(self.call_level)
-        fun = self.fr.program_find_func(addr)
-        if self.fr.program_func_var(addr.prog, fun, args):
-            v = self.fr.program_func_var(addr.prog, fun, args)
-            val = self.fr.funcvar_get(v)
-        elif self.fr.program_global_var(addr.prog, args):
-            v = self.fr.program_global_var(addr.prog, args)
-            val = self.fr.globalvar_get(v)
+        addr = currproc.call_addr(self.call_level)
+        fun = currproc.program_find_func(addr)
+        if currproc.program_func_var(addr.prog, fun, args):
+            v = currproc.program_func_var(addr.prog, fun, args)
+            val = currproc.funcvar_get(v)
+        elif currproc.program_global_var(addr.prog, args):
+            v = currproc.program_global_var(addr.prog, args)
+            val = currproc.globalvar_get(v)
         else:
             errlog("Variable not found: %s" % args)
             val = None
@@ -1274,7 +1370,8 @@ class MufGui(object):
         desc="Show the current call stack."
     )
     def cmd_where(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
         fmt = (
@@ -1282,7 +1379,7 @@ class MufGui(object):
             " line {line}: {inst}\n" +
             "    {src}"
         )
-        for callinfo in self.fr.get_call_stack():
+        for callinfo in currproc.get_call_stack():
             if callinfo['level'] == self.call_level:
                 callinfo['mk'] = '>'
             else:
@@ -1295,7 +1392,8 @@ class MufGui(object):
         desc="Move context up the call stack."
     )
     def cmd_up(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
         if self.call_level <= 0:
@@ -1310,10 +1408,10 @@ class MufGui(object):
         desc="Move context down the call stack."
     )
     def cmd_down(self, args):
-        if not self.fr:
+        if not currproc:
             errlog("Program not running.")
             return
-        levels = self.fr.get_call_stack()
+        levels = currproc.get_call_stack()
         if self.call_level >= len(levels) - 1:
             errlog("Already at last call level.")
             return
@@ -1330,8 +1428,8 @@ class MufGui(object):
             errlog("Program not compiled.")
             return
         self.dotrace.set('1')
-        if self.fr:
-            self.fr.set_trace(self.dotrace.get() != '0')
+        if currproc:
+            currproc.set_trace(self.dotrace.get() != '0')
 
     @debugger_command(
         words=["notrace"],
@@ -1343,8 +1441,9 @@ class MufGui(object):
             errlog("Program not compiled.")
             return
         self.dotrace.set('0')
-        if self.fr:
-            self.fr.set_trace(self.dotrace.get() != '0')
+        currproc = self._selected_process()
+        if currproc:
+            currproc.set_trace(self.dotrace.get() != '0')
 
     @debugger_command(
         words=["pop"],
@@ -1352,7 +1451,8 @@ class MufGui(object):
         desc="Pop one or more items off the data stack."
     )
     def cmd_pop(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
         try:
@@ -1360,7 +1460,7 @@ class MufGui(object):
                 args = "1"
             cnt = int(args)
             for i in range(cnt):
-                self.fr.data_pop()
+                currproc.data_pop()
         except:
             errlog("Usage: pop [COUNT]")
 
@@ -1370,7 +1470,8 @@ class MufGui(object):
         desc="Duplicate one or more items from the top of the data stack."
     )
     def cmd_dup(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
         try:
@@ -1378,7 +1479,7 @@ class MufGui(object):
                 args = "1"
             cnt = int(args)
             for i in range(cnt):
-                self.fr.data_pick(cnt)
+                currproc.data_pick(cnt)
         except:
             errlog("Usage: dup [COUNT]")
 
@@ -1388,7 +1489,8 @@ class MufGui(object):
         desc="Rotate top COUNT items on the top of the data stack."
     )
     def cmd_rotate(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
         try:
@@ -1396,10 +1498,10 @@ class MufGui(object):
                 args = "1"
             cnt = int(args)
             if cnt > 0:
-                self.fr.data_push(self.fr.data_pull(cnt))
+                currproc.data_push(currproc.data_pull(cnt))
             elif cnt < 0:
-                val = self.fr.data_pop()
-                self.fr.data_insert((-cnt) - 1, val)
+                val = currproc.data_pop()
+                currproc.data_insert((-cnt) - 1, val)
         except:
             errlog("Usage: dup [COUNT]")
 
@@ -1409,13 +1511,14 @@ class MufGui(object):
         desc="Swap top two items on the top of the data stack."
     )
     def cmd_swap(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
-        a = self.fr.data_pop()
-        b = self.fr.data_pop()
-        self.fr.data_push(a)
-        self.fr.data_push(b)
+        a = currproc.data_pop()
+        b = currproc.data_pop()
+        currproc.data_push(a)
+        currproc.data_push(b)
 
     @debugger_command(
         words=["push"],
@@ -1423,20 +1526,21 @@ class MufGui(object):
         desc="Push VALUE onto the top of the data stack."
     )
     def cmd_push(self, args):
-        if not self.fr:
+        currproc = self._selected_process()
+        if not currproc:
             errlog("Program not running.")
             return
         elif not args:
             errlog("Usage: push VALUE")
             return
         elif util.is_int(args):
-            self.fr.data_push(int(args))
+            currproc.data_push(int(args))
         elif util.is_float(args):
-            self.fr.data_push(float(args))
+            currproc.data_push(float(args))
         elif util.is_dbref(args):
-            self.fr.data_push(si.DBRef(int(args[1:])))
+            currproc.data_push(si.DBRef(int(args[1:])))
         elif util.is_strlit(args):
-            self.fr.data_push(args[1:-1])
+            currproc.data_push(args[1:-1])
         log("Stack item pushed.")
 
     def allow_srcsedit(self):
@@ -1447,10 +1551,14 @@ class MufGui(object):
         return self.root.focus_get() == srcs_disp
 
     def allow_run(self):
-        return self.fr is not None
+        prog = self._current_prog()
+        if not prog:
+            return False
+        return bool(db.getobj(prog).compiled)
 
     def allow_debug(self):
-        return self.fr and self.fr.get_call_stack()
+        currproc = self._selected_process()
+        return currproc and currproc.get_call_stack()
 
     def appmenu_prefs_dlog(self, event=None):
         # TODO: implement!
@@ -1514,7 +1622,7 @@ class MufGui(object):
                 return
             if dosave:
                 self.save_program_to_file(prog)
-        self.fr = None
+        process_list.killall(prog)
         db.recycle_object(prog)
         self.srcs_nb.remove_pane(prog)
         self.update_displays()
@@ -1534,6 +1642,9 @@ class MufGui(object):
     @menu_cmd("File", "Quit", plats=["Linux"])
     @accels(win="Alt-F4", lin="Ctrl-Q")
     def filemenu_quit(self, event=None):
+        netifc.notify_all('System shutting down.')
+        netifc.flush_all_descrs()
+        netifc.disconnect_all()
         try:
             self.root.destroy()
         except:
@@ -1624,35 +1735,50 @@ class MufGui(object):
     @accels(mac="Ctrl-I", win="Ctrl-Shift-I", lin="Ctrl-Shift-I")
     @enable_test('allow_debug')
     def progmenu_step_inst(self, event=None):
-        self.fr.set_break_insts(1)
+        currproc = self._selected_process()
+        if not currproc:
+            return
+        currproc.set_break_insts(1)
         self.resume_execution()
 
     @menu_cmd("Program", "Step Line")
     @accels(mac="Ctrl-S", win="Ctrl-Shift-S", lin="Ctrl-Shift-S")
     @enable_test('allow_debug')
     def progmenu_step_line(self, event=None):
-        self.fr.set_break_steps(1)
+        currproc = self._selected_process()
+        if not currproc:
+            return
+        currproc.set_break_steps(1)
         self.resume_execution()
 
     @menu_cmd("Program", "Next Line")
     @accels(mac="Ctrl-N", win="Ctrl-Shift-N", lin="Ctrl-Shift-N")
     @enable_test('allow_debug')
     def progmenu_next_line(self, event=None):
-        self.fr.set_break_lines(1)
+        currproc = self._selected_process()
+        if not currproc:
+            return
+        currproc.set_break_lines(1)
         self.resume_execution()
 
     @menu_cmd("Program", "Finish Function")
     @accels(mac="Ctrl-F", win="Ctrl-Shift-F", lin="Ctrl-Shift-F")
     @enable_test('allow_debug')
     def progmenu_finish(self, event=None):
-        self.fr.set_break_on_finish(True)
+        currproc = self._selected_process()
+        if not currproc:
+            return
+        currproc.set_break_on_finish(True)
         self.resume_execution()
 
     @menu_cmd("Program", "Continue Execution")
     @accels(mac="Ctrl-C", win="Ctrl-Shift-C", lin="Ctrl-Shift-C")
     @enable_test('allow_debug')
     def progmenu_continue(self, event=None):
-        self.fr.reset_breaks()
+        currproc = self._selected_process()
+        if not currproc:
+            return
+        currproc.reset_breaks()
         self.resume_execution()
 
     @separator
@@ -1662,8 +1788,9 @@ class MufGui(object):
     def progmenu_trace(self, event=None):
         if event:
             self.dotrace.set('0' if self.dotrace.get() != '0' else '1')
-        if self.fr:
-            self.fr.set_trace(self.dotrace.get() != '0')
+        currproc = self._selected_process()
+        if currproc:
+            currproc.set_trace(self.dotrace.get() != '0')
 
     @separator
     @menu_cmd("Program", "Register as...")
@@ -1709,4 +1836,3 @@ if __name__ == "__main__":
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap
-

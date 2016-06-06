@@ -76,6 +76,7 @@
    72: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "Spike"
     2: #4 line 2 ("", "Spike") "pointy"
@@ -149,6 +150,7 @@
    70: #4 line 31 ("", #11, 1) POP
    71: #4 line 32 ("", #11) RECYCLE
    72: #4 line 33 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 73 steps.
 

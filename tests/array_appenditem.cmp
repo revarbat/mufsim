@@ -13,6 +13,7 @@
     9: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "d"
     2: #4 line 2 ("", "d") {
@@ -23,6 +24,7 @@
     7: #4 line 2 ("", "d", "a", "b", "c", 3) ARRAY_MAKE
     8: #4 line 2 ("", "d", 3["a", "b", "c"]) ARRAY_APPENDITEM
     9: #4 line 3 ("", 4["a", "b", "c", "d"]) EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 10 steps.
 

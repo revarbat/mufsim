@@ -19,6 +19,7 @@
    15: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") LV0: me
     2: #4 line 2 ("", LV0) @
@@ -35,6 +36,7 @@
    13: #4 line 4 ("", #5, "haven") FLAG?
    14: #4 line 4 ("", 1) POP
    15: #4 line 5 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 16 steps.
 

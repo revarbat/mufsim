@@ -15,6 +15,7 @@
    11: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") #5
     2: #4 line 2 ("", #5) "outlist"
@@ -32,6 +33,7 @@ SETPROP "outlist#/2" on #5 = "is"
 SETPROP "outlist#/3" on #5 = "a"
 SETPROP "outlist#/4" on #5 = "test."
    11: #4 line 4 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 12 steps.
 

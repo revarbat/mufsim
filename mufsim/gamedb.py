@@ -5,8 +5,8 @@ import time
 from mufsim.errors import MufRuntimeError
 import mufsim.utils as util
 import mufsim.stackitems as si
-import mufsim.connections as conn
 from mufsim.logger import log
+from mufsim.interface import network_interface as netifc
 
 
 player_names = {}
@@ -58,7 +58,6 @@ class DBObject(object):
         self.ts_usecount = 0
         if objtype == "player":
             player_names[self.name.lower()] = self.dbref
-            self.descr = conn.connect(self.dbref)
             self.password = passwd
         if regname:
             register_obj(0, regname, si.DBRef(self.dbref))
@@ -112,10 +111,10 @@ class DBObject(object):
             val = self.properties[prop]
         if not suppress:
             if isinstance(val, str):
-                log("GETPROP \"%s\" on #%d = %s" %
+                log('GETPROP "%s" on #%d = %s' %
                     (prop, self.dbref, util.escape_str(val)))
             else:
-                log("GETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
+                log('GETPROP "%s" on #%d = %s' % (prop, self.dbref, val))
         return val
 
     def setprop(self, prop, val, suppress=False):
@@ -124,14 +123,14 @@ class DBObject(object):
         self.properties[prop] = val
         if not suppress:
             if isinstance(val, str):
-                log("SETPROP \"%s\" on #%d = %s" %
+                log('SETPROP "%s" on #%d = %s' %
                     (prop, self.dbref, util.escape_str(val)))
             else:
-                log("SETPROP \"%s\" on #%d = %s" % (prop, self.dbref, val))
+                log('SETPROP "%s" on #%d = %s' % (prop, self.dbref, val))
 
     def delprop(self, prop):
         prop = self.normalize_prop(prop)
-        log("DELPROP \"%s\" on #%d" % (prop, self.dbref))
+        log('DELPROP "%s" on #%d' % (prop, self.dbref))
         self.mark_modify()
         if prop in self.properties:
             del self.properties[prop]
@@ -140,7 +139,7 @@ class DBObject(object):
             prp = self.normalize_prop(prp)
             if prp.startswith(prop):
                 del self.properties[prp]
-                log("DELPROP \"%s\" on #%d" % (prp, self.dbref))
+                log('DELPROP "%s" on #%d' % (prp, self.dbref))
 
     def is_propdir(self, prop):
         prop = self.normalize_prop(prop)
@@ -151,7 +150,7 @@ class DBObject(object):
             if prp.startswith(prop):
                 val = True
                 break
-        log("PROPDIR? \"%s\" on #%d = %s" % (prop, self.dbref, val))
+        log('PROPDIR? "%s" on #%d = %s' % (prop, self.dbref, val))
         return val
 
     def next_prop(self, prop, suppress=False):
@@ -180,7 +179,7 @@ class DBObject(object):
                     if not out or pfx + sub < out:
                         out = pfx + sub
         if not suppress:
-            log("NEXTPROP \"%s\" on #%d = \"%s\"" % (prop, self.dbref, out))
+            log('NEXTPROP "%s" on #%d = "%s"' % (prop, self.dbref, out))
         return out
 
     def prodir_props(self, prop):
@@ -196,7 +195,7 @@ class DBObject(object):
                 if sub not in out:
                     out.append(sub)
         out.sort()
-        log("PROPDIRPROPS \"%s\" on #%d = %s" % (prop, self.dbref, out))
+        log('PROPDIRPROPS "%s" on #%d = %s' % (prop, self.dbref, out))
         return out
 
     def blessprop(self, prop, suppress=False):
@@ -205,7 +204,7 @@ class DBObject(object):
         if prop in self.properties:
             self.blessed_properties[prop] = 1
         if not suppress:
-            log("BLESSPROP \"%s\" on #%d" % (prop, self.dbref))
+            log('BLESSPROP "%s" on #%d' % (prop, self.dbref))
         return
 
     def unblessprop(self, prop, suppress=False):
@@ -214,15 +213,21 @@ class DBObject(object):
         if prop in self.properties:
             del self.blessed_properties[prop]
         if not suppress:
-            log("UNBLESSPROP \"%s\" on #%d" % (prop, self.dbref))
+            log('UNBLESSPROP "%s" on #%d' % (prop, self.dbref))
         return
 
     def is_blessed(self, prop, suppress=False):
         prop = self.normalize_prop(prop)
         val = prop in self.blessed_properties
         if not suppress:
-            log("IS_BLESSED \"%s\" on #%d = %s" % (prop, self.dbref, val))
+            log('IS_BLESSED "%s" on #%d = %s' % (prop, self.dbref, val))
         return val
+
+    def notify(self, msg):
+        if self.objtype == "player":
+            descrs = netifc.user_descrs(self.dbref)
+            for descr in descrs:
+                netifc.descr_notify(descr, msg)
 
     def __repr__(self):
         return "%s(#%d)" % (self.name, self.dbref)
@@ -652,7 +657,7 @@ def init_object_db():
         objtype="player",
         flags="W3",
         location=0,
-        passwd="WizPass",
+        passwd="potrzbie",
         props={
             "sex": "male"
         },
@@ -713,7 +718,7 @@ def init_object_db():
         objtype="player",
         flags="1",
         location=main_room.dbref,
-        passwd="password2",
+        passwd="password",
         props={
             "sex": "female"
         },

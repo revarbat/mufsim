@@ -2431,6 +2431,7 @@ SETPROP "_defs/lsedit__basic" on #4 = "#4 \"lsedit__basic\" call"
  2392: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
  2341: #4 line 550 ("") Function: __start (0 vars)
  2342: #4 line 551 ("") "me"
  2343: #4 line 551 ("", "me") MATCH
@@ -2951,6 +2952,7 @@ NOTIFY: test  OBJ=LIST
  2200: #4 line 520 (0) EXIT
  2340: #4 line 549 (0) EXIT
  2392: #4 line 559 (0) EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 518 steps.
 

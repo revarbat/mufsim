@@ -40,6 +40,7 @@
    36: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") {
     2: #4 line 3 ("", Mark) {
@@ -79,6 +80,7 @@
 NOTIFY TO [John_Doe(#5)]: Johnny                   4        Jane_Doe  3.14
 NOTIFY TO [John_Doe(#5)]: Ghaladahsk_Fadja       123        John_Doe     0
    36: #4 line 18 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 37 steps.
 

@@ -37,7 +37,7 @@ py2exe:
 
 clean:
 	rm -rf build *.pyc __pycache__
-	find mufsim -name '*.pyc' -exec rm {} \;
+	find mufsim -name '*.pyc' -o -name __pycache__ -o -name .ropeproject | xargs rm -rf
 
 distclean: clean
 	rm -rf dist dist-win

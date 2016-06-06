@@ -5,7 +5,7 @@ import sys
 import platform
 from glob import glob
 
-VERSION = "0.8.3"
+VERSION = "0.8.4"
 
 
 APP = ['kickstart.py']
@@ -111,7 +111,7 @@ setup(
     },
     install_requires=[
         'setuptools',
-        'belfrywidgets>=0.9.3',
+        'belfrywidgets>=0.9.4',
         'mudclientprotocol>=0.1.0'
     ],
     data_files=data_files,

@@ -56,6 +56,7 @@
    52: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") {
     2: #4 line 2 ("", Mark) 3
@@ -109,6 +110,7 @@
    50: #4 line 7 ("", 2{"a": 3, "b": 8}, 3{"c": 4, "d": 9, "e": 7}) POP
    51: #4 line 7 ("", 2{"a": 3, "b": 8}) POP
    52: #4 line 8 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 53 steps.
 

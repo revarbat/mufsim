@@ -12,6 +12,7 @@
     8: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") LV0: me
     2: #4 line 2 ("", LV0) @
@@ -22,6 +23,7 @@
     7: #4 line 2 ("", #2, #5, "foo") NOTIFY_EXCEPT
 NOTIFY TO ALL IN Main Room(#2) EXCEPT John_Doe(#5): foo
     8: #4 line 3 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 9 steps.
 

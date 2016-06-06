@@ -21,6 +21,7 @@
    17: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") {
     2: #4 line 2 ("", Mark) "foo"
@@ -39,6 +40,7 @@
    15: #4 line 2 ("", 4{"bar": 8, "baz": 2, "foo": 3, "qux": 9}, "ba*") ARRAY_MATCHKEY
    16: #4 line 2 ("", 2{"bar": 8, "baz": 2}) POP
    17: #4 line 3 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 18 steps.
 

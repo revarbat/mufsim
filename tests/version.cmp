@@ -9,12 +9,14 @@
     5: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "Muck2.2fb6.09"
     2: #4 line 2 ("", "Muck2.2fb6.09") POP
     3: #4 line 3 ("") "Muck2.2fb6.09"
     4: #4 line 3 ("", "Muck2.2fb6.09") POP
     5: #4 line 4 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 6 steps.
 

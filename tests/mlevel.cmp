@@ -12,6 +12,7 @@
     8: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "*jane_doe"
     2: #4 line 2 ("", "*jane_doe") MATCH
@@ -21,6 +22,7 @@
     6: #4 line 3 ("", #4) MLEVEL
     7: #4 line 3 ("", 3) POP
     8: #4 line 4 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 9 steps.
 

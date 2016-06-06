@@ -2,7 +2,7 @@ import time
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 from mufsim.logger import log
-from mufsim.errors import MufRuntimeError, MufBreakExecution
+from mufsim.errors import MufRuntimeError
 from mufsim.insts.base import Instruction, instr
 
 
@@ -15,51 +15,9 @@ class InstReadWantsBlanks(Instruction):
 @instr("read")
 class InstRead(Instruction):
     def execute(self, fr):
-        while True:
-            if fr.text_entry:
-                txt = fr.text_entry.pop(0)
-            else:
-                fr.wait_state = fr.WAIT_READ
-                raise MufBreakExecution()
-            if txt or fr.read_wants_blanks:
-                break
-            log("Blank line ignored.")
-        if txt == "@Q":
-            while fr.call_stack:
-                fr.call_pop()
-            while fr.catch_stack:
-                fr.catch_pop()
-            raise MufRuntimeError("Aborting program.")
-        fr.data_push(txt)
-
-
-@instr("tread")
-class InstTRead(Instruction):
-    def execute(self, fr):
-        # TODO: make real timed read.
-        fr.data_pop(int)
-        while True:
-            if fr.text_entry:
-                txt = fr.text_entry.pop(0)
-            else:
-                fr.wait_state = fr.WAIT_READ
-                raise MufBreakExecution()
-            if txt or fr.read_wants_blanks:
-                break
-            log("Blank line ignored.")
-        if txt == "@T":
-            log("Faking time-out.")
-            fr.data_push("")
-            fr.data_push(1)
-        elif txt == "@Q":
-            while fr.call_stack:
-                fr.call_pop()
-            while fr.catch_stack:
-                fr.catch_pop()
-            raise MufRuntimeError("Aborting program.")
-        else:
-            fr.data_push(txt)
-            fr.data_push(0)
+        if fr.execution_mode == fr.MODE_BACKGROUND:
+            raise MufRuntimeError("Cannot READ in background process.")
+        fr.wait_for_read()
 
 
 @instr("userlog")
@@ -83,6 +41,7 @@ class InstNotify(Instruction):
         fr.check_underflow(2)
         msg = fr.data_pop(str)
         who = fr.data_pop_object()
+        who.notify(msg)
         me = fr.globalvar_get(0)
         if who.dbref == me.value:
             log("NOTIFY: %s" % msg)
@@ -102,7 +61,10 @@ class InstArrayNotify(Instruction):
         for msg in msgs:
             if not isinstance(msg, str):
                 raise MufRuntimeError("Expected list array of strings. (1)")
+        for msg in msgs:
             targs = [db.getobj(o) for o in targs]
+            for targ in targs:
+                targ.notify(msg)
             log("NOTIFY TO %s: %s" % (targs, msg))
 
 
@@ -113,6 +75,9 @@ class InstNotifyExcept(Instruction):
         msg = fr.data_pop(str)
         who = fr.data_pop_dbref()
         where = fr.data_pop_object()
+        for ref in where.contents:
+            if ref != who.value:
+                db.getobj(ref).notify(msg)
         if db.validobj(who):
             who = db.getobj(who)
             log("NOTIFY TO ALL IN %s EXCEPT %s: %s" % (where, who, msg))
@@ -130,8 +95,11 @@ class InstNotifyExclude(Instruction):
         excl = []
         for i in range(pcount):
             who = fr.data_pop_object()
-            excl.append(si.DBRef(who.dbref))
+            excl.append(who.dbref)
         where = fr.data_pop_object()
+        for ref in where.contents:
+            if ref not in excl:
+                db.getobj(ref).notify(msg)
         excls = [db.getobj(o) for o in excl if db.validobj(o)]
         if excls:
             log("NOTIFY TO ALL IN %s EXCEPT %s: %s" % (where, excls, msg))

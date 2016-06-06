@@ -17,6 +17,7 @@
    13: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 3.14
     2: #4 line 2 ("", 3.14) FTOSTR
@@ -31,6 +32,7 @@
    11: #4 line 5 ("", 1.23456789123) FTOSTR
    12: #4 line 5 ("", "1.23456789123") POP
    13: #4 line 6 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 14 steps.
 

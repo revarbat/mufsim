@@ -39,6 +39,7 @@
    35: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "*jane_doe"
     2: #4 line 2 ("", "*jane_doe") MATCH
@@ -75,6 +76,7 @@
    33: #4 line 9 ("", #6) PENNIES
    34: #4 line 9 ("", 44) POP
    35: #4 line 10 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 36 steps.
 

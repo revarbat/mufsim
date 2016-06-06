@@ -29,8 +29,8 @@ class LockNodeObject(LockNode):
         if not db.validobj(self.dbref):
             return False
         if db.getobj(self.dbref).objtype == "program":
-            from mufsim.stackframe import MufStackFrame
-            fr = MufStackFrame()
+            from mufsim.processlist import process_list
+            fr = process_list.new_process()
             trig = supp  # TODO: Use consistent real trigger!
             fr.setup(self.dbref, supp, trig, "")
             fr.execute_code()

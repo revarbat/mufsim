@@ -23,6 +23,7 @@
    19: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "Foolbar"
     2: #4 line 2 ("", "Foolbar") LV0: me
@@ -43,6 +44,7 @@
    17: #4 line 5 ("", "Foo bar", #3) EXT-NAME-OK?
    18: #4 line 5 ("", 1) POP
    19: #4 line 6 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 20 steps.
 

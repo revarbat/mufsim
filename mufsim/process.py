@@ -1,5 +1,5 @@
-import sys
 import copy
+import time
 
 import mufsim.stackitems as si
 import mufsim.gamedb as db
@@ -7,9 +7,10 @@ from mufsim.compiler import MufCompiler
 from mufsim.logger import log, warnlog, errlog
 from mufsim.errors import MufRuntimeError, MufBreakExecution
 from mufsim.callframe import MufCallFrame
+from mufsim.events import MufEventQueue
 
 
-class MufStackFrame(object):
+class MufProcess(object):
     MAX_STACK = 1024
     FP_ERRORS_LIST = [
         ("DIV_ZERO", "Division by zero attempted."),
@@ -18,18 +19,18 @@ class MufStackFrame(object):
         ("FBOUNDS", "Floating-point inputs were infinite or out of range."),
         ("IBOUNDS", "Calculation resulted in an integer overflow."),
     ]
-    BREAK_NONE = 0
-    BREAK_INST = 1
-    BREAK_STEP = 2
-    BREAK_NEXT = 3
-    BREAK_FINISH = 4
+    BREAK_NONE = ''
+    BREAK_INST = 'INST'
+    BREAK_STEP = 'STEP'
+    BREAK_NEXT = 'NEXT'
+    BREAK_FINISH = 'FINISH'
 
-    WAIT_NONE = 0
-    WAIT_READ = 1
-    WAIT_TREAD = 2
-    WAIT_EVENT = 3
+    MODE_PREEMPT = 0
+    MODE_FOREGROUND = 1
+    MODE_BACKGROUND = 2
 
-    def __init__(self):
+    def __init__(self, proclist):
+        self.proclist = proclist
         self.user = si.DBRef(-1)
         self.program = si.DBRef(-1)
         self.trigger = si.DBRef(-1)
@@ -39,11 +40,14 @@ class MufStackFrame(object):
         self.data_stack = []
         self.globalvars = {}
         self.fp_errors = 0
+        self.events = MufEventQueue()
+        self.watchers = []
         self.read_wants_blanks = False
-        self.execution_mode = 1
-        self.wait_state = self.WAIT_NONE
+        self.execution_mode = self.MODE_FOREGROUND
+        self.wait_state = ''
         self.trace = False
         self.cycles = 0
+        self.runtime = 0.0
         self.breakpoints = []
         self.break_on_error = False
         self.break_type = None
@@ -51,11 +55,74 @@ class MufStackFrame(object):
         self.prev_call_level = -1
         self.prevline = (-1, -1)
         self.text_entry = []
+        self.start_time = time.time()
         self.fp_error_names = [v[0] for v in self.FP_ERRORS_LIST]
         self.fp_error_descrs = [v[1] for v in self.FP_ERRORS_LIST]
         self.fp_error_bits = [
             (1 << k) for k, v in enumerate(self.FP_ERRORS_LIST)
         ]
+
+    ###############################################################
+
+    def lookup_process(self, pid):
+        return self.proclist.get(pid)
+
+    def get_pids(self):
+        self.proclist.get_pids()
+
+    def timer_start(self, secs, name):
+        self.proclist.timer_add(secs, self.pid, name)
+
+    def timer_stop(self, name):
+        self.proclist.timer_del(self.pid, name)
+
+    def watch_pid(self, pid):
+        self.proclist.watch_pid(self.pid, pid)
+
+    def kill_pid(self, pid):
+        self.proclist.kill_process(self.pid)
+
+    def end_process(self):
+        self.proclist.process_complete(self.pid)
+
+    def fork_process(self):
+        newproc = self.proclist.new_process()
+        newproc.program = copy.deepcopy(self.program)
+        newproc.user = copy.deepcopy(self.user)
+        newproc.trigger = copy.deepcopy(self.trigger)
+        newproc.command = self.command
+        newproc.globalvar_set(0, copy.deepcopy(self.user))
+        newproc.globalvar_set(1, si.DBRef(db.getobj(self.user).location))
+        newproc.globalvar_set(2, copy.deepcopy(self.trigger))
+        newproc.globalvar_set(3, self.command)
+        newproc.catch_stack = copy.deepcopy(self.catch_stack)
+        newproc.call_stack = copy.deepcopy(self.call_stack)
+        newproc.data_stack = copy.deepcopy(self.data_stack)
+        newproc.globalvars = copy.deepcopy(self.globalvars)
+        newproc.fp_errors = self.fp_errors
+        newproc.breakpoints = self.breakpoints
+        newproc.break_on_error = self.break_on_error
+        newproc.read_wants_blanks = self.read_wants_blanks
+        newproc.execution_mode = self.MODE_BACKGROUND
+        newproc.proclist.sleep(0.0, newproc.pid)
+        newproc.pc_advance(1)
+        return newproc
+
+    ###############################################################
+
+    def wait_for_read(self):
+        self.proclist.wait_for_read(self.user.value, self.pid)
+        raise MufBreakExecution()
+
+    def sleep(self, secs):
+        self.proclist.sleep(secs, self.pid)
+        raise MufBreakExecution()
+
+    def wait_for_events(self, pats):
+        self.proclist.wait_for_events(self.pid, pats)
+        raise MufBreakExecution()
+
+    ###############################################################
 
     def setup(self, prog, user, trig, cmd):
         # Reset program state.
@@ -66,11 +133,12 @@ class MufStackFrame(object):
         self.fp_errors = 0
         self.read_wants_blanks = False
         self.cycles = 0
+        self.runtime = 0.0
         # Set call info
+        self.program = si.DBRef(prog.dbref)
         self.user = si.DBRef(user.dbref)
         self.trigger = si.DBRef(trig.dbref)
         self.command = cmd
-        self.program = si.DBRef(prog.dbref)
         # Set globals
         self.globalvar_set(0, si.DBRef(user.dbref))
         self.globalvar_set(1, si.DBRef(user.location))
@@ -80,6 +148,14 @@ class MufStackFrame(object):
         comp = self.get_compiled(prog)
         self.call_push(comp.lastfunction, trig.dbref)
         self.data_push(cmd)
+
+    def uses_prog(self, prog):
+        prog = db.normobj(prog)
+        for lev in range(len(self.call_stack)):
+            addr = self.call_addr(level=lev)
+            if addr and addr.prog == prog:
+                return True
+        return False
 
     def get_compiled(self, prog=-1):
         prog = db.normobj(prog)
@@ -356,8 +432,6 @@ class MufStackFrame(object):
                 self._trigger_breakpoint()
 
     def _check_line_based_breakpoints(self):
-        if not self.call_stack:
-            self._trigger_breakpoint()
         addr = self.curr_addr()
         line = self.get_inst_line(addr)
         currline = (addr.prog, line)
@@ -379,40 +453,52 @@ class MufStackFrame(object):
                         self._trigger_breakpoint()
 
     def check_breakpoints(self):
+        if not self.call_stack:
+            self.end_process()
+            self._trigger_breakpoint()
         if not self.break_type and not self.breakpoints:
             return
         self._check_inst_based_breakpoints()
         self._check_line_based_breakpoints()
 
     def execute_code(self, level=-1):
+        maxcycles = {
+            self.MODE_PREEMPT: 999999999,
+            self.MODE_FOREGROUND: 10000,
+            self.MODE_BACKGROUND: 10000,
+        }
         level += len(self.call_stack) if level < 0 else 0
+        starttime = time.time()
         self.prev_call_level = level + 1
         addr = self.curr_addr()
         inst = self.get_inst(addr)
         self.prevline = (addr.prog, inst.line)
-        self.wait_state = self.WAIT_NONE
+        slice_cycles = 0
         while self.call_stack:
             addr = self.curr_addr()
             inst = self.get_inst(addr)
             if self.trace:
                 log(self.get_trace_line(), msgtype='trace')
-                sys.stdout.flush()
             try:
-                self.cycles += 1
-                inst.execute(self)
-                self.pc_advance(1)
-            except MufBreakExecution as e:
-                return
-            except (MufRuntimeError, db.InvalidObjectError) as e:
-                if not self.catch_trigger(e):
-                    return
-            finally:
                 try:
+                    self.cycles += 1
+                    slice_cycles += 1
+                    inst.execute(self)
+                    self.pc_advance(1)
+                    if slice_cycles >= maxcycles[self.execution_mode]:
+                        self.sleep(0.0)
                     self.check_breakpoints()
-                except MufBreakExecution as e:
-                    return
+                except (MufRuntimeError, db.InvalidObjectError) as e:
+                    if not self.catch_trigger(e):
+                        self.runtime += time.time() - starttime
+                        return
+                    self.check_breakpoints()
+            except MufBreakExecution as e:
+                self.runtime += time.time() - starttime
+                return
 
     ###############################################################
+
     def get_programs(self):
         return db.get_all_programs()
 

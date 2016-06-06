@@ -12,11 +12,13 @@ GETPROP "_version" on #4 = "3.14"
     4: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 2 ("") Function: main (0 vars)
     1: #4 line 4 ("") "Pass"
     2: #4 line 9 ("", "Pass") "Pass"
     3: #4 line 16 ("", "Pass", "Pass") "Pass"
     4: #4 line 18 ("", "Pass", "Pass", "Pass") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 5 steps.
 

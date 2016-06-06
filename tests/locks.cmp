@@ -46,6 +46,7 @@
    42: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") LV0: me
     2: #4 line 2 ("", LV0) @
@@ -94,6 +95,7 @@ GETPROP "_/lok" on #5 = Lock:(#5|#6)
    40: #4 line 11 ("", #6, Lock:(#5|#6)) TESTLOCK
    41: #4 line 11 ("", 1) POP
    42: #4 line 12 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 43 steps.
 

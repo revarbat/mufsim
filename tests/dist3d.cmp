@@ -45,6 +45,7 @@
    41: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 1.0
     2: #4 line 2 ("", 1.0) 0.0
@@ -87,6 +88,7 @@
    39: #4 line 9 ("", 10.0, -10.0, 10.0) DIST3D
    40: #4 line 9 ("", 17.3205080757) POP
    41: #4 line 10 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 42 steps.
 

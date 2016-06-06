@@ -13,6 +13,7 @@
     9: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 1
     2: #4 line 4 ("", 1) DUP
@@ -33,6 +34,7 @@
     5: #4 line 4 ("", 3, 0) JmpIfFalse: 8
     8: #4 line 7 ("", 3) POP
     9: #4 line 8 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 20 steps.
 

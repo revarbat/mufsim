@@ -61,6 +61,7 @@
    57: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (1 vars)
     1: #4 line 2 () PROG
     2: #4 line 2 (#4) 1
@@ -120,6 +121,7 @@ COMPILE Copy(#8)
    55: #4 line 13 (#8, 0, 0) PROGRAM_GETLINES
    56: #4 line 13 (16[": main[ arg -- ]", "    prog 1 2 program_getlines pop", "    prog 0 0 program_getlines var! lines", "    \"Copy\" newprogram var! newobj", "    newobj @ compiled? pop", "    newobj @ 0 0 program_getlines pop", "    newobj @ lines @ program_setlines", "    newobj @ compiled? pop", "    newobj @ 1 compile pop", "    newobj @ compiled? pop", "    newobj @ uncompile", "    newobj @ compiled? pop", "    newobj @ 0 0 program_getlines pop", ";", "", ""]) POP
    57: #4 line 14 () EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 58 steps.
 

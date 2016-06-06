@@ -45,6 +45,7 @@
    41: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it."
     2: #4 line 2 ("", "%n is in %p happy place by %r and it suits %o, as it is %a, and %s earned it.") SV0: msg
@@ -210,6 +211,7 @@ NOTIFY: John_Doe is in Its happy place by Itself and it suits It, as it is Its, 
    17: #4 line 5 ("", 0) JmpIfFalse: 40
    40: #4 line 9 ("") __FORPOP__
    41: #4 line 10 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 140 steps.
 

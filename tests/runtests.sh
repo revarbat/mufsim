@@ -17,7 +17,7 @@ for f in *.muf *.muv ; do
             echo "Installing results as $cmpfile"
             mv -f $outfile $cmpfile
             else
-            diff -u $cmpfile $outfile
+            diff -u -I '[Pp]rocess' $cmpfile $outfile
         fi
     fi
     rm -f $outfile

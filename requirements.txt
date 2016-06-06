@@ -5,3 +5,5 @@ PyInstaller==3.1.1
 pyjs==0.8.2
 pytz==2013.7
 readline==6.2.4.1
+mufclientprotocol>=0.1.0
+belfrywidgets>=0.9.3

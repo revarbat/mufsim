@@ -21,6 +21,7 @@
    17: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 0
     2: #4 line 2 ("", 0) JmpIfFalse: 4
@@ -35,6 +36,7 @@
    14: #4 line 5 ("", "bar", "qux") "baz2"
    15: #4 line 5 ("", "bar", "qux", "baz2") JMP: 17
    17: #4 line 6 ("", "bar", "qux", "baz2") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 14 steps.
 

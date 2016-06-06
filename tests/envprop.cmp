@@ -79,6 +79,7 @@
    75: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") {
     2: #4 line 2 ("", Mark) 0
@@ -368,6 +369,7 @@ GETPROP "foo" on #5 = "A"
     8: #4 line 2 ("", 0) JmpIfFalse: 74
    74: #4 line 29 ("") __FORPOP__
    75: #4 line 30 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 261 steps.
 

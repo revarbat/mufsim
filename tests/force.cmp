@@ -9,6 +9,7 @@
     5: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "*jane_doe"
     2: #4 line 2 ("", "*jane_doe") MATCH
@@ -16,6 +17,7 @@
     4: #4 line 2 ("", #6, "say Hello, World!") FORCE
 FORCE Jane_Doe(#6) TO DO: say Hello, World!
     5: #4 line 3 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 6 steps.
 

@@ -11,6 +11,7 @@
     6: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     3: #4 line 2 ("") Function: main (0 vars)
     4: #4 line 3 ("") Addr:'#4'0
     5: #4 line 3 ("", Addr:'#4'0) EXECUTE
@@ -18,6 +19,7 @@
     1: #4 line 1 ("") 42
     2: #4 line 1 ("", 42) EXIT
     6: #4 line 4 ("", 42) EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 7 steps.
 

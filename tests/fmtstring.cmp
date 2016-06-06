@@ -11,6 +11,7 @@
     7: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "foo"
     2: #4 line 2 ("", "foo") 42
@@ -19,6 +20,7 @@
     5: #4 line 3 ("", "foo", 42, #5, #5) "%D %d %i %s"
     6: #4 line 3 ("", "foo", 42, #5, #5, "%D %d %i %s") FMTSTRING
     7: #4 line 4 ("", "John_Doe #5 42 foo") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 8 steps.
 

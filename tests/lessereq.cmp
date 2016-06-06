@@ -23,6 +23,7 @@
    19: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 1
     2: #4 line 2 ("", 1) 2
@@ -43,6 +44,7 @@
    17: #4 line 7 ("", 1, 1, 0, 0, 1, #-1) 0
    18: #4 line 7 ("", 1, 1, 0, 0, 1, #-1, 0) <=
    19: #4 line 8 ("", 1, 1, 0, 0, 1, 1) EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 20 steps.
 

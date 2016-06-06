@@ -20,6 +20,7 @@
    16: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "J"
     2: #4 line 2 ("", "J") PART_PMATCH
@@ -37,6 +38,7 @@
    14: #4 line 6 ("", "xyzxy") PART_PMATCH
    15: #4 line 6 ("", #-1) POP
    16: #4 line 7 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 17 steps.
 

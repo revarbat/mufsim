@@ -6,9 +6,11 @@
     2: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 2 ("") Function: main (0 vars)
     1: #4 line 10 ("") "Pass"
     2: #4 line 24 ("", "Pass") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 3 steps.
 

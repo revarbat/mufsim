@@ -52,6 +52,7 @@
    48: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 0
     2: #4 line 2 ("", 0) ARRAY_MAKE
@@ -123,6 +124,7 @@
    46: #4 line 20 ("", 3{"a": 3, "b": 4, "c": 5}, 0) POP
    47: #4 line 20 ("", 3{"a": 3, "b": 4, "c": 5}) POP
    48: #4 line 21 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 71 steps.
 

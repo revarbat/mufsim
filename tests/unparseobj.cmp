@@ -16,6 +16,7 @@
    12: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") #1
     2: #4 line 2 ("", #1) UNPARSEOBJ
@@ -29,6 +30,7 @@
    10: #4 line 4 ("", #6) UNPARSEOBJ
    11: #4 line 4 ("", "Jane_Doe(#6PM1)") POP
    12: #4 line 5 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 13 steps.
 

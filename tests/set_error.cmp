@@ -27,6 +27,7 @@
    23: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "DIV_ZERO"
     2: #4 line 2 ("", "DIV_ZERO") IS_SET?
@@ -51,6 +52,7 @@
    21: #4 line 11 ("", "FBOUNDS") IS_SET?
    22: #4 line 11 ("", 1) POP
    23: #4 line 12 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 24 steps.
 

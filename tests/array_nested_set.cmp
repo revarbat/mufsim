@@ -25,6 +25,7 @@
    21: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 8
     2: #4 line 3 ("", 8) {
@@ -47,6 +48,7 @@
    19: #4 line 4 ("", 8, 1{"a": 1{"x": 3}}, "a", "x", 2) ARRAY_MAKE
    20: #4 line 5 ("", 8, 1{"a": 1{"x": 3}}, 2["a", "x"]) ARRAY_NESTED_SET
    21: #4 line 6 ("", 1{"a": 1{"x": 8}}) EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 22 steps.
 

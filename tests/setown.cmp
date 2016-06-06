@@ -15,6 +15,7 @@
    11: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") PROG
     2: #4 line 2 ("", #4) OWNER
@@ -27,6 +28,7 @@
     9: #4 line 4 ("", #4) OWNER
    10: #4 line 4 ("", #6) POP
    11: #4 line 5 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 12 steps.
 

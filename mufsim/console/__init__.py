@@ -6,6 +6,7 @@ import os
 import sys
 import time
 import argparse
+import threading
 from subprocess import call
 
 try:
@@ -16,9 +17,10 @@ except:
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 import mufsim.utils as util
-from mufsim.logger import log, set_output_command
+from mufsim.logger import log, warnlog, set_output_command
 from mufsim.compiler import MufCompiler
-from mufsim.stackframe import MufStackFrame
+from mufsim.interface import network_interface as netifc
+from mufsim.processlist import process_list
 import mufsim.configs as confs
 
 
@@ -31,46 +33,36 @@ def log_print(msgtype, msg):
         sys.stdout.flush()
 
 
+def process_daemon():
+    while True:
+        netifc.poll()
+
+
+daemon = threading.Thread(name='ProcessDaemon', target=process_daemon)
+daemon.setDaemon(True)
+daemon.start()
+
+
 class ConsoleMufDebugger(object):
     def __init__(self, fr):
         self.fr = fr
         self.matches = []
+        process_list.watch_process_change(self.handle_process_change)
+        process_list.set_read_handler(self.handle_read)
 
-    def handle_reads(self):
-        readline = input("READ>")
-        if readline is None or readline == "@Q":
-            while self.fr.call_stack:
-                self.fr.call_pop()
-            while self.fr.catch_stack:
-                self.fr.catch_pop()
-            log("Aborting program.")
-            return False
-        if not readline and not self.fr.read_wants_blanks:
-            log("Blank line ignored.")
-            return True
-        self.fr.pc_advance(1)
-        if self.fr.wait_state == self.fr.WAIT_READ:
-            self.fr.data_push(readline)
-        elif readline == "@T":
-            log("Faking time-out.")
-            self.fr.data_push("")
-            self.fr.data_push(1)
-        else:
-            self.fr.data_push(readline)
-            self.fr.data_push(0)
-        return True
+    def handle_process_change(self):
+        self.fr = process_list.current_process
+        log("Process process changed to PID %d." % self.fr.pid)
+
+    def handle_read(self):
+        while True:
+            return input("READ>")
 
     def resume_execution(self):
-        while True:
+        if self.fr and self.fr.call_stack:
             self.fr.execute_code()
             if not self.fr.get_call_stack():
-                log("Program exited.")
-                break
-            if self.fr.wait_state in [
-                self.fr.WAIT_READ, self.fr.WAIT_TREAD
-            ] and self.handle_reads():
-                continue
-            break
+                warnlog("Program exited.")
 
     def complete(self, text, state):
         cmds = [
@@ -391,7 +383,7 @@ class ConsoleMufDebugger(object):
         userobj = db.get_player_obj("John_Doe")
         progobj = db.get_registered_obj(userobj, "$cmd/test")
         trigobj = db.get_registered_obj(userobj, "$testaction")
-        self.fr = MufStackFrame()
+        self.fr = process_list.new_process()
         self.fr.setup(progobj, userobj, trigobj, self.opts.command)
         log("Restarting program.")
         self.debug_cmd_list("")
@@ -565,7 +557,7 @@ class MufConsole(object):
         userobj = db.get_player_obj("John_Doe")
         progobj = db.get_registered_obj(userobj, "$cmd/test")
         trigobj = db.get_registered_obj(userobj, "$testaction")
-        fr = MufStackFrame()
+        fr = process_list.new_process()
         fr.setup(
             progobj,
             userobj,

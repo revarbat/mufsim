@@ -11,6 +11,7 @@
     7: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "allow_*"
     2: #4 line 2 ("", "allow_*") SYSPARM_ARRAY
@@ -19,6 +20,7 @@
     5: #4 line 3 ("", "*an*") SYSPARM_ARRAY
     6: #4 line 3 ("", 10[5{"group": "Tuning", "mlev": 0, "name": "clean_interval", "type": "timespan", "value": 54000}, 5{"group": "MPI", "mlev": 0, "name": "mpi_max_commands", "type": "integer", "value": 2048}, 5{"group": "Spam Limits", "mlev": 0, "name": "command_burst_size", "type": "integer", "value": 500}, 5{"group": "Spam Limits", "mlev": 0, "name": "command_time_msec", "type": "integer", "value": 1000}, 5{"group": "Spam Limits", "mlev": 0, "name": "commands_per_time", "type": "integer", "value": 2}, 6{"group": "Database", "mlev": 0, "name": "lost_and_found", "objtype": "any", "type": "dbref", "value": #0}, 5{"group": "Commands", "mlev": 4, "name": "recognize_null_command", "type": "boolean", "value": 0}, 5{"group": "Logging", "mlev": 4, "name": "log_commands", "type": "boolean", "value": 1}, 5{"group": "Logging", "mlev": 4, "name": "log_failed_commands", "type": "boolean", "value": 0}, 5{"group": "MUF", "mlev": 0, "name": "expanded_debug_trace", "type": "boolean", "value": 1}]) POP
     7: #4 line 4 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 8 steps.
 

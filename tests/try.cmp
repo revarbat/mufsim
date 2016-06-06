@@ -35,6 +35,7 @@
    31: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 0
     2: #4 line 2 ("", 0) Try: 7
@@ -64,6 +65,7 @@ Caught error in #4 line 14 (POP): Stack underflow.
    29: #4 line 15 ("", 3, "Stack underflow.") POP
    30: #4 line 17 ("", 3) POP
    31: #4 line 18 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 26 steps.
 

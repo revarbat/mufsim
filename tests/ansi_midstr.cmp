@@ -44,6 +44,7 @@
    40: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m"
     2: #4 line 2 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m") SV0: a
@@ -85,6 +86,7 @@
    38: #4 line 8 ("", "\[[1mBold\[[0m \[[2mDim\[[0m \[[31m\[[43mColor\[[0m", 10, 5) ANSI_MIDSTR
    39: #4 line 8 ("", "\[[31m\[[43mColor") POP
    40: #4 line 9 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 41 steps.
 

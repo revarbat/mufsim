@@ -25,6 +25,7 @@
    21: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 3.14159
     2: #4 line 2 ("", 3.14159) MODF
@@ -47,6 +48,7 @@
    19: #4 line 6 ("", -3.0, -0.14159) POP
    20: #4 line 6 ("", -3.0) POP
    21: #4 line 7 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 22 steps.
 

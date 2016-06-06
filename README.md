@@ -1,14 +1,48 @@
 # MufSim
-An offline command-line simulator and debugger for the MUF language.
+An offline simulator and debugger for the MUF language, with GUI and
+command-line interfaces.
 
-This is NOT a perfect simulator of a full MUCK.
-This does NOT accurately simulate all permissions and behaviours.
-It IS, however, a useful way to debug and test programs that don't
-need some of the more unusual primitives.
+This is *not* a perfect simulator of a full MUCK.  This does *not*
+accurately simulate permissions and behaviours.  It *is*, however,
+a useful way to make sure that you are manipulating the stack
+properly.  It's a useful way to debug and test programs that don't
+need some of the more unusual parts of MUF.
 
 
-## Usage
-Usage: `mufsim [-h] [-m] [-u] [-r] [-t] [-d] [-c COMMAND] infile`
+## Installation
+
+### Windows:
+Unpack the `dist\MufSimWin64.zip` archive and place the resulting
+`MufSim.exe` binary someplace useful.
+
+### OS X:
+Unpack the `dist/MufSimOSX.zip` archive and place the resulting
+`MufSim.app` application bundle in the `/Applications` folder.
+
+### Linux:
+Using PyPi:
+
+    pip install mufsim
+
+From sources:
+
+    python3 setup.py build install
+
+
+## Using the GUI Debugger
+
+### Windows:
+Run the `MufSim.exe` binary to launch the GUI Debugger & IDE.
+
+### OS X:
+Open the `MufSim.app` application bundle to launch the GUI Debugger & IDE.
+
+### Linux:
+Run the `mufsimgui` binary to launch the GUI Debugger & IDE.
+
+
+## Using the Command-Line Debugger
+Usage: `mufsim [-h] [-u] [-r] [-t] [-d] [-c COMMAND] [-e TEXTENTRY] [-f TEXTFILE] [-p REGNAME FILE] infile`
 
 Positional argument   | What it is.
 ----------------------|-----------------------------------------------
@@ -21,14 +55,16 @@ Optional argument                 | What it does.
 -r, --run                         | Run compiled MUF tokens.
 -t, --trace                       | Show stacktrace for each instrution.
 -d, --debug                       | Run MUF program in interactive debugger.
--c STR, --command STR             | Specify string to push onto the stack for run.
--e TXT, --textentry TXT           | Text line to feed to READs. (multiple allowed)
+-c TEXT, --command TEXT           | Specify text to push onto the stack for run.
+-e TEXT, --textentry TEXT         | Text line to feed to READs. (multiple allowed)
 -f FILE, --textfile FILE          | File of text lines to feed to READs.
 -p NAME FILE, --program NAME FILE | Create extra prog from FILE, reg'ed as $NAME.
+--timing                          | Show run execution timing.
 
 
 ## Interactive Debugger
-The interactive MUF debugger accepts the following commands:
+The interactive MUF debugger (in both the command-line and GUI) accepts
+the following commands:
 
 Command               | What it does
 ----------------------|--------------------------------------------
@@ -124,11 +160,10 @@ database related primitives.  This database is as follows:
 
 
 ## Adding libraries
-You can add extra library program objects to the DB, by using the
-`-p` command-line argument.  For example, if you have the following
-MUF files:
+You can add extra library program objects to the DB, by using the `-p`
+command-line argument, or by opening the extra library MUF files in the GUI app.  For example, if you have the following MUF files:
 
-lib-foo.muf:
+### lib-foo.muf
 
     $version 1.000
     $lib-version 1.000
@@ -138,7 +173,7 @@ lib-foo.muf:
     public foo
     $libdef foo
 
-And cmd-test.muf:
+### cmd-test.muf
 
     $include $lib/foo
     : main[ arg -- ]
@@ -148,4 +183,16 @@ And cmd-test.muf:
 You can run them like this:
 
     mufsim -r -p lib/foo lib-foo.muf cmd-test.muf
+
+
+## External Client Connections
+
+You can connect and log into a player object from an external client, to test things like MCP and MCPGUI programs. To do so, (assuming you're on the same machine you're running MufSim on) simply connect to `localhost`, port `8888`, and connect to the test user `John_Doe` with the password `password`.
+
+Or:
+
+    telnet localhost 8888
+    connect John_Doe password
+
+You can't currently use any MUCK commands like @dig, but you can interact with MUF programs doing READs or using MCP.
 
