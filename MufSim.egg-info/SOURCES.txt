@@ -8,6 +8,7 @@ MufSim.egg-info/requires.txt
 MufSim.egg-info/top_level.txt
 mufsim/__init__.py
 mufsim/callframe.py
+mufsim/commands.py
 mufsim/compiled.py
 mufsim/compiler.py
 mufsim/configs.py
@@ -26,6 +27,7 @@ mufsim/console/__init__.py
 mufsim/gui/__init__.py
 mufsim/gui/listdisplay.py
 mufsim/gui/menudecorators.py
+mufsim/gui/progeditor.py
 mufsim/gui/tooltip.py
 mufsim/insts/__init__.py
 mufsim/insts/arrays.py
