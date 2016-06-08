@@ -82,7 +82,9 @@ def usercmd_connect(descr, user, cmd):
     if not username or not passwd or cmd:
         notify_descr_or_user(descr, user, "Bad connect syntax.")
         return
-    user = db.match_playername('*' + username)
+    user = db.match_dbref(username)
+    if user == -1:
+        user = db.match_playername('*' + username)
     try:
         playerobj = db.get_player_obj(username)
     except:
@@ -150,9 +152,9 @@ def usercmd_page(descr, user, cmd):
         return
     userobj = db.getobj(user)
     targname, mesg = getword(cmd, '=')
-    targref = match_playername(targname)
+    targref = db.match_playername(targname)
     if targref == -1:
-        targref = match_playername_prefix(targname)
+        targref = db.match_playername_prefix(targname)
     if targref == -1:
         userobj.notify("I don't recognize that player.")
         return
@@ -262,7 +264,7 @@ def usercmd_at_dig(descr, user, cmd):
     roomname, cmd = getword(cmd, '=')
     envroom, regname = getword(cmd, '=')
     regname = regname.strip()
-    envref = match_from(userobj.dbref, envroom)
+    envref = db.match_from(userobj.dbref, envroom)
     if not db.validobj(envref):
         userobj.notify("I don't know which room you mean.")
         return
@@ -290,7 +292,7 @@ def usercmd_at_action(descr, user, cmd):
     exitname, cmd = getword(cmd, '=')
     srcname, regname = getword(cmd, '=')
     regname = regname.strip()
-    srcref = match_controlled(userobj.dbref, srcname)
+    srcref = db.match_controlled(userobj.dbref, srcname)
     if not db.validobj(srcref):
         return
     srcobj = db.getobj(srcref)
@@ -317,7 +319,7 @@ def usercmd_at_open(descr, user, cmd):
     destrefs = []
     for destname in dests.split(';'):
         destname = destname.strip()
-        destref = match_controlled(userobj.dbref, destname)
+        destref = db.match_controlled(userobj.dbref, destname)
         if not db.validobj(destref):
             return
         destrefs.append(destref)
@@ -390,10 +392,10 @@ def usercmd_at_teleport(descr, user, cmd):
     objname, destname = getword(cmd, '=')
     objname = objname.strip()
     destname = destname.strip()
-    obj = match_controlled(user, objname)
+    obj = db.match_controlled(user, objname)
     if not db.validobj(obj):
         return
-    destref = match_controlled(user, destname)
+    destref = db.match_controlled(user, destname)
     if not db.validobj(destref):
         return
     obj = db.getobj(obj)
@@ -413,7 +415,7 @@ def usercmd_at_set(descr, user, cmd):
         return
     userobj = db.getobj(user)
     objname, flag = getword(cmd, '=')
-    obj = match_controlled(user, objname)
+    obj = db.match_controlled(user, objname)
     if not db.validobj(obj):
         return
     if ':' in flag:
@@ -469,7 +471,7 @@ def usercmd_at_unlink(descr, user, cmd):
         return
     userobj = db.getobj(user)
     objname = cmd.strip()
-    obj = match_controlled(user, objname)
+    obj = db.match_controlled(user, objname)
     if not db.validobj(obj):
         return
     obj = db.getobj(obj)
@@ -484,13 +486,13 @@ def usercmd_at_link(descr, user, cmd):
         return
     userobj = db.getobj(user)
     objname, dests = getword(cmd, '=')
-    obj = match_controlled(user, objname)
+    obj = db.match_controlled(user, objname)
     if not db.validobj(obj):
         return
     destrefs = []
     for destname in dests.split(';'):
         destname = destname.strip()
-        destref = match_controlled(userobj.dbref, destname)
+        destref = db.match_controlled(userobj.dbref, destname)
         if not db.validobj(destref):
             return
         destrefs.append(destref)
@@ -508,10 +510,10 @@ def usercmd_at_chown(descr, user, cmd):
     objname, newowner = getword(cmd, '=')
     objname = objname.strip()
     newowner = newowner.strip()
-    obj = match_controlled(user, objname)
+    obj = db.match_controlled(user, objname)
     if not db.validobj(obj):
         return
-    newowner = match_controlled(user, newowner)
+    newowner = db.match_controlled(user, newowner)
     if not db.validobj(newowner):
         return
     obj = db.getobj(obj)
