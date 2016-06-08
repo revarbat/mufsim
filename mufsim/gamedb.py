@@ -21,10 +21,10 @@ class InvalidObjectError(Exception):
 
 class DBObject(object):
     def __init__(
-        self, name, objtype="thing", owner=-1,
-        props={}, flags="", location=-1,
-        regname=None, passwd=None,
-    ):
+                self, name, objtype="thing", owner=-1,
+                props={}, flags="", location=-1,
+                regname=None, passwd=None
+                ):
         global db_top
         global player_names
         global recycled_list
@@ -91,6 +91,12 @@ class DBObject(object):
             else:
                 destobj.contents.insert(0, self.dbref)
                 self.location = dest
+
+    def unparse_for(self, who):
+        if self.controlled_by(who):
+            return '%s(#%dR%s)' % (self.name, self.dbref, self.flags)
+        else:
+            return self.name
 
     def normalize_prop(self, prop):
         prop = prop.strip().lower()
@@ -228,6 +234,16 @@ class DBObject(object):
             descrs = netifc.user_descrs(self.dbref)
             for descr in descrs:
                 netifc.descr_notify(descr, msg)
+
+    def controlled_by(self, who):
+        if not validobj(who):
+            return False
+        userobj = getobj(who)
+        if self.owner == who:
+            return True
+        if 'W' in userobj.flags:
+            return True
+        return False
 
     def __repr__(self):
         return "%s(#%d)" % (self.name, self.dbref)
@@ -398,6 +414,16 @@ def match_contents(remote, pat):
     return obj
 
 
+def match_all_exits(remote, pat):
+    pat = pat.strip()
+    obj = match_content_exits(remote, pat)
+    if obj == -1:
+        obj = match_content_exits(getobj(remote).location, pat)
+    if obj == -1:
+        obj = match_env_exits(remote, pat)
+    return obj
+
+
 def match_from(remote, pat):
     pat = pat.strip()
     obj = match_dbref(pat)
@@ -406,16 +432,32 @@ def match_from(remote, pat):
     if obj == -1:
         obj = match_playername(pat)
     if obj == -1:
-        obj = match_content_exits(remote, pat)
-    if obj == -1:
-        obj = match_content_exits(getobj(remote).location, pat)
-    if obj == -1:
-        obj = match_env_exits(remote, pat)
+        obj = match_all_exits(remote, pat)
     if obj == -1:
         obj = match_contents(remote, pat)
     if obj == -1:
         obj = match_contents(getobj(remote).location, pat)
     return obj
+
+
+def match_noisy(who, pat):
+    userobj = getobj(who)
+    obj = match_from(who, pat)
+    if obj == -1:
+        userobj.notify("I don't see that here!")
+    elif obj == -2:
+        userobj.notify("I don't know which one you mean!")
+    return obj
+
+
+def match_controlled(who, pat):
+    obj = match_noisy(who, pat)
+    if not validobj(obj):
+        return obj
+    obj = getobj(obj)
+    if not obj.controlled_by(who):
+        userobj.notify("Permission denied.")
+    return obj.dbref
 
 
 def get_player_obj(who):
@@ -431,6 +473,11 @@ def register_obj(where, name, ref):
     where = getobj(normobj(where))
     ref = si.DBRef(normobj(ref))
     where.setprop("_reg/" + name, ref, suppress=True)
+
+
+def links_array(targ):
+    targ = getobj(normobj(targ))
+    return targ.links
 
 
 def entrances_array(targ):
@@ -664,11 +711,17 @@ def init_object_db():
     )
 
     main_room = DBObject(
-        name="Main Room",
+        name="Test Chamber #2",
         objtype="room",
         location=0,
         owner=wizard_player.dbref,
         regname="mainroom",
+        props={
+            '_/de': (
+                "You see a large white room with segmented walls and floors.  "
+                "A faded sign declares this place to be 'Test Chamber #2'."
+            )
+        },
     )
 
     trigger_action = DBObject(
@@ -710,6 +763,10 @@ def init_object_db():
             "abc/efg/klm": "prop_klm",
             "abc/nop/qrs": "prop_qrs",
             "abc/nop/tuv": "prop_tuv",
+            '_/de': (
+                "John is a non-descript testing dummy, who looks like he's "
+                "taken more than his fair share of abuse."
+            ),
         },
     )
 
@@ -720,17 +777,22 @@ def init_object_db():
         location=main_room.dbref,
         passwd="password",
         props={
-            "sex": "female"
+            "sex": "female",
+            '_/de': (
+                "Jane is a female model testing mannequin in orange and white."
+            ),
         },
     )
 
     DBObject(
-        name="My Thing",
+        name="Weighted Test Cube",
         objtype="thing",
         flags="",
         location=main_room.dbref,
-        props={},
         regname="testthing",
+        props={
+            '_/de': "You see a standard weighted test cube.",
+        },
     )
 
 

@@ -4,6 +4,7 @@ import mufsim.utils as util
 import mufsim.gamedb as db
 import mufsim.stackitems as si
 import mufsim.sysparms as sysparm
+import mufsim.commands as cmds
 from mufsim.logger import log
 from mufsim.errors import MufRuntimeError, MufCompileError
 from mufsim.insts.base import Instruction, instr
@@ -403,15 +404,13 @@ class InstForce(Instruction):
         cmd = fr.data_pop(str)
         obj = fr.data_pop_object()
         log("FORCE %s TO DO: %s" % (obj, cmd))
-        # TODO: Real forcing!  (pipe dream)
-        # obj.force(cmd)
+        cmds.process_command(fr.proclist, -1, obj.dbref, cmd)
 
 
 @instr("force_level")
 class InstForceLevel(Instruction):
     def execute(self, fr):
-        # TODO: use real force level.
-        fr.data_push(0)
+        fr.data_push(cmds.get_force_level())
 
 
 @instr("exits")

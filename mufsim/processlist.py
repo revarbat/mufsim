@@ -1,9 +1,8 @@
-import re
 import time
 import heapq
 
 import mufsim.utils as util
-import mufsim.gamedb as db
+import mufsim.commands as cmds
 from mufsim.logger import log, warnlog
 from mufsim.errors import MufRuntimeError
 from mufsim.process import MufProcess
@@ -94,7 +93,7 @@ class ProcessList(object):
                 continue
             user = netifc.descr_dbref(descr)
             if user not in self.reading_processes:
-                self.process_command(descr, user, cmd)
+                cmds.process_command(self, descr, user, cmd)
                 continue
             pid = self.reading_processes[user]
             ofr = self.processes.get(pid)
@@ -111,8 +110,10 @@ class ProcessList(object):
             while True:
                 if ofr.text_entry:
                     cmd = ofr.text_entry.pop(0)
-                else:
+                elif not netifc.user_descrs(ofr.user.value):
                     cmd = self.read_handler()
+                else:
+                    break
                 if cmd is None or cmd == '@Q':
                     log("Aborting program.")
                     del self.reading_processes[ofr.user.value]
@@ -151,33 +152,6 @@ class ProcessList(object):
             ofr = self.processes.get(pid)
             if ofr:
                 ofr.events.add_event("TIMER." + name[:32], when)
-
-    def process_command(self, descr, user, cmd):
-        # TODO: process command.
-        if user is None:
-            if cmd.strip().startswith('connect'):
-                m = re.match(r' *connect +([^ ]+) +([^ ]+) *$', cmd, re.I)
-                if not m:
-                    netifc.descr_notify(descr, "Bad connect syntax.")
-                    return
-                username = m.group(1)
-                passwd = m.group(2)
-                log("name='%s'" % username)
-                log("pass='%s'" % passwd)
-                user = db.match_playername('*' + username)
-                log("user='%s'" % user)
-                try:
-                    playerobj = db.get_player_obj(username)
-                except:
-                    netifc.descr_notify(
-                        descr, "AInvalid playername or password.")
-                    return
-                if playerobj.password != passwd:
-                    netifc.descr_notify(
-                        descr, "BInvalid playername or password.")
-                    return
-                netifc.descr_set_user(descr, playerobj.dbref)
-                netifc.descr_notify(descr, "Welcome to MufSim.")
 
     def alloc_new_pid(self):
         attempts = 1024

@@ -21,6 +21,7 @@ except ImportError:  # Python 3
 
 from mufsim.gui.tooltip import CreateToolTip
 from mufsim.gui.listdisplay import ListDisplay
+from mufsim.gui.progeditor import ProgramEditor
 from mufsim.gui.menudecorators import (
     menu_cmd, menu_check, separator, accels, enable_test,
     process_enablers, create_menus,
@@ -357,13 +358,9 @@ class MufGui(object):
 
     def setup_gui_source_display_frame(self, master, prog):
         srcdispfr = Frame(master)
-        disp = ListDisplay(
+        disp = ProgramEditor(
             srcdispfr,
             font=self.monospace,
-            gutter=5,
-            undo=True,
-            autoseparators=True,
-            maxundo=1000,
         )
         disp.gutter.bind(
             '<Button-1>', self.handle_sources_breakpoint_toggle)

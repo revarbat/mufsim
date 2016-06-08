@@ -8,6 +8,18 @@ from mudclientprotocol import McpConnection
 from mufsim.logger import log
 
 
+welcome_banner = """\
+ __  __            __    _____   _
+|  \/  |          / _|  / ____| (_)
+| \  / |  _   _  | |_  | (___    _   _ __ ___
+| |\/| | | | | | |  _|  \___ \  | | | '_ ` _ \ 
+| |  | | | |_| | | |    ____) | | | | | | | | |
+|_|  |_|  \__,_| |_|   |_____/  |_| |_| |_| |_|
+
+The Muf Debugger/Editor/Simulator
+"""
+
+
 class Connection(object):
     def __init__(self, sock, host):
         self.MAXBUF = 16384
@@ -22,10 +34,13 @@ class Connection(object):
         self.outbuf = bytearray()
         self.inbuf = bytearray()
         self.lock = threading.RLock()
+        for line in welcome_banner.split('\n'):
+            self._notify_raw(line)
 
     def read_available(self):
         with self.lock:
             self.inbuf += self.socket.recv(2048)
+            self.last_time = time.time()
 
     def write_available(self):
         with self.lock:
@@ -57,9 +72,13 @@ class Connection(object):
     def notify(self, mesg):
         self.mcp_conn.write_inband(mesg)
 
-    def get_host(self):
+    def get_remote_host(self):
         with self.lock:
             return self.remote_host
+
+    def get_remote_user(self):
+        with self.lock:
+            return self.remote_user
 
     def is_secure(self):
         with self.lock:
@@ -102,7 +121,7 @@ class Server(object):
     def _accept_connection(self):
         (sock, addr) = self.serversocket.accept()
         sock.setblocking(False)
-        con = Connection(sock, addr)
+        con = Connection(sock, addr[0])
         self.descriptors[con.descr] = con
         log("ACCEPTED CONNECTION ON DESCR %d FROM %s" % (con.descr, addr))
 
@@ -195,14 +214,14 @@ class Server(object):
         with self.lock:
             con = self.descriptors.get(descr)
             if con:
-                return con.get_host()
+                return con.get_remote_host()
             return ""
 
     def descr_user(self, descr):
         with self.lock:
             con = self.descriptors.get(descr)
             if con:
-                return con.remote_user
+                return con.get_remote_user()
             return ""
 
     def descr_dbref(self, descr):

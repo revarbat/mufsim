@@ -145,12 +145,7 @@ class InstControls(Instruction):
         fr.check_underflow(2)
         obj = fr.data_pop_object()
         who = fr.data_pop_object()
-        if obj.owner == who.dbref:
-            fr.data_push(1)
-        elif "W" in who.flags:
-            fr.data_push(1)
-        else:
-            fr.data_push(0)
+        fr.data_push(1 if obj.controlled_by(who.dbref) else 0)
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap
