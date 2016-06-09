@@ -21,7 +21,7 @@ except ImportError:  # Python 3
 
 from mufsim.gui.tooltip import CreateToolTip
 from mufsim.gui.listdisplay import ListDisplay
-from mufsim.gui.progeditor import ProgramEditor
+from mufsim.gui.mufeditor import MufEditor
 from mufsim.gui.menudecorators import (
     menu_cmd, menu_check, separator, accels, enable_test,
     process_enablers, create_menus,
@@ -121,11 +121,11 @@ class MufGui(object):
 
         panes3.add(
             self.setup_gui_source_frame(panes3),
-            minsize=200, height=400
+            minsize=200, height=400, stretch='always'
         )
         panes3.add(
             self.setup_gui_console_frame(panes3),
-            minsize=90, height=200
+            minsize=90, height=100
         )
 
         self.gui_raise_window()
@@ -318,11 +318,11 @@ class MufGui(object):
             panes = PanedWindow(nbfr, orient=VERTICAL)
             panes.add(
                 self.setup_gui_source_display_frame(panes, prog),
-                minsize=100, height=300
+                minsize=100, height=400, stretch='always'
             )
             panes.add(
                 self.setup_gui_tokens_frame(panes, prog),
-                minsize=100, height=100
+                minsize=55, height=100
             )
             selfr.pack(side=TOP, fill=X, expand=0)
             panes.pack(side=TOP, fill=BOTH, expand=1)
@@ -358,7 +358,7 @@ class MufGui(object):
 
     def setup_gui_source_display_frame(self, master, prog):
         srcdispfr = Frame(master)
-        disp = ProgramEditor(
+        disp = MufEditor(
             srcdispfr,
             font=self.monospace,
         )

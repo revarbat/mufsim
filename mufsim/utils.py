@@ -54,6 +54,14 @@ def is_strlit(s):
     return s[0] == '"' and s[-1] == '"'
 
 
+def split_char(txt, chars):
+    finds = [x for x in [txt.find(c) for c in chars] if x >= 0]
+    if not finds:
+        return txt, ''
+    pos = min(finds)
+    return txt[:pos], txt[pos:]
+
+
 def smatch(pat, txt):
     pats = [
         ('{', '\b('),
