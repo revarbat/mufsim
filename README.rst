@@ -26,13 +26,13 @@ Unpack the ``dist/MufSimOSX.zip`` archive and place the resulting
 
 Linux
 -----
-Using PyPi:
+Install using PyPi::
 
-    ``pip install mufsim``
+    pip install mufsim
 
-From sources:
+Installing from sources::
 
-    ``python3 setup.py build install``
+    python3 setup.py build install
 
 
 Using the GUI Debugger
