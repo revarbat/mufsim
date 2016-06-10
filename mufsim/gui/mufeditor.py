@@ -4,6 +4,7 @@ except ImportError:  # Python 3
     from tkinter import *  # noqa
 
 import mufsim.utils as util
+from mufsim.logger import log
 from mufsim.gui.listdisplay import ListDisplay
 from mufsim.insts.base import primitives
 from mufsim.compiler import MufCompiler
@@ -49,6 +50,7 @@ class MufEditor(ListDisplay):
         )
         for tag, attrs in self.syntax_colors.items():
             self.tag_config('_ed_' + tag, **attrs)
+        self.bind('<Key-BackSpace>', self.handle_key_backspace)
         self.bind('<Key-Return>', self.handle_key_enter)
         self.bind("<Key-Tab>", self.handle_key_tab)
         self.bind('<Key>', self.handle_keypress)
@@ -149,8 +151,49 @@ class MufEditor(ListDisplay):
                 self.tag_add('_ed_' + tag, start, end)
 
     def handle_key_tab(self, event):
-        self.insert(INSERT, "    ")
+        curridx = self.index(INSERT)
+        currline, currpos = [int(i) for i in curridx.split('.')]
+        line = self.get('insert linestart', 'insert lineend')
+        indent = len(line) - len(line.lstrip())
+        toadd = 4 - (indent % 4)
+        if currpos <= indent:
+            self.insert('insert linestart', ' ' * toadd)
+        elif not self.get("insert-1c", "insert").lstrip():
+            self.insert(INSERT, ' ' * 4)
+        else:
+            word = self.get("insert-1c wordstart", "insert")
+            words = [
+                x for x in (
+                    list(primitives.keys()) +
+                    list(MufCompiler.builtin_defines.keys())
+                )
+                if x.startswith(word)
+            ]
+            words.sort()
+            pfx = util.common_prefix(words)
+            if len(pfx) > len(word):
+                self.delete("insert-1c wordstart", "insert")
+                self.insert(INSERT, pfx)
+                self._syntax_hilite_line(INSERT)
+            else:
+                if len(words) > 1:
+                    log("Completion: %s" % ", ".join(words))
+                self.bell()
         return 'break'
+
+    def handle_key_backspace(self, event=None):
+        curridx = self.index(INSERT)
+        currline, currpos = [int(i) for i in curridx.split('.')]
+        line = self.get('insert linestart', 'insert lineend')
+        indent = len(line) - len(line.lstrip())
+        if currpos == indent and currpos > 0:
+            todel = indent % 4
+            if not todel:
+                todel = 4
+            if todel > currpos:
+                todel = currpos
+            self.delete('insert linestart', 'insert linestart+%dc' % todel)
+            return 'break'
 
     def handle_key_enter(self, event=None):
         self._syntax_hilite_line('insert')
@@ -168,11 +211,12 @@ class MufEditor(ListDisplay):
             self.delete('insert linestart', 'insert lineend')
             self.insert(
                 INSERT,
-                (' ' * (indent + 4 * (incs-decs))) + line.lstrip()
+                (' ' * (previndent - 4 * decs)) + line.lstrip()
             )
             indent -= 4 * decs
         self._syntax_hilite_line('insert')
         self.insert(INSERT, "\n" + ' ' * (indent + 4 * incs))
+        self.see(INSERT)
         return 'break'
 
     def handle_keypress(self, event=None):

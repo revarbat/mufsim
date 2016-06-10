@@ -5,14 +5,13 @@ import sys
 import platform
 from glob import glob
 
-VERSION = "0.9.2"
+VERSION = "0.9.3"
 
 
 APP = ['kickstart.py']
 COPYRIGHT = "Copyright 2016 by Revar Desmera"
-LONG_DESCR = """\
-An offline tokenizer, interpreter, and debugger for MUF, a stack-based
-forth-alike MUCK extension language."""
+with open('README.rst') as f:
+    LONG_DESCR = f.read()
 
 extra_options = {}
 data_files = []

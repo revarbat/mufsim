@@ -375,7 +375,6 @@ class MufGui(object):
         disp.gutter.tag_config(
             'breakpt', background="#447", foreground="white")
         disp.pack(side=BOTTOM, fill=BOTH, expand=1)
-        disp.bind("<Tab>", self.handle_editor_tabs)
         disp.bind("<<Modified>>", self.handle_editor_modify)
         CreateToolTip(
             disp.gutter,
@@ -723,10 +722,6 @@ class MufGui(object):
             self.update_displays(level=self.call_level)
         else:
             errlog("Unrecognized command.")
-        return 'break'
-
-    def handle_editor_tabs(self, event):
-        event.widget.insert(INSERT, "    ")
         return 'break'
 
     def handle_editor_modify(self, event):

@@ -119,6 +119,22 @@ def getsize(obj):
     return inner(obj)
 
 
+def common_prefix(words):
+    if not words:
+        return ''
+    pfx = words[0]
+    while pfx:
+        good = True
+        for word in words[1:]:
+            if not word.startswith(pfx):
+                good = False
+                break
+        if good:
+            return pfx
+        pfx = pfx[:-1]
+    return pfx
+
+
 def compare_dicts(a, b):
     keys1 = sorted(list(a.keys()))
     keys2 = sorted(list(b.keys()))
