@@ -94,7 +94,7 @@ class MufGui(object):
 
     def setup_gui(self):
         self.root = Tk()
-        self.root.title("MUF Debugger")
+        self.root.title("MUF IDE")
         self.root.protocol("WM_DELETE_WINDOW", self.filemenu_quit)
         if platform.system() == "Darwin":
             self.root.wm_attributes("-modified", 0)
@@ -365,10 +365,6 @@ class MufGui(object):
         disp.gutter.bind(
             '<Button-1>', self.handle_sources_breakpoint_toggle)
         disp.tag_config(
-            'error', background="#faa", foreground="black")
-        disp.tag_config(
-            'warning', background="#ffa", foreground="black")
-        disp.tag_config(
             'hilite', background="#aff", foreground="black")
         disp.tag_config(
             'currline', background="#77f", foreground="white")
@@ -496,7 +492,7 @@ class MufGui(object):
     def handle_processes(self):
         netifc.poll(0.0)
         process_list.process(self.call_level)
-        self.root.after(250, self.handle_processes)
+        self.root.after(100, self.handle_processes)
 
     def handle_close_tab(self, prog):
         progobj = db.getobj(prog)
@@ -747,14 +743,23 @@ class MufGui(object):
         if not prog:
             return False
         first = True
-        srcs_disp = self.source_displays[prog]
-        srcs_disp.tag_remove('error', '0.0', END)
-        srcs_disp.tag_remove('warning', '0.0', END)
+        disp = self.source_displays[prog]
+        for tag in disp.tag_names():
+            if tag.startswith('error') or tag.startswith('warning'):
+                disp.tag_delete(tag)
+        count = dict(error=0, warning=0)
         for line, typ, msg in self.errors_queue:
-            srcs_disp.tag_add(typ, '%d.0' % line, '%d.end+1c' % line)
+            count[typ] += 1
+            tagname = "%s%d" % (typ, count[typ])
+            if typ == 'error':
+                disp.tag_config(tagname, background="#faa", foreground="black")
+            else:
+                disp.tag_config(tagname, background="#ffa", foreground="black")
+            disp.tag_add(tagname, '%d.0' % line, '%d.end+1c' % line)
+            CreateToolTip(disp, msg, tag=tagname)
             if first:
                 first = False
-                srcs_disp.see('%d.0' % line)
+                disp.see('%d.0' % line)
 
     def update_console(self, msgtype, msg):
         m = re.match(r'^(Warning|Error) in line (\d+): (.*)$', msg)
@@ -770,7 +775,7 @@ class MufGui(object):
     def update_modified(self):
         if platform.system() != "Darwin":
             return
-        self.root.after(1000, self.update_modified)
+        self.root.after(100, self.update_modified)
         prog = self._current_prog()
         if prog is None:
             self.root.wm_attributes("-modified", 0)
@@ -1643,34 +1648,34 @@ class MufGui(object):
             pass
 
     @menu_cmd("Edit", "Undo")
-    @accels(mac="Cmd-Z", win="Ctrl-Z", lin="Ctrl-Z")
+    @accels(mac="Cmd-Z", win="Ctrl-Z", lin="Ctrl-Z", bind=False)
     def editmenu_undo(self, event=None):
         self.root.focus_get().event_generate("<<Undo>>"),
 
     @menu_cmd("Edit", "Redo")
-    @accels(mac="Cmd-Y", win="Ctrl-Y", lin="Ctrl-Y")
+    @accels(mac="Cmd-Y", win="Ctrl-Y", lin="Ctrl-Y", bind=False)
     def editmenu_redo(self, event=None):
         self.root.focus_get().event_generate("<<Redo>>"),
 
     @separator
     @menu_cmd("Edit", "Cut")
-    @accels(mac="Cmd-X", win="Ctrl-X", lin="Ctrl-X")
+    @accels(mac="Cmd-X", win="Ctrl-X", lin="Ctrl-X", bind=False)
     def editmenu_cut(self, event=None):
         self.root.focus_get().event_generate("<<Cut>>"),
 
     @menu_cmd("Edit", "Copy")
-    @accels(mac="Cmd-C", win="Ctrl-C", lin="Ctrl-C")
+    @accels(mac="Cmd-C", win="Ctrl-C", lin="Ctrl-C", bind=False)
     def editmenu_copy(self, event=None):
         self.root.focus_get().event_generate("<<Copy>>"),
 
     @menu_cmd("Edit", "Paste")
-    @accels(mac="Cmd-V", win="Ctrl-V", lin="Ctrl-V")
+    @accels(mac="Cmd-V", win="Ctrl-V", lin="Ctrl-V", bind=False)
     def editmenu_paste(self, event=None):
         self.root.focus_get().event_generate("<<Paste>>"),
 
     @separator
     @menu_cmd("Edit", "Clear")
-    @accels(mac="Delete", win="Delete", lin="Delete")
+    @accels(mac="BackSpace", win="BackSpace", lin="BackSpace", bind=False)
     def editmenu_clear(self, event=None):
         self.root.focus_get().event_generate("<<Clear>>"),
 

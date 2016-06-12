@@ -1,6 +1,7 @@
 ######
 MufSim
 ######
+
 An offline simulator, debugger, and IDE for the MUF language, with GUI
 and command-line interfaces.
 
@@ -198,18 +199,18 @@ You can run them in the command-line debugger like this::
 
 External Client Connections
 ===========================
-You can connect and log into a player object from an external client, to test
-things like MCP and MCPGUI programs. To do so, (assuming you're on the same
-machine you're running MufSim on) simply connect to ``localhost``, port
-``8888``, and connect to the test user ``John_Doe`` with the password
+You can connect and log into a player object from an external client, to
+test things like MCP and MCPGUI programs. To do so, (assuming you're on
+the same machine you're running MufSim on) simply connect to ``localhost``,
+port ``8888``, and connect to the test user ``John_Doe`` with the password
 ``password``.  Or::
 
     telnet localhost 8888
     connect John_Doe password
 
 There are a few simple building and chat MUCK commands like ``@dig``,
-``@link``, ``say``, ``pose``, etc.  You can also interact with MUF programs
-doing READs or using MCP.
+``@link``, ``say``, ``pose``, etc.  You can also interact with MUF
+programs doing READs or using MCP.
 
 
 The Simulated MUCK Database

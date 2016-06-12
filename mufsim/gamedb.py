@@ -235,6 +235,11 @@ class DBObject(object):
             for descr in descrs:
                 netifc.descr_notify(descr, msg)
 
+    def notify_exclude(self, msg, excluded):
+        for obj in getobj(self.location).contents:
+            if obj not in excluded:
+                getobj(obj).notify(msg)
+
     def controlled_by(self, who):
         if not validobj(who):
             return False
@@ -247,6 +252,39 @@ class DBObject(object):
 
     def __repr__(self):
         return "%s(#%d)" % (self.name, self.dbref)
+
+
+def do_succ(user, obj):
+    user = getobj(user)
+    obj = getobj(obj)
+    succ = obj.getprop('_/sc')
+    if succ:
+        user.notify(succ)
+    osucc = obj.getprop('_/osc')
+    if osucc:
+        user.notify_exclude(osucc, user.dbref)
+
+
+def do_fail(user, obj):
+    user = getobj(user)
+    obj = getobj(obj)
+    fail = obj.getprop('_/fl')
+    if fail:
+        user.notify(fail)
+    ofail = obj.getprop('_/ofl')
+    if ofail:
+        user.notify_exclude(ofail, user.dbref)
+
+
+def do_drop(user, obj):
+    user = getobj(user)
+    obj = getobj(obj)
+    drop = obj.getprop('_/dr')
+    if drop:
+        user.notify(drop)
+    odrop = obj.getprop('_/odr')
+    if odrop:
+        user.notify_exclude(odrop, user.dbref)
 
 
 def normobj(obj):

@@ -1,5 +1,6 @@
 # from mufsim.logger import log
 import mufsim.gamedb as db
+import mufsim.locks as lock
 from mufsim.interface import network_interface as netifc
 
 
@@ -117,6 +118,14 @@ def usercmd_look(descr, user, cmd):
         desc = "You see nothing special."
     # TODO: process for MPI
     userobj.notify(desc)
+    lck = targobj.getprop('_/lok')
+    unlocked = True
+    if lck and isinstance(lck, lock.LockNode) and not lck.eval(user):
+        unlocked = False
+    if unlocked:
+        db.do_succ(user, targobj.dbref)
+    else:
+        db.do_fail(user, targobj.dbref)
     if targobj.contents:
         userobj.notify('Contents:')
         for obj in targobj.contents:
@@ -557,13 +566,28 @@ def process_command(proclist, descr, user, cmd):
         if not links:
             notify_descr_or_user(descr, user, "Huh?")
             return
-        if db.getobj(links[0]).objtype != "program":
-            # TODO: moveto room, or fetch thing on non-program?
+        trigobj = db.getobj(trig)
+        userobj = db.getobj(user)
+        if db.getobj(links[0]).objtype in ["room", "thing"]:
+            lck = userobj.getprop('_/lok')
+            unlocked = True
+            if lck and isinstance(lck, lock.LockNode) and not lck.eval(user):
+                unlocked = False
+            if unlocked:
+                db.do_succ(user, trigobj.dbref)
+            else:
+                db.do_fail(user, trigobj.dbref)
+            if db.getobj(links[0]).objtype == "room":
+                userobj.moveto(links[0])
+            else:
+                db.getobj(links[0]).moveto(user)
+            if unlocked:
+                db.do_drop(user, trigobj.dbref)
+            return
+        elif db.getobj(links[0]).objtype != "program":
             notify_descr_or_user(descr, user, "Huh?")
             return
         progobj = db.getobj(links[0])
-        userobj = db.getobj(user)
-        trigobj = db.getobj(trig)
         if not progobj.compiled:
             notify_descr_or_user(descr, user, "Program not compiled.")
             return

@@ -64,7 +64,7 @@ def separator(func):
     return func
 
 
-def accels(mac=None, win=None, lin=None):
+def accels(mac=None, win=None, lin=None, bind=True):
     def func_decorator(func):
         if platform.system() == "Darwin":
             func.accelerator = mac
@@ -72,6 +72,7 @@ def accels(mac=None, win=None, lin=None):
             func.accelerator = win
         if platform.system() == "Linux":
             func.accelerator = lin
+        func.bind_accels = bind
         return func
     return func_decorator
 
@@ -151,15 +152,16 @@ def create_menus(obj, master, menubar):
             # <Shift-A> has priority over <Command-A>
             # May as well bind for both upper and lowercase key.
             key_u = key.upper() if len(key) == 1 else key
-            master.bind(
-                "<%s%s>" % (mods, key_u),
-                lambda e, h=hndlr: master.after(100, h, e)
-            )
             key_l = key.lower() if len(key) == 1 else key
-            master.bind(
-                "<%s%s>" % (mods, key_l),
-                lambda e, h=hndlr: master.after(100, h, e)
-            )
+            if hasattr(hndlr, 'bind_accels') and hndlr.bind_accels:
+                master.bind(
+                    "<%s%s>" % (mods, key_u),
+                    lambda e, h=hndlr: master.after(100, h, e)
+                )
+                master.bind(
+                    "<%s%s>" % (mods, key_l),
+                    lambda e, h=hndlr: master.after(100, h, e)
+                )
             if platform.system() == "Windows":
                 # Standardize menu accelerator for Windows
                 menuaccel = "%s%s" % (mods, key.title())

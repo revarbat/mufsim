@@ -11,7 +11,7 @@ release:
 	rm -rf dist/MufSim-*.egg dist/MufSim-*.tar.gz dist/MufSim-*.whl
 	python3 setup.py egg_info sdist bdist_wheel bdist_egg
 
-upload: release
+upload:
 	twine upload dist/*.tar.gz dist/*.whl dist/*.egg
 
 app:

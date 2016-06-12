@@ -206,7 +206,7 @@ class MufCompiler(object):
             # Strip whitespace
             src = self.lstrip(src)
             if not src:
-                return (None, None)
+                return (None, '')
             if src[0] != '(':
                 break
             src = self.strip_comment(src)
@@ -233,8 +233,12 @@ class MufCompiler(object):
             if not src:
                 raise MufCompileError("Incomplete $if directive block.")
             word, src = self.get_word(src)
+            if not word:
+                raise MufCompileError("Incomplete $if directive block.")
             if word.startswith("$if"):
                 cond, src = self.get_word(src, expand=False)
+                if not cond:
+                    raise MufCompileError("Incomplete $if directive block.")
                 level += 1
             elif word == "$endif":
                 if not level:

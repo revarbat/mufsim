@@ -182,6 +182,11 @@ class MufEditor(ListDisplay):
         return 'break'
 
     def handle_key_backspace(self, event=None):
+        selranges = self.tag_ranges(SEL)
+        if selranges:
+            self.delete(SEL_FIRST, SEL_LAST)
+            self._syntax_hilite_line('insert')
+            return 'break'
         curridx = self.index(INSERT)
         currline, currpos = [int(i) for i in curridx.split('.')]
         line = self.get('insert linestart', 'insert lineend')
