@@ -5,7 +5,7 @@ import sys
 import platform
 from glob import glob
 
-VERSION = "0.9.7"
+VERSION = "0.9.8"
 
 
 APP = ['kickstart.py']
@@ -18,6 +18,10 @@ data_files = []
 
 py2app_options = dict(
     argv_emulation=True,
+    includes=[
+        'belfrywidgets', 'mudclientprotocol', 'pymuv',
+        'six', 'packaging', 'packaging.requirements', 'packaging.version', 'packaging.specifiers'
+    ],
     plist=dict(
         CFBundleIconFile="MufSim.icns",
         CFBundleIdentifier="com.belfry.mufsimulator",
@@ -111,7 +115,10 @@ setup(
     install_requires=[
         'setuptools',
         'belfrywidgets>=0.9.4',
-        'mudclientprotocol>=0.1.0'
+        'mudclientprotocol>=0.1.0',
+        'pymuv>=0.9.0',
+        'six',
+        'packaging',
     ],
     data_files=data_files,
     options={
