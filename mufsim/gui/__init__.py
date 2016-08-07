@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import platform
+from pymuv.parsefile import MuvParser
 
 try:  # Python 2
     from Tkinter import *  # noqa
     from tkFont import Font
     from tkSimpleDialog import askstring
-    from tkFileDialog import askopenfilename
-    from tkMessageBox import showinfo, askyesnocancel
+    from tkFileDialog import askopenfilename, asksaveasfilename
+    from tkMessageBox import showerror, showinfo, askyesnocancel
     from ttk import Combobox
 except ImportError:  # Python 3
     from tkinter import *  # noqa
     from tkinter.font import Font
     from tkinter.simpledialog import askstring
-    from tkinter.filedialog import askopenfilename
-    from tkinter.messagebox import showinfo, askyesnocancel
+    from tkinter.filedialog import askopenfilename, asksaveasfilename
+    from tkinter.messagebox import showerror, showinfo, askyesnocancel
     from tkinter.ttk import Combobox
 
 from mufsim.gui.tooltip import CreateToolTip
@@ -1108,20 +1110,20 @@ class MufGui(object):
         )
         self.compile_program(progobj.dbref)
 
-    def save_program_to_file(self, prog):
+    def save_program_to_file(self, prog, saveas=False):
         progobj = db.getobj(prog)
         srcs_disp = self.source_displays[prog]
         progobj.sources = srcs_disp.get('1.0', 'end-2c')
         filename = progobj.name
-        if re.match(r'Untitled.mu[fv]$', filename):
+        if saveas or re.match(r'Untitled.mu[fv]$', filename):
             extras = {}
             if platform.system() == 'Darwin':
                 extras = dict(
-                    message="Select a source file to load...",
+                    message="Save program to file...",
                 )
             filename = asksaveasfilename(
                 parent=self.root,
-                title="Load Program",
+                title="Save Program",
                 initialfile=filename,
                 defaultextension=".muf",
                 filetypes=[
@@ -1134,8 +1136,62 @@ class MufGui(object):
             if not filename:
                 return
             progobj.name = filename
-        with open(filename, "w") as f:
-            f.write(progobj.sources)
+        try:
+            with open(filename, "w") as f:
+                f.write(progobj.sources)
+        except IOError as e:
+            showerror(
+                "Error saving file",
+                "Error: %s" % e,
+                parent=self.root,
+            )
+            return
+        lbl = self.srcs_nb.pane_label(progobj.dbref)
+        lbl.config(text="%s(#%d)" % (filename, progobj.dbref))
+        srcs_disp.edit_modified(False)
+
+    def export_muf_to_file(self, prog):
+        progobj = db.getobj(prog)
+        srcs_disp = self.source_displays[prog]
+        progobj.sources = srcs_disp.get('1.0', 'end-2c')
+        filename = progobj.name
+        filename = filename.replace('.muv', '.muf')
+        extras = {}
+        if platform.system() == 'Darwin':
+            extras = dict(
+                message="Compile and save MUF to file...",
+            )
+        filename = asksaveasfilename(
+            parent=self.root,
+            title="Export MUF",
+            initialfile=filename,
+            defaultextension=".muf",
+            filetypes=[
+                ('MUF files', '.muf'),
+                ('MUF files', '.m'),
+            ],
+            **extras
+        )
+        if not filename:
+            return
+        progobj.name = filename
+        muvparser = MuvParser()
+        muvparser.set_debug(True)
+        muvparser.error_cb = errlog
+        muvparser.parse_string(progobj.sources, filename=filename)
+        if muvparser.error_found:
+            return
+        mufoutput = muvparser.output
+        try:
+            with open(filename, "w") as f:
+                f.write(mufoutput)
+        except IOError as e:
+            showerror(
+                "Error exporting file",
+                "Error: %s" % e,
+                parent=self.root,
+            )
+            return
         lbl = self.srcs_nb.pane_label(progobj.dbref)
         lbl.config(text="%s(#%d)" % (filename, progobj.dbref))
         srcs_disp.edit_modified(False)
@@ -1513,11 +1569,33 @@ class MufGui(object):
         srcs_disp = self.source_displays[prog]
         return self.root.focus_get() == srcs_disp
 
+    def allow_save(self):
+        prog = self._current_prog()
+        if not prog:
+            return False
+        if not self.srcs_nb.selected_pane:
+            return False
+        if prog not in self.source_displays:
+            return False
+        return True
+
     def allow_run(self):
         prog = self._current_prog()
         if not prog:
             return False
         return bool(db.getobj(prog).compiled)
+
+    def allow_export_muv(self):
+        if not self.allow_save():
+            return False
+        prog = self._current_prog()
+        if not prog:
+            return False
+        progobj = db.getobj(prog)
+        srcs_disp = self.source_displays[prog]
+        if srcs_disp.syntax_mode == "muv":
+            return bool(progobj.compiled)
+        return False
 
     def allow_debug(self):
         currproc = self._selected_process()
@@ -1568,7 +1646,7 @@ class MufGui(object):
     @separator
     @menu_cmd("File", "Close Tab")
     @accels(mac="Cmd-W", win="Ctrl-W", lin="Ctrl-W")
-    @enable_test('allow_run')
+    @enable_test('allow_save')
     def filemenu_close(self, event=None):
         prog = self._current_prog()
         if not prog:
@@ -1590,14 +1668,35 @@ class MufGui(object):
         self.srcs_nb.remove_pane(prog)
         self.update_displays()
 
-    @menu_cmd("File", "Save Program")
+    @menu_cmd("File", "Save")
     @accels(mac="Cmd-S", win="Ctrl-S", lin="Ctrl-S")
-    @enable_test('allow_run')
-    def filemenu_save_program(self, event=None):
+    @enable_test('allow_save')
+    def filemenu_save(self, event=None):
         prog = self._current_prog()
         if not prog:
             return
         self.save_program_to_file(prog)
+        self.update_displays()
+
+    @menu_cmd("File", "Save As...")
+    @accels(mac="Shift-Cmd-S", win="Shift-Ctrl-S", lin="Shift-Ctrl-S")
+    @enable_test('allow_save')
+    def filemenu_save_as(self, event=None):
+        prog = self._current_prog()
+        if not prog:
+            return
+        self.save_program_to_file(prog, saveas=True)
+        self.update_displays()
+
+    @separator
+    @menu_cmd("File", "Export MUF...")
+    @accels(mac="Shift-Cmd-E", win="Shift-Ctrl-E", lin="Shift-Ctrl-E")
+    @enable_test('allow_export_muv')
+    def filemenu_export_muv(self, event=None):
+        prog = self._current_prog()
+        if not prog:
+            return
+        self.export_muf_to_file(prog)
         self.update_displays()
 
     @separator

@@ -1,6 +1,0 @@
-setuptools
-belfrywidgets>=0.9.4
-mudclientprotocol>=0.1.0
-pymuv>=0.9.0
-six
-packaging
