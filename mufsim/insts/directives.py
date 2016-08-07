@@ -1,7 +1,7 @@
 import mufsim.utils as util
 import mufsim.gamedb as db
 from mufsim.logger import log
-from mufsim.errors import MufCompileError
+from mufsim.errors import MufCompileError, ReloadAsMuvException
 from mufsim.insts.base import Instruction, instr
 
 
@@ -32,7 +32,7 @@ class InstDollarLanguage(Instruction):
     def compile(self, cmplr, code, src):
         val, src = cmplr.get_to_eol(src)
         if val.strip().lower() == '"muv"':
-            raise MufCompileError("MUV needs -m flag to compile.")
+            raise ReloadAsMuvException()
         return (False, src)
 
 

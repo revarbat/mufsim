@@ -16,31 +16,18 @@
    12: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 0
     2: #4 line 2 ("", 0) CONCOUNT
-    3: #4 line 2 ("", 0, 3) --
-    4: #4 line 2 ("", 0, 2) 1
-    5: #4 line 2 ("", 0, 2, 1) FOR
-    6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 0, 1) JmpIfFalse: 11
-    8: #4 line 3 ("", 0) CONHOST
-    9: #4 line 3 ("", "host3.remotedomain.com") POP
-   10: #4 line 4 ("") JMP: 6
-    6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 1, 1) JmpIfFalse: 11
-    8: #4 line 3 ("", 1) CONHOST
-    9: #4 line 3 ("", "host11.remotedomain.com") POP
-   10: #4 line 4 ("") JMP: 6
-    6: #4 line 3 ("") __FORITER__
-    7: #4 line 3 ("", 2, 1) JmpIfFalse: 11
-    8: #4 line 3 ("", 2) CONHOST
-    9: #4 line 3 ("", "host13.remotedomain.com") POP
-   10: #4 line 4 ("") JMP: 6
+    3: #4 line 2 ("", 0, 0) --
+    4: #4 line 2 ("", 0, -1) 1
+    5: #4 line 2 ("", 0, -1, 1) FOR
     6: #4 line 3 ("") __FORITER__
     7: #4 line 3 ("", 0) JmpIfFalse: 11
    11: #4 line 4 ("") __FORPOP__
    12: #4 line 5 ("") EXIT
+Process exited: pid=1
 Program exited.
-Execution completed in 25 steps.
+Execution completed in 10 steps.
 

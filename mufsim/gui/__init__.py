@@ -2,7 +2,6 @@
 
 import os
 import platform
-from subprocess import Popen, PIPE
 
 try:  # Python 2
     from Tkinter import *  # noqa
@@ -762,7 +761,12 @@ class MufGui(object):
                 disp.see('%d.0' % line)
 
     def update_console(self, msgtype, msg):
-        m = re.match(r'^(Warning|Error) in line (\d+): (.*)$', msg)
+        m = re.match(r'^(Warning|Error) in line (\d+): (.*)$', msg, re.I)
+        if not m:
+            m = re.match(
+                r'^(Warning|Error) in .* line (\d+), col \d+: (.*)$',
+                msg, re.I | re.M
+            )
         if m:
             errtype = m.group(1).lower()
             errline = int(m.group(2))
@@ -1029,13 +1033,13 @@ class MufGui(object):
         self.update_sourcecode_from_program(prog, force=True)
         if not success:
             errlog(
-                "MUF tokenization of %s(#%d) failed!" % (
+                "Compilation of %s(#%d) failed!" % (
                     progobj.name, progobj.dbref
                 )
             )
         else:
             log(
-                "MUF tokenization of %s(#%d) successful." % (
+                "Compilation of %s(#%d) successful." % (
                     progobj.name, progobj.dbref
                 ),
                 msgtype="good"
@@ -1072,50 +1076,11 @@ class MufGui(object):
         self.update_displays()
         self.cons_in.focus()
 
-    def process_muv(self, infile):
-        tmpfile = infile
-        if tmpfile[-4:] == ".muv":
-            tmpfile = tmpfile[:-1] + 'f'
-        else:
-            tmpfile += ".muf"
-        if "MufSim.app/Contents/Resources" in os.getcwd():
-            muvdir = os.path.join(os.getcwd(), "muv")
-            cmdarr = [
-                os.path.join(muvdir, "muv"),
-                "-I", os.path.join(muvdir, "incls"),
-                "-o", tmpfile,
-                infile
-            ]
-        else:
-            cmdarr = ["muv", "-o", tmpfile, infile]
-        p = Popen(cmdarr, stdout=PIPE, stderr=PIPE)
-        outdata, errdata = p.communicate()
-        outdata = outdata.decode()
-        errdata = errdata.decode()
-        for line in outdata.split("\n"):
-            if line:
-                log(line)
-        for line in errdata.split("\n"):
-            if line:
-                errlog(line)
-        if p.returncode != 0:
-            errlog("MUV compilation failed!")
-            return None
-        log("MUV compilation successful.", msgtype="good")
-        return tmpfile
-
     def load_program_from_file(self, filename):
         self.cons_disp.delete('0.0', END)
-        origfile = filename
-        if filename.endswith(".muv"):
-            filename = self.process_muv(filename)
-        if not filename:
-            return
         srcs = ""
         with open(filename, "r") as f:
             srcs = f.read()
-        if origfile.endswith(".muv"):
-            os.unlink(filename)
         userobj = db.get_player_obj("John_Doe")
         selprog = self._current_prog()
         if (
@@ -1147,7 +1112,8 @@ class MufGui(object):
         progobj = db.getobj(prog)
         srcs_disp = self.source_displays[prog]
         progobj.sources = srcs_disp.get('1.0', 'end-2c')
-        if re.match(r'Untitled.mu[fv]$', progobj.name):
+        filename = progobj.name
+        if re.match(r'Untitled.mu[fv]$', filename):
             extras = {}
             if platform.system() == 'Darwin':
                 extras = dict(
@@ -1156,7 +1122,7 @@ class MufGui(object):
             filename = asksaveasfilename(
                 parent=self.root,
                 title="Load Program",
-                initialfile=progobj.name,
+                initialfile=filename,
                 defaultextension=".muf",
                 filetypes=[
                     ('MUF files', '.muf'),

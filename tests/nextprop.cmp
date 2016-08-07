@@ -23,18 +23,18 @@ New process: pid=1
     2: #4 line 2 ("", LV0) @
     3: #4 line 2 ("", #5) ""
     4: #4 line 2 ("", #5, "") NEXTPROP
-NEXTPROP "" on #5 = "abc"
-    5: #4 line 3 ("", "abc") LV0: me
-    6: #4 line 3 ("", "abc", LV0) @
-    7: #4 line 3 ("", "abc", #5) "test#/"
-    8: #4 line 3 ("", "abc", #5, "test#/") NEXTPROP
+NEXTPROP "" on #5 = "_"
+    5: #4 line 3 ("", "_") LV0: me
+    6: #4 line 3 ("", "_", LV0) @
+    7: #4 line 3 ("", "_", #5) "test#/"
+    8: #4 line 3 ("", "_", #5, "test#/") NEXTPROP
 NEXTPROP "test#" on #5 = "test#/1"
-    9: #4 line 4 ("", "abc", "test#/1") LV0: me
-   10: #4 line 4 ("", "abc", "test#/1", LV0) @
-   11: #4 line 4 ("", "abc", "test#/1", #5) "test#/2"
-   12: #4 line 4 ("", "abc", "test#/1", #5, "test#/2") NEXTPROP
+    9: #4 line 4 ("", "_", "test#/1") LV0: me
+   10: #4 line 4 ("", "_", "test#/1", LV0) @
+   11: #4 line 4 ("", "_", "test#/1", #5) "test#/2"
+   12: #4 line 4 ("", "_", "test#/1", #5, "test#/2") NEXTPROP
 NEXTPROP "test#/2" on #5 = "test#/3"
-   13: #4 line 5 ("", "abc", "test#/1", "test#/3") EXIT
+   13: #4 line 5 ("", "_", "test#/1", "test#/3") EXIT
 Process exited: pid=1
 Program exited.
 Execution completed in 14 steps.

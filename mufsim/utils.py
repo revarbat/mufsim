@@ -29,7 +29,7 @@ def is_int(s):
 
 
 def is_dbref(s):
-    if s[0] != '#':
+    if not s.startswith('#'):
         return False
     try:
         int(s[1:])

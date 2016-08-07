@@ -12,19 +12,71 @@ from mufsim.compiler import MufCompiler
 
 class MufEditor(ListDisplay):
     def __init__(self, master, **kwargs):
-        self.incr_words = [
-            ":", "begin", "for", "foreach", "if", "else",
-            "try", "catch", "catch_detailed", "{",
-        ]
-        self.decr_words = [
-            ";", "repeat", "until", "else", "then",
-            "catch", "catch_detailed", "endcatch",
-            "}array", "}list", "}dict", "}join", "}cat", "}tell",
-        ]
+        self.syntax_mode = "muf"
+        self.scheduled_update = False
         self.dirty_lines = []
-        self.keywords = list(set(self.incr_words + self.decr_words))
-        self.comment_prefix = "("
-        self.comment_suffix = ")"
+
+        self.syntax_data = {
+            "muf": {
+                "incr": [
+                    ":", "begin", "for", "foreach", "if", "else",
+                    "try", "catch", "catch_detailed", "{",
+                ],
+                "decr": [
+                    ";", "repeat", "until", "else", "then",
+                    "catch", "catch_detailed", "endcatch",
+                    "}array", "}list", "}dict", "}join", "}cat", "}tell",
+                ],
+                "keywords": [
+                    ":", ";", "begin", "for", "foreach", "repeat", "until",
+                    "if", "else", "then", "try", "exit",
+                    "catch", "catch_detailed", "endcatch",
+                    "{", "}array", "}list", "}dict", "}join", "}cat", "}tell",
+                ],
+                "declared": [':', 'lvar', 'var'],
+                "wordseps": [r'(?ms)(\S+)\s*(.*$)'],
+                "comments": {
+                    "line": None,
+                    "multi": ("(", ")"),
+                },
+            },
+            "muv": {
+                "incr": ['{', '('],
+                "decr": ['}', ')'],
+                "keywords": [
+                    "func", "for", "while", "until", "if", "else",
+                    "try", "catch", "break", "continue", "var", "const",
+                    "switch", "case", "default", "using", "namespace",
+                    "return", "include", "by", "del", "eq", "extern",
+                    "fmtstring", "muf", "multiple", "single", "void",
+                    "public", "push", "top", "unless", "in", "=>", ",",
+                    "abort", "throw", "tell", "count", "cat", "haskey",
+                    "me", "loc", "trigger", "command", "true", "false",
+                    "$author", "$echo", "$error", "$include",
+                    "$language", "$libversion", "$note", "$pragma",
+                    "$version", "$warn", ",",
+                    "=", "==", "!=", "<", ">", "<=", ">=", "&&", "||",
+                    "^^", "!", "^", "+=", "-=", "*=", "/=", "%=",
+                    "<<=", ">>=", "&=", "|=", "^=", "**=",
+                    "+", "-", "*", "/", "%", "**", "&", "|", "^",
+                ],
+                "declared": ['func', 'var', 'const', 'namespace'],
+                "wordseps": [
+                    r'([a-z_$][a-z_0-9]*\??)\s*(.*$)',
+                    r'(\d*\.\d+[eE][+-]?\d+)\s*(.*$)',
+                    r'(\d+\.\d*[eE][+-]?\d+)\s*(.*$)',
+                    r'(\d+[eE][+-]?\d+)\s*(.*$)',
+                    r'(\d*\.\d+)\s*(.*$)',
+                    r'(\d+\.\d*)\s*(.*$)',
+                    r'([0-9]+)\s*(.*$)',
+                    r'([-+*/%^&|=!]=?|<<?=?|>>?=?|&&|[|][|]|[*][*]=?|=>|\?|[][,;:.(){}])\s*(.*$)',  # noqa
+                ],
+                "comments": {
+                    "line": "//",
+                    "multi": ("/*", "*/"),
+                },
+            },
+        }
         self.syntax_colors = {
             'comment': dict(foreground='#999'),
             'string': dict(foreground='#80f'),
@@ -34,7 +86,6 @@ class MufEditor(ListDisplay):
             'mufprim': dict(foreground='#750'),
             'error': dict(foreground='#f00', underline=1),
         }
-        self.scheduled_update = False
 
         kwargs.setdefault('font', ("Courier", "12"))
         kwargs.setdefault('gutterfont', kwargs['font'])
@@ -56,27 +107,41 @@ class MufEditor(ListDisplay):
         self.bind('<Key>', self.handle_keypress)
 
     def _get_comment(self, txt):
-        out = txt[:1]
-        txt = txt[1:]
+        syndata = self.syntax_data[self.syntax_mode]
+        linepfx = syndata['comments']['line']
+        if linepfx and txt.startswith(linepfx):
+            if '\n' in txt:
+                out, txt = txt.split('\n', 1)
+            else:
+                out, txt = txt, ''
+            return out, txt
+        prefix, suffix = syndata['comments']['multi']
+        if prefix and txt.startswith(prefix):
+            out = txt[:len(prefix)]
+            txt = txt[len(prefix):]
+        else:
+            return None, txt
         lev = 1
-        commentchars = self.comment_prefix + self.comment_suffix
+        commentdelims = [prefix, suffix]
         while txt:
-            if txt.startswith(self.comment_prefix):
+            if txt.startswith(prefix):
                 lev += 1
-                out += txt[:len(self.comment_prefix)]
-                txt = txt[len(self.comment_prefix):]
+                out += txt[:len(prefix)]
+                txt = txt[len(prefix):]
                 continue
-            if txt.startswith(self.comment_suffix):
+            if txt.startswith(suffix):
                 lev -= 1
-                out += txt[:len(self.comment_suffix)]
-                txt = txt[len(self.comment_suffix):]
+                out += txt[:len(suffix)]
+                txt = txt[len(suffix):]
                 if not lev:
                     break
-            pfx, txt = util.split_char(txt, commentchars)
+            pfx, txt = util.split_char(txt, commentdelims)
             out += pfx
         return out, txt
 
     def _get_string(self, txt):
+        if not txt.startswith('"'):
+            return None, txt
         out = txt[:1]
         txt = txt[1:]
         while txt:
@@ -96,36 +161,60 @@ class MufEditor(ListDisplay):
         words = []
         startlen = len(txt)
         txt = txt.lstrip()
+        syndata = self.syntax_data[self.syntax_mode]
+        prefix, suffix = syndata['comments']['multi']
         while txt:
             start = startlen - len(txt)
-            if txt.startswith('"'):
-                word, txt = self._get_string(txt)
-            elif txt.startswith(self.comment_prefix):
+            word, txt = self._get_string(txt)
+            if word is None:
                 word, txt = self._get_comment(txt)
-            elif ' ' in txt:
-                word, txt = txt.split(' ', 1)
-            else:
-                word, txt = txt, ''
+            if word is None:
+                for pat in syndata['wordseps']:
+                    m = re.match(pat, txt, re.I)
+                    if m:
+                        word = m.group(1)
+                        txt = m.group(2)
+                        break
+            if word is None:
+                word = txt
+                txt = ''
             end = startlen - len(txt)
             txt = txt.lstrip()
             words.append((word, start, end))
         return words
 
-    def _syntax_hilite_line(self, pos):
+    def _syntax_hilite_all(self):
+        end = int(self.index(END).split('.', 1)[0])
+        self.dirty_lines = list(range(1, end))
+        self._schedule_update()
+
+    def _syntax_hilite_line(self, pos):  # noqa
         lstart = self.index('%s linestart' % pos)
         lend = self.index('%s lineend' % pos)
         lnum = lstart.split('.', 1)[0]
         for tag, attrs in self.syntax_colors.items():
             self.tag_remove('_ed_' + tag, lstart, lend)
         line = self.get(lstart, lend)
+        if self.syntax_mode != "muv" and re.match(r'[$]language +"muv"', line):
+            self.syntax_mode = "muv"
+            self._syntax_hilite_all()
+            return
+        if self.syntax_mode != "muf" and re.match(r'[:;]', line):
+            self.syntax_mode = "muf"
+            self._syntax_hilite_all()
+            return
+        syndata = self.syntax_data[self.syntax_mode]
+        keywords = syndata['keywords']
+        prefix, suffix = syndata['comments']['multi']
+        linepfx = syndata['comments']['line']
         next_is_declared = False
         for word, start, end in self._words(line):
             tag = None
-            if word.startswith(self.comment_prefix):
-                sfx = self.comment_suffix
+            if linepfx and word.startswith(linepfx):
+                tag = 'comment'
+            elif prefix and word.startswith(prefix):
                 tag = 'comment' if (
-                    len(word) > 1 and
-                    word.endswith(sfx)
+                    len(word) > len(prefix) and word.endswith(suffix)
                 ) else 'error'
             elif word.startswith('"'):
                 tag = 'string' if (
@@ -139,11 +228,15 @@ class MufEditor(ListDisplay):
             elif next_is_declared:
                 tag = 'declared'
                 next_is_declared = False
-            elif word in self.keywords:
+            elif word in keywords:
                 tag = 'keyword'
-            elif word in primitives or word in MufCompiler.builtin_defines:
+            elif (
+                self.syntax_mode == "muf" and
+                (word in primitives or word in MufCompiler.builtin_defines)
+            ):
                 tag = 'mufprim'
-            if word in [':', 'lvar', 'var']:
+            declared = syndata['declared']
+            if word in declared:
                 next_is_declared = True
             start = "%s.%d" % (lnum, start)
             end = "%s.%d" % (lnum, end)
@@ -199,6 +292,7 @@ class MufEditor(ListDisplay):
                 todel = currpos
             self.delete('insert linestart', 'insert linestart+%dc' % todel)
             return 'break'
+        self.schedule_gutter_update(event=event)
 
     def handle_key_enter(self, event=None):
         self._syntax_hilite_line('insert')
@@ -207,10 +301,13 @@ class MufEditor(ListDisplay):
         previndent = len(prevline) - len(prevline.lstrip(' '))
         indent = len(line) - len(line.lstrip(' '))
         incs = decs = 0
+        syndata = self.syntax_data[self.syntax_mode]
+        incr_words = syndata['incr']
+        decr_words = syndata['decr']
         for word, start, end in self._words(line):
-            if word in self.incr_words:
+            if word in incr_words:
                 incs = 1
-            if line.strip().startswith(word) and word in self.decr_words:
+            if line.strip().startswith(word) and word in decr_words:
                 decs = 1
         if decs and indent - previndent >= 0:
             self.delete('insert linestart', 'insert lineend')

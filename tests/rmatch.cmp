@@ -42,7 +42,7 @@ New process: pid=1
    13: #4 line 5 ("") #1
    14: #4 line 5 ("", #1) "test"
    15: #4 line 5 ("", #1, "test") RMATCH
-   16: #4 line 5 ("", #-1) POP
+   16: #4 line 5 ("", #2) POP
    17: #4 line 6 ("") #1
    18: #4 line 6 ("", #1) "John_Doe"
    19: #4 line 6 ("", #1, "John_Doe") RMATCH

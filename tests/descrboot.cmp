@@ -7,11 +7,12 @@
     3: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") DESCR
-    2: #4 line 2 ("", 11) DESCRBOOT
-BOOTED DESCRIPTOR 11: John_Doe(#5)
+    2: #4 line 2 ("", -1) DESCRBOOT
     3: #4 line 3 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 4 steps.
 

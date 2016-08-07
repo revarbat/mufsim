@@ -12,15 +12,17 @@
     8: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") #-1
     2: #4 line 2 ("", #-1) DESCRIPTORS
-    3: #4 line 2 ("", 3, 11, 13, 3) POPN
+    3: #4 line 2 ("", 0) POPN
     4: #4 line 3 ("") LV0: me
     5: #4 line 3 ("", LV0) @
     6: #4 line 3 ("", #5) DESCRIPTORS
-    7: #4 line 3 ("", 11, 1) POPN
+    7: #4 line 3 ("", 0) POPN
     8: #4 line 4 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 9 steps.
 

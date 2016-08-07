@@ -12,15 +12,17 @@
     8: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") #-1
     2: #4 line 2 ("", #-1) DESCR_ARRAY
-    3: #4 line 2 ("", 3[3, 11, 13]) POP
+    3: #4 line 2 ("", 0[]) POP
     4: #4 line 3 ("") LV0: me
     5: #4 line 3 ("", LV0) @
     6: #4 line 3 ("", #5) DESCR_ARRAY
-    7: #4 line 3 ("", 1[11]) POP
+    7: #4 line 3 ("", 0[]) POP
     8: #4 line 4 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 9 steps.
 

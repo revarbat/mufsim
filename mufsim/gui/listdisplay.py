@@ -123,7 +123,7 @@ class ListDisplay(Text):
     def schedule_gutter_update(self, event=None):
         if self.gutter_timer:
             return
-        self.gutter_timer = self.after_idle(self.update_gutter)
+        self.gutter_timer = self.after(10, self.update_gutter)
 
     def insert(self, *args, **kwargs):
         Text.insert(self, *args, **kwargs)

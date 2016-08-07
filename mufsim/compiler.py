@@ -1,11 +1,13 @@
+import re
 from textwrap import dedent
+from pymuv.parsefile import MuvParser
 
 import mufsim.stackitems as si
 import mufsim.gamedb as db
 import mufsim.utils as util
 from mufsim.logger import errlog
 from mufsim.compiled import CompiledMuf
-from mufsim.errors import MufCompileError
+from mufsim.errors import MufCompileError, ReloadAsMuvException
 
 import mufsim.insts.flow as instfl
 import mufsim.insts.stack as instst
@@ -132,6 +134,7 @@ class MufCompiler(object):
     def __init__(self):
         self.compiled = None
         self.word_line = 1
+        self.muv_line = None
         self.line = 1
         self.stmt_stack = []
         self.funcname = None
@@ -155,6 +158,9 @@ class MufCompiler(object):
         return txt[i:]
 
     def strip_comment(self, src):
+        m = re.match(r'\(MUV:L(\d+)\)', src)
+        if m:
+            self.muv_line = int(m.group(1))
         src = src[1:]
         lev = 1
         for i in range(len(src)):
@@ -167,7 +173,7 @@ class MufCompiler(object):
             elif src[i] == ')':
                 lev -= 1
         if lev > 0:
-            raise MufCompileError("CommentNotTerminated")
+            raise MufCompileError("Unterminated comment.")
         return src[i:]
 
     def get_string(self, src):
@@ -210,7 +216,10 @@ class MufCompiler(object):
             if src[0] != '(':
                 break
             src = self.strip_comment(src)
-        self.word_line = self.line
+        if self.muv_line:
+            self.word_line = self.muv_line
+        else:
+            self.word_line = self.line
         if src[0] == '"':
             word, src = self.get_string(src)
             return (word, src)
@@ -385,13 +394,26 @@ class MufCompiler(object):
         self.compiled = comp
         self.line = 1
         self.word_line = 1
+        self.muv_line = None
         self.stmt_stack = []
         self.funcname = None
         self.defines = dict(self.builtin_defines)
         self.include_defs_from(0, suppress=True)
-        src = db.getobj(prog).sources
+        progobj = db.getobj(prog)
+        src = progobj.sources
         try:
-            code, src = self.compile_r(src)
+            try:
+                code, src = self.compile_r(src)
+            except ReloadAsMuvException:
+                src = progobj.sources
+                muvparser = MuvParser()
+                muvparser.set_debug(True)
+                muvparser.error_cb = errlog
+                muvparser.parse_string(src, filename=progobj.name)
+                if muvparser.error_found:
+                    return None
+                src = muvparser.output
+                code, src = self.compile_r(src)
             if self.funcname:
                 raise MufCompileError("Function incomplete.")
             self.check_for_incomplete_block()

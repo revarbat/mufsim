@@ -9,14 +9,16 @@
     5: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") -1
     2: #4 line 2 ("", -1) DESCRFLUSH
 DESCRFLUSH ALL DESCRS.
     3: #4 line 3 ("") DESCR
-    4: #4 line 3 ("", 11) DESCRFLUSH
-DESCRFLUSH 11, John_Doe(#5)
+    4: #4 line 3 ("", -1) DESCRFLUSH
+DESCRFLUSH ALL DESCRS.
     5: #4 line 4 ("") EXIT
+Process exited: pid=1
 Program exited.
 Execution completed in 6 steps.
 

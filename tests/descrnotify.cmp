@@ -16,38 +16,16 @@
    12: EXIT
 
 #### Executing Tokens #################################
+New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") #-1
     2: #4 line 2 ("", #-1) DESCR_ARRAY
-    3: #4 line 3 ("", 3[3, 11, 13]) FOREACH
-    4: #4 line 3 ("") __FORITER__
-    5: #4 line 3 ("", 0, 3, 1) JmpIfFalse: 11
-    6: #4 line 3 ("", 0, 3) SWAP
-    7: #4 line 3 ("", 3, 0) POP
-    8: #4 line 4 ("", 3) "Foobar"
-    9: #4 line 4 ("", 3, "Foobar") DESCRNOTIFY
-NOTIFY TO DESCR 3, Wizard(#1): Foobar
-   10: #4 line 5 ("") JMP: 4
-    4: #4 line 3 ("") __FORITER__
-    5: #4 line 3 ("", 1, 11, 1) JmpIfFalse: 11
-    6: #4 line 3 ("", 1, 11) SWAP
-    7: #4 line 3 ("", 11, 1) POP
-    8: #4 line 4 ("", 11) "Foobar"
-    9: #4 line 4 ("", 11, "Foobar") DESCRNOTIFY
-NOTIFY TO DESCR 11, John_Doe(#5): Foobar
-   10: #4 line 5 ("") JMP: 4
-    4: #4 line 3 ("") __FORITER__
-    5: #4 line 3 ("", 2, 13, 1) JmpIfFalse: 11
-    6: #4 line 3 ("", 2, 13) SWAP
-    7: #4 line 3 ("", 13, 2) POP
-    8: #4 line 4 ("", 13) "Foobar"
-    9: #4 line 4 ("", 13, "Foobar") DESCRNOTIFY
-NOTIFY TO DESCR 13, Jane_Doe(#6): Foobar
-   10: #4 line 5 ("") JMP: 4
+    3: #4 line 3 ("", 0[]) FOREACH
     4: #4 line 3 ("") __FORITER__
     5: #4 line 3 ("", 0) JmpIfFalse: 11
    11: #4 line 5 ("") __FORPOP__
    12: #4 line 6 ("") EXIT
+Process exited: pid=1
 Program exited.
-Execution completed in 29 steps.
+Execution completed in 8 steps.
 
