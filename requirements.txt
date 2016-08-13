@@ -6,5 +6,5 @@ pyjs==0.8.2
 pytz==2013.7
 readline==6.2.4.1
 mufclientprotocol>=0.1.0
-belfrywidgets>=0.9.3
-pymuv>=0.9.0
+belfrywidgets>=1.0.2
+pymuv>=0.9.2

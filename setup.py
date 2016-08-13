@@ -5,7 +5,7 @@ import sys
 import platform
 from glob import glob
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 
 APP = ['kickstart.py']
@@ -20,7 +20,8 @@ py2app_options = dict(
     argv_emulation=True,
     includes=[
         'belfrywidgets', 'mudclientprotocol', 'pymuv',
-        'six', 'packaging', 'packaging.requirements', 'packaging.version', 'packaging.specifiers'
+        'six', 'packaging', 'packaging.requirements',
+        'packaging.version', 'packaging.specifiers'
     ],
     plist=dict(
         CFBundleIconFile="MufSim.icns",
@@ -52,7 +53,7 @@ py2app_options = dict(
 py2exe_options = dict(
     bundle_files=2,
     dist_dir='dist-win',
-    excludes=["tests", "dist", "build"],
+    excludes=["tests", "dist", "build", "docs"],
 )
 
 if platform.system() == 'Windows':
@@ -114,9 +115,9 @@ setup(
     },
     install_requires=[
         'setuptools',
-        'belfrywidgets>=0.9.4',
+        'belfrywidgets>=1.0.2',
         'mudclientprotocol>=0.1.0',
-        'pymuv>=0.9.0',
+        'pymuv>=0.9.2',
         'six',
         'packaging',
     ],
