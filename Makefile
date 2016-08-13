@@ -32,6 +32,11 @@ py2exe:
 	python3 setup.py py2exe
 	# cd dist && zip -r MufSimWin64 MufSim.exe
 
+muvdoc: MUVREF.html
+
+MUVREF.html: MUVREF.rst muvref.css
+	rst2html.py --stylesheet-path=html4css1.css,muvref.css --embed-stylesheet MUVREF.rst MUVREF.html
+
 clean:
 	rm -rf build *.pyc __pycache__
 	find mufsim -name '*.pyc' -o -name __pycache__ -o -name .ropeproject | xargs rm -rf

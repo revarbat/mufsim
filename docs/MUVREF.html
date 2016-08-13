@@ -1,0 +1,1838 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.12: http://docutils.sourceforge.net/" />
+<title>MUV 2.0 Language Syntax</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 7614 2013-02-21 15:55:51Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title, .code .error {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { color: grey; } /* line numbers */
+pre.code, code { background-color: #eeeeee }
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+/* "booktabs" style (no vertical lines) */
+table.docutils.booktabs {
+  border: 0px;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.docutils.booktabs * {
+  border: 0px;
+}
+table.docutils.booktabs th {
+  border-bottom: thin solid;
+  text-align: left;
+}
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+<style type="text/css">
+
+.contents {
+  border: 1px solid #ccc;
+  padding: 5px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 220px;
+  font-size: 90%;
+  white-space: nowrap;
+}
+.contents .topic-title {
+  font-size: 120%;
+}
+.contents UL {
+  list-style-type: none;
+  padding-left: 20px;
+}
+.document {
+  width: 750px;
+  margin-left: 260px;
+  margin-right: auto;
+  margin-bottom: 200px;
+}
+.section {
+  margin-left: 25px;
+}
+.section H1 {
+  font-size: 166%;
+  margin-left: -25px
+}
+.section H2 {
+  font-size: 133%;
+  margin-left: -25px
+}
+.literal {
+  padding: 0 1px;
+  color: #a70;
+  border: 1px solid #ddd;
+  background-color: #eef6ff;
+}
+.literal-block {
+  padding: 2px;
+  border: 1px solid #aaa;
+  background-color: #def;
+}
+.literal, .literal-block {
+  font-size: 80%;
+  font-family: Menlo, monospace;
+}
+table {
+  margin-left: 25px;
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+}
+th {
+  background: #ddf;
+}
+
+</style>
+</head>
+<body>
+<div class="document" id="muv-2-0-language-syntax">
+<h1 class="title">MUV 2.0 Language Syntax</h1>
+
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="auto-toc simple">
+<li><a class="reference internal" href="#comments" id="id1">1&nbsp;&nbsp;&nbsp;Comments</a></li>
+<li><a class="reference internal" href="#literals" id="id2">2&nbsp;&nbsp;&nbsp;Literals</a></li>
+<li><a class="reference internal" href="#constant-declarations" id="id3">3&nbsp;&nbsp;&nbsp;Constant Declarations</a></li>
+<li><a class="reference internal" href="#global-variables" id="id4">4&nbsp;&nbsp;&nbsp;Global Variables</a></li>
+<li><a class="reference internal" href="#function-declarations" id="id5">5&nbsp;&nbsp;&nbsp;Function Declarations</a></li>
+<li><a class="reference internal" href="#function-calls" id="id6">6&nbsp;&nbsp;&nbsp;Function Calls</a></li>
+<li><a class="reference internal" href="#function-variables" id="id7">7&nbsp;&nbsp;&nbsp;Function Variables</a></li>
+<li><a class="reference internal" href="#built-ins-functions" id="id8">8&nbsp;&nbsp;&nbsp;Built-Ins Functions</a></li>
+<li><a class="reference internal" href="#namespaces" id="id9">9&nbsp;&nbsp;&nbsp;Namespaces</a></li>
+<li><a class="reference internal" href="#includes" id="id10">10&nbsp;&nbsp;&nbsp;Includes</a></li>
+<li><a class="reference internal" href="#expressions" id="id11">11&nbsp;&nbsp;&nbsp;Expressions</a><ul class="auto-toc">
+<li><a class="reference internal" href="#basic-math" id="id12">11.1&nbsp;&nbsp;&nbsp;Basic Math</a></li>
+<li><a class="reference internal" href="#bitwise-math" id="id13">11.2&nbsp;&nbsp;&nbsp;Bitwise Math</a></li>
+<li><a class="reference internal" href="#assignment" id="id14">11.3&nbsp;&nbsp;&nbsp;Assignment</a></li>
+<li><a class="reference internal" href="#numeric-comparisons" id="id15">11.4&nbsp;&nbsp;&nbsp;Numeric Comparisons</a></li>
+<li><a class="reference internal" href="#string-comparisons" id="id16">11.5&nbsp;&nbsp;&nbsp;String Comparisons</a></li>
+<li><a class="reference internal" href="#array-operations" id="id17">11.6&nbsp;&nbsp;&nbsp;Array Operations</a></li>
+<li><a class="reference internal" href="#true-and-false" id="id18">11.7&nbsp;&nbsp;&nbsp;True and False</a></li>
+<li><a class="reference internal" href="#logical-operations" id="id19">11.8&nbsp;&nbsp;&nbsp;Logical Operations</a></li>
+<li><a class="reference internal" href="#conditional-operator" id="id20">11.9&nbsp;&nbsp;&nbsp;Conditional Operator</a></li>
+<li><a class="reference internal" href="#chaining-expressions" id="id21">11.10&nbsp;&nbsp;&nbsp;Chaining Expressions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arrays" id="id22">12&nbsp;&nbsp;&nbsp;Arrays</a></li>
+<li><a class="reference internal" href="#dictionaries" id="id23">13&nbsp;&nbsp;&nbsp;Dictionaries</a></li>
+<li><a class="reference internal" href="#conditional-statements" id="id24">14&nbsp;&nbsp;&nbsp;Conditional Statements</a><ul class="auto-toc">
+<li><a class="reference internal" href="#if-statements" id="id25">14.1&nbsp;&nbsp;&nbsp;If Statements</a></li>
+<li><a class="reference internal" href="#post-conditionals" id="id26">14.2&nbsp;&nbsp;&nbsp;Post-Conditionals</a></li>
+<li><a class="reference internal" href="#switch-statements" id="id27">14.3&nbsp;&nbsp;&nbsp;Switch Statements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#loop-statements" id="id28">15&nbsp;&nbsp;&nbsp;Loop Statements</a><ul class="auto-toc">
+<li><a class="reference internal" href="#while-loops" id="id29">15.1&nbsp;&nbsp;&nbsp;While Loops</a></li>
+<li><a class="reference internal" href="#until-loops" id="id30">15.2&nbsp;&nbsp;&nbsp;Until Loops</a></li>
+<li><a class="reference internal" href="#do-while-loops" id="id31">15.3&nbsp;&nbsp;&nbsp;Do-While Loops</a></li>
+<li><a class="reference internal" href="#do-until-loops" id="id32">15.4&nbsp;&nbsp;&nbsp;Do-Until Loops</a></li>
+<li><a class="reference internal" href="#for-loops" id="id33">15.5&nbsp;&nbsp;&nbsp;For Loops</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#comprehensions" id="id34">16&nbsp;&nbsp;&nbsp;Comprehensions</a></li>
+<li><a class="reference internal" href="#tuple-assignment" id="id35">17&nbsp;&nbsp;&nbsp;Tuple Assignment</a></li>
+<li><a class="reference internal" href="#exception-handling" id="id36">18&nbsp;&nbsp;&nbsp;Exception Handling</a></li>
+<li><a class="reference internal" href="#muf-interaction" id="id37">19&nbsp;&nbsp;&nbsp;MUF Interaction</a></li>
+<li><a class="reference internal" href="#extern-declarations" id="id38">20&nbsp;&nbsp;&nbsp;Extern Declarations</a></li>
+<li><a class="reference internal" href="#directives" id="id39">21&nbsp;&nbsp;&nbsp;Directives</a></li>
+<li><a class="reference internal" href="#debugging-muv" id="id40">22&nbsp;&nbsp;&nbsp;Debugging MUV</a></li>
+</ul>
+</div>
+<div class="section" id="comments">
+<h1><a class="toc-backref" href="#table-of-contents">1&nbsp;&nbsp;&nbsp;Comments</a></h1>
+<p>Comments can take one of two styles.  For single-line comments, you can use:</p>
+<pre class="literal-block">
+// Single line comment.
+</pre>
+<p>For multi-line comments, you can use:</p>
+<pre class="literal-block">
+/*
+multiple
+line
+comment
+*/
+</pre>
+</div>
+<div class="section" id="literals">
+<h1><a class="toc-backref" href="#table-of-contents">2&nbsp;&nbsp;&nbsp;Literals</a></h1>
+<p>Decimal integers are simple:</p>
+<pre class="literal-block">
+123456789
+</pre>
+<p>Hexadecimal integers are prefixed with <tt class="docutils literal">0x</tt>:</p>
+<pre class="literal-block">
+0x7ffc
+</pre>
+<p>Octal integers are prefixed with <tt class="docutils literal">0o</tt>:</p>
+<pre class="literal-block">
+0o1234567
+</pre>
+<p>Binary integers are prefixed with <tt class="docutils literal">0b</tt>:</p>
+<pre class="literal-block">
+0b11010100
+</pre>
+<p>You can also prefix decimal numbers with <tt class="docutils literal">0d</tt>, if you want to be pedantic:</p>
+<pre class="literal-block">
+0d123456789
+</pre>
+<p>Floating point numbers are given like:</p>
+<pre class="literal-block">
+3.14
+0.1
+3.
+1e9
+6.022e23
+1.6e-35
+</pre>
+<p>DataBase References (dbrefs) are given like:</p>
+<pre class="literal-block">
+#12345
+#-1
+</pre>
+<p>All numbers, of any base, can have <tt class="docutils literal">_</tt> placeholder characters, to make the
+numbers more human readable, like thousands separators:</p>
+<pre class="literal-block">
+123_456_789
+0xBAD_BEEF
+0b1101_0100
+0o12_345_678
+16_237.21
+#12_345
+</pre>
+<p>String literals are given with single or double-quotes:</p>
+<pre class="literal-block">
+&quot;Hello!&quot;
+'Hiya!'
+</pre>
+<p>If you use triples of quotes for string delimiters, you can more easily
+include single or double character quotes in the string:</p>
+<pre class="literal-block">
+&quot;&quot;&quot;It's a &quot;test&quot;.&quot;&quot;&quot;
+'''It's a &quot;test&quot;.'''
+</pre>
+<p>Singlequotes and doublequotes inside strings can be escaped by a
+backslash <tt class="docutils literal">\</tt>:</p>
+<pre class="literal-block">
+&quot;This is a \&quot;test\&quot;.&quot;
+</pre>
+<p>You can insert a newline inside a string with a <tt class="docutils literal">\r</tt> or <tt class="docutils literal">\n</tt>, and
+an escape char can be added with a <tt class="docutils literal">\e</tt> or <tt class="docutils literal">\[</tt>:</p>
+<pre class="literal-block">
+'\e[1mBold\[[0m\rNormal'
+</pre>
+<p>To make it easier to give regexp patterns with backslashes, you can give raw
+strings by preceeding a regular string of any type with a single <tt class="docutils literal">r</tt>.  Raw
+strings are not processed for backslash escaped characters:</p>
+<pre class="literal-block">
+r&quot;http://\([a-z0-9._-]+\)&quot;
+r'http://\([a-z0-9._-]+\)'
+r&quot;&quot;&quot;http://\([a-z0-9._-]+\)&quot;&quot;&quot;
+r'''http://\([a-z0-9._-]+\)'''
+</pre>
+<p>List arrays can be declared as comma-separated lists of values, surrounded
+by square brackets:</p>
+<pre class="literal-block">
+[&quot;first&quot;, &quot;second&quot;, &quot;third&quot;]
+[1, 2, 4, 8]
+</pre>
+<p>Dictionaries (sometimes called hash tables, or associative arrays in other
+languages) are declared like lists, but with key-value pairs, where the key
+and value in each pair are separated by <tt class="docutils literal">=&gt;</tt> delimiters:</p>
+<pre class="literal-block">
+[ &quot;key1&quot; =&gt; &quot;val1&quot;, &quot;key2&quot; =&gt; &quot;val2&quot;, &quot;key3&quot; =&gt; &quot;val3&quot; ]
+</pre>
+<p>To declare an empty dictionary, which is distinct from a list, use:</p>
+<pre class="literal-block">
+[=&gt;]
+</pre>
+</div>
+<div class="section" id="constant-declarations">
+<h1><a class="toc-backref" href="#table-of-contents">3&nbsp;&nbsp;&nbsp;Constant Declarations</a></h1>
+<p>You can declare constants using the syntax:</p>
+<pre class="literal-block">
+const PI = 3.14159;
+</pre>
+<p>By convention, the constant name should be all uppercase.</p>
+</div>
+<div class="section" id="global-variables">
+<h1><a class="toc-backref" href="#table-of-contents">4&nbsp;&nbsp;&nbsp;Global Variables</a></h1>
+<p>You can declare global variables at the toplevel scope like:</p>
+<pre class="literal-block">
+var myglobal;
+var answer = 42;
+</pre>
+<p>The global variables <tt class="docutils literal">me</tt>, <tt class="docutils literal">loc</tt>, <tt class="docutils literal">trigger</tt> and <tt class="docutils literal">command</tt> are
+pre-defined for all programs.</p>
+</div>
+<div class="section" id="function-declarations">
+<h1><a class="toc-backref" href="#table-of-contents">5&nbsp;&nbsp;&nbsp;Function Declarations</a></h1>
+<p>You can declare a function like this:</p>
+<pre class="literal-block">
+func helloworld() {
+    return &quot;Hello World!&quot;;
+}
+</pre>
+<p>With arguments, you can declare it like this:</p>
+<pre class="literal-block">
+func concatenate(var1, var2) {
+    return strcat(var1, var2);
+}
+</pre>
+<p>If you need a variable number of arguments for a function, you can put a <tt class="docutils literal">*</tt>
+after the last variable, to indicate that the last variable will receive all
+remaining arguments, in a list:</p>
+<pre class="literal-block">
+func concat(args*) {
+    return array_interpret(args);
+}
+</pre>
+<p>If you need to declare a <tt class="docutils literal">public</tt> function, that can be called by name from
+other MUF programs, you can declare it like this:</p>
+<pre class="literal-block">
+public func concat(args*) {
+    return array_interpret(args);
+}
+</pre>
+<p>Functions return the value given to the <tt class="docutils literal">return</tt> command.  ie: <tt class="docutils literal">return 42;</tt>
+will return the integer value <tt class="docutils literal">42</tt> from the function.  If the end of the
+function is reached with no <tt class="docutils literal">return</tt> executing, then the function will
+return the integer <tt class="docutils literal">0</tt>.</p>
+</div>
+<div class="section" id="function-calls">
+<h1><a class="toc-backref" href="#table-of-contents">6&nbsp;&nbsp;&nbsp;Function Calls</a></h1>
+<p>You can call functions you have declared, and many builtin MUF primitives in
+this way:</p>
+<pre class="literal-block">
+myvar = myfunction(5, &quot;John Doe&quot;);
+notify(me, &quot;Hello World!&quot;);
+</pre>
+<p>If a MUF primitive would return more than one argument on the stack, the MUV
+counterpart will return all those values in a list.</p>
+</div>
+<div class="section" id="function-variables">
+<h1><a class="toc-backref" href="#table-of-contents">7&nbsp;&nbsp;&nbsp;Function Variables</a></h1>
+<p>You can declare extra variables in function scope like this:</p>
+<pre class="literal-block">
+func myfunction() {
+    var myvar;
+    var fifth = &quot;5th&quot;;
+    ...
+}
+</pre>
+<p>Variables can be declared in block scopes within functions, and will be in
+effect only within those blocks.  You can even declare variables of the same
+name within different scopes:</p>
+<pre class="literal-block">
+func myfunction() {
+    var x = &quot;C&quot;;
+    for (var x in [&quot;F&quot;, &quot;A&quot;, &quot;D&quot;]) {
+        if (x eq &quot;A&quot;) {
+            tell(x);
+            var x = &quot;B&quot;;
+            tell(x);
+        }
+    }
+    tell(x);
+}
+</pre>
+<p>will output the following:</p>
+<pre class="literal-block">
+A
+B
+C
+</pre>
+</div>
+<div class="section" id="built-ins-functions">
+<h1><a class="toc-backref" href="#table-of-contents">8&nbsp;&nbsp;&nbsp;Built-Ins Functions</a></h1>
+<p>MUV has several built-in commands available to all programs:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="73%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Function</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">abort(msg)</tt></td>
+<td>Throws a user exception with the given <tt class="docutils literal">msg</tt>.</td>
+</tr>
+<tr><td><tt class="docutils literal">throw(msg)</tt></td>
+<td>The same as <tt class="docutils literal">abort(msg)</tt></td>
+</tr>
+<tr><td><tt class="docutils literal">tell(msg)</tt></td>
+<td>The same as <tt class="docutils literal">notify(me, msg)</tt></td>
+</tr>
+<tr><td><tt class="docutils literal">count(arr)</tt></td>
+<td>Returns the count of how many items are in an array.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">cat(...)</span></tt></td>
+<td>Converts all args to strings and concatenates them.</td>
+</tr>
+<tr><td><tt class="docutils literal">haskey(key,arr)</tt></td>
+<td>Evaluates true if <tt class="docutils literal">key</tt> is in the array <tt class="docutils literal">arr</tt>.</td>
+</tr>
+</tbody>
+</table>
+<p>MUV also has some built-in constants:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="73%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Constant</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">true</tt></td>
+<td><tt class="docutils literal">1</tt> (Evaluates as true.)</td>
+</tr>
+<tr><td><tt class="docutils literal">false</tt></td>
+<td><tt class="docutils literal">0</tt> (Evaluates as false.)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="namespaces">
+<h1><a class="toc-backref" href="#table-of-contents">9&nbsp;&nbsp;&nbsp;Namespaces</a></h1>
+<p>If you declare global variables and function within a namespace block, then
+those variables and functions become part of that namespace:</p>
+<pre class="literal-block">
+namespace math {
+    const PI = 3.14159;
+}
+</pre>
+<p>Will define the constant <tt class="docutils literal"><span class="pre">math::PI</span></tt>.  To refer to that variable, you will
+need to either use the <tt class="docutils literal">math::</tt> prefix, or specify that you want to use that
+namespace like this:</p>
+<pre class="literal-block">
+using namespace math;
+</pre>
+<p>Here's more examples:</p>
+<pre class="literal-block">
+namespace math {
+    const PI = 3.14159;
+    func rad2deg(x) {
+        return x*180.0/PI;
+    }
+}
+func thirdpi() {
+    return math::rad2deg(math::PI/3.0);
+}
+using namespace math;
+func halfpi() {
+    return rad2deg(PI/2.0);
+}
+</pre>
+</div>
+<div class="section" id="includes">
+<h1><a class="toc-backref" href="#table-of-contents">10&nbsp;&nbsp;&nbsp;Includes</a></h1>
+<p>You can include the code from other MUV files by using the <tt class="docutils literal">include</tt> command:</p>
+<pre class="literal-block">
+include &quot;otherfile.muv&quot;;
+</pre>
+<p>You can include standard MUV files by preceeding the filename with a <tt class="docutils literal">!</tt>.
+This tells <tt class="docutils literal">include</tt> to look for the file in the system-wide MUV includes.
+One important standard include file is <tt class="docutils literal">!fb6/prims</tt>:</p>
+<pre class="literal-block">
+include &quot;!fb6/prims&quot;;
+</pre>
+<p>If you include <tt class="docutils literal">!fb6/prims</tt> in your file, you will get all the standard FB6
+MUF primitives declared for MUV to use.  These primitives will be declared
+with exactly the same names as they have in MUF, with the same argument
+ordering.  The only exceptions are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="24%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">MUF Name</th>
+<th class="head">MUV Name</th>
+<th class="head">Change</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">name-ok?</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">name_ok?()</span></tt></td>
+<td>Dash in name replaced with underscore.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">pname-ok?</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">pname_ok?()</span></tt></td>
+<td>Dash in name replaced with underscore.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">ext-name-ok?</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">ext_name_ok?()</span></tt></td>
+<td>Dashes in name replaced with underscore.</td>
+</tr>
+<tr><td><tt class="docutils literal">fmtstring</tt></td>
+<td><tt class="docutils literal">fmtstring()</tt></td>
+<td>Argument ordering completely reversed.</td>
+</tr>
+</tbody>
+</table>
+<p>Since MUF has kind of a messy namespace, you can <em>instead</em> include files
+with just the primitives you need, renamed a bit more sensibly.  For example,
+if you include the file <tt class="docutils literal">!fb6/obj</tt> You can get access to the standard
+fb6 object related primitives, renamed into the <tt class="docutils literal">obj::</tt> namespace such
+that MUF primitives like <tt class="docutils literal">name</tt> and <tt class="docutils literal">set</tt> are renamed to <tt class="docutils literal"><span class="pre">obj::name()</span></tt>
+and <tt class="docutils literal"><span class="pre">obj::set()</span></tt>, leading to far less namespace polution.  The standard
+namespaced include files are as follows, in alphabetical order.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="19%" />
+<col width="59%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Include File</th>
+<th class="head">NameSpace</th>
+<th class="head">What it declares</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">fb6/ansi</tt></td>
+<td><tt class="docutils literal">ansi::</tt></td>
+<td>ANSI color code string primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/argparse</tt></td>
+<td><tt class="docutils literal">argparse::</tt></td>
+<td>Cmd-line argument parsing.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/array</tt></td>
+<td><tt class="docutils literal">array::</tt></td>
+<td>Array/list/dictionary primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/conn</tt></td>
+<td><tt class="docutils literal">conn::</tt></td>
+<td>Connection based primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/debug</tt></td>
+<td><tt class="docutils literal">debug::</tt></td>
+<td>Debugging related primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/descr</tt></td>
+<td><tt class="docutils literal">descr::</tt></td>
+<td>Descriptor based connection primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/event</tt></td>
+<td><tt class="docutils literal">event::</tt></td>
+<td>Event handling primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/gui</tt></td>
+<td><tt class="docutils literal">gui::</tt></td>
+<td>MCP-GUI related primitives and defines.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/io</tt></td>
+<td><tt class="docutils literal">io::</tt></td>
+<td><tt class="docutils literal">notify</tt> and <tt class="docutils literal">read</tt> type primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/lock</tt></td>
+<td><tt class="docutils literal">lock::</tt></td>
+<td>Lock related primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/match</tt></td>
+<td>&nbsp;</td>
+<td><tt class="docutils literal">match_noisy</tt>, <tt class="docutils literal">match_controlled</tt></td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/math</tt></td>
+<td><tt class="docutils literal">math::</tt></td>
+<td>Floating point and integer math prims.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/mcp</tt></td>
+<td><tt class="docutils literal">mcp::</tt></td>
+<td>MCP client-server protocol prims.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/obj</tt></td>
+<td><tt class="docutils literal">obj::</tt></td>
+<td>DB object related primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/proc</tt></td>
+<td><tt class="docutils literal">proc::</tt></td>
+<td>MUF process related primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/prog</tt></td>
+<td><tt class="docutils literal">prog::</tt></td>
+<td>Program calling, editing, and compiling.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/prop</tt></td>
+<td><tt class="docutils literal">prop::</tt></td>
+<td>Prims for working with properties.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/regex</tt></td>
+<td><tt class="docutils literal">regex::</tt></td>
+<td>Regular expression primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/stdlib</tt></td>
+<td>&nbsp;</td>
+<td><tt class="docutils literal">trig</tt>, <tt class="docutils literal">caller</tt>, <tt class="docutils literal">prog</tt>, <tt class="docutils literal">version</tt>.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/str</tt></td>
+<td><tt class="docutils literal">str::</tt></td>
+<td>String manipulation primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/sys</tt></td>
+<td><tt class="docutils literal">sys::</tt></td>
+<td>System related primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/time</tt></td>
+<td><tt class="docutils literal">time::</tt></td>
+<td>Time based primitives.</td>
+</tr>
+<tr><td><tt class="docutils literal">fb6/type</tt></td>
+<td><tt class="docutils literal">type::</tt></td>
+<td>Type checking and conversion primitives.</td>
+</tr>
+</tbody>
+</table>
+<p>NOTE: It doesn't make much sense to include <em>both</em> <tt class="docutils literal">!fb6/prims</tt> <em>and</em> one
+or more of the namespaced files.  If you include from both, it should still
+work, but it really misses the point of using namespaces.</p>
+</div>
+<div class="section" id="expressions">
+<h1><a class="toc-backref" href="#table-of-contents">11&nbsp;&nbsp;&nbsp;Expressions</a></h1>
+<div class="section" id="basic-math">
+<h2><a class="toc-backref" href="#table-of-contents">11.1&nbsp;&nbsp;&nbsp;Basic Math</a></h2>
+<ul class="simple">
+<li>Addition: <tt class="docutils literal">2 + 3</tt></li>
+<li>Subtraction: <tt class="docutils literal">5 - 2</tt></li>
+<li>Multiplication: <tt class="docutils literal">5 * 2</tt></li>
+<li>Division: <tt class="docutils literal">10 / 2</tt></li>
+<li>Modulo: <tt class="docutils literal">7 % 3</tt></li>
+<li>Grouping: <tt class="docutils literal">2 * (3 + 4)</tt></li>
+</ul>
+</div>
+<div class="section" id="bitwise-math">
+<h2><a class="toc-backref" href="#table-of-contents">11.2&nbsp;&nbsp;&nbsp;Bitwise Math</a></h2>
+<ul class="simple">
+<li>Bitwise AND: <tt class="docutils literal">6 &amp; 4</tt></li>
+<li>Bitwise OR: <tt class="docutils literal">8 | 4</tt></li>
+<li>Bitwise XOR: <tt class="docutils literal">6 ^ 4</tt></li>
+<li>Bitwise NOT: <tt class="docutils literal">~10</tt></li>
+<li>BitShift Left: <tt class="docutils literal">1 &lt;&lt; 4</tt></li>
+<li>BitShift Right: <tt class="docutils literal">128 &gt;&gt; 3</tt></li>
+</ul>
+</div>
+<div class="section" id="assignment">
+<h2><a class="toc-backref" href="#table-of-contents">11.3&nbsp;&nbsp;&nbsp;Assignment</a></h2>
+<ul class="simple">
+<li>Simple assignment: <tt class="docutils literal">x = 23</tt></li>
+<li>Add and assign: <tt class="docutils literal">x += 2</tt> is the same as <tt class="docutils literal">x = x + 2</tt></li>
+<li>Subtract and assign: <tt class="docutils literal">x <span class="pre">-=</span> 2</tt> is the same as <tt class="docutils literal">x = x - 2</tt></li>
+<li>Multiply and assign: <tt class="docutils literal">x *= 2</tt> is the same as <tt class="docutils literal">x = x * 2</tt></li>
+<li>Divide and assign: <tt class="docutils literal">x /= 2</tt> is the same as <tt class="docutils literal">x = x / 2</tt></li>
+<li>Modulo and assign: <tt class="docutils literal">x %= 2</tt> is the same as <tt class="docutils literal">x = x % 2</tt></li>
+<li>Bitwise AND and assign: <tt class="docutils literal">x &amp;= 2</tt> is the same as <tt class="docutils literal">x = x &amp; 2</tt></li>
+<li>Bitwise OR and assign: <tt class="docutils literal">x |= 2</tt> is the same as <tt class="docutils literal">x = x | 2</tt></li>
+<li>Bitwise XOR and assign: <tt class="docutils literal">x ^= 2</tt> is the same as <tt class="docutils literal">x = x ^ 2</tt></li>
+<li>BitShift Left and assign: <tt class="docutils literal">x &lt;&lt;= 2</tt> is the same as <tt class="docutils literal">x = x &lt;&lt; 2</tt></li>
+<li>BitShift Right and assign: <tt class="docutils literal">x &gt;&gt;= 2</tt> is the same as <tt class="docutils literal">x = x &gt;&gt; 2</tt></li>
+</ul>
+</div>
+<div class="section" id="numeric-comparisons">
+<h2><a class="toc-backref" href="#table-of-contents">11.4&nbsp;&nbsp;&nbsp;Numeric Comparisons</a></h2>
+<ul class="simple">
+<li><tt class="docutils literal">x == 2</tt> returns true if <tt class="docutils literal">x</tt> equals <tt class="docutils literal">2</tt>, otherwise false.</li>
+<li><tt class="docutils literal">x != 2</tt> returns true if <tt class="docutils literal">x</tt> does not equal <tt class="docutils literal">2</tt>, otherwise false.</li>
+<li><tt class="docutils literal">x &lt; 2</tt> returns true if <tt class="docutils literal">x</tt> is less than <tt class="docutils literal">2</tt>, otherwise false.</li>
+<li><tt class="docutils literal">x &gt; 2</tt> returns true if <tt class="docutils literal">x</tt> is greater than <tt class="docutils literal">2</tt>, otherwise false.</li>
+<li><tt class="docutils literal">x &lt;= 2</tt> returns true if <tt class="docutils literal">x</tt> is less than or equal to <tt class="docutils literal">2</tt>, otherwise false.</li>
+<li><tt class="docutils literal">x &gt;= 2</tt> returns true if <tt class="docutils literal">x</tt> is greater than or equal to <tt class="docutils literal">2</tt>, otherwise false.</li>
+</ul>
+</div>
+<div class="section" id="string-comparisons">
+<h2><a class="toc-backref" href="#table-of-contents">11.5&nbsp;&nbsp;&nbsp;String Comparisons</a></h2>
+<ul class="simple">
+<li><tt class="docutils literal">x eq &quot;foo&quot;</tt> returns true if <tt class="docutils literal">x</tt> equals the string <tt class="docutils literal">&quot;foo&quot;</tt>, case sensitive.</li>
+</ul>
+</div>
+<div class="section" id="array-operations">
+<h2><a class="toc-backref" href="#table-of-contents">11.6&nbsp;&nbsp;&nbsp;Array Operations</a></h2>
+<ul class="simple">
+<li><tt class="docutils literal">x in arr</tt> returns true if the value <tt class="docutils literal">x</tt> is in the array <tt class="docutils literal">arr</tt>.</li>
+<li><tt class="docutils literal">x[2]</tt> returns the third item of the array in the variable <tt class="docutils literal">x</tt>.</li>
+<li><tt class="docutils literal">x[2] = 42</tt> sets the third element of the array in <tt class="docutils literal">x</tt> to <tt class="docutils literal">42</tt>.</li>
+</ul>
+</div>
+<div class="section" id="true-and-false">
+<h2><a class="toc-backref" href="#table-of-contents">11.7&nbsp;&nbsp;&nbsp;True and False</a></h2>
+<p>In MUV and MUF both, a value is considered True unless it is one of the
+following specific False values:</p>
+<ul class="simple">
+<li>Integer: <tt class="docutils literal">0</tt></li>
+<li>DBRef: <tt class="docutils literal"><span class="pre">#-1</span></tt></li>
+<li>Float: <tt class="docutils literal">0.0</tt></li>
+<li>Empty String: <tt class="docutils literal">&quot;&quot;</tt></li>
+<li>Empty List: <tt class="docutils literal">[]</tt></li>
+<li>Empty Dictionary: <tt class="docutils literal"><span class="pre">[=&gt;]</span></tt></li>
+<li>Invalid Lock</li>
+<li>Stack Mark</li>
+</ul>
+</div>
+<div class="section" id="logical-operations">
+<h2><a class="toc-backref" href="#table-of-contents">11.8&nbsp;&nbsp;&nbsp;Logical Operations</a></h2>
+<ul class="simple">
+<li>Logical AND: <tt class="docutils literal">x &amp;&amp; y</tt> returns true if both <tt class="docutils literal">x</tt> or <tt class="docutils literal">y</tt> are true.
+More specifically, this returns the value of <tt class="docutils literal">x</tt> if it is false,
+otherwise it returns the value of <tt class="docutils literal">y</tt>.</li>
+<li>Logical OR: <tt class="docutils literal">x || y</tt> returns true if either <tt class="docutils literal">x</tt> or <tt class="docutils literal">y</tt> is true.
+More specifically, this returns the value of <tt class="docutils literal">x</tt> if it is true,
+otherwise it returns the value of <tt class="docutils literal">y</tt>.</li>
+<li>Logical XOR: <tt class="docutils literal">x ^^ y</tt> returns true if exactly one of <tt class="docutils literal">x</tt> or <tt class="docutils literal">y</tt> is true.</li>
+<li>Logical NOT: <tt class="docutils literal">!x</tt> returns true if <tt class="docutils literal">x</tt> is false.</li>
+</ul>
+<p>The expression <tt class="docutils literal">x &gt; 3 &amp;&amp; !(y &lt; 10)</tt> will return true if both <tt class="docutils literal">x</tt> is greater
+than <tt class="docutils literal">3</tt> <em>and</em> <tt class="docutils literal">y</tt> is <em>not</em> less than <tt class="docutils literal">10</tt>.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">Logical expressions support shortcutting.  If the left half of a
+logical <tt class="docutils literal">||</tt> (OR) is true, the right half isn't evaluated at all. If
+the left half of a logical <tt class="docutils literal">&amp;&amp;</tt> (AND) is false, the right half isn't
+evaluated at all.  Both sides of a logical <tt class="docutils literal">^^</tt> (XOR) are always
+evaluated.  This mostly has implications when you are calling functions
+in the right-hand side of a shortcutted expression, as these calls may
+not be made at all.</p>
+</div>
+<p>The intrinsic short-cutting in logical <tt class="docutils literal">&amp;&amp;</tt> (AND) and <tt class="docutils literal">||</tt> (OR) operators
+can also have other uses.  The <tt class="docutils literal">&amp;&amp;</tt> (AND) operator can be used to chain
+successful calls, such as:</p>
+<pre class="literal-block">
+function1(x) &amp;&amp; function2(x) &amp;&amp; function3(x)
+</pre>
+<p>Each function in the chain is only called if every previous function in the
+chain returned a true value.  The final value returned will either be the
+first false value returned, or the true value returned by the last call.</p>
+<p>More usefully, if you have a series of functions that return a false value
+on success, and a non-false value on failure, you can chain these calls with
+<tt class="docutils literal">||</tt> (OR) operators, and get an overall failure code (or string) for the
+chain:</p>
+<pre class="literal-block">
+function1(x) || function2(x) || function3(x)
+</pre>
+<p>Each function in this chain is only called if every previous function in
+the chain returned a false (success!) value.  The final value returned will
+either be the first true (error code or string) value returned, or the false
+(success!) value returned by the last call.</p>
+<p>The <tt class="docutils literal">||</tt> (OR) operator is also useful in returning default values:</p>
+<pre class="literal-block">
+function1(x) || 42
+</pre>
+<p>This will return the result from <tt class="docutils literal">function1()</tt>, unless it is a value that
+evaluates as false, in which case <tt class="docutils literal">42</tt> will be returned.</p>
+<div class="warning">
+<p class="first admonition-title">Warning</p>
+<p>You can combine <tt class="docutils literal">&amp;&amp;</tt> (AND) and <tt class="docutils literal">||</tt> (OR) to provide alternate
+values for both success and failure:</p>
+<pre class="literal-block">
+test() &amp;&amp; &quot;success&quot; || &quot;failure&quot;
+</pre>
+<p>However this only works correctly if you use the logical operators
+in that specific order, and if the success value evaluates as true.</p>
+<p>You should resist the urge to use this notation.  It will always be
+cleaner, more efficient, more concise, and less bug prone to use the
+Conditional Operator, described below:</p>
+<pre class="last literal-block">
+test() ? &quot;success&quot; : &quot;failure&quot;
+</pre>
+</div>
+</div>
+<div class="section" id="conditional-operator">
+<h2><a class="toc-backref" href="#table-of-contents">11.9&nbsp;&nbsp;&nbsp;Conditional Operator</a></h2>
+<p>If you need to provide two different results, based on the result of a third
+expression, you can use the conditional operator:</p>
+<pre class="literal-block">
+x&gt;0 ? 1 : 2
+</pre>
+<p>This will return <tt class="docutils literal">1</tt> if <tt class="docutils literal">x</tt> is greater than <tt class="docutils literal">0</tt>, otherwise it will
+return <tt class="docutils literal">2</tt>.</p>
+<p>WARNING: since some identifiers in MUV can end in <tt class="docutils literal">?</tt> (ie: <tt class="docutils literal">awake?</tt>) you
+will need to put a space between an identifier and the <tt class="docutils literal">?</tt> in a conditional
+expression, otherwise you may get odd syntax errors:</p>
+<pre class="literal-block">
+var success = result ? &quot;Yes&quot; : &quot;No&quot;;
+</pre>
+<p>You may have noticed that you can also use logical operators to get much the
+same results with slightly different syntax, and only two extra characters:</p>
+<pre class="literal-block">
+var success = result &amp;&amp; &quot;Yes&quot; || &quot;No&quot;;
+</pre>
+<p>There are a few important differences to be aware of, though:</p>
+<ul class="simple">
+<li>If the true branch of a logical operator expression tries to return a false
+value, then the false branch gets erroneously evaluated as well, and its
+result is returned instead.</li>
+<li>The conditional operator generates simpler and more efficient code.</li>
+<li>The conditional operator is explicitly providing alternate values, so it
+makes for clearer code, compared to abusing logical operator side effects.</li>
+</ul>
+</div>
+<div class="section" id="chaining-expressions">
+<h2><a class="toc-backref" href="#table-of-contents">11.10&nbsp;&nbsp;&nbsp;Chaining Expressions</a></h2>
+<p>All these expressions can be combined and chained in surprisingly complex
+ways:</p>
+<pre class="literal-block">
+var y = [[4, 5, 6], 3];
+var z = 1;
+var x = y[0][1] = 43 * (z += 1 &lt;&lt; 3);
+</pre>
+</div>
+</div>
+<div class="section" id="arrays">
+<h1><a class="toc-backref" href="#table-of-contents">12&nbsp;&nbsp;&nbsp;Arrays</a></h1>
+<p>Declaring a list array is easy:</p>
+<pre class="literal-block">
+var listvar = [&quot;First&quot;, &quot;Second&quot;, &quot;Third&quot;, &quot;Forth!&quot;];
+</pre>
+<p>To declare an empty list, just use:</p>
+<pre class="literal-block">
+var foo = [];
+</pre>
+<p>You can fetch an element from a list using a subscript:</p>
+<pre class="literal-block">
+var a = listvar[2];
+</pre>
+<p>Which will set the newly declared variable <tt class="docutils literal">a</tt> to <tt class="docutils literal">&quot;Third&quot;</tt>:</p>
+<p>Setting a list element uses a similar syntax:</p>
+<pre class="literal-block">
+listvar[3] = &quot;foo&quot;;
+</pre>
+<p>That will change the 4th element (as list indexes are 0-based) of the list in
+listvar to <tt class="docutils literal">&quot;foo&quot;</tt>, resulting in listvar containing the list:</p>
+<pre class="literal-block">
+[&quot;First&quot;, &quot;Second&quot;, &quot;Third&quot;, &quot;foo&quot;]
+</pre>
+<p>You can append items to an existing list with the <tt class="docutils literal">[]</tt> construct:</p>
+<pre class="literal-block">
+listvar[] = &quot;bar&quot;;
+</pre>
+<p>Resulting in listvar containing the list:</p>
+<pre class="literal-block">
+[&quot;First&quot;, &quot;Second&quot;, &quot;Third&quot;, &quot;foo&quot;, &quot;bar&quot;]
+</pre>
+<p>Deletion of list elements uses <tt class="docutils literal">del()</tt> like this:</p>
+<pre class="literal-block">
+del(listvar[2]);
+</pre>
+<p>Which deletes the 3rd element of the list stored in <tt class="docutils literal">listvar</tt>, resulting in
+<tt class="docutils literal">listvar</tt> containing:</p>
+<pre class="literal-block">
+[&quot;First&quot;, &quot;Second&quot;, &quot;foo&quot;, &quot;bar&quot;]
+</pre>
+<p>If you need to work with nested lists, ie: lists stored in elements of lists,
+you can just add subscripts to the expression.  For example, if you start
+with this array:</p>
+<pre class="literal-block">
+var nest = [
+    [8, 7, 6, 5],
+    [4, 3, 2],
+    [&quot;Foo&quot;, &quot;Bar&quot;, &quot;Baz&quot;]
+];
+</pre>
+<p>Then to get the second element of the list embedded in the third element
+of the array in the variable <tt class="docutils literal">nest</tt>, you will do the following:</p>
+<pre class="literal-block">
+nest[2][1];
+</pre>
+<p>To set the third element of the list embedded in the first element of
+<tt class="docutils literal">nest</tt>, to the value 23, you can do this:</p>
+<pre class="literal-block">
+nest[0][2] = 23;
+</pre>
+<p>At this point, the variable <tt class="docutils literal">nest</tt> will contain the following:</p>
+<pre class="literal-block">
+[ [8, 7, 23, 5],  [4, 3, 2],  [&quot;Foo&quot;, &quot;Bar&quot;, &quot;Baz&quot;] ]
+</pre>
+<p>To append <tt class="docutils literal">&quot;Qux&quot;</tt> to the list in the 3rd element of the list in <tt class="docutils literal">nest</tt>:</p>
+<pre class="literal-block">
+listvar[2][] = &quot;Qux&quot;;
+</pre>
+<p>The variable <tt class="docutils literal">nest</tt> now contains the following:</p>
+<pre class="literal-block">
+[ [8, 7, 23, 5],  [4, 3, 2],  [&quot;Foo&quot;, &quot;Bar&quot;, &quot;Baz&quot;, &quot;Qux&quot;] ]
+</pre>
+<p>To delete the 2nd element of the list in the 3rd element in <tt class="docutils literal">nest</tt>:</p>
+<pre class="literal-block">
+del(nest[2][1]);
+</pre>
+<p>The variable <tt class="docutils literal">nest</tt> now contains:</p>
+<pre class="literal-block">
+[ [8, 7, 23, 5],  [4, 3, 2],  [&quot;Foo&quot;, &quot;Baz&quot;, &quot;Qux&quot;] ]
+</pre>
+</div>
+<div class="section" id="dictionaries">
+<h1><a class="toc-backref" href="#table-of-contents">13&nbsp;&nbsp;&nbsp;Dictionaries</a></h1>
+<p>Dictionaries are a special type of array, where the keys are not necessarily
+numeric, and they don't have to be contiguous.  You can use many of the same
+functions and primitives with dictionaries that you use with list arrays.
+MUV Dictionaries are functionally like hash tables in other languages.</p>
+<p>Defining a dictionary is similar to defining a list array, except you also
+specify the keys:</p>
+<pre class="literal-block">
+var mydict = [
+    &quot;one&quot; =&gt; 1,
+    &quot;two&quot; =&gt; 2,
+    &quot;three&quot; =&gt; 3,
+    &quot;four&quot; =&gt; 4
+];
+</pre>
+<p>To define an empty dictionary, which is distinct from a list, you can use:</p>
+<pre class="literal-block">
+var empty = [=&gt;];
+</pre>
+<p>Reading, setting and deleting dictionary elements are very similar to doing
+the same with a list array:</p>
+<pre class="literal-block">
+var myvar = mydict[&quot;three&quot;];
+mydict[&quot;six&quot;] = 6;
+del(mydict[&quot;one&quot;]);
+</pre>
+<p>Similarly to list arrays, you can also nest dictionaries with other lists and
+dictionaries.  The syntax to manipulate nested dictionaries is exactly the
+same as for lists:</p>
+<pre class="literal-block">
+var nest = [
+    &quot;foo&quot; =&gt; [5, 6, 7],
+    &quot;bar&quot; =&gt; [
+        &quot;fee&quot; =&gt; 1,
+        &quot;fie&quot; =&gt; 2,
+        &quot;foe&quot; =&gt; 3
+    ],
+    &quot;baz&quot; =&gt; 17
+];
+nest[&quot;baz&quot;] = 42;
+nest[&quot;bar&quot;][] = &quot;fum&quot;;
+del(nest[&quot;foo&quot;][1])
+</pre>
+</div>
+<div class="section" id="conditional-statements">
+<h1><a class="toc-backref" href="#table-of-contents">14&nbsp;&nbsp;&nbsp;Conditional Statements</a></h1>
+<div class="section" id="if-statements">
+<h2><a class="toc-backref" href="#table-of-contents">14.1&nbsp;&nbsp;&nbsp;If Statements</a></h2>
+<p>You can use the <tt class="docutils literal">if</tt> statement to execute code only if an expression is true:</p>
+<pre class="literal-block">
+if (x &gt; 3)
+    tell(&quot;Greater!&quot;);
+</pre>
+<p>This will execute <tt class="docutils literal"><span class="pre">tell(&quot;Greater!&quot;)</span></tt> only if the test <tt class="docutils literal">x &gt; 3</tt> evaluates
+as true.</p>
+<p>You can make multiple statements part of the conditional by surrounding them
+in braces like this:</p>
+<pre class="literal-block">
+if (x &gt; 3) {
+    tell(&quot;x &gt; 3!&quot;);
+    tell(cat(&quot;x = &quot;, x));
+}
+</pre>
+<p>If you also need to have it execute code if the expression was false, you can
+use an <tt class="docutils literal">else</tt> clause, like this:</p>
+<pre class="literal-block">
+if (x &lt; 0) {
+    tell(&quot;Negative!&quot;);
+} else {
+    tell(&quot;Positive!&quot;);
+}
+</pre>
+<p>Idiomatically, this is simply &quot;If X is true, do Y, otherwise, do Z.&quot;</p>
+</div>
+<div class="section" id="post-conditionals">
+<h2><a class="toc-backref" href="#table-of-contents">14.2&nbsp;&nbsp;&nbsp;Post-Conditionals</a></h2>
+<p>You can make a single statement execute only if an expression is true by
+using a trailing <tt class="docutils literal">if</tt> clause:</p>
+<pre class="literal-block">
+tell(&quot;Odd!&quot;) if (x%2);
+</pre>
+<p>This will only execute <tt class="docutils literal"><span class="pre">tell(&quot;Odd!&quot;)</span></tt> if the result of <tt class="docutils literal">x % 2</tt> evaluates
+as true, (non-zero).  Idiomatically, this is &quot;Do X if Y is true.&quot;</p>
+<p>You can also make a single statement execute only if an expression is false by
+using a trailing <tt class="docutils literal">unless</tt> clause:</p>
+<pre class="literal-block">
+tell(&quot;Even!&quot;) unless(x%2);
+</pre>
+<p>This will only execute <tt class="docutils literal"><span class="pre">tell(&quot;Even!&quot;)</span></tt> if the result of <tt class="docutils literal">x % 2</tt> evaluates
+as False (<tt class="docutils literal">0</tt>).  Idiomatically, this is &quot;Do X unless Y is true.&quot;</p>
+</div>
+<div class="section" id="switch-statements">
+<h2><a class="toc-backref" href="#table-of-contents">14.3&nbsp;&nbsp;&nbsp;Switch Statements</a></h2>
+<p>If you need to compare a value against a lot of options, you can use the
+<tt class="docutils literal">switch</tt> - <tt class="docutils literal">case</tt> statement:</p>
+<pre class="literal-block">
+switch (val) {
+    case(1) tell(&quot;One!&quot;);
+    case(2) tell(&quot;Two!&quot;);
+    case(3) tell(&quot;Three!&quot;);
+}
+</pre>
+<p>The optional <tt class="docutils literal">default</tt> clause allows you to execute code if no <tt class="docutils literal">case</tt>
+matches:</p>
+<pre class="literal-block">
+switch (val) {
+    case(1) tell(&quot;One!&quot;);
+    case(2) tell(&quot;Two!&quot;);
+    case(3) tell(&quot;Three!&quot;);
+    default tell(&quot;Something else!&quot;);
+}
+</pre>
+<p>With the <tt class="docutils literal">using</tt> clause, you can specify a primitive or function that
+takes two arguments to use for comparisons.  When the comparison function
+or primitive returns true, then a match is found.  When you specify
+<tt class="docutils literal">using strcmp</tt> it special-cases the comparison to actually be <tt class="docutils literal">strcmp not</tt>.
+The same applies for <tt class="docutils literal">stringcmp</tt>, which is translated to <tt class="docutils literal">stringcmp not</tt>:</p>
+<pre class="literal-block">
+switch (val using strcmp) {
+    case(&quot;one&quot;) {
+        tell(&quot;First!&quot;);
+    }
+    case(&quot;two&quot;) {
+        tell(&quot;Second!&quot;);
+    }
+    case(&quot;three&quot;) {
+        tell(&quot;Third!&quot;);
+    }
+    default {
+        tell(&quot;Something else!&quot;)
+    }
+}
+</pre>
+<p>You can also specify built-in comparison operators like <tt class="docutils literal">eq</tt>, <tt class="docutils literal">in</tt>, or
+<tt class="docutils literal">=</tt>.  Only the first <tt class="docutils literal">case</tt> with a successful match will be executed:</p>
+<pre class="literal-block">
+switch (val using eq) {
+    case(&quot;one&quot;) tell(&quot;First!&quot;);
+    case(&quot;two&quot;) tell(&quot;Second!&quot;);
+    case(&quot;three&quot;) tell(&quot;Third!&quot;);
+}
+</pre>
+<p>Unlike in C, <tt class="docutils literal">switch</tt> statements do not fall-through from one case clause to
+the next. Also, you can actually use expressions in the case, not just
+constants:</p>
+<pre class="literal-block">
+switch(name(obj) using eq) {
+    case(strcat(name(me), &quot;'s Brush&quot;)) {
+        tell(&quot;It's one of your brushes!&quot;);
+        brushcount++;
+    }
+    case(strcat(name(me), &quot;'s Fiddle&quot;)) {
+        tell(&quot;It's one of your fiddles!&quot;);
+        fiddlecount++;
+    }
+}
+</pre>
+<p>If you use the <tt class="docutils literal">break</tt> statement inside a case clause, you can exit the case
+clause early, and execution resumes after the end of the switch.  If you use a
+<tt class="docutils literal">continue</tt> statement inside a case clause, the entire switch statement is
+re-evaluated.  This can be useful for, perhaps, running a looping state
+machine:</p>
+<pre class="literal-block">
+const FIRST = 1;
+const SECOND = 2;
+const THIRD = 3;
+const FOURTH = 4;
+var state = FIRST;
+switch(state) {
+    case(FIRST) {
+        state = SECOND;
+        do_something();
+        continue;
+    }
+    case(SECOND) {
+        state = THIRD;
+        do_something_else();
+        continue;
+    }
+    case(THIRD) {
+        if (do_something_more()) {
+            state = FOURTH;
+            continue;
+        }
+        break;
+    }
+    case(FOURTH) {
+        state = FIRST;
+        do_something_special()
+        continue;
+    }
+}
+</pre>
+</div>
+</div>
+<div class="section" id="loop-statements">
+<h1><a class="toc-backref" href="#table-of-contents">15&nbsp;&nbsp;&nbsp;Loop Statements</a></h1>
+<p>There are several types of loops available.</p>
+<div class="section" id="while-loops">
+<h2><a class="toc-backref" href="#table-of-contents">15.1&nbsp;&nbsp;&nbsp;While Loops</a></h2>
+<p>While loops will repeat as long as the condition evaluates true.
+The condition is checked before each loop:</p>
+<pre class="literal-block">
+var i = 10;
+while (i &gt; 0) {
+    tell(intostr(i--));
+}
+</pre>
+<p>Idiomatically, <tt class="docutils literal">while(X) Y;</tt> means  &quot;While X is true, keep repeating Y.&quot;</p>
+</div>
+<div class="section" id="until-loops">
+<h2><a class="toc-backref" href="#table-of-contents">15.2&nbsp;&nbsp;&nbsp;Until Loops</a></h2>
+<p>Until loops will repeat as long as the condition evaluates false.
+The condition is checked before each loop:</p>
+<pre class="literal-block">
+var i = 10;
+until (i == 0) {
+    tell(intostr(i--));
+}
+</pre>
+<p>Idiomatically, <tt class="docutils literal">until(X) Y;</tt> means  &quot;Until X is true, keep repeating Y.&quot;</p>
+</div>
+<div class="section" id="do-while-loops">
+<h2><a class="toc-backref" href="#table-of-contents">15.3&nbsp;&nbsp;&nbsp;Do-While Loops</a></h2>
+<p>Do-While loops will repeat as long as the condition evaluates true.
+The condition is checked after each loop.  The loop will execute at
+least once:</p>
+<pre class="literal-block">
+var i = 10;
+do {
+    tell(intostr(i--));
+} while(i &gt; 0);
+</pre>
+<p>Idiomatically, <tt class="docutils literal">do X while(Y);</tt> means &quot;Do X, then while Y is true keep
+repeating X.&quot;</p>
+</div>
+<div class="section" id="do-until-loops">
+<h2><a class="toc-backref" href="#table-of-contents">15.4&nbsp;&nbsp;&nbsp;Do-Until Loops</a></h2>
+<p>Do-Until loops will repeat as long as the condition evaluates false.
+The condition is checked after each loop.  The loop will execute at
+least once:</p>
+<pre class="literal-block">
+var i = 10;
+do {
+    tell(intostr(i--));
+} until(i == 0);
+</pre>
+<p>Idiomatically, <tt class="docutils literal">do X until(Y);</tt> means &quot;Do X, then until Y is true keep
+repeating X.&quot;</p>
+</div>
+<div class="section" id="for-loops">
+<h2><a class="toc-backref" href="#table-of-contents">15.5&nbsp;&nbsp;&nbsp;For Loops</a></h2>
+<p>For loops come in a few varieties. The first version counts up
+from one number to another, inclusive:</p>
+<pre class="literal-block">
+// Count from 1 up to 10, inclusive
+for (var i in 1 =&gt; 10) {
+    tell(intostr(i));
+}
+</pre>
+<p>Idiomatically, <tt class="docutils literal">for (V in X =&gt; Y) Z;</tt> means, &quot;Count from X to Y, inclusive.
+For each value, store it in the variable V, then execute Z.&quot;</p>
+<p>With a <tt class="docutils literal">by</tt> clause, you can count down, or by a different increment:</p>
+<pre class="literal-block">
+// Count from 10 down to 1, inclusive
+for (var i in 10 =&gt; 1 by -1) {
+    tell(intostr(i));
+}
+</pre>
+<p>Idiomatically, <tt class="docutils literal">for (V in X =&gt; Y by N) Z;</tt> means, &quot;Count from X to Y,
+inclusive, adding N each time.  For each value, store it in the variable V,
+then execute Z.&quot;</p>
+<p>You can also iterate arrays/lists/dictionaries like this:</p>
+<pre class="literal-block">
+var letters = [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;];
+for (var letter in letters)
+    tell(letter);
+</pre>
+<p>Idiomatically, <tt class="docutils literal">for (V in X) Y;</tt> means, &quot;For each item in the array X,
+store the value in the variable V, then execute the code Y.&quot;</p>
+<p>To iterate over both indexes/keys and values:</p>
+<pre class="literal-block">
+for (var idx =&gt; var letter in [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;])
+    tell(cat(idx, letter));
+</pre>
+<p>Idiomatically, <tt class="docutils literal">for (K =&gt; V in X) Y;</tt> means, &quot;For each item in the array X,
+store the array item's index (key) in the variable K, and the item's value in
+the variable V, then execute the code Y.&quot;</p>
+</div>
+</div>
+<div class="section" id="comprehensions">
+<h1><a class="toc-backref" href="#table-of-contents">16&nbsp;&nbsp;&nbsp;Comprehensions</a></h1>
+<p>Using a variation on loops and conditionals, you can quickly create lists and
+dictionaries that are mutations of already existing arrays.  The original
+array is untouched.</p>
+<p>For example, if you have a list of strings in the variable <tt class="docutils literal">words</tt>, you can
+create a list of uppercased versions of those words like this:</p>
+<pre class="literal-block">
+var words = [&quot;fee&quot;, &quot;fie&quot;, &quot;foe&quot;, &quot;fum&quot;];
+var uppers = [for (var word in words) toupper(word)];
+</pre>
+<p>Similarly, you can generate a dictionary.  If we have an existing dictionary,
+that we want to make a new dictionary from, with uppercased keys, and values
+that are incremented, we can do the following:</p>
+<pre class="literal-block">
+var prims = [
+    &quot;notify&quot; =&gt; 2,
+    &quot;pop&quot; =&gt; 1,
+    &quot;swap&quot; =&gt; 1,
+    &quot;setpropstr&quot; =&gt; 3
+];
+var keywords = [for (var k =&gt; var v in prims) toupper(k) =&gt; v+1];
+</pre>
+<p>You can use any variation of for loop for making comprehensions:</p>
+<pre class="literal-block">
+var odd_thirds = [for (x in 1 =&gt; 100 by 3) if (x % 2) x];
+</pre>
+<p>You can also filter a list or dictionary by adding an <tt class="docutils literal">if</tt> or <tt class="docutils literal">unless</tt>
+clause.  This will only include entries which passed the conditional test:</p>
+<pre class="literal-block">
+var x;
+var odds = [for (x in 0 =&gt; 100) if (x % 2) x];
+var sevens = [for (var y in 0 =&gt; 100) unless (y % 7) y];
+</pre>
+</div>
+<div class="section" id="tuple-assignment">
+<h1><a class="toc-backref" href="#table-of-contents">17&nbsp;&nbsp;&nbsp;Tuple Assignment</a></h1>
+<p>If an expression or function call returns an array of known size, you can
+assign each array item to an individual variable using tuple assignment:</p>
+<pre class="literal-block">
+extern multiple split(s, delim);
+&lt;var a, var b&gt; = split(&quot;Hello, World!&quot;, &quot; &quot;);
+
+&lt;a, b&gt; = split(&quot;foo=bar&quot;, &quot;=&quot;);
+</pre>
+<p>You can also use tuple assignment inside a loop or comprehension:</p>
+<pre class="literal-block">
+for (&lt;a, b&gt; in list_generator()) {
+    tell(cat(b, a));
+}
+
+var foo = [for (&lt;a, b&gt; in list_generator()) if (a != b) a + b];
+</pre>
+<div class="important">
+<p class="first admonition-title">Important</p>
+<p class="last">You must put space between the <tt class="docutils literal">&gt;</tt> and <tt class="docutils literal">=</tt> of the
+tuple assignment, or the language parser will get confused, thinking
+if sees a <tt class="docutils literal">&gt;=</tt> token.</p>
+</div>
+</div>
+<div class="section" id="exception-handling">
+<h1><a class="toc-backref" href="#table-of-contents">18&nbsp;&nbsp;&nbsp;Exception Handling</a></h1>
+<p>You can trap errors with the <tt class="docutils literal">try</tt> - <tt class="docutils literal">catch</tt> construct:</p>
+<pre class="literal-block">
+try {
+    setname(obj, &quot;Foobar&quot;);
+} catch (e) {
+    tell(e[&quot;error&quot;]);
+}
+</pre>
+<p>The variable given to the <tt class="docutils literal">catch</tt> command will, when an error is received,
+have a dictionary stored in it with the following values:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal">error</tt></dt>
+<dd>The error string that was emitted by the MUF instruction that threw an
+error.</dd>
+<dt><tt class="docutils literal">instr</tt></dt>
+<dd>The name of the MUF instruction that threw the error.</dd>
+<dt><tt class="docutils literal">line</tt></dt>
+<dd>The MUF line that threw the error.</dd>
+<dt><tt class="docutils literal">program</tt></dt>
+<dd>The program that the error was thrown in.  This might not be the same as
+the current program, if the error occurred inside a call.</dd>
+</dl>
+<p>If you don't care about the exception details, you can just not specify the
+variable:</p>
+<pre class="literal-block">
+try {
+    setname(obj, &quot;Foobar&quot;);
+} catch () {
+    tell(&quot;Could not set the name.&quot;);
+}
+</pre>
+<p>If you just want to trap any errors without doing anything, you can just do:</p>
+<pre class="literal-block">
+try {
+    setname(obj, &quot;Foobar&quot;);
+} catch();
+</pre>
+<p>If you need to throw your own custom exception, you can do it like:</p>
+<pre class="literal-block">
+throw(&quot;MyError&quot;)
+</pre>
+</div>
+<div class="section" id="muf-interaction">
+<h1><a class="toc-backref" href="#table-of-contents">19&nbsp;&nbsp;&nbsp;MUF Interaction</a></h1>
+<p>Sometimes you need to interact with other MUF programs, by reading or
+storing data on the MUF stack.  You can do that with the <tt class="docutils literal">top</tt> and
+<tt class="docutils literal"><span class="pre">push(...)</span></tt> constructs. Also, you can specify raw MUF code with the
+<tt class="docutils literal"><span class="pre">muf(&quot;...&quot;)</span></tt> command.</p>
+<p>The special variable <tt class="docutils literal">top</tt> refers to the top of the stack.  You can &quot;pop&quot;
+the top item off of the stack and store it in a variable like:</p>
+<pre class="literal-block">
+var foo = top;
+</pre>
+<p>You can &quot;push&quot; a value onto the top of the stack with the <tt class="docutils literal"><span class="pre">push(...)</span></tt>
+command:</p>
+<pre class="literal-block">
+push(&quot;Hi!&quot;);
+</pre>
+<p>You can also push multiple values at once:</p>
+<pre class="literal-block">
+push(&quot;One&quot;, 2, #3, &quot;Fore!&quot;);
+</pre>
+<p>The <tt class="docutils literal"><span class="pre">push(...)</span></tt> command will return the value of the last item pushed.:</p>
+<blockquote>
+var v = push(13, 42);</blockquote>
+<p>Will leave <tt class="docutils literal">13</tt> and <tt class="docutils literal">42</tt> on the stack, and the value of <tt class="docutils literal">v</tt> will be
+set to <tt class="docutils literal">42</tt>.</p>
+<p>You can specify raw MUF code by passing it as a string to the <tt class="docutils literal"><span class="pre">muf(...)</span></tt>
+command:</p>
+<pre class="literal-block">
+muf('{ &quot;Hello, &quot; args &#64; }list array_interpret out !');
+</pre>
+<p>which will compile directly into MUF as:</p>
+<pre class="literal-block">
+{ &quot;Hello, &quot; args &#64; }list array_interpret out !
+</pre>
+<p>IMPORTANT: If you use the <tt class="docutils literal"><span class="pre">muf(...)</span></tt> command inside a function or in a const
+definition, make sure that the MUF code it gives will leave exactly one item
+on the stack!</p>
+<p>If you need it, you can also use raw MUF code in the using clause of a
+<tt class="docutils literal">switch</tt>:</p>
+<pre class="literal-block">
+switch (val using muf('&quot;*&quot; strcat smatch')) {
+    case(&quot;1&quot;) tell(&quot;Starts with 1&quot;);
+    case(&quot;2&quot;) tell(&quot;Starts with 2&quot;);
+    case(&quot;3&quot;) tell(&quot;Starts with 3&quot;);
+}
+</pre>
+</div>
+<div class="section" id="extern-declarations">
+<h1><a class="toc-backref" href="#table-of-contents">20&nbsp;&nbsp;&nbsp;Extern Declarations</a></h1>
+<p>If new primitives are added to MUF that MUV doesn't know about, or if you need
+to call external libraries, you can use an <tt class="docutils literal">extern</tt> declaration to let MUV
+know about how to call it:</p>
+<pre class="literal-block">
+extern void tell(msg);
+</pre>
+<p>will tell MUV that a function or primitive named <tt class="docutils literal">tell</tt> exists that takes one
+argument, and returns nothing on the stack.  A call to this will return the
+value <tt class="docutils literal">0</tt>, if it is used in an expression:</p>
+<pre class="literal-block">
+extern single foobar(baz, qux);
+</pre>
+<p>will tell MUV that a function or primitive named <tt class="docutils literal">foobar</tt> exists, that takes
+two arguments, and returns a single value on the stack.  When you call this
+function, it will return that single stack item to the caller:</p>
+<pre class="literal-block">
+extern multiple fleegul();
+</pre>
+<p>will tell MUV that a function or primitive named <tt class="docutils literal">fleegul</tt> exists, that takes
+no arguments, and returns two or more values on the stack.  When you call this
+function, it will return a list containing all the returned stack items.</p>
+<p>If you need to create an extern for a primitive or function that is problematic
+to describe with a normal extern, you can give raw custom MUF code at the end
+of the extern to coerce it to a normal form:</p>
+<pre class="literal-block">
+extern single concat(args*) = &quot;array_interpret&quot;;
+
+extern single fmtstr(fmt, args*) = &quot;
+    2 try
+        array_explode 1 + rotate fmtstring
+        depth 0 swap - rotate depth 1 - popn
+    catch abort
+    endcatch
+&quot;;
+</pre>
+<p>The arguments for the extern will be the topmost stack items, with the first
+argument being deepest on the stack.  In the case of varargs, like above, the
+topmost stack item will be a list containing all the remaining args.  If the
+extern is <tt class="docutils literal">void</tt>, then nothing is expected to be left on the stack.  If the
+extern is <tt class="docutils literal">single</tt>, then one item is expected to be left on the stack.  If
+the extern is <tt class="docutils literal">multiple</tt>, then all items left on the stack will be bundled
+into a list to be returned to the caller.</p>
+<p>The raw MUF code given is used <em>instead</em> of a call to the name of the declared
+extern.  A normal extern:</p>
+<pre class="literal-block">
+extern single foo();
+</pre>
+<p>will insert <tt class="docutils literal">foo</tt> into the output code where a call to <tt class="docutils literal">foo()</tt> is made.
+An extern with raw MUF like:</p>
+<pre class="literal-block">
+extern single foo() = &quot;bar&quot;;
+</pre>
+<p>will insert <tt class="docutils literal">bar</tt> into the output code where a call to <tt class="docutils literal">foo()</tt> is made.</p>
+</div>
+<div class="section" id="directives">
+<h1><a class="toc-backref" href="#table-of-contents">21&nbsp;&nbsp;&nbsp;Directives</a></h1>
+<p>There are a number of compiler directives that are (mostly) passed through to
+the MUF output code.  These include:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Directive</th>
+<th class="head">What it Does</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>$language &quot;muv&quot;</td>
+<td>Allow future MUCK servers to determine this is MUV.</td>
+</tr>
+<tr><td>$warn &quot;msg&quot;</td>
+<td>Prints msg as a MUV compiler warning.</td>
+</tr>
+<tr><td>$error &quot;msg&quot;</td>
+<td>Prints msg as a MUV error and stops compilation.</td>
+</tr>
+<tr><td>$echo &quot;msg&quot;</td>
+<td>Outputs as the corresponding MUF directive.</td>
+</tr>
+<tr><td>$author &quot;who&quot;</td>
+<td>Outputs as the corresponding MUF directive.</td>
+</tr>
+<tr><td>$note &quot;msg&quot;</td>
+<td>Outputs as the corresponding MUF directive.</td>
+</tr>
+<tr><td>$version 1.2</td>
+<td>Outputs as the corresponding MUF directive.</td>
+</tr>
+<tr><td>$libversion 1.2</td>
+<td>Outputs as the corresponding MUF directive.</td>
+</tr>
+<tr><td>$include &quot;$foo&quot;</td>
+<td>Outputs as the corresponding MUF directive.</td>
+</tr>
+<tr><td>$pragma &quot;foo&quot;</td>
+<td>Outputs as the corresponding MUF directive.</td>
+</tr>
+</tbody>
+</table>
+<div class="important">
+<p class="first admonition-title">Important</p>
+<p class="last">All MUV programs should start with <tt class="docutils literal">$language &quot;muv&quot;</tt>.
+Future versions of the MUCK server will use this to recognize MUV source
+code.  The MufSim IDE also uses it to distinguish MUV from MUF source.</p>
+</div>
+</div>
+<div class="section" id="debugging-muv">
+<h1><a class="toc-backref" href="#table-of-contents">22&nbsp;&nbsp;&nbsp;Debugging MUV</a></h1>
+<p>It's easiest to debug and test MUV code using the MufSim GUI IDE.  There
+are binaries for Mac OS X, and for 64-bit Windows.  You can find them at:</p>
+<blockquote>
+<a class="reference external" href="https://github.com/revarbat/mufsim/tree/master/dist">https://github.com/revarbat/mufsim/tree/master/dist</a></blockquote>
+<p>For Linux, (or any other platform, really), or if you want to use the
+command-line mufsim MUV/MUF debugger instead of the GUI, you can use
+Python and pip to install MufSim:</p>
+<pre class="literal-block">
+pip install mufsim --upgrade
+</pre>
+<p>If you prefer to install from the github MufSim sources, download and unpack
+the mufsim-x.x.x.tar.gz archive, then install with:</p>
+<pre class="literal-block">
+python3 setup.py build install
+</pre>
+<p>Otherwise, when you are debugging a program compiled into MUF from MUV,
+using the MUCK's built-in MUF debugger or stack-tracing, there are a few
+things you should be aware of:</p>
+<ul class="simple">
+<li>If you add a <tt class="docutils literal"><span class="pre">-d</span></tt> to the muv compiler command-line, debugging code will
+be inserted throughout the MUF output. This mostly takes the form of
+comments that show the MUV source line that generated the current MUF code.
+These comments take the form <tt class="docutils literal">(MUV:L123)</tt> where 123 is the line number.</li>
+<li>To prevent namespace collision with the built-in primitives of MUF, the
+non-public functions and variables that MUV generates are renamed slightly
+from what was given in the MUV sources.  This generally means preceeding
+the name with a <tt class="docutils literal">_</tt>, and converting any <tt class="docutils literal">::</tt> namespace separators
+to <tt class="docutils literal">__</tt>.  ie: <tt class="docutils literal"><span class="pre">::foo::bar</span></tt> will get renamed to <tt class="docutils literal">_foo__bar</tt>.</li>
+<li>To keep consistent with expressions returning values, some extra <tt class="docutils literal">dup</tt>
+and <tt class="docutils literal">pop</tt> statements may appear throughout the code.  Some of this will
+get optimized out by the MUF compiler, and some won't, but they are very
+fast primitives that shouldn't affect performance much.</li>
+<li>Calls to an <tt class="docutils literal">extern void</tt> defined primitive or function will be followed
+by a <tt class="docutils literal">0</tt> to fake that the call returned <tt class="docutils literal">0</tt>.</li>
+<li>Calls to an <tt class="docutils literal">extern multiple</tt> defined primitive or function will be
+wrapped in <tt class="docutils literal">{</tt> and <tt class="docutils literal">}list</tt> to collapse the multiple return values
+into a single list array.</li>
+<li>Because in MUV <em>all</em> calls have a return value, for those functions that
+don't end in a <tt class="docutils literal">return</tt> statement, a <tt class="docutils literal">0</tt> is put at the end of a generated
+function, just in case.</li>
+</ul>
+<p>For example, the following MUV source:</p>
+<pre class="literal-block">
+$language &quot;muv&quot;
+extern void tellme(msg) = &quot;me &#64; swap notify&quot;;
+extern single toupper(s);
+extern multiple stats(who);
+var gvar = 42;
+func foo(bar) {
+    tellme(toupper(bar));
+    var baz = stats(me);
+}
+</pre>
+<p>Will compile to MUF as:</p>
+<pre class="literal-block">
+( Generated by the MUV compiler. )
+(   https://github.com/revarbat/pymuv )
+(MUV:L4) lvar _gvar
+(MUV:L5) : _foo[ _bar -- ret ]
+    (MUV:L6) _bar &#64; toupper me &#64; swap notify
+    (MUV:L7) { me &#64; stats }list var! _baz
+    0
+(MUV:L8) ;
+(MUV:L5) : __start
+    &quot;me&quot; match me ! me &#64; location loc ! trig trigger !
+    (MUV:L4) 42 _gvar !
+    _foo
+;
+</pre>
+<p>There are several things to note here:</p>
+<ul class="simple">
+<li>The program starts with <tt class="docutils literal">$language &quot;muv&quot;</tt></li>
+<li>There are comments like <tt class="docutils literal">(MUV:L123)</tt> throughout the code, to indicate
+what MUV source line originated the MUF code following the comment.</li>
+<li>The user declared global variable <tt class="docutils literal">gvar</tt> has been renamed to <tt class="docutils literal">_gvar</tt></li>
+<li>The user declared function <tt class="docutils literal">foo</tt> has been renamed to <tt class="docutils literal">_foo</tt>.</li>
+<li>The user declared scoped variables <tt class="docutils literal">bar</tt> and <tt class="docutils literal">baz</tt> have been renamed
+to <tt class="docutils literal">_bar</tt> and <tt class="docutils literal">_baz</tt>.</li>
+<li>The system variable <tt class="docutils literal">me</tt>, however, remains unchanged.</li>
+<li>Since <tt class="docutils literal">toupper()</tt> is declared to return a <tt class="docutils literal">single</tt> value, that value is
+returned unmolested after the call to <tt class="docutils literal">toupper</tt>.</li>
+<li>The call to the <tt class="docutils literal">extern</tt> declared function <tt class="docutils literal">tellme</tt>, is replaced by the
+code <tt class="docutils literal">me &#64; swap notify</tt>.</li>
+<li>Since <tt class="docutils literal">stats()</tt> is declared to return <tt class="docutils literal">multiple</tt> values, the entire
+expression is wrapped in <tt class="docutils literal">{</tt> and <tt class="docutils literal">}list</tt> to collapse all those values
+into a single list array.</li>
+<li>As the function <tt class="docutils literal">foo()</tt> ends without a <tt class="docutils literal">return</tt> statement at the end,
+a <tt class="docutils literal">0</tt> is pushed onto the stack, so <tt class="docutils literal">foo()</tt> always returns at least <tt class="docutils literal">0</tt>.</li>
+<li>The <tt class="docutils literal">__start</tt> function is added to the end of the progam, to perform
+initialization of global variables.  It then calls the user's last
+function.</li>
+</ul>
+<div class="warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Global variable initialization only occurs in the <tt class="docutils literal">__start</tt>
+function, which isn't run for public library calls.  Global variables in
+libraries may not get initialized unless you make an explicit public
+function to initialize them.</p>
+</div>
+</div>
+</div>
+</body>
+</html>
