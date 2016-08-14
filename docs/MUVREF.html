@@ -423,8 +423,8 @@ th {
 <li><a class="reference internal" href="#string-comparisons" id="id16">11.5&nbsp;&nbsp;&nbsp;String Comparisons</a></li>
 <li><a class="reference internal" href="#array-operations" id="id17">11.6&nbsp;&nbsp;&nbsp;Array Operations</a></li>
 <li><a class="reference internal" href="#true-and-false" id="id18">11.7&nbsp;&nbsp;&nbsp;True and False</a></li>
-<li><a class="reference internal" href="#logical-operations" id="id19">11.8&nbsp;&nbsp;&nbsp;Logical Operations</a></li>
-<li><a class="reference internal" href="#conditional-operator" id="id20">11.9&nbsp;&nbsp;&nbsp;Conditional Operator</a></li>
+<li><a class="reference internal" href="#conditional-operator" id="id19">11.8&nbsp;&nbsp;&nbsp;Conditional Operator</a></li>
+<li><a class="reference internal" href="#logical-operations" id="id20">11.9&nbsp;&nbsp;&nbsp;Logical Operations</a></li>
 <li><a class="reference internal" href="#chaining-expressions" id="id21">11.10&nbsp;&nbsp;&nbsp;Chaining Expressions</a></li>
 </ul>
 </li>
@@ -989,8 +989,24 @@ following specific False values:</p>
 <li>Stack Mark</li>
 </ul>
 </div>
+<div class="section" id="conditional-operator">
+<h2><a class="toc-backref" href="#table-of-contents">11.8&nbsp;&nbsp;&nbsp;Conditional Operator</a></h2>
+<p>If you need to provide two different results, based on the result of a third
+expression, you can use the conditional operator:</p>
+<pre class="literal-block">
+x&gt;0 ? 1 : 2
+</pre>
+<p>This will return <tt class="docutils literal">1</tt> if <tt class="docutils literal">x</tt> is greater than <tt class="docutils literal">0</tt>, otherwise it will
+return <tt class="docutils literal">2</tt>.</p>
+<p><strong>IMPORTANT:</strong> since some identifiers in MUV can end in <tt class="docutils literal">?</tt> (ie: <tt class="docutils literal">awake?</tt>)
+you will need to put a space between an identifier and the <tt class="docutils literal">?</tt> in a
+conditional expression, otherwise you may get odd syntax errors:</p>
+<pre class="literal-block">
+var success = result ?&quot;Yes&quot;:&quot;No&quot;;
+</pre>
+</div>
 <div class="section" id="logical-operations">
-<h2><a class="toc-backref" href="#table-of-contents">11.8&nbsp;&nbsp;&nbsp;Logical Operations</a></h2>
+<h2><a class="toc-backref" href="#table-of-contents">11.9&nbsp;&nbsp;&nbsp;Logical Operations</a></h2>
 <ul class="simple">
 <li>Logical AND: <tt class="docutils literal">x &amp;&amp; y</tt> returns true if both <tt class="docutils literal">x</tt> or <tt class="docutils literal">y</tt> are true.
 More specifically, this returns the value of <tt class="docutils literal">x</tt> if it is false,
@@ -1003,16 +1019,13 @@ otherwise it returns the value of <tt class="docutils literal">y</tt>.</li>
 </ul>
 <p>The expression <tt class="docutils literal">x &gt; 3 &amp;&amp; !(y &lt; 10)</tt> will return true if both <tt class="docutils literal">x</tt> is greater
 than <tt class="docutils literal">3</tt> <em>and</em> <tt class="docutils literal">y</tt> is <em>not</em> less than <tt class="docutils literal">10</tt>.</p>
-<div class="note">
-<p class="first admonition-title">Note</p>
-<p class="last">Logical expressions support shortcutting.  If the left half of a
+<p><strong>NOTE:</strong> Logical expressions support shortcutting.  If the left half of a
 logical <tt class="docutils literal">||</tt> (OR) is true, the right half isn't evaluated at all. If
 the left half of a logical <tt class="docutils literal">&amp;&amp;</tt> (AND) is false, the right half isn't
 evaluated at all.  Both sides of a logical <tt class="docutils literal">^^</tt> (XOR) are always
 evaluated.  This mostly has implications when you are calling functions
 in the right-hand side of a shortcutted expression, as these calls may
 not be made at all.</p>
-</div>
 <p>The intrinsic short-cutting in logical <tt class="docutils literal">&amp;&amp;</tt> (AND) and <tt class="docutils literal">||</tt> (OR) operators
 can also have other uses.  The <tt class="docutils literal">&amp;&amp;</tt> (AND) operator can be used to chain
 successful calls, such as:</p>
@@ -1039,52 +1052,21 @@ function1(x) || 42
 </pre>
 <p>This will return the result from <tt class="docutils literal">function1()</tt>, unless it is a value that
 evaluates as false, in which case <tt class="docutils literal">42</tt> will be returned.</p>
-<div class="warning">
-<p class="first admonition-title">Warning</p>
-<p>You can combine <tt class="docutils literal">&amp;&amp;</tt> (AND) and <tt class="docutils literal">||</tt> (OR) to provide alternate
-values for both success and failure:</p>
+<p><strong>WARNING:</strong> You can combine <tt class="docutils literal">&amp;&amp;</tt> (AND) and <tt class="docutils literal">||</tt> (OR) to provide alternate
+values for both success and failure, but this is almost never a good idea.
+This notation only works correctly if you use the logical operators in that
+specific order.  Additionally, if the true branch of the expression tries to
+return a false value, then the false branch gets erroneously evaluated as
+well, and its result is returned instead.</p>
+<p>It will always be cleaner, clearer, more efficient, more concise, and less bug
+prone to use the Conditional Operator.  Do this:</p>
 <pre class="literal-block">
-test() &amp;&amp; &quot;success&quot; || &quot;failure&quot;
+result ? &quot;Yes&quot; : &quot;No&quot;;
 </pre>
-<p>However this only works correctly if you use the logical operators
-in that specific order, and if the success value evaluates as true.</p>
-<p>You should resist the urge to use this notation.  It will always be
-cleaner, more efficient, more concise, and less bug prone to use the
-Conditional Operator, described below:</p>
-<pre class="last literal-block">
-test() ? &quot;success&quot; : &quot;failure&quot;
-</pre>
-</div>
-</div>
-<div class="section" id="conditional-operator">
-<h2><a class="toc-backref" href="#table-of-contents">11.9&nbsp;&nbsp;&nbsp;Conditional Operator</a></h2>
-<p>If you need to provide two different results, based on the result of a third
-expression, you can use the conditional operator:</p>
+<p>Don't do this:</p>
 <pre class="literal-block">
-x&gt;0 ? 1 : 2
+result &amp;&amp; &quot;Yes&quot; || &quot;No&quot;;
 </pre>
-<p>This will return <tt class="docutils literal">1</tt> if <tt class="docutils literal">x</tt> is greater than <tt class="docutils literal">0</tt>, otherwise it will
-return <tt class="docutils literal">2</tt>.</p>
-<p>WARNING: since some identifiers in MUV can end in <tt class="docutils literal">?</tt> (ie: <tt class="docutils literal">awake?</tt>) you
-will need to put a space between an identifier and the <tt class="docutils literal">?</tt> in a conditional
-expression, otherwise you may get odd syntax errors:</p>
-<pre class="literal-block">
-var success = result ? &quot;Yes&quot; : &quot;No&quot;;
-</pre>
-<p>You may have noticed that you can also use logical operators to get much the
-same results with slightly different syntax, and only two extra characters:</p>
-<pre class="literal-block">
-var success = result &amp;&amp; &quot;Yes&quot; || &quot;No&quot;;
-</pre>
-<p>There are a few important differences to be aware of, though:</p>
-<ul class="simple">
-<li>If the true branch of a logical operator expression tries to return a false
-value, then the false branch gets erroneously evaluated as well, and its
-result is returned instead.</li>
-<li>The conditional operator generates simpler and more efficient code.</li>
-<li>The conditional operator is explicitly providing alternate values, so it
-makes for clearer code, compared to abusing logical operator side effects.</li>
-</ul>
 </div>
 <div class="section" id="chaining-expressions">
 <h2><a class="toc-backref" href="#table-of-contents">11.10&nbsp;&nbsp;&nbsp;Chaining Expressions</a></h2>
@@ -1523,12 +1505,9 @@ for (&lt;a, b&gt; in list_generator()) {
 
 var foo = [for (&lt;a, b&gt; in list_generator()) if (a != b) a + b];
 </pre>
-<div class="important">
-<p class="first admonition-title">Important</p>
-<p class="last">You must put space between the <tt class="docutils literal">&gt;</tt> and <tt class="docutils literal">=</tt> of the
+<p><strong>IMPORTANT:</strong> You must put space between the <tt class="docutils literal">&gt;</tt> and <tt class="docutils literal">=</tt> of the
 tuple assignment, or the language parser will get confused, thinking
 if sees a <tt class="docutils literal">&gt;=</tt> token.</p>
-</div>
 </div>
 <div class="section" id="exception-handling">
 <h1><a class="toc-backref" href="#table-of-contents">18&nbsp;&nbsp;&nbsp;Exception Handling</a></h1>
@@ -1724,12 +1703,9 @@ the MUF output code.  These include:</p>
 </tr>
 </tbody>
 </table>
-<div class="important">
-<p class="first admonition-title">Important</p>
-<p class="last">All MUV programs should start with <tt class="docutils literal">$language &quot;muv&quot;</tt>.
+<p><strong>IMPORTANT:</strong> All MUV programs should start with <tt class="docutils literal">$language &quot;muv&quot;</tt>.
 Future versions of the MUCK server will use this to recognize MUV source
 code.  The MufSim IDE also uses it to distinguish MUV from MUF source.</p>
-</div>
 </div>
 <div class="section" id="debugging-muv">
 <h1><a class="toc-backref" href="#table-of-contents">22&nbsp;&nbsp;&nbsp;Debugging MUV</a></h1>
@@ -1825,13 +1801,10 @@ a <tt class="docutils literal">0</tt> is pushed onto the stack, so <tt class="do
 initialization of global variables.  It then calls the user's last
 function.</li>
 </ul>
-<div class="warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Global variable initialization only occurs in the <tt class="docutils literal">__start</tt>
+<p><strong>WARNING:</strong> Global variable initialization only occurs in the <tt class="docutils literal">__start</tt>
 function, which isn't run for public library calls.  Global variables in
 libraries may not get initialized unless you make an explicit public
 function to initialize them.</p>
-</div>
 </div>
 </div>
 </body>

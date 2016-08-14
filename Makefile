@@ -32,10 +32,10 @@ py2exe:
 	python3 setup.py py2exe
 	# cd dist && zip -r MufSimWin64 MufSim.exe
 
-muvdoc: MUVREF.html
+muvdoc: docs/MUVREF.html
 
-MUVREF.html: MUVREF.rst muvref.css
-	rst2html.py --stylesheet-path=html4css1.css,muvref.css --embed-stylesheet MUVREF.rst MUVREF.html
+docs/MUVREF.html: docs/MUVREF.rst docs/muvref.css
+	cd docs && rst2html.py --stylesheet-path=html4css1.css,muvref.css --embed-stylesheet MUVREF.rst MUVREF.html
 
 clean:
 	rm -rf build *.pyc __pycache__
