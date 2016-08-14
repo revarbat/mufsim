@@ -1520,18 +1520,20 @@ try {
 }
 </pre>
 <p>The variable given to the <tt class="docutils literal">catch</tt> command will, when an error is received,
-have a dictionary stored in it with the following values:</p>
+have a dictionary stored in it with the following keys:</p>
 <dl class="docutils">
-<dt><tt class="docutils literal">error</tt></dt>
-<dd>The error string that was emitted by the MUF instruction that threw an
-error.</dd>
-<dt><tt class="docutils literal">instr</tt></dt>
-<dd>The name of the MUF instruction that threw the error.</dd>
-<dt><tt class="docutils literal">line</tt></dt>
-<dd>The MUF line that threw the error.</dd>
-<dt><tt class="docutils literal">program</tt></dt>
-<dd>The program that the error was thrown in.  This might not be the same as
-the current program, if the error occurred inside a call.</dd>
+<dt><tt class="docutils literal">&quot;error&quot;</tt></dt>
+<dd>The value for this key will be an error string that was emitted by the
+MUF instruction that threw an error.</dd>
+<dt><tt class="docutils literal">&quot;instr&quot;</tt></dt>
+<dd>The value for this is the string name of the MUF instruction that threw
+the error.</dd>
+<dt><tt class="docutils literal">&quot;line&quot;</tt></dt>
+<dd>This will have the integer MUF line that threw the error.</dd>
+<dt><tt class="docutils literal">&quot;program&quot;</tt></dt>
+<dd>This will contain the DBRef of the program that the error was thrown in.
+This might not be the same as the current program, if the error occurred
+inside a call.</dd>
 </dl>
 <p>If you don't care about the exception details, you can just not specify the
 variable:</p>
