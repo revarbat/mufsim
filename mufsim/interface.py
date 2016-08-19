@@ -9,10 +9,11 @@ from mufsim.logger import log
 
 
 welcome_banner = """\
+Welcome to
  __  __            __    _____   _
 |  \/  |          / _|  / ____| (_)
 | \  / |  _   _  | |_  | (___    _   _ __ ___
-| |\/| | | | | | |  _|  \___ \  | | | '_ ` _ \ 
+| |\/| | | | | | |  _|  \___ \  | | | '_ ` _ \
 | |  | | | |_| | | |    ____) | | | | | | | | |
 |_|  |_|  \__,_| |_|   |_____/  |_| |_| |_| |_|
 
@@ -226,10 +227,10 @@ class Server(object):
 
     def descr_dbref(self, descr):
         with self.lock:
-            con = self.descriptors.get(descr)
-            if con:
-                return con.user
-            return -1
+            con = self.descriptors.get(descr, None)
+            if con is None or con.user is None:
+                return -1
+            return con.user
 
     def descr_read_line(self, descr):
         with self.lock:

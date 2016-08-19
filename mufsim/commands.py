@@ -75,7 +75,7 @@ def usercmd_quit(descr, user, cmd):
 
 @usercommand('connect')
 def usercmd_connect(descr, user, cmd):
-    if user is not None:
+    if user is not None and user != -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     username, cmd = getword(cmd)
@@ -101,7 +101,7 @@ def usercmd_connect(descr, user, cmd):
 
 @usercommand('look')
 def usercmd_look(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     userobj = db.getobj(user)
@@ -133,9 +133,18 @@ def usercmd_look(descr, user, cmd):
             userobj.notify(obj.unparse_for(user))
 
 
+@usercommand('score')
+def usercmd_score(descr, user, cmd):
+    if user is None or user == -1:
+        netifc.descr_notify(descr, "Huh?")
+        return
+    userobj = db.getobj(user)
+    userobj.notify("You have %d pennies." % userobj.pennies)
+
+
 @usercommand('whisper')
 def usercmd_whisper(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         netifc.descr_notify(descr, "Huh?")
         return
     userobj = db.getobj(user)
@@ -156,7 +165,7 @@ def usercmd_whisper(descr, user, cmd):
 
 @usercommand('page')
 def usercmd_page(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         netifc.descr_notify(descr, "Huh?")
         return
     userobj = db.getobj(user)
@@ -185,7 +194,7 @@ def usercmd_page(descr, user, cmd):
 
 @usercommand('say')
 def usercmd_say(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         netifc.descr_notify(descr, "Huh?")
         return
     loc = db.getobj(user).location
@@ -201,7 +210,7 @@ def usercmd_say(descr, user, cmd):
 
 @usercommand('pose')
 def usercmd_pose(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         netifc.descr_notify(descr, "Huh?")
         return
     loc = db.getobj(user).location
@@ -266,7 +275,7 @@ def usercmd_at_who(descr, user, cmd):
 
 @usercommand('@dig')
 def usercmd_at_dig(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     userobj = db.getobj(user)
@@ -294,7 +303,7 @@ def usercmd_at_dig(descr, user, cmd):
 
 @usercommand('@action')
 def usercmd_at_action(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     userobj = db.getobj(user)
@@ -318,7 +327,7 @@ def usercmd_at_action(descr, user, cmd):
 
 @usercommand('@open')
 def usercmd_at_open(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     userobj = db.getobj(user)
@@ -346,7 +355,7 @@ def usercmd_at_open(descr, user, cmd):
 
 @usercommand('@pcreate')
 def usercmd_at_pcreate(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     userobj = db.getobj(user)
@@ -373,7 +382,7 @@ def usercmd_at_pcreate(descr, user, cmd):
 
 @usercommand('@create')
 def usercmd_at_create(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     userobj = db.getobj(user)
@@ -394,7 +403,7 @@ def usercmd_at_create(descr, user, cmd):
 
 @usercommand('@teleport')
 def usercmd_at_teleport(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     userobj = db.getobj(user)
@@ -419,7 +428,7 @@ def usercmd_at_teleport(descr, user, cmd):
 
 @usercommand('@set')
 def usercmd_at_set(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     userobj = db.getobj(user)
@@ -446,7 +455,7 @@ def usercmd_at_set(descr, user, cmd):
 
 @usercommand('@program')
 def usercmd_at_program(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     userobj = db.getobj(user)
@@ -463,19 +472,23 @@ def usercmd_at_program(descr, user, cmd):
     if regname:
         db.register_obj(user, regname, newprog.dbref)
     userobj.notify("Program created as #%d." % newprog.dbref)
+    # TODO: Enter actual editor.
+    # TODO: Make sure GUI gets updated.
 
 
 @usercommand('@edit')
 def usercmd_at_edit(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
+    # TODO: Enter actual editor.
+    # TODO: Make sure GUI gets updated.
     pass
 
 
 @usercommand('@unlink')
 def usercmd_at_unlink(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     userobj = db.getobj(user)
@@ -490,7 +503,7 @@ def usercmd_at_unlink(descr, user, cmd):
 
 @usercommand('@link')
 def usercmd_at_link(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         netifc.descr_notify(descr, "Huh?")
         return
     userobj = db.getobj(user)
@@ -512,7 +525,7 @@ def usercmd_at_link(descr, user, cmd):
 
 @usercommand('@chown')
 def usercmd_at_chown(descr, user, cmd):
-    if user is None:
+    if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
     userobj = db.getobj(user)
@@ -538,7 +551,7 @@ def get_force_level():
     return force_level
 
 
-def process_command(proclist, descr, user, cmd):
+def process_command(proclist, descr, user, cmd):  # noqa
     global force_level, user_commands
     try:
         force_level += 1

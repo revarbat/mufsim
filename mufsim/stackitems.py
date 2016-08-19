@@ -8,6 +8,12 @@ class Item(object):
     def __init__(self, value):
         self.value = value
 
+    def __nonzero__(self):
+        return self.__bool__()
+
+    def __bool__(self):
+        return True
+
     def __str__(self):
         return "Unknown"
 
@@ -19,6 +25,9 @@ class Mark(Item):
     def __init__(self):
         super(Mark, self).__init__(0)
 
+    def __bool__(self):
+        return False
+
     def __str__(self):
         return "Mark"
 
@@ -27,6 +36,9 @@ class Mark(Item):
 class DBRef(Item):
     def __str__(self):
         return "#%d" % self.value
+
+    def __bool__(self):
+        return self.value != -1
 
     def __lt__(self, other):
         return self.value < other.value
@@ -39,6 +51,9 @@ class DBRef(Item):
 class Lock(Item):
     def __str__(self):
         return "Lock:%s" % self.value
+
+    def __bool__(self):
+        return self.value is not None
 
     def __lt__(self, other):
         return self.value < other.value
@@ -54,6 +69,9 @@ class Address(Item):
     def __init__(self, value, prog):
         self.prog = prog
         super(Address, self).__init__(value)
+
+    def __bool__(self):
+        return self.value is not None
 
     def __str__(self):
         return "Addr:'#%d'%d" % (self.prog, self.value)

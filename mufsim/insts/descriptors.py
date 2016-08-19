@@ -45,7 +45,9 @@ class InstDescrCon(Instruction):
 class InstDescrDBRef(Instruction):
     def execute(self, fr):
         descr = fr.data_pop(int)
-        fr.data_push(si.DBRef(netifc.descr_dbref(descr)))
+        ref = netifc.descr_dbref(descr)
+        obj = si.DBRef(ref)
+        fr.data_push(obj)
 
 
 @instr("descr_setuser")
@@ -187,14 +189,14 @@ class InstDescrHost(Instruction):
 class InstDescrTime(Instruction):
     def execute(self, fr):
         descr = fr.data_pop(int)
-        fr.data_push(netifc.descr_time(descr))
+        fr.data_push(int(netifc.descr_time(descr)))
 
 
 @instr("descridle")
 class InstDescrIdle(Instruction):
     def execute(self, fr):
         descr = fr.data_pop(int)
-        fr.data_push(netifc.descr_idle(descr))
+        fr.data_push(int(netifc.descr_idle(descr)))
 
 
 @instr("descrleastidle")
