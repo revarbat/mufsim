@@ -73,6 +73,7 @@ class ConsoleMufDebugger(object):
         begin = readline.get_begidx()
         end = readline.get_endidx()
         text = origline[begin:end]
+        muvname = ("_%s" % text).replace("::", "__")
         words = origline.split(' ')
         if state == 0:
             addr = self.fr.curr_addr()
@@ -81,9 +82,8 @@ class ConsoleMufDebugger(object):
                 self.matches = [s for s in cmds if s and s.startswith(text)]
             elif words[0] in ['l', 'list', 'b', 'break']:
                 self.matches = [
-                    x
-                    for x in self.fr.program_functions(addr.prog)
-                    if x.startswith(text)
+                    x for x in self.fr.program_functions(addr.prog)
+                    if x.startswith(text) or x.startswith(muvname)
                 ]
             elif words[0] == 'show':
                 showcmds = ['breakpoints', 'functions', 'globals', 'vars']
@@ -93,7 +93,8 @@ class ConsoleMufDebugger(object):
                 fvars = self.fr.program_func_vars(addr.prog, fun)
                 gvars = self.fr.program_global_vars(addr.prog)
                 self.matches = [
-                    x for x in (fvars + gvars) if x.startswith(text)
+                    x for x in (fvars + gvars)
+                    if x.startswith(text) or x.startswith(muvname)
                 ]
             else:
                 self.matches = cmds[:]
@@ -234,19 +235,29 @@ class ConsoleMufDebugger(object):
 
     def debug_cmd_print(self, args):
         addr = self.fr.curr_addr()
+        vname = args
+        muvname = ("_%s" % vname).replace("::", "__")
         fun = self.fr.program_find_func(addr)
-        if self.fr.program_func_var(addr.prog, fun, args):
-            v = self.fr.program_func_var(addr.prog, fun, args)
+        if self.fr.program_func_var(addr.prog, fun, vname):
+            v = self.fr.program_func_var(addr.prog, fun, vname)
             val = self.fr.funcvar_get(v)
-        elif self.fr.program_global_var(addr.prog, args):
-            v = self.fr.program_global_var(addr.prog, args)
+        elif self.fr.program_global_var(addr.prog, vname):
+            v = self.fr.program_global_var(addr.prog, vname)
             val = self.fr.globalvar_get(v)
+        elif self.fr.program_func_var(addr.prog, fun, muvname):
+            v = self.fr.program_func_var(addr.prog, fun, muvname)
+            val = self.fr.funcvar_get(v)
+            vname = muvname
+        elif self.fr.program_global_var(addr.prog, muvname):
+            v = self.fr.program_global_var(addr.prog, muvname)
+            val = self.fr.globalvar_get(v)
+            vname = muvname
         else:
-            log("Variable not found: %s" % args)
+            log("Variable not found: %s" % vname)
             val = None
         if val is not None:
             val = si.item_repr(val)
-            log("%s = %s" % (args, val))
+            log("%s = %s" % (vname, val))
 
     def debug_cmd_show_breakpoints(self):
         log("Breakpoints")
