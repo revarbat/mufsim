@@ -1117,6 +1117,11 @@ class MufGui(object):
         progobj.sources = srcs_disp.get('1.0', 'end-2c')
         filename = progobj.name
         if saveas or re.match(r'Untitled.mu[fv]$', filename):
+            if saveas:
+                if srcs_disp.syntax_mode == "muv":
+                    filename = re.sub(r'\.muf$', r'.muv', filename)
+                elif srcs_disp.syntax_mode == "muf":
+                    filename = re.sub(r'\.muv$', r'.muf', filename)
             extras = {}
             if platform.system() == 'Darwin':
                 extras = dict(
@@ -1211,7 +1216,7 @@ class MufGui(object):
             if muvparser.error_found:
                 return
             srcs = muvparser.output
-        wiz = UploadWizard(self.root, srcs)
+        UploadWizard(self.root, srcs)
 
     @debugger_command(
         words=["h", "help"],

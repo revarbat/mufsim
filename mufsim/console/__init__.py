@@ -2,12 +2,10 @@
 
 from __future__ import print_function
 
-import os
 import sys
 import time
 import argparse
 import threading
-from subprocess import call
 
 try:
     import readline
@@ -512,8 +510,10 @@ class MufConsole(object):
                             help="File to read from for READs.")
         parser.add_argument(
             "-p", "--program", action='append', default=[],
-            nargs=2, metavar=('REGNAME', 'FILE'), dest='progs',
-            help="Create extra program, registered as $NAME, from source FILE."
+            nargs=2, metavar=('REGNAME', 'FILE'), dest='progs', help=(
+                "Create extra program, registered as $REGNAME, "
+                "from source FILE."
+            )
         )
         parser.add_argument('infile', help='Input MUF sourcecode filename.')
         opts = parser.parse_args()
@@ -539,18 +539,6 @@ class MufConsole(object):
             readline.write_history_file(confs.HISTORY_FILE)
         except:
             pass
-
-    def process_muv(self, infile):
-        tmpfile = infile
-        if tmpfile[-4:] == ".muv":
-            tmpfile = tmpfile[:-1] + 'f'
-        else:
-            tmpfile += ".muf"
-        retcode = call(["muv", "-o", tmpfile, infile], stderr=sys.stderr)
-        if retcode != 0:
-            log("Aborting.")
-            return None
-        return tmpfile
 
     def run_code(self):
         self.readline_setup()
@@ -593,18 +581,9 @@ class MufConsole(object):
     def main(self):
         self.process_cmdline()
         for name, filename in self.opts.progs:
-            origfile = filename
-            if filename.endswith(".muv"):
-                self.header("Compiling MUV Code to MUF")
-                filename = self.process_muv(filename)
-                log("")
-            if not filename:
-                return
             srcs = ""
             with open(filename, "r") as f:
                 srcs = f.read()
-            if origfile.endswith(".muv"):
-                os.unlink(filename)
             userobj = db.get_player_obj("John_Doe")
             if name:
                 globenv = db.get_registered_obj(userobj, "$globalenv")

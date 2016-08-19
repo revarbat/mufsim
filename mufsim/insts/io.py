@@ -65,7 +65,11 @@ class InstArrayNotify(Instruction):
             targs = [db.getobj(o) for o in targs]
             for targ in targs:
                 targ.notify(msg)
-            log("NOTIFY TO %s: %s" % (targs, msg))
+            me = fr.globalvar_get(0)
+            if len(targs) == 1 and targs[0].dbref == me.value:
+                log("NOTIFY: %s" % msg)
+            else:
+                log("NOTIFY TO %s: %s" % (targs, msg))
 
 
 @instr("notify_except")
