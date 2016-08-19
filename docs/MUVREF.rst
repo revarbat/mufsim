@@ -385,6 +385,7 @@ Basic Math
 - Multiplication: ``5 * 2``
 - Division: ``10 / 2``
 - Modulo: ``7 % 3``
+- Power: ``7 ** 3``
 - Grouping: ``2 * (3 + 4)``
 
 
