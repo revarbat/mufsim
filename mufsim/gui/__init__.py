@@ -3,7 +3,6 @@
 import os
 import re
 import platform
-from pymuv.parsefile import MuvParser
 
 try:  # Python 2
     from Tkinter import *  # noqa
@@ -20,9 +19,12 @@ except ImportError:  # Python 3
     from tkinter.messagebox import showerror, showinfo, askyesnocancel
     from tkinter.ttk import Combobox
 
-from mufsim.gui.tooltip import CreateToolTip
-from mufsim.gui.listdisplay import ListDisplay
+from pymuv.parsefile import MuvParser
+from belfrywidgets import ToolTip, TabbedNoteBook
+
 from mufsim.gui.mufeditor import MufEditor
+from mufsim.gui.listdisplay import ListDisplay
+from mufsim.gui.upload_wizard import UploadWizard
 from mufsim.gui.menudecorators import (
     menu_cmd, menu_check, separator, accels, enable_test,
     process_enablers, create_menus,
@@ -35,7 +37,6 @@ from mufsim.logger import log, warnlog, errlog, set_output_command
 from mufsim.compiler import MufCompiler
 from mufsim.interface import network_interface as netifc
 from mufsim.processlist import process_list
-from belfrywidgets.tabbednotebook import TabbedNoteBook
 
 
 mufsim_version = None
@@ -238,7 +239,7 @@ class MufGui(object):
             'empty', foreground="gray50", font=self.sansserif_i)
         self.data_disp.tag_bind(
             'sitem', '<Double-Button-1>', self.handle_stack_item_dblclick)
-        CreateToolTip(
+        ToolTip(
             self.data_disp,
             'Double-Click to pretty-print value.',
             tag='sitem',
@@ -262,7 +263,7 @@ class MufGui(object):
             'callfr', '<Button-1>', self.handle_call_stack_click)
         self.call_disp.tag_config(
             'currline', background="#77f", foreground="white")
-        CreateToolTip(
+        ToolTip(
             self.call_disp,
             'Click to view call level.',
             tag='callfr',
@@ -292,7 +293,7 @@ class MufGui(object):
         self.vars_disp.tag_bind(
             'fval', '<Double-Button-1>', self.handle_vars_fname_dblclick)
         for tag in ['gname', 'fname', 'gval', 'fval']:
-            CreateToolTip(
+            ToolTip(
                 self.vars_disp,
                 'Double-Click to pretty-print value.',
                 tag=tag,
@@ -373,7 +374,7 @@ class MufGui(object):
             'breakpt', background="#447", foreground="white")
         disp.pack(side=BOTTOM, fill=BOTH, expand=1)
         disp.bind("<<Modified>>", self.handle_editor_modify)
-        CreateToolTip(
+        ToolTip(
             disp.gutter,
             'Click on line number to toggle breakpoint.',
         )
@@ -427,13 +428,13 @@ class MufGui(object):
         self.finish_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.cont_btn.pack(side=LEFT, fill=NONE, expand=0)
         self.trace_chk.pack(side=LEFT, fill=NONE, expand=0)
-        CreateToolTip(self.run_btn, 'Run program from the start.')
-        CreateToolTip(self.stepi_btn, 'Execute one instruction.')
-        CreateToolTip(self.stepl_btn, 'Step one line, following calls.')
-        CreateToolTip(self.nextl_btn, 'Next line, stepping over calls.')
-        CreateToolTip(self.finish_btn, 'Finish the current function.')
-        CreateToolTip(self.cont_btn, 'Continue execution.')
-        CreateToolTip(self.trace_chk, 'Show stack trace for each instruction.')
+        ToolTip(self.run_btn, 'Run program from the start.')
+        ToolTip(self.stepi_btn, 'Execute one instruction.')
+        ToolTip(self.stepl_btn, 'Step one line, following calls.')
+        ToolTip(self.nextl_btn, 'Next line, stepping over calls.')
+        ToolTip(self.finish_btn, 'Finish the current function.')
+        ToolTip(self.cont_btn, 'Continue execution.')
+        ToolTip(self.trace_chk, 'Show stack trace for each instruction.')
         return btnsfr
 
     def setup_gui_tokens_frame(self, master, prog):
@@ -757,7 +758,7 @@ class MufGui(object):
             else:
                 disp.tag_config(tagname, background="#ffa", foreground="black")
             disp.tag_add(tagname, '%d.0' % line, '%d.end+1c' % line)
-            CreateToolTip(disp, msg, tag=tagname)
+            ToolTip(disp, msg, tag=tagname)
             if first:
                 first = False
                 disp.see('%d.0' % line)
@@ -1154,7 +1155,7 @@ class MufGui(object):
         progobj = db.getobj(prog)
         srcs_disp = self.source_displays[prog]
         progobj.sources = srcs_disp.get('1.0', 'end-2c')
-        filename = progobj.name
+        origfilename = filename = progobj.name
         filename = filename.replace('.muv', '.muf')
         extras = {}
         if platform.system() == 'Darwin':
@@ -1178,7 +1179,7 @@ class MufGui(object):
         muvparser = MuvParser()
         muvparser.set_debug(True)
         muvparser.error_cb = errlog
-        muvparser.parse_string(progobj.sources, filename=filename)
+        muvparser.parse_string(progobj.sources, filename=origfilename)
         if muvparser.error_found:
             return
         mufoutput = muvparser.output
@@ -1195,6 +1196,22 @@ class MufGui(object):
         lbl = self.srcs_nb.pane_label(progobj.dbref)
         lbl.config(text="%s(#%d)" % (filename, progobj.dbref))
         srcs_disp.edit_modified(False)
+
+    def upload_to_server(self, prog, as_muv=False):
+        progobj = db.getobj(prog)
+        srcs_disp = self.source_displays[prog]
+        progobj.sources = srcs_disp.get('1.0', 'end-2c')
+        filename = progobj.name
+        srcs = progobj.sources
+        if not as_muv and srcs_disp.syntax_mode == "muv":
+            muvparser = MuvParser()
+            muvparser.set_debug(True)
+            muvparser.error_cb = errlog
+            muvparser.parse_string(srcs, filename=filename)
+            if muvparser.error_found:
+                return
+            srcs = muvparser.output
+        wiz = UploadWizard(self.root, srcs)
 
     @debugger_command(
         words=["h", "help"],
@@ -1692,11 +1709,31 @@ class MufGui(object):
     @menu_cmd("File", "Export MUF...")
     @accels(mac="Shift-Cmd-E", win="Shift-Ctrl-E", lin="Shift-Ctrl-E")
     @enable_test('allow_export_muv')
-    def filemenu_export_muv(self, event=None):
+    def filemenu_export_muf(self, event=None):
         prog = self._current_prog()
         if not prog:
             return
         self.export_muf_to_file(prog)
+        self.update_displays()
+
+    @separator
+    @menu_cmd("File", "Upload MUV...")
+    @accels(mac="Shift-Cmd-U", win="Shift-Ctrl-U", lin="Shift-Ctrl-U")
+    @enable_test('allow_export_muv')
+    def filemenu_upload_muv(self, event=None):
+        prog = self._current_prog()
+        if not prog:
+            return
+        self.upload_to_server(prog, as_muv=True)
+        self.update_displays()
+
+    @menu_cmd("File", "Upload MUF...")
+    @accels(mac="Cmd-U", win="Ctrl-U", lin="Ctrl-U")
+    def filemenu_upload_muf(self, event=None):
+        prog = self._current_prog()
+        if not prog:
+            return
+        self.upload_to_server(prog)
         self.update_displays()
 
     @separator

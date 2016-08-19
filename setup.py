@@ -5,7 +5,7 @@ import sys
 import platform
 from glob import glob
 
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 
 
 APP = ['kickstart.py']
@@ -19,7 +19,7 @@ data_files = []
 py2app_options = dict(
     argv_emulation=True,
     includes=[
-        'belfrywidgets', 'mudclientprotocol', 'pymuv',
+        'belfrywidgets', 'mudclientprotocol', 'pymuv', 'appdirs',
         'six', 'packaging', 'packaging.requirements',
         'packaging.version', 'packaging.specifiers'
     ],
@@ -115,9 +115,10 @@ setup(
     },
     install_requires=[
         'setuptools',
-        'belfrywidgets>=1.0.2',
+        'belfrywidgets>=1.0.3',
         'mudclientprotocol>=0.1.0',
         'pymuv>=0.9.2',
+        'appdirs>=1.4.0',
         'six',
         'packaging',
     ],

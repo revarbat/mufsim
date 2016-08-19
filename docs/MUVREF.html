@@ -746,13 +746,13 @@ func halfpi() {
 </div>
 <div class="section" id="includes">
 <h1><a class="toc-backref" href="#table-of-contents">10&nbsp;&nbsp;&nbsp;Includes</a></h1>
-<p>You can include the code from other MUV files by using the <tt class="docutils literal">include</tt> command:</p>
+<p>You can include code from other MUV files by using the <tt class="docutils literal">include</tt> command:</p>
 <pre class="literal-block">
 include &quot;otherfile.muv&quot;;
 </pre>
 <p>You can include standard MUV files by preceeding the filename with a <tt class="docutils literal">!</tt>.
 This tells <tt class="docutils literal">include</tt> to look for the file in the system-wide MUV includes.
-One important standard include file is <tt class="docutils literal">!fb6/prims</tt>:</p>
+One important standard include file is <a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/prims">fb6/prims</a>:</p>
 <pre class="literal-block">
 include &quot;!fb6/prims&quot;;
 </pre>
@@ -762,9 +762,9 @@ with exactly the same names as they have in MUF, with the same argument
 ordering.  The only exceptions are:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="22%" />
+<col width="21%" />
 <col width="24%" />
-<col width="54%" />
+<col width="55%" />
 </colgroup>
 <thead valign="bottom">
 <tr><th class="head">MUF Name</th>
@@ -783,7 +783,7 @@ ordering.  The only exceptions are:</p>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">ext-name-ok?</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">ext_name_ok?()</span></tt></td>
-<td>Dashes in name replaced with underscore.</td>
+<td>Dashes in name replaced with underscores.</td>
 </tr>
 <tr><td><tt class="docutils literal">fmtstring</tt></td>
 <td><tt class="docutils literal">fmtstring()</tt></td>
@@ -797,7 +797,111 @@ if you include the file <tt class="docutils literal">!fb6/obj</tt> You can get a
 fb6 object related primitives, renamed into the <tt class="docutils literal">obj::</tt> namespace such
 that MUF primitives like <tt class="docutils literal">name</tt> and <tt class="docutils literal">set</tt> are renamed to <tt class="docutils literal"><span class="pre">obj::name()</span></tt>
 and <tt class="docutils literal"><span class="pre">obj::set()</span></tt>, leading to far less namespace polution.  The standard
-namespaced include files are as follows, in alphabetical order.</p>
+namespaced primitives include files are as follows, in alphabetical order.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="19%" />
+<col width="59%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Include File</th>
+<th class="head">NameSpace</th>
+<th class="head">What it declares</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/ansi">fb6/ansi</a></td>
+<td><tt class="docutils literal">ansi::</tt></td>
+<td>ANSI color code string primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/array">fb6/array</a></td>
+<td><tt class="docutils literal">array::</tt></td>
+<td>Array/list/dictionary primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/conn">fb6/conn</a></td>
+<td><tt class="docutils literal">conn::</tt></td>
+<td>Connection based primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/debug">fb6/debug</a></td>
+<td><tt class="docutils literal">debug::</tt></td>
+<td>Debugging related primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/descr">fb6/descr</a></td>
+<td><tt class="docutils literal">descr::</tt></td>
+<td>Descriptor based connection primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/event">fb6/event</a></td>
+<td><tt class="docutils literal">event::</tt></td>
+<td>Event handling primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/gui">fb6/gui</a></td>
+<td><tt class="docutils literal">gui::</tt></td>
+<td>MCP-GUI related primitives and defines.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/io">fb6/io</a></td>
+<td><tt class="docutils literal">io::</tt></td>
+<td><tt class="docutils literal">notify</tt> and <tt class="docutils literal">read</tt> type primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/lock">fb6/lock</a></td>
+<td><tt class="docutils literal">lock::</tt></td>
+<td>Lock related primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/math">fb6/math</a></td>
+<td><tt class="docutils literal">math::</tt></td>
+<td>Floating point and integer math prims.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/mcp">fb6/mcp</a></td>
+<td><tt class="docutils literal">mcp::</tt></td>
+<td>MCP client-server protocol prims.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/obj">fb6/obj</a></td>
+<td><tt class="docutils literal">obj::</tt></td>
+<td>DB object related primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/proc">fb6/proc</a></td>
+<td><tt class="docutils literal">proc::</tt></td>
+<td>MUF process related primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/prog">fb6/prog</a></td>
+<td><tt class="docutils literal">prog::</tt></td>
+<td>Program calling, editing, and compiling.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/prop">fb6/prop</a></td>
+<td><tt class="docutils literal">prop::</tt></td>
+<td>Prims for working with properties.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/regex">fb6/regex</a></td>
+<td><tt class="docutils literal">regex::</tt></td>
+<td>Regular expression primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/stdlib">fb6/stdlib</a></td>
+<td>&nbsp;</td>
+<td><tt class="docutils literal">trig</tt>, <tt class="docutils literal">caller</tt>, <tt class="docutils literal">prog</tt>, <tt class="docutils literal">version</tt>.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/str">fb6/str</a></td>
+<td><tt class="docutils literal">str::</tt></td>
+<td>String manipulation primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/sys">fb6/sys</a></td>
+<td><tt class="docutils literal">sys::</tt></td>
+<td>System related primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/time">fb6/time</a></td>
+<td><tt class="docutils literal">time::</tt></td>
+<td>Time based primitives.</td>
+</tr>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/type">fb6/type</a></td>
+<td><tt class="docutils literal">type::</tt></td>
+<td>Type checking and conversion primitives.</td>
+</tr>
+</tbody>
+</table>
+<p>NOTE: It doesn't make much sense to include <em>both</em> <tt class="docutils literal">!fb6/prims</tt> <em>and</em> one
+or more of the namespaced files.  If you include from both, it should still
+work, but it really misses the point of using namespaces.</p>
+<p>There are also a couple standard include files that provide access to features
+useful for matching and argument parsing.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="22%" />
@@ -811,103 +915,16 @@ namespaced include files are as follows, in alphabetical order.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td><tt class="docutils literal">fb6/ansi</tt></td>
-<td><tt class="docutils literal">ansi::</tt></td>
-<td>ANSI color code string primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/argparse</tt></td>
-<td><tt class="docutils literal">argparse::</tt></td>
-<td>Cmd-line argument parsing.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/array</tt></td>
-<td><tt class="docutils literal">array::</tt></td>
-<td>Array/list/dictionary primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/conn</tt></td>
-<td><tt class="docutils literal">conn::</tt></td>
-<td>Connection based primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/debug</tt></td>
-<td><tt class="docutils literal">debug::</tt></td>
-<td>Debugging related primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/descr</tt></td>
-<td><tt class="docutils literal">descr::</tt></td>
-<td>Descriptor based connection primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/event</tt></td>
-<td><tt class="docutils literal">event::</tt></td>
-<td>Event handling primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/gui</tt></td>
-<td><tt class="docutils literal">gui::</tt></td>
-<td>MCP-GUI related primitives and defines.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/io</tt></td>
-<td><tt class="docutils literal">io::</tt></td>
-<td><tt class="docutils literal">notify</tt> and <tt class="docutils literal">read</tt> type primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/lock</tt></td>
-<td><tt class="docutils literal">lock::</tt></td>
-<td>Lock related primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/match</tt></td>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/match">fb6/match</a></td>
 <td>&nbsp;</td>
 <td><tt class="docutils literal">match_noisy</tt>, <tt class="docutils literal">match_controlled</tt></td>
 </tr>
-<tr><td><tt class="docutils literal">fb6/math</tt></td>
-<td><tt class="docutils literal">math::</tt></td>
-<td>Floating point and integer math prims.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/mcp</tt></td>
-<td><tt class="docutils literal">mcp::</tt></td>
-<td>MCP client-server protocol prims.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/obj</tt></td>
-<td><tt class="docutils literal">obj::</tt></td>
-<td>DB object related primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/proc</tt></td>
-<td><tt class="docutils literal">proc::</tt></td>
-<td>MUF process related primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/prog</tt></td>
-<td><tt class="docutils literal">prog::</tt></td>
-<td>Program calling, editing, and compiling.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/prop</tt></td>
-<td><tt class="docutils literal">prop::</tt></td>
-<td>Prims for working with properties.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/regex</tt></td>
-<td><tt class="docutils literal">regex::</tt></td>
-<td>Regular expression primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/stdlib</tt></td>
-<td>&nbsp;</td>
-<td><tt class="docutils literal">trig</tt>, <tt class="docutils literal">caller</tt>, <tt class="docutils literal">prog</tt>, <tt class="docutils literal">version</tt>.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/str</tt></td>
-<td><tt class="docutils literal">str::</tt></td>
-<td>String manipulation primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/sys</tt></td>
-<td><tt class="docutils literal">sys::</tt></td>
-<td>System related primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/time</tt></td>
-<td><tt class="docutils literal">time::</tt></td>
-<td>Time based primitives.</td>
-</tr>
-<tr><td><tt class="docutils literal">fb6/type</tt></td>
-<td><tt class="docutils literal">type::</tt></td>
-<td>Type checking and conversion primitives.</td>
+<tr><td><a class="reference external" href="https://github.com/revarbat/pymuv/blob/master/pymuv/incls/fb6/argparse">fb6/argparse</a></td>
+<td><tt class="docutils literal">argparse::</tt></td>
+<td>Cmd-line argument parsing.</td>
 </tr>
 </tbody>
 </table>
-<p>NOTE: It doesn't make much sense to include <em>both</em> <tt class="docutils literal">!fb6/prims</tt> <em>and</em> one
-or more of the namespaced files.  If you include from both, it should still
-work, but it really misses the point of using namespaces.</p>
 </div>
 <div class="section" id="expressions">
 <h1><a class="toc-backref" href="#table-of-contents">11&nbsp;&nbsp;&nbsp;Expressions</a></h1>
