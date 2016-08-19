@@ -5,7 +5,7 @@ import sys
 import platform
 from glob import glob
 
-VERSION = "1.1.2"
+VERSION = "1.1.3"
 
 
 APP = ['kickstart.py']

@@ -9,5 +9,7 @@ build/
 dist/MufSim
 dist/*.app
 dist/*.exe
+dist/MufSim-*.tar.gz
+dist/MufSim-*.whl
 dist-win
 .ropeproject
