@@ -1,0 +1,55 @@
+#### Compiling MUF Program Untitled.muf(#4) ###########
+
+#### Showing Tokens for Untitled.muf(#4) ##############
+    0: Function: _main (1 vars)
+    1: "foof"
+    2: -8
+    3: "%*s."
+    4: FMTSTRING
+    5: EXIT
+
+    6: Function: __start (0 vars)
+    7: "me"
+    8: MATCH
+    9: LV0: me
+   10: !
+   11: LV0: me
+   12: @
+   13: LOCATION
+   14: LV1: loc
+   15: !
+   16: TRIG
+   17: LV2: trigger
+   18: !
+   19: Addr:'#4'0
+   20: EXECUTE
+   21: EXIT
+
+#### Executing Tokens #################################
+New process: pid=1
+    6: #4 line 2 ("") Function: __start (0 vars)
+    7: #4 line 2 ("") "me"
+    8: #4 line 2 ("", "me") MATCH
+    9: #4 line 2 ("", #5) LV0: me
+   10: #4 line 2 ("", #5, LV0) !
+   11: #4 line 2 ("") LV0: me
+   12: #4 line 2 ("", LV0) @
+   13: #4 line 2 ("", #5) LOCATION
+   14: #4 line 2 ("", #2) LV1: loc
+   15: #4 line 2 ("", #2, LV1) !
+   16: #4 line 2 ("") TRIG
+   17: #4 line 2 ("", #3) LV2: trigger
+   18: #4 line 2 ("", #3, LV2) !
+   19: #4 line 2 ("") Addr:'#4'0
+   20: #4 line 2 ("", Addr:'#4'0) EXECUTE
+    0: #4 line 2 ("") Function: _main (1 vars)
+    1: #4 line 4 () "foof"
+    2: #4 line 4 ("foof") -8
+    3: #4 line 4 ("foof", -8) "%*s."
+    4: #4 line 4 ("foof", -8, "%*s.") FMTSTRING
+    5: #4 line 5 ("foof    .") EXIT
+   21: #4 line 2 ("foof    .") EXIT
+Process exited: pid=1
+Program exited.
+Execution completed in 22 steps.
+

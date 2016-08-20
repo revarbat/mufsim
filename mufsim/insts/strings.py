@@ -20,13 +20,14 @@ class InstFmtString(Instruction):
     def execute(self, fr):
         def subfunc(matchobj):
             fmt = matchobj.group(1)
-            ftyp = matchobj.group(3)
+            ftyp = matchobj.group(4)
+            fmt = self.handle_fieldsubs(fmt, fr)
             if ftyp == "%":
                 return "%"
             elif ftyp == "i":
                 val = fr.data_pop(int)
                 ftyp = "d"
-            elif ftyp.lower() in ["e", "f", "g"]:
+            elif ftyp.lower() in ["e" "f", "g"]:
                 val = fr.data_pop(float)
             elif ftyp == "s":
                 val = fr.data_pop(str)
@@ -44,15 +45,13 @@ class InstFmtString(Instruction):
                 ftyp = "s"
             else:
                 return ""
-            fmt = self.handle_fieldsubs(fmt, fr)
             fmt = fmt + ftyp
-            return fmt % val
+            fmtd = fmt % val
+            return fmtd
 
         fmt = fr.data_pop(str)
-        out = re.sub(
-            r'(%[| 0+-]*[0-9]*(\.[0-9]*)?)([idDefgEFGsl%?~])',
-            subfunc, fmt
-        )
+        pat = r'(%[| 0+-]*(\d*|\*)\.?(\d*|\*)?)([idDefgEFGsl%?~])'
+        out = re.sub(pat, subfunc, fmt)
         fr.data_push(out)
 
 

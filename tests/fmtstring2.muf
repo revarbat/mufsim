@@ -1,0 +1,5 @@
+$language "muv"
+func main(arg)
+{
+    return fmtstring("%*s.", -8, "foof");
+}

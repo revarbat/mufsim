@@ -77,8 +77,8 @@ New process: pid=1
    33: #4 line 17 ("", 2["Johnny                   4        Jane_Doe  3.14", "Ghaladahsk_Fadja       123        John_Doe     0"], Mark, #5) }
    34: #4 line 17 ("", 2["Johnny                   4        Jane_Doe  3.14", "Ghaladahsk_Fadja       123        John_Doe     0"], #5, 1) ARRAY_MAKE
    35: #4 line 17 ("", 2["Johnny                   4        Jane_Doe  3.14", "Ghaladahsk_Fadja       123        John_Doe     0"], 1[#5]) ARRAY_NOTIFY
-NOTIFY TO [John_Doe(#5)]: Johnny                   4        Jane_Doe  3.14
-NOTIFY TO [John_Doe(#5)]: Ghaladahsk_Fadja       123        John_Doe     0
+NOTIFY: Johnny                   4        Jane_Doe  3.14
+NOTIFY: Ghaladahsk_Fadja       123        John_Doe     0
    36: #4 line 18 ("") EXIT
 Process exited: pid=1
 Program exited.
