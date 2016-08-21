@@ -117,7 +117,7 @@ setup(
         'setuptools',
         'belfrywidgets>=1.0.3',
         'mudclientprotocol>=0.1.0',
-        'ssltelnet>=0.9.1',
+        'ssltelnet>=0.9.2',
         'pymuv>=0.9.4',
         'appdirs>=1.4.0',
         'six',

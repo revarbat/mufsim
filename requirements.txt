@@ -2,10 +2,10 @@ CairoSVG==1.0.20
 ldap3==1.0.4
 py2app==0.7.3
 PyInstaller==3.1.1
-pyjs==0.8.2
 pytz==2013.7
-readline==6.2.4.1
-mufclientprotocol>=0.1.0
+mudclientprotocol>=0.1.0
 belfrywidgets>=1.0.3
+ssltelnet>=0.9.2
 pymuv>=0.9.4
 appdirs>=1.4.0
+readline==6.2.4.1
