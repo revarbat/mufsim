@@ -5,7 +5,7 @@ import sys
 import platform
 from glob import glob
 
-VERSION = "1.1.4"
+VERSION = "1.1.5"
 
 
 APP = ['kickstart.py']
@@ -117,6 +117,7 @@ setup(
         'setuptools',
         'belfrywidgets>=1.0.3',
         'mudclientprotocol>=0.1.0',
+        'ssltelnet>=0.9.1',
         'pymuv>=0.9.4',
         'appdirs>=1.4.0',
         'six',
