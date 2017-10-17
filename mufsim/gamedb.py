@@ -62,6 +62,16 @@ class DBObject(object):
         if regname:
             register_obj(0, regname, si.DBRef(self.dbref))
 
+    def rename(self, newname, passwd=None):
+        global player_names
+        if self.objtype == "player":
+            if self.password != passwd:
+                return False
+            del player_names[self.name.lower()]
+            player_names[newname.lower()] = self.dbref
+        self.name = newname
+        return True
+
     def mark_modify(self):
         self.ts_modified = int(time.time())
 

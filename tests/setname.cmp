@@ -27,6 +27,7 @@ New process: pid=1
     6: #4 line 3 ("", LV0) @
     7: #4 line 3 ("", #5) "Jeff"
     8: #4 line 3 ("", #5, "Jeff") SETNAME
+SETPROP "@__sys__/name/1508217741" on #5 = "Jeff"
     9: #4 line 4 ("") LV0: me
    10: #4 line 4 ("", LV0) @
    11: #4 line 4 ("", #5) NAME

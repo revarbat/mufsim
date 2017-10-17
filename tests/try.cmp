@@ -39,8 +39,8 @@ New process: pid=1
     0: #4 line 1 ("") Function: main (0 vars)
     1: #4 line 2 ("") 0
     2: #4 line 2 ("", 0) Try: 7
-    3: #4 line 3 ("") "foo"
-    4: #4 line 3 ("", "foo") ABORT
+    3: #4 line 3 () "foo"
+    4: #4 line 3 ("foo") ABORT
 Caught error in #4 line 3 (ABORT): foo
     7: #4 line 4 ("", "foo") POP
     8: #4 line 6 ("") 3
@@ -48,23 +48,23 @@ Caught error in #4 line 3 (ABORT): foo
    10: #4 line 6 ("", 3, 4) 5
    11: #4 line 7 ("", 3, 4, 5) 2
    12: #4 line 7 ("", 3, 4, 5, 2) Try: 17
-   13: #4 line 8 ("", 3, 4, 5) "bar"
-   14: #4 line 8 ("", 3, 4, 5, "bar") ABORT
+   13: #4 line 8 (4, 5) "bar"
+   14: #4 line 8 (4, 5, "bar") ABORT
 Caught error in #4 line 8 (ABORT): bar
-   17: #4 line 9 ("", 3, 4{"error": "bar", "instr": "ABORT", "line": 8, "program": #4}) POP
-   18: #4 line 11 ("", 3) POP
-   19: #4 line 12 ("") 3
-   20: #4 line 12 ("", 3) 4
-   21: #4 line 12 ("", 3, 4) 5
-   22: #4 line 13 ("", 3, 4, 5) 2
-   23: #4 line 13 ("", 3, 4, 5, 2) Try: 29
-   24: #4 line 14 ("", 3, 4, 5) POP
-   25: #4 line 14 ("", 3, 4) POP
-   26: #4 line 14 ("", 3) POP
+   17: #4 line 9 ("", 3, 4, 5, 4{"error": "bar", "instr": "ABORT", "line": 8, "program": #4}) POP
+   18: #4 line 11 ("", 3, 4, 5) POP
+   19: #4 line 12 ("", 3, 4) 3
+   20: #4 line 12 ("", 3, 4, 3) 4
+   21: #4 line 12 ("", 3, 4, 3, 4) 5
+   22: #4 line 13 ("", 3, 4, 3, 4, 5) 2
+   23: #4 line 13 ("", 3, 4, 3, 4, 5, 2) Try: 29
+   24: #4 line 14 (4, 5) POP
+   25: #4 line 14 (4) POP
+   26: #4 line 14 () POP
 Caught error in #4 line 14 (POP): Stack underflow.
-   29: #4 line 15 ("", 3, "Stack underflow.") POP
-   30: #4 line 17 ("", 3) POP
-   31: #4 line 18 ("") EXIT
+   29: #4 line 15 ("", 3, 4, 3, "Stack underflow.") POP
+   30: #4 line 17 ("", 3, 4, 3) POP
+   31: #4 line 18 ("", 3, 4) EXIT
 Process exited: pid=1
 Program exited.
 Execution completed in 26 steps.

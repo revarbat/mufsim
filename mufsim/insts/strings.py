@@ -1,5 +1,6 @@
 import re
 import random
+import hashlib
 
 import mufsim.utils as util
 import mufsim.stackitems as si
@@ -217,7 +218,7 @@ class InstRegExp(Instruction):
         if (flags % 0x1) != 0:
             flgs |= re.IGNORECASE
         try:
-            pat = re.compile(pat, flgs)
+            pat = re.compile(pat, flags=flgs)
         except:
             raise MufRuntimeError("Malformed regexp pattern. (2)")
         matches = pat.search(txt)
@@ -246,10 +247,44 @@ class InstRegSub(Instruction):
         if (flags % 0x1) != 0:
             flgs |= re.IGNORECASE
         try:
-            val = re.sub(pat, repl, txt, flgs)
+            val = re.sub(pat, repl, txt, flags=flgs)
         except:
             raise MufRuntimeError("Malformed regexp pattern. (2)")
         fr.data_push(val)
+
+
+@instr("regsplit")
+class InstRegSplit(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        flags = fr.data_pop(int)
+        pat = fr.data_pop(str)
+        txt = fr.data_pop(str)
+        flgs = 0
+        if (flags % 0x1) != 0:
+            flgs |= re.IGNORECASE
+        try:
+            arr = re.split(pat, txt, flags=flgs)
+        except:
+            raise MufRuntimeError("Malformed regexp pattern. (2)")
+        fr.data_push(arr)
+
+
+@instr("regsplit_noempty")
+class InstRegSplitNoEmpty(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        flags = fr.data_pop(int)
+        pat = fr.data_pop(str)
+        txt = fr.data_pop(str)
+        flgs = 0
+        if (flags % 0x1) != 0:
+            flgs |= re.IGNORECASE
+        try:
+            arr = re.split(pat, txt, flags=flgs)
+        except:
+            raise MufRuntimeError("Malformed regexp pattern. (2)")
+        fr.data_push([x for x in arr if x])
 
 
 @instr("subst")
@@ -669,6 +704,22 @@ class InstCtoI(Instruction):
             fr.data_push(c)
         else:
             fr.data_push(0)
+
+
+@instr("md5hash")
+class InstMD5Hash(Instruction):
+    def execute(self, fr):
+        s = fr.data_pop(str)
+        hash = hashlib.md5(s.encode()).hexdigest()
+        fr.data_push(hash)
+
+
+@instr("sha1hash")
+class InstSHA1Hash(Instruction):
+    def execute(self, fr):
+        s = fr.data_pop(str)
+        hash = hashlib.sha1(s.encode()).hexdigest()
+        fr.data_push(hash)
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

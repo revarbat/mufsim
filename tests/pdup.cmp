@@ -1,0 +1,22 @@
+#### Compiling MUF Program Untitled.muf(#4) ###########
+
+#### Showing Tokens for Untitled.muf(#4) ##############
+    0: Function: main (0 vars)
+    1: 42
+    2: ?DUP
+    3: 0
+    4: ?DUP
+    5: EXIT
+
+#### Executing Tokens #################################
+New process: pid=1
+    0: #4 line 1 ("") Function: main (0 vars)
+    1: #4 line 2 ("") 42
+    2: #4 line 2 ("", 42) ?DUP
+    3: #4 line 2 ("", 42, 42) 0
+    4: #4 line 2 ("", 42, 42, 0) ?DUP
+    5: #4 line 3 ("", 42, 42, 0) EXIT
+Process exited: pid=1
+Program exited.
+Execution completed in 6 steps.
+

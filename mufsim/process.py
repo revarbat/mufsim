@@ -12,6 +12,7 @@ from mufsim.events import MufEventQueue
 
 class MufProcess(object):
     MAX_STACK = 1024
+    BUFFER_LEN = 4096
     FP_ERRORS_LIST = [
         ("DIV_ZERO", "Division by zero attempted."),
         ("NAN", "Result was not a number."),
@@ -293,11 +294,18 @@ class MufProcess(object):
         self.pc_set(caddr)
         return True
 
-    def check_type(self, val, types):
+    def check_type(self, val, types, argnum=0):
         if types and type(val) not in types:
-            self.raise_expected_type_error(types)
+            self.raise_expected_type_error(types, argnum=argnum)
 
-    def raise_expected_type_error(self, types):
+    def check_list_type(self, arrval, types, argnum=0):
+        if type(arrval) is not list:
+            self.raise_expected_type_error(types, isarray=True, argnum=argnum)
+        for val in arrval:
+            if types and type(val) not in types:
+                self.raise_expected_type_error(types, isarray=True, argnum=argnum)
+
+    def raise_expected_type_error(self, types, isarray=False, argnum=0):
         types = list(types)
         type_names = [
             ("number", [int, float]),
@@ -326,16 +334,26 @@ class MufProcess(object):
                     types.remove(extype)
                 expected.append(name)
         expected = " or ".join(expected)
-        raise MufRuntimeError("Expected %s argument." % expected)
+        arrstr = "array of " if isarray else ""
+        argstr = " ({0})".format(argnum) if argnum else ""
+        msg = "Expected {0}{1} argument.{2}".format(arrstr, expected, argstr)
+        raise MufRuntimeError(msg)
 
     def check_underflow(self, cnt):
         if self.data_depth() < cnt:
             raise MufRuntimeError("Stack underflow.")
 
     def data_depth(self):
+        return len(self.data_stack) - self.catch_locklevel()
+
+    def data_full_depth(self):
         return len(self.data_stack)
 
     def data_push(self, x):
+        if isinstance(x, str) and len(x) > self.BUFFER_LEN:
+            raise MufRuntimeError("String overflow.")
+        if isinstance(x, (list, dict)) and len(x) > self.MAX_STACK:
+            raise MufRuntimeError("Array overflow.")
         self.data_stack.append(x)
         if len(self.data_stack) > self.MAX_STACK:
             raise MufRuntimeError("Stack overflow.")

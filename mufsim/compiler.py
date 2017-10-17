@@ -32,7 +32,6 @@ import mufsim.insts.strings  # noqa
 import mufsim.insts.timedate  # noqa
 
 
-# vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap
 from mufsim.insts.base import primitives
 import mufsim.configs as confs
 
@@ -52,6 +51,12 @@ class MufCompiler(object):
         '__muckname': util.escape_str("MufSim"),
         '__fuzzball__': '1',
         'max_variable_count': str(confs.MAX_VARS),
+
+        '&': 'bitand',
+        '|': 'bitor',
+        '^': 'bitxor',
+        '<<': 'bitshift',
+        '**': 'pow',
 
         '}array': '} array_make',
         '}list': '} array_make',

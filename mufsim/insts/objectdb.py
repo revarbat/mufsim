@@ -280,6 +280,8 @@ class InstSetName(Instruction):
         nam = fr.data_pop(str)
         obj = fr.data_pop_object()
         obj.name = nam
+        if obj.objtype == "player":
+            obj.setprop("@__sys__/name/%d" % time.time(), nam)
         obj.mark_modify()
 
 
@@ -404,7 +406,21 @@ class InstForce(Instruction):
         cmd = fr.data_pop(str)
         obj = fr.data_pop_object()
         log("FORCE %s TO DO: %s" % (obj, cmd))
+        cmds.force_level_push(fr.user, fr.program)
         cmds.process_command(fr.proclist, -1, obj.dbref, cmd)
+        cmds.force_level_pop()
+
+
+@instr("forcedby")
+class InstForcedBy(Instruction):
+    def execute(self, fr):
+        fr.data_push(cmds.get_force_stack()[-1])
+
+
+@instr("forcedby_array")
+class InstForcedByArray(Instruction):
+    def execute(self, fr):
+        fr.data_push(cmds.get_force_stack())
 
 
 @instr("force_level")

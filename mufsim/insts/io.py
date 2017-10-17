@@ -3,6 +3,7 @@ import mufsim.stackitems as si
 import mufsim.gamedb as db
 from mufsim.logger import log
 from mufsim.errors import MufRuntimeError
+from mufsim.interface import network_interface
 from mufsim.insts.base import Instruction, instr
 
 
@@ -47,6 +48,20 @@ class InstNotify(Instruction):
             log("NOTIFY: %s" % msg)
         else:
             log("NOTIFY TO %s: %s" % (who, msg))
+
+
+@instr("notify_nolisten")
+class InstNotifyNolisten(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        msg = fr.data_pop(str)
+        who = fr.data_pop_object()
+        who.notify(msg)
+        me = fr.globalvar_get(0)
+        if who.dbref == me.value:
+            log("NOTIFY_NOLISTEN: %s" % msg)
+        else:
+            log("NOTIFY_NOLISTEN TO %s: %s" % (who, msg))
 
 
 @instr("array_notify")
@@ -109,6 +124,49 @@ class InstNotifyExclude(Instruction):
             log("NOTIFY TO ALL IN %s EXCEPT %s: %s" % (where, excls, msg))
         else:
             log("NOTIFY TO ALL IN %s: %s" % (where, msg))
+
+
+@instr("array_notify_secure")
+class InstArrayNotifySecure(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        insmsgs = fr.data_pop(list)
+        secmsgs = fr.data_pop(list)
+        whoall = fr.data_pop(list)
+        fr.check_list_type(whoall, (si.DBRef), argnum=1)
+        fr.check_list_type(secmsgs, (str), argnum=2)
+        fr.check_list_type(insmsgs, (str), argnum=3)
+        me = fr.globalvar_get(0)
+        for who in whoall:
+            for descr in network_interface.user_descrs(who.value):
+                msgarr = secmsgs if network_interface.descr_secure(descr) else insmsgs
+                for msg in msgarr:
+                    network_interface.descr_notify(descr, msg)
+            if who.dbref == me.value:
+                log("NOTIFY (SECURE): %s" % secmsg)
+                log("NOTIFY (INSECURE): %s" % insmsg)
+            else:
+                log("NOTIFY TO %s (SECURE): %s" % (who, secmsg))
+                log("NOTIFY TO %s (INSECURE): %s" % (who, insmsg))
+
+
+@instr("notify_secure")
+class InstNotifySecure(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        insmsg = fr.data_pop(str)
+        secmsg = fr.data_pop(str)
+        who = fr.data_pop_object()
+        for descr in network_interface.user_descrs(who.value):
+            msg = secmsg if network_interface.descr_secure(descr) else insmsg
+            network_interface.descr_notify(descr, msg)
+        me = fr.globalvar_get(0)
+        if who.dbref == me.value:
+            log("NOTIFY (SECURE): %s" % secmsg)
+            log("NOTIFY (INSECURE): %s" % insmsg)
+        else:
+            log("NOTIFY (SECURE) TO %s: %s" % (who, secmsg))
+            log("NOTIFY (INSECURE) TO %s: %s" % (who, insmsg))
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

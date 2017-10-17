@@ -36,9 +36,14 @@ class InstInt(Instruction):
 class InstPlus(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
-        b = fr.data_pop(int, float, si.DBRef)
-        a = fr.data_pop(int, float, si.DBRef)
+        b = fr.data_pop(int, float, str, si.DBRef)
+        a = fr.data_pop(int, float, str, si.DBRef)
         makedbref = False
+        if isinstance(a, str):
+            if not isinstance(b, str):
+                raise MufRuntimeError("Strings can only concatenate with strings.")
+            fr.data_push(a + b)
+            return
         if isinstance(a, si.DBRef):
             if isinstance(b, float):
                 raise MufRuntimeError("Cannot add float to dbref.")
@@ -144,8 +149,18 @@ class InstMinusMinus(Instruction):
 class InstTimes(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
-        b = fr.data_pop(int, float)
-        a = fr.data_pop(int, float)
+        b = fr.data_pop(int, float, str)
+        a = fr.data_pop(int, float, str)
+        if isinstance(a, str):
+            if not isinstance(b, int) or b < 0:
+                raise MufRuntimeError("Strings can only be multiplied by positive integers.")
+            fr.data_push(a * b)
+            return
+        if isinstance(b, str):
+            if not isinstance(a, int) or a < 0:
+                raise MufRuntimeError("Strings can only be multiplied by positive integers.")
+            fr.data_push(b * a)
+            return
         if math.isinf(a) or math.isinf(b):
             fr.set_error("FBOUNDS")
         out = a * b

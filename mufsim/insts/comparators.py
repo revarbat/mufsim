@@ -1,5 +1,5 @@
 import mufsim.stackitems as si
-# from mufsim.errors import MufRuntimeError
+from mufsim.errors import MufRuntimeError
 from mufsim.insts.base import Instruction, instr
 
 
@@ -44,13 +44,32 @@ class InstNot(Instruction):
 class InstEquals(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
-        b = fr.data_pop(int, float, si.DBRef)
-        a = fr.data_pop(int, float, si.DBRef)
+        b = fr.data_pop(int, float, str, si.DBRef)
+        a = fr.data_pop(int, float, str, si.DBRef)
+        if isinstance(a, str) and not isinstance(b, str):
+            raise MufRuntimeError("Strings can only compare to strings!")
         if isinstance(a, si.DBRef):
             a = a.value
         if isinstance(b, si.DBRef):
             b = b.value
         fr.data_push(1 if a == b else 0)
+
+    def __str__(self):
+        return "="
+
+@instr("!=")
+class InstNotEquals(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(2)
+        b = fr.data_pop(int, float, str, si.DBRef)
+        a = fr.data_pop(int, float, str, si.DBRef)
+        if isinstance(a, str) and not isinstance(b, str):
+            raise MufRuntimeError("Strings can only compare to strings!")
+        if isinstance(a, si.DBRef):
+            a = a.value
+        if isinstance(b, si.DBRef):
+            b = b.value
+        fr.data_push(1 if a != b else 0)
 
     def __str__(self):
         return "="

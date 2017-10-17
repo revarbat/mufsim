@@ -7,15 +7,17 @@ sysparms = {}
 
 
 class SysParm(object):
-    def __init__(self, typ, group, name, rlev, wlev, label, mod, dflt):
+    def __init__(self, typ, group, name, rlev, wlev, label, mod, dflt, nullable=False):
         self.valtype = typ
         self.name = name
         self.group = group
+        self.default = dflt
         self.rlev = rlev
         self.wlev = wlev
         self.label = label
         self.module = mod
         self.value = dflt
+        self.nullable = nullable
         sysparms[name] = self
         sysparms_list.append(self)
 
@@ -29,6 +31,11 @@ def get_sysparm_info(name):
         "group": parm.group,
         "type": parm.valtype,
         "mlev": parm.rlev,
+        "readmlev": parm.rlev,
+        "writemlev": parm.wlev,
+        "active": 1,
+        "default": parm.default,
+        "nullable": parm.nullable,
         "value": parm.value,
     }
     if parm.valtype == "dbref":
@@ -73,9 +80,9 @@ SysParm("string", "Currency", "cpennies", 0, 4, "Currency name, capitalized, plu
 SysParm("string", "Currency", "cpenny", 0, 4, "Currency name, capitalized", "", 'Penny')
 SysParm("string", "Currency", "pennies", 0, 4, "Currency name, plural", "", 'pennies')
 SysParm("string", "Currency", "penny", 0, 4, "Currency name", "", 'penny')
-SysParm("string", "DB Dumps", "dumpdone_mesg", 0, 4, "Database dump finished message", "", '## Save complete. ##')
-SysParm("string", "DB Dumps", "dumping_mesg", 0, 4, "Database dump started message", "", '## Pausing to save database. This may take a while. ##')
-SysParm("string", "DB Dumps", "dumpwarn_mesg", 0, 4, "Database dump warning message", "", '## Game will pause to save the database in a few minutes. ##')
+SysParm("string", "DB Dumps", "dumpdone_mesg", 0, 4, "Database dump finished message", "", '## Save complete. ##', nullable=True)
+SysParm("string", "DB Dumps", "dumping_mesg", 0, 4, "Database dump started message", "", '## Pausing to save database. This may take a while. ##', nullable=True)
+SysParm("string", "DB Dumps", "dumpwarn_mesg", 0, 4, "Database dump warning message", "", '## Game will pause to save the database in a few minutes. ##', nullable=True)
 SysParm("string", "Idle Boot", "idle_boot_mesg", 0, 4, "Boot message given to users idling out", "", 'Autodisconnecting for inactivity.')
 SysParm("string", "Misc", "huh_mesg", 0, 4, "Unrecognized command warning", "", 'Huh?  (Type "help" for help.)')
 SysParm("string", "Misc", "leave_mesg", 0, 4, "Logoff message for QUIT", "", 'Come back later!')
@@ -86,7 +93,7 @@ SysParm("string", "Properties", "gender_prop", 0, 4, "Property name used for pro
 SysParm("string", "Registration", "register_mesg", 0, 4, "Login registration denied message", "", "Sorry, you can get a character by e-mailing XXXX@machine.net.address with a charname and password.")
 SysParm("string", "SSL", "ssl_cert_file", 5, 5, "Path to SSL certificate .pem", "SSL", "data/server.pem")
 SysParm("string", "SSL", "ssl_key_file", 5, 5, "Path to SSL private key .pem", "SSL", "data/server.pem")
-SysParm("string", "SSL", "ssl_keyfile_passwd", 5, 5, "Password for SSL private key file", "SSL", "")
+SysParm("string", "SSL", "ssl_keyfile_passwd", 5, 5, "Password for SSL private key file", "SSL", "", nullable=True)
 SysParm(
     "string", "SSL", "ssl_cipher_preference_list", 5, 5,
     "Allowed OpenSSL cipher list", "SSL",
@@ -135,9 +142,9 @@ SysParm(
     ])
 )
 SysParm("string", "SSL", "ssl_min_protocol_version", 5, 5, "Min. allowed SSL protocol version for clients", "SSL", "None")
-SysParm("string", "Database", "pcreate_flags", 0, 4, "Initial flags for newly created players", "", "B")
-SysParm("string", "Database", "reserved_names", 0, 4, "String-match list of reserved names", "", "")
-SysParm("string", "Database", "reserved_player_names", 0, 4, "String-match list of reserved player names", "", "")
+SysParm("string", "Database", "pcreate_flags", 0, 4, "Initial flags for newly created players", "", "B", nullable=True)
+SysParm("string", "Database", "reserved_names", 0, 4, "String-match list of reserved names", "", "", nullable=True)
+SysParm("string", "Database", "reserved_player_names", 0, 4, "String-match list of reserved player names", "", "", nullable=True)
 
 SysParm("timespan", "Database", "aging_time", 0, 4, "When to considered an object old and unused", "", 90*86400)
 SysParm("timespan", "DB Dumps", "dump_interval", 0, 4, "Interval between dumps", "", 4*3600)

@@ -51,6 +51,15 @@ class InstFuncVar(Instruction):
         return "SV%d: %s" % (self.varnum, self.varname)
 
 
+@instr("secure_sysvars")
+class InstSecureSysvars(Instruction):
+    def execute(self, fr):
+        fr.globalvar_set(0, fr.user)
+        fr.globalvar_set(1, si.DBRef(db.getobj(fr.user).location))
+        fr.globalvar_set(2, fr.trigger)
+        fr.globalvar_set(3, fr.command)
+
+
 @instr("!")
 class InstBang(Instruction):
     def execute(self, fr):
@@ -86,6 +95,18 @@ class InstDup(Instruction):
     def execute(self, fr):
         a = fr.data_pop()
         fr.data_push(a)
+        fr.data_push(a)
+
+
+@instr("?dup")
+class InstQDup(Instruction):
+    def execute(self, fr):
+        a = fr.data_pop()
+        if isinstance(a, si.DBRef):
+            if a.value != -1:
+                fr.data_push(a)
+        elif a:
+            fr.data_push(a)
         fr.data_push(a)
 
 
@@ -143,6 +164,18 @@ class InstRot(Instruction):
         fr.data_push(a)
 
 
+@instr("-rot")
+class InstNegRot(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        c = fr.data_pop()
+        b = fr.data_pop()
+        a = fr.data_pop()
+        fr.data_push(c)
+        fr.data_push(a)
+        fr.data_push(b)
+
+
 @instr("rotate")
 class InstRotate(Instruction):
     def execute(self, fr):
@@ -193,6 +226,26 @@ class InstPut(Instruction):
             raise MufRuntimeError("Value out of range")
         else:
             fr.data_put(num, val)
+
+
+@instr("nip")
+class InstNip(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        fr.data_push(b)
+
+
+@instr("tuck")
+class InstTuck(Instruction):
+    def execute(self, fr):
+        fr.check_underflow(3)
+        b = fr.data_pop()
+        a = fr.data_pop()
+        fr.data_push(b)
+        fr.data_push(a)
+        fr.data_push(b)
 
 
 @instr("reverse")
@@ -247,7 +300,7 @@ class InstDepth(Instruction):
 @instr("fulldepth")
 class InstFullDepth(Instruction):
     def execute(self, fr):
-        fr.data_push(fr.data_depth())
+        fr.data_push(fr.data_full_depth())
 
 
 @instr("variable")

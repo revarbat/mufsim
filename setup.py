@@ -5,11 +5,11 @@ import sys
 import platform
 from glob import glob
 
-VERSION = "1.1.5"
+VERSION = "1.2.0"
 
 
 APP = ['kickstart.py']
-COPYRIGHT = "Copyright 2016 by Revar Desmera"
+COPYRIGHT = "Copyright 2016-2017 by Revar Desmera"
 with open('README.rst') as f:
     LONG_DESCR = f.read()
 
@@ -118,7 +118,7 @@ setup(
         'belfrywidgets>=1.0.3',
         'mudclientprotocol>=0.1.0',
         'ssltelnet>=0.9.2',
-        'pymuv>=0.9.4',
+        'pymuv>=0.9.7',
         'appdirs>=1.4.0',
         'six',
         'packaging',

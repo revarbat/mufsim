@@ -1,11 +1,12 @@
-# from mufsim.logger import log
-import mufsim.gamedb as db
+import time
 import mufsim.locks as lock
+import mufsim.gamedb as db
+import mufsim.stackitems as si
 from mufsim.interface import network_interface as netifc
 
 
 user_commands = {}
-force_level = 0
+force_stack = []
 
 
 def getword(txt, delim=' '):
@@ -69,12 +70,12 @@ def usercommand(cmdname):
 
 
 @usercommand('QUIT')
-def usercmd_quit(descr, user, cmd):
+def usercmd_quit(proclist, descr, user, cmd):
     netifc.descr_disconnect(descr)
 
 
 @usercommand('connect')
-def usercmd_connect(descr, user, cmd):
+def usercmd_connect(proclist, descr, user, cmd):
     if user is not None and user != -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -100,7 +101,7 @@ def usercmd_connect(descr, user, cmd):
 
 
 @usercommand('look')
-def usercmd_look(descr, user, cmd):
+def usercmd_look(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -134,7 +135,7 @@ def usercmd_look(descr, user, cmd):
 
 
 @usercommand('score')
-def usercmd_score(descr, user, cmd):
+def usercmd_score(proclist, descr, user, cmd):
     if user is None or user == -1:
         netifc.descr_notify(descr, "Huh?")
         return
@@ -143,7 +144,7 @@ def usercmd_score(descr, user, cmd):
 
 
 @usercommand('whisper')
-def usercmd_whisper(descr, user, cmd):
+def usercmd_whisper(proclist, descr, user, cmd):
     if user is None or user == -1:
         netifc.descr_notify(descr, "Huh?")
         return
@@ -164,7 +165,7 @@ def usercmd_whisper(descr, user, cmd):
 
 
 @usercommand('page')
-def usercmd_page(descr, user, cmd):
+def usercmd_page(proclist, descr, user, cmd):
     if user is None or user == -1:
         netifc.descr_notify(descr, "Huh?")
         return
@@ -193,7 +194,7 @@ def usercmd_page(descr, user, cmd):
 
 
 @usercommand('say')
-def usercmd_say(descr, user, cmd):
+def usercmd_say(proclist, descr, user, cmd):
     if user is None or user == -1:
         netifc.descr_notify(descr, "Huh?")
         return
@@ -209,7 +210,7 @@ def usercmd_say(descr, user, cmd):
 
 
 @usercommand('pose')
-def usercmd_pose(descr, user, cmd):
+def usercmd_pose(proclist, descr, user, cmd):
     if user is None or user == -1:
         netifc.descr_notify(descr, "Huh?")
         return
@@ -225,7 +226,7 @@ def usercmd_pose(descr, user, cmd):
 
 
 @usercommand('@who')
-def usercmd_at_who(descr, user, cmd):
+def usercmd_at_who(proclist, descr, user, cmd):
     if db.validobj(user) and 'W' in db.getobj(user).flags:
         fmt = (
             "{name:<30s} {loc:>8s} {time:>10s} {idle:>4s}"
@@ -274,7 +275,7 @@ def usercmd_at_who(descr, user, cmd):
 
 
 @usercommand('@dig')
-def usercmd_at_dig(descr, user, cmd):
+def usercmd_at_dig(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -302,7 +303,7 @@ def usercmd_at_dig(descr, user, cmd):
 
 
 @usercommand('@action')
-def usercmd_at_action(descr, user, cmd):
+def usercmd_at_action(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -326,7 +327,7 @@ def usercmd_at_action(descr, user, cmd):
 
 
 @usercommand('@open')
-def usercmd_at_open(descr, user, cmd):
+def usercmd_at_open(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -354,7 +355,7 @@ def usercmd_at_open(descr, user, cmd):
 
 
 @usercommand('@pcreate')
-def usercmd_at_pcreate(descr, user, cmd):
+def usercmd_at_pcreate(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -377,11 +378,11 @@ def usercmd_at_pcreate(descr, user, cmd):
     )
     if regname:
         db.register_obj(user, regname, newobj.dbref)
-    userobj.notify("Thing created as #%d." % newobj.dbref)
+    userobj.notify("Player created as #%d." % newobj.dbref)
 
 
 @usercommand('@create')
-def usercmd_at_create(descr, user, cmd):
+def usercmd_at_create(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -402,7 +403,7 @@ def usercmd_at_create(descr, user, cmd):
 
 
 @usercommand('@teleport')
-def usercmd_at_teleport(descr, user, cmd):
+def usercmd_at_teleport(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -426,8 +427,121 @@ def usercmd_at_teleport(descr, user, cmd):
     userobj.notify("Teleported.")
 
 
+@usercommand('@name')
+def usercmd_at_name(proclist, descr, user, cmd):
+    if user is None or user == -1:
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    userobj = db.getobj(user)
+    objname, newname = getword(cmd, '=')
+    obj = db.match_controlled(user, objname)
+    if not db.validobj(obj):
+        return
+    if obj.objtype == "player":
+        newname, passwd = getword(newname, ' ')
+    else:
+        passwd=None
+    if obj.rename(newname, passwd=passwd):
+        if obj.objtype == "player":
+            obj.setprop("@__sys__/name/%d" % time.time(), newname)
+        userobj.notify("Name set.")
+    else:
+        userobj.notify("Bad password.")
+
+
+@usercommand('@description')
+def usercmd_at_description(proclist, descr, user, cmd):
+    if user is None or user == -1:
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    userobj = db.getobj(user)
+    objname, value = getword(cmd, '=')
+    obj = db.match_controlled(user, objname)
+    if not db.validobj(obj):
+        return
+    obj.setprop("_/de", value)
+
+
+@usercommand('@success')
+def usercmd_at_success(proclist, descr, user, cmd):
+    if user is None or user == -1:
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    userobj = db.getobj(user)
+    objname, value = getword(cmd, '=')
+    obj = db.match_controlled(user, objname)
+    if not db.validobj(obj):
+        return
+    obj.setprop("_/sc", value)
+
+
+@usercommand('@osuccess')
+def usercmd_at_osuccess(proclist, descr, user, cmd):
+    if user is None or user == -1:
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    userobj = db.getobj(user)
+    objname, value = getword(cmd, '=')
+    obj = db.match_controlled(user, objname)
+    if not db.validobj(obj):
+        return
+    obj.setprop("_/osc", value)
+
+
+@usercommand('@fail')
+def usercmd_at_fail(proclist, descr, user, cmd):
+    if user is None or user == -1:
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    userobj = db.getobj(user)
+    objname, value = getword(cmd, '=')
+    obj = db.match_controlled(user, objname)
+    if not db.validobj(obj):
+        return
+    obj.setprop("_/fl", value)
+
+
+@usercommand('@ofail')
+def usercmd_at_ofail(proclist, descr, user, cmd):
+    if user is None or user == -1:
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    userobj = db.getobj(user)
+    objname, value = getword(cmd, '=')
+    obj = db.match_controlled(user, objname)
+    if not db.validobj(obj):
+        return
+    obj.setprop("_/ofl", value)
+
+
+@usercommand('@drop')
+def usercmd_at_drop(proclist, descr, user, cmd):
+    if user is None or user == -1:
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    userobj = db.getobj(user)
+    objname, value = getword(cmd, '=')
+    obj = db.match_controlled(user, objname)
+    if not db.validobj(obj):
+        return
+    obj.setprop("_/dr", value)
+
+
+@usercommand('@odrop')
+def usercmd_at_odrop(proclist, descr, user, cmd):
+    if user is None or user == -1:
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    userobj = db.getobj(user)
+    objname, value = getword(cmd, '=')
+    obj = db.match_controlled(user, objname)
+    if not db.validobj(obj):
+        return
+    obj.setprop("_/odr", value)
+
+
 @usercommand('@set')
-def usercmd_at_set(descr, user, cmd):
+def usercmd_at_set(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -454,7 +568,7 @@ def usercmd_at_set(descr, user, cmd):
 
 
 @usercommand('@program')
-def usercmd_at_program(descr, user, cmd):
+def usercmd_at_program(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -477,7 +591,7 @@ def usercmd_at_program(descr, user, cmd):
 
 
 @usercommand('@edit')
-def usercmd_at_edit(descr, user, cmd):
+def usercmd_at_edit(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -487,7 +601,7 @@ def usercmd_at_edit(descr, user, cmd):
 
 
 @usercommand('@unlink')
-def usercmd_at_unlink(descr, user, cmd):
+def usercmd_at_unlink(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -502,7 +616,7 @@ def usercmd_at_unlink(descr, user, cmd):
 
 
 @usercommand('@link')
-def usercmd_at_link(descr, user, cmd):
+def usercmd_at_link(proclist, descr, user, cmd):
     if user is None or user == -1:
         netifc.descr_notify(descr, "Huh?")
         return
@@ -524,7 +638,7 @@ def usercmd_at_link(descr, user, cmd):
 
 
 @usercommand('@chown')
-def usercmd_at_chown(descr, user, cmd):
+def usercmd_at_chown(proclist, descr, user, cmd):
     if user is None or user == -1:
         notify_descr_or_user(descr, user, "Huh?")
         return
@@ -546,70 +660,94 @@ def usercmd_at_chown(descr, user, cmd):
     userobj.notify("Chowned.")
 
 
+@usercommand('@force')
+def usercmd_at_force(proclist, descr, user, cmd):
+    if user is None or user == -1:
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    userobj = db.getobj(user)
+    targobj, forced_cmd = getword(cmd, '=')
+    force_level_push(si.DBRef(user))
+    process_command(proclist, -1, userobj.dbref, forced_cmd)
+    force_level_pop()
+    userobj.notify("Forced.")
+
+
+def get_force_stack():
+    global force_stack
+    return [item for sublist in force_stack for item in sublist]
+
+
 def get_force_level():
-    global force_level
-    return force_level
+    global force_stack
+    return len(force_stack)+1
+
+
+def force_level_push(*refs):
+    global force_stack
+    force_stack.append(refs)
+
+
+def force_level_pop():
+    global force_stack
+    force_stack.pop()
 
 
 def process_command(proclist, descr, user, cmd):  # noqa
-    global force_level, user_commands
-    try:
-        force_level += 1
-        if cmd.lstrip().startswith(':'):
-            cmd = 'pose ' + cmd.lstrip()[1:]
-        elif cmd.lstrip().startswith('"'):
-            cmd = 'say ' + cmd.lstrip()[1:]
-        elif cmd.lstrip().startswith('WHO'):
-            cmd = '@who ' + cmd.lstrip()[3:]
-        word, cmdarg = getword(cmd)
-        trig = -1
-        if db.validobj(user):
-            trig = db.match_all_exits(user, word)
-        if trig < 0:
-            if word in user_commands:
-                cmdfunc = user_commands[word]
-                if cmdfunc is None:
-                    notify_descr_or_user(descr, user, "Huh?")
-                    return
-                cmdfunc(descr, user, cmdarg)
+    global user_commands
+    if cmd.lstrip().startswith(':'):
+        cmd = 'pose ' + cmd.lstrip()[1:]
+    elif cmd.lstrip().startswith('"'):
+        cmd = 'say ' + cmd.lstrip()[1:]
+    elif cmd.lstrip().startswith('WHO'):
+        cmd = '@who ' + cmd.lstrip()[3:]
+    word, cmdarg = getword(cmd)
+    trig = -1
+    if db.validobj(user):
+        trig = db.match_all_exits(user, word)
+    if trig < 0:
+        if word in user_commands:
+            cmdfunc = user_commands[word]
+            if cmdfunc is None:
+                notify_descr_or_user(descr, user, "Huh?")
                 return
-            notify_descr_or_user(descr, user, "Huh?")
+            cmdfunc(proclist, descr, user, cmdarg)
             return
-        links = db.links_array(trig)
-        if not links:
-            notify_descr_or_user(descr, user, "Huh?")
-            return
-        trigobj = db.getobj(trig)
-        userobj = db.getobj(user)
-        if db.getobj(links[0]).objtype in ["room", "thing"]:
-            lck = userobj.getprop('_/lok')
-            unlocked = True
-            if lck and isinstance(lck, lock.LockNode) and not lck.eval(user):
-                unlocked = False
-            if unlocked:
-                db.do_succ(user, trigobj.dbref)
-            else:
-                db.do_fail(user, trigobj.dbref)
-            if db.getobj(links[0]).objtype == "room":
-                userobj.moveto(links[0])
-            else:
-                db.getobj(links[0]).moveto(user)
-            if unlocked:
-                db.do_drop(user, trigobj.dbref)
-            return
-        elif db.getobj(links[0]).objtype != "program":
-            notify_descr_or_user(descr, user, "Huh?")
-            return
-        progobj = db.getobj(links[0])
-        if not progobj.compiled:
-            notify_descr_or_user(descr, user, "Program not compiled.")
-            return
-        newproc = proclist.new_process()
-        newproc.setup(progobj, userobj, trigobj, cmdarg)
-        newproc.descr = descr
-        newproc.execute_code()
-    finally:
-        force_level -= 1
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    links = db.links_array(trig)
+    if not links:
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    trigobj = db.getobj(trig)
+    userobj = db.getobj(user)
+    if db.getobj(links[0]).objtype in ["room", "thing"]:
+        lck = userobj.getprop('_/lok')
+        unlocked = True
+        if lck and isinstance(lck, lock.LockNode) and not lck.eval(user):
+            unlocked = False
+        if unlocked:
+            db.do_succ(user, trigobj.dbref)
+        else:
+            db.do_fail(user, trigobj.dbref)
+        if db.getobj(links[0]).objtype == "room":
+            userobj.moveto(links[0])
+        else:
+            db.getobj(links[0]).moveto(user)
+        if unlocked:
+            db.do_drop(user, trigobj.dbref)
+        return
+    elif db.getobj(links[0]).objtype != "program":
+        notify_descr_or_user(descr, user, "Huh?")
+        return
+    progobj = db.getobj(links[0])
+    if not progobj.compiled:
+        notify_descr_or_user(descr, user, "Program not compiled.")
+        return
+    newproc = proclist.new_process()
+    newproc.setup(progobj, userobj, trigobj, cmdarg)
+    newproc.descr = descr
+    newproc.execute_code()
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap
