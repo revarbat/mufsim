@@ -285,6 +285,23 @@ class InstSetName(Instruction):
         obj.mark_modify()
 
 
+@instr("pname_history")
+class InstPNameHistory(Instruction):
+    def execute(self, fr):
+        obj = fr.data_pop_object()
+        prop = "@__sys__/name/"
+        prop = obj.normalize_prop(prop)
+        plen = len(prop)
+        arr = {}
+        vprop = obj.next_prop(prop)
+        while vprop:
+            val = obj.getprop(vprop)
+            if val is not None:
+                arr[vprop[plen:]] = val
+            vprop = obj.next_prop(vprop)
+        fr.data_push(arr)
+
+
 @instr("name-ok?")
 class InstNameOkP(Instruction):
     def execute(self, fr):
