@@ -15,22 +15,18 @@ upload:
 	twine upload dist/*.tar.gz dist/*.whl dist/*.egg
 
 app:
-	rm -rf dist/MufSim dist/MufSim.app dist/MufSimOSX.zip
-	python3 setup.py py2app
+	rm -rf dist/MufSim dist/MufSim.app dist/MufSimOSX.zip dist/MufSimOSX64.zip
+	pyinstaller MufSim.spec
 	rm -rf dist/MufSim
 	tools/mkicons.sh
 	cp icons/MufSim.icns dist/MufSim.app/Contents/Resources/
-	cd dist && zip -r MufSimOSX MufSim.app
+	cd dist && zip -r MufSimOSX64 MufSim.app
 
 exe:
 	rm -rf dist/MufSim dist/MufSim.exe dist/MufSimWin64.zip
 	pyinstaller MufSim.spec
 	# cd dist && zip -r MufSimWin64 MufSim.exe
 
-py2exe:
-	rm -rf dist/MufSim dist/MufSim.exe dist/MufSimWin64.zip
-	python3 setup.py py2exe
-	# cd dist && zip -r MufSimWin64 MufSim.exe
 
 muvdoc: docs/MUVREF.html
 
