@@ -17,12 +17,12 @@ Installation
 
 Windows
 -------
-Unpack the ``dist\MufSimWin64.zip`` archive and place the resulting
+Unpack the ``MufSimWin64.zip`` archive and place the resulting
 ``MufSim.exe`` binary someplace useful.
 
 OS X
 ----
-Unpack the ``dist/MufSimOSX.zip`` archive and place the resulting
+Unpack the ``MufSimOSX64.zip`` archive and place the resulting
 ``MufSim.app`` application bundle in the ``/Applications`` folder.
 
 Linux
