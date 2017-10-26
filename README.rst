@@ -2,8 +2,9 @@
 MufSim
 ######
 
-An offline simulator, debugger, and IDE for the MUF language, with GUI
-and command-line interfaces.
+An offline simulator, debugger, and IDE for the MUF and
+[MUV](https://github.com/revarbat/pymuv/blob/master/MUVREF.rst)
+languages, with GUI and command-line interfaces.
 
 This is *not* a perfect simulator of a full MUCK.  This does *not*
 simulate all permissions and behaviours.  It *is*, however, a useful
