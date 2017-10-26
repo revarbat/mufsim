@@ -3,7 +3,7 @@ MufSim
 ######
 
 An offline simulator, debugger, and IDE for the MUF and
-[MUV](https://github.com/revarbat/pymuv/blob/master/MUVREF.rst)
+`MUV <https://github.com/revarbat/pymuv/blob/master/MUVREF.rst>`_
 languages, with GUI and command-line interfaces.
 
 This is *not* a perfect simulator of a full MUCK.  This does *not*
