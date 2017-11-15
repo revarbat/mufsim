@@ -68,14 +68,10 @@ class InstNotifyNolisten(Instruction):
 class InstArrayNotify(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
-        targs = fr.data_pop(list)
-        msgs = fr.data_pop(list)
-        for targ in targs:
-            if not isinstance(targ, si.DBRef):
-                raise MufRuntimeError("Expected list array of dbrefs. (2)")
-        for msg in msgs:
-            if not isinstance(msg, str):
-                raise MufRuntimeError("Expected list array of strings. (1)")
+        targs = fr.data_pop_list()
+        msgs = fr.data_pop_list()
+        fr.check_list_type(msgs, (str), argnum=1)
+        fr.check_list_type(targs, (si.DBRef), argnum=2)
         for msg in msgs:
             targs = [db.getobj(o) for o in targs]
             for targ in targs:
@@ -130,9 +126,9 @@ class InstNotifyExclude(Instruction):
 class InstArrayNotifySecure(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
-        insmsgs = fr.data_pop(list)
-        secmsgs = fr.data_pop(list)
-        whoall = fr.data_pop(list)
+        insmsgs = fr.data_pop_list()
+        secmsgs = fr.data_pop_list()
+        whoall = fr.data_pop_list()
         fr.check_list_type(whoall, (si.DBRef), argnum=1)
         fr.check_list_type(secmsgs, (str), argnum=2)
         fr.check_list_type(insmsgs, (str), argnum=3)

@@ -103,8 +103,6 @@ class MufCompiler(object):
             reflist_find -4 rotate reflist_find or
         '''),
 
-        'secure_sysvars':
-            '"me" match dup me ! location loc ! trig trigger ! cmd command !',
         'truename': 'name',
         'version': '__version',
         'strip': 'striplead striptail',
@@ -136,7 +134,8 @@ class MufCompiler(object):
         'sorttype_shuffle': '4',
     }
 
-    def __init__(self):
+    def __init__(self, target='fb6'):
+        self.target = target
         self.compiled = None
         self.word_line = 1
         self.muv_line = None
@@ -411,8 +410,12 @@ class MufCompiler(object):
                 code, src = self.compile_r(src)
             except ReloadAsMuvException:
                 src = progobj.sources
-                muvparser = MuvParser()
-                muvparser.set_debug(True)
+                muvparser = MuvParser(
+                    debug=True,
+                    target=self.target,
+                    optim=0,
+                    sysonly=True,
+                )
                 muvparser.error_cb = errlog
                 muvparser.parse_string(src, filename=progobj.name)
                 if muvparser.error_found:

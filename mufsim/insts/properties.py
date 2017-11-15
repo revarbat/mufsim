@@ -73,7 +73,7 @@ class InstArrayGetPropDirs(Instruction):
                 break
             if obj.is_propdir(prop):
                 out.append(prop)
-        fr.data_push(out)
+        fr.data_push_list(out)
 
 
 @instr("getprop")
@@ -206,18 +206,18 @@ class InstArrayGetPropList(Instruction):
             val = obj.getprop("%s#/%d" % (prop, i + 1))
             if isinstance(val, str):
                 out.append(val)
-        fr.data_push(out)
+        fr.data_push_list(out)
 
 
 @instr("array_put_proplist")
 class InstArrayPutPropList(Instruction):
     def execute(self, fr):
         fr.check_underflow(3)
-        items = fr.data_pop(list)
+        items = fr.data_pop_list()
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
         obj.setprop("%s#" % prop, len(items))
-        for i, item in enumerate(items):
+        for i, item in enumerate(items[:]):
             obj.setprop("%s#/%d" % (prop, i + 1), item)
 
 
@@ -236,14 +236,14 @@ class InstArrayGetPropVals(Instruction):
             if val is not None:
                 out[vprop[plen:]] = val
             vprop = obj.next_prop(vprop)
-        fr.data_push(out)
+        fr.data_push_dict(out)
 
 
 @instr("array_put_propvals")
 class InstArrayPutPropVals(Instruction):
     def execute(self, fr):
         fr.check_underflow(3)
-        d = fr.data_pop(dict)
+        d = fr.data_pop_dict()
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
         keys = sorted(
@@ -262,27 +262,25 @@ class InstArrayGetReflist(Instruction):
         obj = fr.data_pop_object()
         val = obj.getprop(prop)
         if not isinstance(val, str):
-            fr.data_push([])
+            fr.data_push_list([])
         else:
             vals = [
                 si.DBRef(int(x[1:]))
                 for x in val.split(" ")
                 if util.is_dbref(x)
             ]
-            fr.data_push(vals)
+            fr.data_push_list(vals)
 
 
 @instr("array_put_reflist")
 class InstArrayPutReflist(Instruction):
     def execute(self, fr):
         fr.check_underflow(3)
-        refs = fr.data_pop(list)
+        refs = fr.data_pop_list()
         prop = fr.data_pop(str)
         obj = fr.data_pop_object()
-        for ref in refs:
-            if not isinstance(ref, si.DBRef):
-                raise MufRuntimeError("Expected list of dbrefs.")
-        refstr = " ".join(["#%d" % ref.value for ref in refs])
+        fr.check_list_type(refs, (si.DBRef), argnum=3)
+        refstr = " ".join([str(ref) for ref in refs])
         obj.setprop(prop, refstr)
 
 
@@ -302,10 +300,10 @@ class InstRefListAdd(Instruction):
                 for x in val.split(" ")
                 if util.is_dbref(x)
             ]
-        if ref in refs:
+        while ref in refs:
             del refs[refs.index(ref)]
         refs.append(ref)
-        refstr = " ".join(["#%d" % x.value for x in refs])
+        refstr = " ".join([str(x) for x in refs])
         obj.setprop(prop, refstr)
 
 
@@ -325,9 +323,9 @@ class InstRefListDel(Instruction):
                 for x in val.split(" ")
                 if util.is_dbref(x)
             ]
-        if ref in refs:
+        while ref in refs:
             del refs[refs.index(ref)]
-        refstr = " ".join(["#%d" % x.value for x in refs])
+        refstr = " ".join([str(x) for x in refs])
         obj.setprop(prop, refstr)
 
 
@@ -359,16 +357,15 @@ class InstArrayFilterProp(Instruction):
         fr.check_underflow(3)
         pat = fr.data_pop(str)
         prop = fr.data_pop(str)
-        objs = fr.data_pop(list)
+        objs = fr.data_pop_list()
         found = []
+        fr.check_list_type(objs, (si.DBRef), argnum=1)
         for obj in objs:
-            if not isinstance(obj, si.DBRef):
-                raise MufRuntimeError("Expected list of dbrefs.")
             if db.validobj(obj):
                 val = db.getobj(obj).getprop(prop)
                 if val and util.smatch(pat, val):
                     found.append(obj)
-        fr.data_push(found)
+        fr.data_push_list(found)
 
 
 @instr("array_filter_flags")
@@ -376,15 +373,15 @@ class InstArrayFilterFlags(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
         flags = fr.data_pop(str).upper()
-        objs = fr.data_pop(list)
+        objs = fr.data_pop_list()
+        fr.check_list_type(obj, (si.DBRef), argnum=1)
         found = []
         for obj in objs:
-            fr.check_type(obj, [si.DBRef])
             if db.validobj(obj):
                 obj = db.getobj(obj)
                 if db.flagsmatch(flags, obj):
                     found.append(si.DBRef(obj.dbref))
-        fr.data_push(found)
+        fr.data_push_list(found)
 
 
 # vim: expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

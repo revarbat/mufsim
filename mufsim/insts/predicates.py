@@ -50,14 +50,14 @@ class InstAddressP(Instruction):
 class InstArrayP(Instruction):
     def execute(self, fr):
         val = fr.data_pop()
-        fr.data_push(1 if type(val) in [list, dict] else 0)
+        fr.data_push(1 if type(val) in [si.MufList, si.MufDict] else 0)
 
 
 @instr("dictionary?")
 class InstDictionaryP(Instruction):
     def execute(self, fr):
         val = fr.data_pop()
-        fr.data_push(1 if isinstance(val, dict) else 0)
+        fr.data_push(1 if isinstance(val, si.MufDict) else 0)
 
 
 @instr("lock?")

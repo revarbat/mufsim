@@ -1,3 +1,4 @@
+import copy
 import mufsim.utils as util
 import mufsim.gamedb as db
 import mufsim.stackitems as si
@@ -96,6 +97,22 @@ class InstDup(Instruction):
         a = fr.data_pop()
         fr.data_push(a)
         fr.data_push(a)
+
+
+@instr("shallow_copy")
+class InstShallowCopy(Instruction):
+    def execute(self, fr):
+        a = fr.data_pop()
+        fr.data_push(a)
+        fr.data_push(copy.copy(a))
+
+
+@instr("deep_copy")
+class InstDeepCopy(Instruction):
+    def execute(self, fr):
+        a = fr.data_pop()
+        fr.data_push(a)
+        fr.data_push(copy.deepcopy(a))
 
 
 @instr("?dup")

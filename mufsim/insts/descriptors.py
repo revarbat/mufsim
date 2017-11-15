@@ -31,7 +31,7 @@ class InstDescrArray(Instruction):
             if db.getobj(who).objtype != "player":
                 raise MufRuntimeError("Expected #-1 or player dbref.")
             descrs = netifc.user_descrs(who.value)
-        fr.data_push(descrs)
+        fr.data_push_list(descrs)
 
 
 @instr("descrcon")

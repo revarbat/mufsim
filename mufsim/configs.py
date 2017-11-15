@@ -1,7 +1,7 @@
 import os.path
 
 
-EMULATED_VERSION = 'Muck2.2fb6.09'
+EMULATED_VERSION = 'Muck2.2fb7.00'
 MAX_VARS = 54
 HISTORY_FILE = os.path.expanduser("~/.mufsim_history")
 

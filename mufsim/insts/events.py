@@ -27,13 +27,16 @@ class InstEventSend(Instruction):
             raise MufRuntimeError("No such Process.")
         ofr.events.add_event(
             "USER." + name[:32],
-            dict(
-                data=data,
-                caller_pid=fr.pid,
-                caller_prog=fr.caller_get(),
-                descr=fr.descr,
-                trigger=si.DBRef(fr.trigger),
-                player=si.DBRef(fr.user),
+            si.MufDict(
+                dict(
+                    data=data,
+                    caller_pid=fr.pid,
+                    caller_prog=fr.caller_get(),
+                    descr=fr.descr,
+                    trigger=si.DBRef(fr.trigger),
+                    player=si.DBRef(fr.user),
+                ),
+                fr.array_pinning
             )
         )
 
@@ -64,7 +67,7 @@ class InstWatchPid(Instruction):
 @instr("event_waitfor")
 class InstEventWaitFor(Instruction):
     def execute(self, fr):
-        pats = fr.data_pop(list)
+        pats = fr.data_pop_list()[:]
         for pat in pats:
             fr.check_type(pat, [str])
         fr.pc_advance(1)

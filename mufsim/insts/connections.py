@@ -25,7 +25,7 @@ class InstOnline(Instruction):
 @instr("online_array")
 class InstOnlineArray(Instruction):
     def execute(self, fr):
-        fr.data_push(netifc.get_users_online())
+        fr.data_push_list(netifc.get_users_online())
 
 
 @instr("concount")

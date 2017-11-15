@@ -62,7 +62,7 @@ class InstExplodeArray(Instruction):
         fr.check_underflow(2)
         delim = fr.data_pop(str)
         txt = fr.data_pop(str)
-        fr.data_push(txt.split(delim))
+        fr.data_push_list(txt.split(delim))
 
 
 @instr("toupper")
@@ -223,16 +223,16 @@ class InstRegExp(Instruction):
             raise MufRuntimeError("Malformed regexp pattern. (2)")
         matches = pat.search(txt)
         if not matches:
-            fr.data_push([])
-            fr.data_push([])
+            fr.data_push_list([])
+            fr.data_push_list([])
         else:
             submatches = []
             indexes = []
             for i in range(len(matches.groups()) + 1):
                 submatches.append(matches.group(i))
                 indexes.append(list(matches.span(i)))
-            fr.data_push(submatches)
-            fr.data_push(indexes)
+            fr.data_push_list(submatches)
+            fr.data_push_list(indexes)
 
 
 @instr("regsub")

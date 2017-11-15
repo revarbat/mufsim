@@ -57,6 +57,7 @@ class MufProcess(object):
         self.prevline = (-1, -1)
         self.text_entry = []
         self.start_time = time.time()
+        self.array_pinning = False
         self.fp_error_names = [v[0] for v in self.FP_ERRORS_LIST]
         self.fp_error_descrs = [v[1] for v in self.FP_ERRORS_LIST]
         self.fp_error_bits = [
@@ -299,7 +300,7 @@ class MufProcess(object):
             self.raise_expected_type_error(types, argnum=argnum)
 
     def check_list_type(self, arrval, types, argnum=0):
-        if type(arrval) is not list:
+        if type(arrval) is not si.MufList:
             self.raise_expected_type_error(types, isarray=True, argnum=argnum)
         for val in arrval:
             if types and type(val) not in types:
@@ -312,10 +313,10 @@ class MufProcess(object):
             ("integer", [int]),
             ("float", [float]),
             ("string", [str]),
-            ("array", [list, dict]),
-            ("list array", [list]),
-            ("dictionary array", [dict]),
+            ("list array", [si.MufList]),
+            ("dictionary array", [si.MufDict]),
             ("dbref", [si.DBRef]),
+            ("array", [si.MufArray, si.MufDict]),
             ("address", [si.Address]),
             ("lock", [si.Lock]),
             ("variable", [si.GlobalVar, si.FuncVar]),
@@ -349,10 +350,16 @@ class MufProcess(object):
     def data_full_depth(self):
         return len(self.data_stack)
 
+    def data_push_list(self, x):
+        self.data_push(si.MufList(x, self.array_pinning))
+
+    def data_push_dict(self, x):
+        self.data_push(si.MufDict(x, self.array_pinning))
+
     def data_push(self, x):
         if isinstance(x, str) and len(x) > self.BUFFER_LEN:
             raise MufRuntimeError("String overflow.")
-        if isinstance(x, (list, dict)) and len(x) > self.MAX_STACK:
+        if isinstance(x, (si.MufList, si.MufDict)) and len(x) > self.MAX_STACK:
             raise MufRuntimeError("Array overflow.")
         self.data_stack.append(x)
         if len(self.data_stack) > self.MAX_STACK:
@@ -363,6 +370,15 @@ class MufProcess(object):
             raise MufRuntimeError("Stack underflow.")
         self.check_type(self.data_stack[-1], types)
         return self.data_stack.pop()
+
+    def data_pop_array(self):
+        return self.data_pop(si.MufList, si.MufDict)
+
+    def data_pop_list(self):
+        return self.data_pop(si.MufList)
+
+    def data_pop_dict(self):
+        return self.data_pop(si.MufDict)
 
     def data_pop_dbref(self):
         return self.data_pop(si.DBRef)

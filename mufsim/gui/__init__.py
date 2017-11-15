@@ -335,9 +335,11 @@ class MufGui(object):
 
     def setup_gui_source_selectors_frame(self, master, prog):
         srcselfr = Frame(master)
-        fun_lbl = Label(srcselfr, text="Function")
         self.current_function[prog] = StringVar()
         self.current_function[prog].set("")
+        self.current_target = StringVar()
+        self.current_target.set("fb6")
+        fun_lbl = Label(srcselfr, text="Function")
         fun_sel = Combobox(
             srcselfr,
             width=20,
@@ -350,11 +352,21 @@ class MufGui(object):
             "<<ComboboxSelected>>",
             self.handle_function_selector_change
         )
+        targ_lbl = Label(srcselfr, text="Target")
+        targ_sel = Combobox(
+            srcselfr,
+            width=6,
+            state="readonly",
+            textvariable=self.current_target,
+            values=["fb6", "fb7"]
+        )
         comp_btn = Button(
             srcselfr, text="Compile", command=self.progmenu_compile)
         fun_lbl.pack(side=LEFT, fill=NONE, expand=0)
         fun_sel.pack(side=LEFT, fill=Y, expand=0, padx=5, pady=2)
-        comp_btn.pack(side=LEFT, fill=Y, expand=0, padx=10, pady=2)
+        comp_btn.pack(side=RIGHT, fill=Y, expand=0, padx=10, pady=2)
+        targ_sel.pack(side=RIGHT, fill=Y, expand=0, padx=5, pady=2)
+        targ_lbl.pack(side=RIGHT, fill=NONE, expand=0)
         self.function_selectors[prog] = fun_sel
         return srcselfr
 
@@ -1032,7 +1044,9 @@ class MufGui(object):
         process_list.killall(prog)
         progobj = db.getobj(prog)
         progobj.compiled = None
-        success = MufCompiler().compile_source(prog)
+        self.cons_disp.delete('0.0', END)
+        target = self.current_target.get()
+        success = MufCompiler(target=target).compile_source(prog)
         self.update_sourcecode_from_program(prog, force=True)
         if not success:
             errlog(
@@ -1061,6 +1075,7 @@ class MufGui(object):
         else:
             progobj = db.get_registered_obj(userobj, "$cmd/test")
         breakpts = []
+        self.cons_disp.delete('0.0', END)
         currproc = self._selected_process()
         if currproc:
             breakpts = currproc.breakpoints

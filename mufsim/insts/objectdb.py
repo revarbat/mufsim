@@ -59,16 +59,16 @@ class InstProgramGetLines(Instruction):
                 start = 1
             if end < 1 or end >= srclen:
                 end = srclen
-            fr.data_push(srcs[start-1:end])
+            fr.data_push_list(srcs[start-1:end])
         else:
-            fr.data_push([])
+            fr.data_push_list([])
 
 
 @instr("program_setlines")
 class InstProgramSetLines(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
-        lines = fr.data_pop(list)
+        lines = fr.data_pop_list()
         obj = fr.data_pop_object()
         if obj.objtype != "program":
             raise MufRuntimeError("Expected program dbref.")
@@ -160,10 +160,10 @@ class InstSysParmArray(Instruction):
     def execute(self, fr):
         pat = fr.data_pop(str)
         out = [
-            sysparm.get_sysparm_info(name)
+            si.MufDict(sysparm.get_sysparm_info(name), fr.array_pinning)
             for name in sysparm.get_sysparm_names(pat)
         ]
-        fr.data_push(out)
+        fr.data_push_list(out)
 
 
 @instr("dbref")
@@ -404,7 +404,7 @@ class InstContentsArray(Instruction):
     def execute(self, fr):
         obj = fr.data_pop_object()
         arr = [si.DBRef(x) for x in obj.contents]
-        fr.data_push(arr)
+        fr.data_push_list(arr)
 
 
 @instr("moveto")
@@ -437,7 +437,7 @@ class InstForcedBy(Instruction):
 @instr("forcedby_array")
 class InstForcedByArray(Instruction):
     def execute(self, fr):
-        fr.data_push(cmds.get_force_stack())
+        fr.data_push_list(cmds.get_force_stack())
 
 
 @instr("force_level")
@@ -461,7 +461,7 @@ class InstExitsArray(Instruction):
     def execute(self, fr):
         obj = fr.data_pop_object()
         arr = [si.DBRef(x) for x in obj.exits]
-        fr.data_push(arr)
+        fr.data_push_list(arr)
 
 
 @instr("next")
@@ -512,11 +512,9 @@ class InstSetLink(Instruction):
 class InstSetLinksArray(Instruction):
     def execute(self, fr):
         fr.check_underflow(2)
-        dests = fr.data_pop(list)
+        dests = fr.data_pop_list()
         obj = fr.data_pop_object()
-        for dest in dests:
-            if not isinstance(dest, si.DBRef):
-                raise MufRuntimeError("Expected list array of dbrefs.")
+        fr.check_list_type(dests, (si.DBRef), argnum=2)
         obj.links = [db.getobj(dest).dbref for dest in dests]
         obj.mark_modify()
 
@@ -541,7 +539,7 @@ class InstGetLinks(Instruction):
 class InstGetLinksArray(Instruction):
     def execute(self, fr):
         obj = fr.data_pop_object()
-        fr.data_push([si.DBRef(x) for x in obj.links])
+        fr.data_push_list([si.DBRef(x) for x in obj.links])
 
 
 @instr("entrances_array")
@@ -549,7 +547,7 @@ class InstEntrancesArray(Instruction):
     def execute(self, fr):
         obj = fr.data_pop_object()
         arr = [si.DBRef(o) for o in db.entrances_array(obj)]
-        fr.data_push(arr)
+        fr.data_push_list(arr)
 
 
 @instr("copyobj")

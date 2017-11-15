@@ -90,7 +90,7 @@ class McpGuiPackage(McpPackage):
         ctrlid = msg.get('id', '')
         event = msg.get('event', '')
         dismissed = msg.get('dismissed', '0')
-        data = msg.get('data', [])
+        data = msg.get('data', si.MufDict({}, fr.array_pinning))
         dlog = get_dlog(dlogid)
         if not dlog:
             return
@@ -103,15 +103,18 @@ class McpGuiPackage(McpPackage):
             data = [data]
         fr.events.add_event(
             'GUI.%s' % dlogid,
-            {
-                'descr': descr,
-                'dlogid': dlogid,
-                'id': ctrlid,
-                'event': event,
-                'dismissed': dismissed,
-                'values': dlog.values,
-                'data': data,
-            }
+            si.MufDict(
+                {
+                    'descr': descr,
+                    'dlogid': dlogid,
+                    'id': ctrlid,
+                    'event': event,
+                    'dismissed': dismissed,
+                    'values': dlog.values,
+                    'data': data,
+                },
+                fr.array_pinning
+            )
         )
         if dismissed:
             del_dlog(dlogid)
@@ -163,7 +166,7 @@ class InstGuiAvailable(Instruction):
 class InstGuiDlogCreate(Instruction):
     def execute(self, fr):
         fr.check_underflow(4)
-        args = fr.data_pop(dict)
+        args = fr.data_pop_dict()
         title = fr.data_pop(str)
         dtype = fr.data_pop(str)
         descr = fr.data_pop(int)
@@ -179,7 +182,7 @@ class InstGuiDlogCreate(Instruction):
             title=title,
             type=dtype,
         )
-        msg.extend(args)
+        msg.extend(dict(args))
         mcp.send_message(msg)
         fr.data_push(dlog.dlogid)
 
@@ -209,7 +212,7 @@ class InstGuiDlogClose(Instruction):
 class InstGuiCtrlCreate(Instruction):
     def execute(self, fr):
         fr.check_underflow(4)
-        args = fr.data_pop(dict)
+        args = fr.data_pop_dict()
         ctrlid = fr.data_pop(str)
         ctype = fr.data_pop(str)
         dlogid = fr.data_pop(str)
@@ -224,7 +227,7 @@ class InstGuiCtrlCreate(Instruction):
 class InstGuiCtrlCommand(Instruction):
     def execute(self, fr):
         fr.check_underflow(4)
-        args = fr.data_pop(dict)
+        args = fr.data_pop_dict()
         command = fr.data_pop(str)
         ctrlid = fr.data_pop(str)
         dlogid = fr.data_pop(str)
@@ -240,12 +243,12 @@ class InstGuiCtrlCommand(Instruction):
 class InstGuiValueSet(Instruction):
     def execute(self, fr):
         fr.check_underflow(3)
-        val = fr.data_pop(str, int, float, si.DBRef, list)
+        val = fr.data_pop(str, int, float, si.DBRef, si.MufList)
         ctrlid = fr.data_pop(str)
         dlogid = fr.data_pop(str)
-        if isinstance(val, list):
-            for v in val:
-                fr.check_type(v, [str, int, float, si.DBRef])
+        if isinstance(val, si.MufList):
+            val = val[:]
+            fr.check_list_type(val, (str, int, float, si.DBRef), argnum=3)
         dlog = get_dlog(dlogid)
         dlog.setvalue(ctrlid, val)
         dlog.send_message('ctrl-value', id=ctrlid, value=val)

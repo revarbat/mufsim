@@ -48,7 +48,7 @@ class McpMufPackage(McpPackage):
             newproc.call_push(addr, -1)
             newproc.data_pop()
             newproc.data_push(descr)
-            newproc.data_push(dict(msg))
+            newproc.data_push(si.MufDict(dict(msg), fr.array_pinning))
             newproc.sleep(0)
         elif self.handler_pid:
             pid = self.handler_pid
@@ -61,7 +61,7 @@ class McpMufPackage(McpPackage):
                     'descr': descr,
                     'package': self.name,
                     'message': name,
-                    'args': dict(msg),
+                    'args': si.MufDict(dict(msg), fr.array_pinning),
                 }
             )
 
@@ -131,7 +131,7 @@ class InstMcpSend(Instruction):
     def execute(self, fr):
         global mcp_pkg_program
         fr.check_underflow(4)
-        args = fr.data_pop(dict)
+        args = fr.data_pop_dict()
         msgname = fr.data_pop(str)
         pkgname = fr.data_pop(str)
         descr = fr.data_pop(int)
@@ -146,7 +146,7 @@ class InstMcpSend(Instruction):
         if msgname:
             msg_full_name += '-' + msgname
         msg = McpMessage(msg_full_name)
-        msg.extend(args)
+        msg.extend(dict(args))
         mcp.send_message(msg)
 
 

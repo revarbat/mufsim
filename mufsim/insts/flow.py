@@ -370,9 +370,8 @@ class InstFor(Instruction):
 @instr("foreach")
 class InstForeach(Instruction):
     def execute(self, fr):
-        arr = fr.data_pop(list, dict)
-        if isinstance(arr, list):
-            arr = {k: v for k, v in enumerate(arr)}
+        arr = fr.data_pop_array()
+        arr = {k: arr[k] for k in arr.keys()}
         fr.loop_iter_push("foreach", iter(arr.items()))
 
     def compile(self, cmplr, code, src):

@@ -507,6 +507,8 @@ class MufConsole(object):
         parser.add_argument("--timing",
                             help="Show run execution timing.",
                             action="store_true")
+        parser.add_argument("-T", "--target", choices=['fb6', 'fb7'], default="fb6",
+                            help="Target MUF variant. Currently one of 'fb6' or 'fb7'.")
         parser.add_argument("-t", "--trace",
                             help="Show stacktrace for each instrution.",
                             action="store_true")
@@ -611,7 +613,8 @@ class MufConsole(object):
                 progobj = db.get_registered_obj(userobj, "$cmd/test")
             progobj.sources = srcs
             self.header("Compiling MUF Program %s" % progobj)
-            success = MufCompiler().compile_source(progobj.dbref)
+            cmplr = MufCompiler(target=self.opts.target)
+            success = cmplr.compile_source(progobj.dbref)
             log("")
             if not success:
                 return

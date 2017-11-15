@@ -37,7 +37,7 @@ class InstGetPids(Instruction):
                     (objtype == "exit" and ofr.trigger == obj)
                 ):
                     out.append(pid)
-        fr.data_push(out)
+        fr.data_push_list(out)
 
 
 @instr("getpidinfo")
