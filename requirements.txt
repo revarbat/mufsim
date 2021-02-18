@@ -1,7 +1,7 @@
 CairoSVG==2.5.1
 ldap3==1.0.4
 py2app==0.7.3
-PyInstaller==3.1.1
+PyInstaller==3.6
 pytz==2013.7
 mudclientprotocol>=0.1.0
 belfrywidgets>=1.0.3
