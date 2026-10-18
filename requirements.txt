@@ -1,4 +1,4 @@
-CairoSVG==2.9.0
+CairoSVG==2.9.1
 ldap3==1.0.4
 py2app==0.7.3
 PyInstaller==6.0.0
